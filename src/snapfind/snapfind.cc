@@ -436,8 +436,8 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 {
 	char * 		tmp_storage = NULL;
 	FILE *		fspec;	
-	int		err;
-	int             fd;
+	int			err;
+	int         fd;
 	snap_search *		snapobj;
 	int					i;
 	snap_search *		rgb;
@@ -458,7 +458,8 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 		
 	if(fd < 0) { 
 		perror(tmp_file);
-		free(tmp_storage); return NULL; }
+		free(tmp_storage); return NULL; 
+	}
 	fspec = fdopen(fd, "w+");
 	if (fspec == NULL) {
 		perror(tmp_file);
@@ -476,6 +477,7 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 
 	for (i = 0; i < num_searches ; i++) {
 		snapobj = snap_searches[i];
+		printf("search %d obj %p \n", i, snapobj);
 		if (snapobj->is_selected()) {
 			snapobj->save_edits();
 			snapobj->write_fspec(fspec);
