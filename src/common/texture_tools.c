@@ -232,13 +232,7 @@ texture_get_lap_pyr_features_from_subimage(IplImage * img,
             cvCreateImage(cvSize(roi.width * 2, roi.height * 2), IPL_DEPTH_8U,
                           num_channels);
         cvResize(laplacianIm[i - 1], laplacianIm_tmp[i], CV_INTER_NN);
-        printf("comput peramid \n");
-        printf("s1 ht %d s1 wd %d s1 ht %d s2 wd %d \n",
-               gaussianIm[i]->height, gaussianIm[i]->width,
-               laplacianIm_tmp[i]->height, laplacianIm_tmp[i]->width);
-
         cvAbsDiff(gaussianIm[i], laplacianIm_tmp[i], laplacianIm[i]);
-        printf("after peramid \n");
     }
     /*
      * calculate response 

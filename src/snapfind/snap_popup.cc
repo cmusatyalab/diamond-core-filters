@@ -1208,6 +1208,7 @@ do_img_popup(GtkWidget *widget)
 	}
 	//gtk_object_set_user_data(GTK_OBJECT(popup_window.window), thumb->fullimage);
 
+
 	char buf[MAX_NAME];
 	sprintf(buf, "Image: %s", thumb->name);
 	gtk_window_set_title(GTK_WINDOW(popup_window.window), buf);
@@ -1264,7 +1265,7 @@ do_img_popup(GtkWidget *widget)
 	    GtkWidget *button = NULL;
 
 	    popup_window.nfaces = thumb->nfaces;
-	    if(thumb->nfaces) {
+	    if (thumb->nfaces) {
 		    sprintf(buf, "faces (%d)", thumb->nfaces);
 		    button = gtk_check_button_new_with_label(buf);
 		    g_signal_connect (G_OBJECT(button), "toggled",
