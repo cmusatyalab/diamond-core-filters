@@ -271,7 +271,7 @@ texture_test_entire_image_variance(IplImage * img, texture_args_t * targs,
                     }
                 }
 
-				if ((num_req < 10) && (min_distance <= targs->max_distance)  &&
+		if ((num_req < 10) && (min_distance <= targs->max_distance)  &&
                         (min_distance < best_box[num_req - 1].distance)) {
                         bbox_t  temp_box;
                                                                                 

@@ -727,7 +727,7 @@ get_example_menu(void)
 	GtkWidget *     item;
 	img_search *	cur_search;
 	search_iter_t	iter;
-	
+
 	menu = gtk_menu_new();
                         
 	sset->reset_search_iter(&iter);
