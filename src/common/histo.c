@@ -944,7 +944,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 	dim_t           xsiz = hconfig->xsize;
 	dim_t           ysiz = hconfig->ysize;
 	bbox_t	 *		bbox;
-	bbox_t*	  		best_box;
+	bbox_t*	  		best_box = NULL;
 	patch_t        *patch;
 	int             done = 0;
 	int             pass;
@@ -1041,7 +1041,9 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 		}
 		//free(best_box);
 	}
-	free(best_box);
+	if (best_box) {
+		free(best_box);
+	}
 
 	return pass;
 }

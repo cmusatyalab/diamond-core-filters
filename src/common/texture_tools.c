@@ -183,7 +183,6 @@ texture_test_entire_image_maholonobis(IplImage * img, texture_args_t * targs,
 	}
 
 done:
-
 	cvResetImageROI(img);
 	return (passed);
 }
@@ -216,7 +215,7 @@ texture_test_entire_image_variance(IplImage * img, texture_args_t * targs,
 	int				num_req = targs->min_matches;
 	int				count;
 	bbox_t         *bbox;
-	bbox_t          *best_box;
+	bbox_t          *best_box = NULL;
 	int             extra_pixels_w = img->width % (1 << NUM_LAP_PYR_LEVELS);
 	int             extra_pixels_h = img->height % (1 << NUM_LAP_PYR_LEVELS);
 	cvSetImageROI(img, cvRect(0, 0, img->width - extra_pixels_w,
@@ -368,11 +367,14 @@ texture_test_entire_image_variance(IplImage * img, texture_args_t * targs,
 			bbox->distance = best_box[count].distance;
 			TAILQ_INSERT_TAIL(blist, bbox, link);
 		}
+	}
+
+done:
+	if (best_box) {
 		free(best_box);
 	}
 
 
-done:
 
 	cvResetImageROI(img);
 	return (passed);
@@ -495,6 +497,7 @@ texture_test_entire_image_pairwise(IplImage * img, texture_args_t * targs,
 		bbox->distance = best_box.distance;
 		TAILQ_INSERT_TAIL(blist, bbox, link);
 	}
+
 
 done:
 
