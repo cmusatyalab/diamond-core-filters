@@ -191,30 +191,10 @@ graph_win::process_expose(GtkWidget *widget, GdkEventExpose *event)
 	gdk_gc_set_clip_rectangle (widget->style->fg_gc[widget->state],
 				   &event->area);
 
-#ifdef	XXX	
-	for(int i=0; i<GW_MAX_LAYERS; i++) {
-		int pht = gdk_pixbuf_get_height(gw_pixbufs[i]);
-		assert(event->area.y + height <= pht);
-		assert(width >= 0);
-		assert(height >= 0);
-		gdk_pixbuf_render_to_drawable_alpha(gw_pixbufs[i],
-					    widget->window,
-					    event->area.x, event->area.y,
-					    event->area.x, event->area.y,
-					    width, height,
-					    GDK_PIXBUF_ALPHA_FULL, 1, /* ign */
-					    GDK_RGB_DITHER_MAX,
-					    0, 0);
-	}
-    	// XXX pthread_mutex_unlock(&di_mutex);
-
-#else 
 	gdk_draw_drawable(widget->window,
-			gw_drawingarea->style->fg_gc[GTK_WIDGET_STATE(gw_drawingarea)],
-			gw_pixmap, event->area.x, event->area.y,
-			event->area.x, event->area.y, width, height);
-
-#endif
+		gw_drawingarea->style->fg_gc[GTK_WIDGET_STATE(gw_drawingarea)],
+		gw_pixmap, event->area.x, event->area.y,
+		event->area.x, event->area.y, width, height);
 
 	gdk_gc_set_clip_rectangle(widget->style->fg_gc[widget->state],
 				   NULL);
@@ -227,7 +207,9 @@ static void
 cb_draw_res_layer(GtkWidget *widget, gpointer ptr) 
 {
 	graph_win *disp_img = (graph_win *)ptr;
+	GUI_CALLBACK_ENTER();
 	disp_img->draw_res(widget);
+	GUI_CALLBACK_LEAVE();
 	return;
 }
 
@@ -236,23 +218,11 @@ void
 graph_win::draw_res(GtkWidget *widget)
 {
 
-	GUI_CALLBACK_ENTER();
 	
 	/* although we clear the pixbuf data here, we still need to
 	 * generate refreshes for either the whole image or the parts
 	 * that we cleared. */
 	rgbimg_clear(gw_layers[GW_RES_LAYER]);
-
-#ifdef	XXX
-	/* draw faces (presumably there's only one checkbox, but that's ok) */
-	gtk_container_foreach(GTK_CONTAINER(import_window.face_cb_area), draw_face_func, 
-			      import_window.face_cb_area);
-
-	/* draw histo bboxes, if on */
-	gtk_container_foreach(GTK_CONTAINER(import_window.histo_cb_area), 	
-		draw_hbbox_func, import_window.histo_cb_area);
-#endif
-	GUI_CALLBACK_LEAVE();
 }
 
 
@@ -272,7 +242,6 @@ cb_realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data)
 void
 graph_win::get_series_color(int i, GdkColor *color)
 {
-
 	switch(i) {
 		case 0:
 			/* first is red */

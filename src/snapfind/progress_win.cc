@@ -69,7 +69,6 @@ static int             thread_close;
 static GtkWidget      *progress_window = NULL;
 static GtkWidget      *progress_box = NULL;
 
-static int      verbose_mode = 1;
 
 static GtkWidget	*progress_bar;
 
@@ -77,273 +76,6 @@ static GtkWidget	*progress_bar;
 #define		PROGRESS_Y_SIZE		400
 
 graph_win	*gwin;
-
-void
-set_summary_attr(GtkWidget * widget)
-{
-#ifdef SUMMARY_FONT_NAME
-    PangoFontDescription *font = NULL;
-    font = pango_font_description_from_string(SUMMARY_FONT_NAME);
-    gtk_widget_modify_font(widget, font);
-    pango_font_description_free(font);
-#endif
-
-    gtk_widget_set_name(widget, "summary");
-}
-
-
-
-typedef struct filt_data {
-    GtkWidget      *frame;
-    GtkWidget      *box;
-    GtkWidget      *sbox1;
-    GtkWidget      *sbox2;
-    GtkWidget      *sbox3;
-    GtkWidget      *time_label;
-    GtkWidget      *time_val;
-    GtkWidget      *proc_label;
-    GtkWidget      *proc_val;
-    GtkWidget      *drop_label;
-    GtkWidget      *nproc_label;
-    GtkWidget      *drop_val;
-} filt_data_t;
-
-
-typedef struct filter_page {
-    LIST_ENTRY(filter_page) fp_link;
-    char           *fp_name;
-    GtkWidget      *fp_table;
-    filt_data_t     fp_data[MAX_DEVICES];
-} filter_page_t;
-
-
-
-typedef struct device_progress {
-    GtkWidget      *name_frame;
-    GtkWidget      *name_box;
-    GtkWidget      *name_label;
-    GtkWidget      *prog_frame;
-    GtkWidget      *prog_box;
-    GtkWidget      *progress_bar;
-    GtkWidget      *total_label;
-    GtkWidget      *total_text;
-    GtkWidget      *proc_label;
-    GtkWidget      *drop_text;
-    GtkWidget      *drop_label;
-    GtkWidget      *nproc_text;
-    GtkWidget      *nproc_label;
-
-    filt_data_t     filt_stats[MAX_FILT];
-} device_progress_t;
-
-
-
-
-device_progress_t devinfo[MAX_DEVICES];
-
-
-
-typedef struct page_master {
-    LIST_HEAD(pm_pages, filter_page) pm_pages;
-    GtkWidget      *pm_notebook;
-} page_master_t;
-
-static page_master_t page_master;
-
-
-void            init_filt_data(filt_data_t * fdata);
-
-
-static filter_page_t *
-find_page(char *name)
-{
-
-    filter_page_t  *cur_page;
-
-    LIST_FOREACH(cur_page, &page_master.pm_pages, fp_link) {
-        if (strcmp(cur_page->fp_name, name) == 0) {
-            return (cur_page);
-        }
-    }
-    return (NULL);
-}
-
-
-void
-new_page(char *name, int num_dev)
-{
-    filter_page_t  *new_page;
-    GtkWidget      *new_lab;
-    int             i;
-
-    /*
-     * make sure this page doesn't already exist 
-     */
-    new_page = find_page(name);
-    assert(new_page == NULL);
-
-
-    new_page = (filter_page_t *) malloc(sizeof(*new_page));
-
-    new_page->fp_name = strdup(name);
-    assert(new_page->fp_name != NULL);
-
-    LIST_INSERT_HEAD(&page_master.pm_pages, new_page, fp_link);
-
-    new_page->fp_table = gtk_table_new(1, num_dev + 1, FALSE);
-
-    gtk_widget_show(new_page->fp_table);
-
-
-    for (i = 0; i < num_dev; i++) {
-        init_filt_data(&new_page->fp_data[i]);
-        gtk_table_attach_defaults(GTK_TABLE(new_page->fp_table),
-                                  new_page->fp_data[i].frame, 0, 1, (i + 1),
-                                  (i + 2));
-    }
-
-
-    new_lab = gtk_label_new(name);
-
-    gtk_notebook_append_page(GTK_NOTEBOOK(page_master.pm_notebook),
-                             new_page->fp_table, new_lab);
-}
-
-
-
-void
-remove_page(char *name)
-{
-    filter_page_t  *old_page;
-
-    /*
-     * make sure this page doesn't already exist 
-     */
-    old_page = find_page(name);
-    assert(new_page != NULL);
-
-    LIST_REMOVE(old_page, fp_link);
-    free(old_page->fp_name);
-    free(old_page);
-
-}
-
-
-
-
-void
-init_filt_data(filt_data_t * fdata)
-{
-    char            data[60];
-
-    GUI_THREAD_CHECK();
-    /*
-     * Now create another region that has the controls
-     * that manipulate the current image being displayed.
-     */
-    fdata->frame = gtk_frame_new(NULL);
-    gtk_widget_show(fdata->frame);
-
-    fdata->box = gtk_vbox_new(FALSE, 10);
-    gtk_container_set_border_width(GTK_CONTAINER(fdata->box), 1);
-    gtk_container_add(GTK_CONTAINER(fdata->frame), fdata->box);
-    gtk_widget_show(fdata->box);
-
-
-    fdata->sbox1 = gtk_hbox_new(FALSE, 10);
-    gtk_container_set_border_width(GTK_CONTAINER(fdata->sbox1), 1);
-    gtk_box_pack_start(GTK_BOX(fdata->box), fdata->sbox1, FALSE, TRUE, 0);
-    gtk_widget_show(fdata->sbox1);
-
-
-    fdata->sbox2 = gtk_hbox_new(FALSE, 10);
-    gtk_container_set_border_width(GTK_CONTAINER(fdata->sbox2), 1);
-    gtk_box_pack_start(GTK_BOX(fdata->box), fdata->sbox2, FALSE, TRUE, 0);
-    gtk_widget_show(fdata->sbox2);
-
-
-    fdata->sbox3 = gtk_hbox_new(FALSE, 10);
-    gtk_container_set_border_width(GTK_CONTAINER(fdata->sbox3), 1);
-    gtk_box_pack_start(GTK_BOX(fdata->box), fdata->sbox3, FALSE, TRUE, 0);
-    gtk_widget_show(fdata->sbox3);
-
-
-    sprintf(data, "%s", "Avg Time (ms):");
-    fdata->time_label = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(fdata->sbox1),
-                       fdata->time_label, FALSE, TRUE, 0);
-    gtk_widget_show(fdata->time_label);
-
-    sprintf(data, "%10.5f", 0.0);
-    fdata->time_val = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(fdata->sbox1),
-                       fdata->time_val, FALSE, TRUE, 0);
-    gtk_widget_show(fdata->time_val);
-
-
-    sprintf(data, "%s", "Objs Proc:");
-    fdata->proc_label = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(fdata->sbox2), fdata->proc_label,
-                       FALSE, TRUE, 0);
-    gtk_widget_show(fdata->proc_label);
-
-
-    sprintf(data, "%8d", 0);
-    fdata->proc_val = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(fdata->sbox2),
-                       fdata->proc_val, FALSE, TRUE, 0);
-    gtk_widget_show(fdata->proc_val);
-
-
-    sprintf(data, "%s", "Objs Drop:");
-    fdata->drop_label = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(fdata->sbox3), fdata->drop_label,
-                       FALSE, TRUE, 0);
-    gtk_widget_show(fdata->drop_label);
-
-    sprintf(data, "%s", "Bypass Obj:");
-    fdata->nproc_label = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(fdata->sbox3), fdata->nproc_label,
-                       FALSE, TRUE, 0);
-    gtk_widget_show(fdata->nproc_label);
-
-
-    sprintf(data, "%8d", 0);
-    fdata->drop_val = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(fdata->sbox3), fdata->drop_val, FALSE, TRUE,
-                       0);
-    gtk_widget_show(fdata->drop_val);
-
-
-}
-
-
-
-
-void
-update_filt_data(filt_data_t * fdata, filter_stats_t * fstats)
-{
-
-    char            data[60];
-    double          elap_time;
-
-    GUI_THREAD_CHECK();
-
-    elap_time = rt_time2secs(fstats->fs_avg_exec_time);
-    elap_time = elap_time * 1000.0; /* convert to ms */
-    sprintf(data, "%.1f", elap_time);
-    gtk_label_set_text(GTK_LABEL(fdata->time_val), data);
-
-
-    sprintf(data, "%-8d", fstats->fs_objs_processed);
-    gtk_label_set_text(GTK_LABEL(fdata->proc_val), data);
-
-    sprintf(data, "%-8d", fstats->fs_objs_dropped);
-    gtk_label_set_text(GTK_LABEL(fdata->drop_val), data);
-}
-
-
-
 
 void
 dump_stats(dev_stats_t * dstats)
@@ -396,57 +128,6 @@ get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
     }
 
     return (hent->h_name);
-
-}
-
-
-
-void
-update_dev_status(int dev, dev_stats_t * dstats, int verbose)
-{
-    char            data[60];
-    device_progress_t *dstatus;
-    double          done;
-    int             i;
-
-    GUI_THREAD_CHECK();
-
-    dstatus = &devinfo[dev];
-
-    if (dstats->ds_objs_total == 0) {
-        done = 0.0;
-    } else {
-        done = ((double) dstats->ds_objs_processed +
-                (double) dstats->ds_objs_nproc) /
-            (double) dstats->ds_objs_total;
-        if (!(done <= 1.0)) {
-            done = 1.0;
-        }
-    }
-    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(dstatus->progress_bar),
-                                  done);
-
-    /*
-     * dump_stats(dstats); 
-     */
-
-
-    sprintf(data, "%-8d", dstats->ds_objs_processed + dstats->ds_objs_nproc);
-    gtk_label_set_text(GTK_LABEL(dstatus->proc_label), data);
-
-    sprintf(data, "%-8d", dstats->ds_objs_total);
-    gtk_label_set_text(GTK_LABEL(dstatus->total_label), data);
-
-    sprintf(data, "%-8d", dstats->ds_objs_dropped);
-    gtk_label_set_text(GTK_LABEL(dstatus->drop_label), data);
-
-    sprintf(data, "%-8d", dstats->ds_objs_nproc);
-    gtk_label_set_text(GTK_LABEL(dstatus->nproc_label), data);
-
-    for (i = 0; i < dstats->ds_num_filters; i++) {
-        update_filt_data(&dstatus->filt_stats[i],
-                         &dstats->ds_filter_stats[i]);
-    }
 }
 
 
@@ -464,8 +145,6 @@ extern int      search_active;
 extern int      search_number;
 extern struct timeval  search_start;
                                                                                 
-
-
 void           *
 stats_main(void *data)
 {
@@ -522,22 +201,25 @@ stats_main(void *data)
 			}
 			total += (double)dstats->ds_objs_total;
 			done += (double)dstats->ds_objs_processed;
-			// XXX printf("done %f \n", done);
 		}
 	
    
 		completed = done/total; 
-        if (!(completed <= 1.0)) {
+        if (completed > 1.0) {
             completed = 1.0;
         }
-		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress_bar),
-                                 completed);
+	printf("completed %f \n", completed);
 
+		/* get currnent time and compute elapsed time */
 		gettimeofday(&tv, &tz);
 		start = timeval_to_double(&search_start);
 		stop = timeval_to_double(&tv);
 		time = stop - start;
-		// XXX printf("time %f \n", time);
+
+	GUI_THREAD_ENTER();
+	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress_bar),
+			 completed);
+
 
 		id = search_number % 8;
 
@@ -551,6 +233,7 @@ stats_main(void *data)
 			// XXX printf("done %f \n", done);
 			gwin->add_point((double)time, done, id);
 		}
+		GUI_THREAD_LEAVE();
 wait:
 		sleep(1);
     }
@@ -562,7 +245,6 @@ void
 stats_close(GtkWidget * window)
 {
     progress_window = NULL;
-
     thread_close = 1;
 }
 
@@ -597,22 +279,21 @@ open_progress_win()
 	gtk_box_pack_start(GTK_BOX(progress_box), gwidget, FALSE, TRUE, 0);
 
 
-	   	hbox =  gtk_hbox_new(FALSE, 10);
-		gtk_box_pack_start(GTK_BOX(progress_box), hbox, FALSE, TRUE, 0);
+	hbox =  gtk_hbox_new(FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(progress_box), hbox, FALSE, TRUE, 0);
 
-		label =  gtk_label_new("Current Progress");
-		gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
+	label =  gtk_label_new("Current Progress");
+	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
 
-		progress_bar = gtk_progress_bar_new();
-		gtk_box_pack_start(GTK_BOX(hbox), progress_bar, TRUE, TRUE, 0);
-
-	
-
+	progress_bar = gtk_progress_bar_new();
+	gtk_box_pack_start(GTK_BOX(hbox), progress_bar, TRUE, TRUE, 0);
         gtk_widget_show_all(progress_window);
+    } else {
+	/* raise the window if it already exists */
+	gdk_window_raise(GTK_WIDGET(progress_window)->window);
     }
+
 }
-
-
 
 
 /*
@@ -620,7 +301,7 @@ open_progress_win()
  * search.
  */
 void
-create_progress_win(ls_search_handle_t shandle, int verbose)
+create_progress_win(ls_search_handle_t shandle)
 {
     int             err;
 
@@ -630,21 +311,13 @@ create_progress_win(ls_search_handle_t shandle, int verbose)
     if (progress_window != NULL) {
         return;
     }
-    //verbose_mode = verbose;
-    /*
-     * XXX 
-     */
-    //verbose_mode = 0;
-    verbose_mode = 1;
 
     /*
      * First we create a section that keeps track
      * of the progress and lets us know where we stand in
      * the search.
      */
-
     open_progress_win();
-
 
     /*
      * Create a thread that processes gets the statistics.
@@ -658,10 +331,6 @@ create_progress_win(ls_search_handle_t shandle, int verbose)
     }
 }
 
-
-
-
-
 void
 close_progress_win()
 {
@@ -672,13 +341,12 @@ close_progress_win()
 }
 
 
-
 void
 toggle_progress_win(ls_search_handle_t shandle, int verbose)
 {
     if (progress_window) {
         close_progress_win();
     } else {
-        create_progress_win(shandle, verbose);
+        create_progress_win(shandle);
     }
 }

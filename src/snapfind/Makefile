@@ -45,8 +45,8 @@ CFLAGS += -DDEBUG
 CFLAGS += -Wall
 CFLAGS += -D_REENTRANT
 CFLAGS += -D_THREAD_SAFE
-#CFLAGS += -DDATA_IN_ATTRS
-CFLAGS_SHARED = $(CFLAGS) -fPIC FLEX = flex 
+CFLAGS += -DDATA_IN_ATTRS
+#CFLAGS_SHARED = $(CFLAGS) -fPIC FLEX = flex 
 # # Set the include paths.  #
 INCDIR += -I ../../lib/libsearchlet
 INCDIR += -I../../lib/libtools
