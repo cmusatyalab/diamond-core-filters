@@ -992,6 +992,111 @@ existing_search_panel(void)
 	return(frame);
 }
 
+#define	MAX_SEARCHES	64	/* XXX horible */
+static GtkWidget *
+highlight_select()
+{
+    GtkWidget *box2, *box1;
+    GtkWidget *separator;
+    GtkWidget *table;
+    GtkWidget *frame, *widget;
+    int row = 0;        /* current table row */
+	int			i;
+
+    GUI_THREAD_CHECK(); 
+
+    box1 = gtk_vbox_new (FALSE, 0);
+    gtk_widget_show (box1);
+
+    frame = gtk_frame_new("Searches");
+    table = gtk_table_new(MAX_SEARCHES+1, 3, FALSE);
+    gtk_table_set_row_spacings(GTK_TABLE(table), 2);
+    gtk_table_set_col_spacings(GTK_TABLE(table), 4);
+    gtk_container_set_border_width(GTK_CONTAINER(table), 10);
+
+    widget = gtk_label_new("Predicate");
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_widget_show(widget);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
+
+    widget = gtk_label_new("Description");
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_widget_show(widget);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
+
+    widget = gtk_label_new("Edit");
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_widget_show(widget);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+
+	for (i=0; i < num_searches; i++) {
+		row = i + 1;
+		widget = snap_searches[i]->get_highlight_widget();
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
+		widget = snap_searches[i]->get_config_widget();
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
+		widget = snap_searches[i]->get_edit_widget();
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+	}
+	gtk_container_add(GTK_CONTAINER(frame), table);
+    gtk_box_pack_start(GTK_BOX(box1), frame, FALSE, FALSE, 10);
+    gtk_widget_show(frame);
+    gtk_widget_show(table);
+    gtk_widget_show_all(box1);
+
+	return(box1);
+}
+
+
+static GtkWidget *
+highlight_panel(void)
+{
+	GtkWidget	*frame;
+	GtkWidget	*box;
+
+  	frame = gtk_frame_new("Highlighting");
+  	gtk_widget_show(frame);
+
+  	/* start button area */
+  	GtkWidget *box2 = gtk_vbox_new (FALSE, 10);
+  	gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
+  	gtk_container_add(GTK_CONTAINER(frame), box2);
+  	gtk_widget_show (box2);
+
+  	GtkWidget *label = gtk_label_new("Highlight regions matching seaches");
+  	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+  	gtk_box_pack_start (GTK_BOX (box2), label, FALSE, TRUE, 0);
+
+
+	box = highlight_select();
+  	gtk_box_pack_start(GTK_BOX(box2), box, FALSE, TRUE, 0);
+
+
+	GtkWidget *pb = gtk_progress_bar_new();
+  	highlight_info.progress_bar = pb;
+  	gtk_box_pack_start (GTK_BOX (box2), pb, TRUE, TRUE, 0);
+
+  	/* couple of buttons */
+  	GtkWidget *buttonbox = gtk_hbox_new(TRUE, 10);
+  	gtk_box_pack_start (GTK_BOX(box2), buttonbox, TRUE, TRUE, 0);
+  	gtk_widget_show(buttonbox);
+
+  	GtkWidget *button = gtk_button_new_with_label ("Highlight");
+  	g_signal_connect_after(GTK_OBJECT(button), "clicked",
+			 	GTK_SIGNAL_FUNC(cb_run_highlight), NULL);
+  	gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
+  	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
+
+  	button = gtk_button_new_with_label ("Clear");
+  	g_signal_connect_after(GTK_OBJECT(button), "clicked",
+					 GTK_SIGNAL_FUNC(cb_clear_highlight_layer), NULL);
+  	gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
+
+	gtk_widget_show_all(frame);
+	return(frame);
+}
+
+
 void
 do_img_popup(GtkWidget *widget) 
 {
@@ -1103,50 +1208,10 @@ do_img_popup(GtkWidget *widget)
 		  gtk_widget_show (button);
 		}
 
-		/* 
-		 * Highlighting
-		 */
-		{
-		  frame = gtk_frame_new("Highlighting");
-		  gtk_box_pack_end (GTK_BOX (box1), frame, FALSE, FALSE, 0);
-		  gtk_widget_show(frame);
+		/* Get highlighting state */
+		frame = highlight_panel();
+  		gtk_box_pack_end (GTK_BOX (box1), frame, FALSE, FALSE, 0);
 
-		  /* start button area */
-		  GtkWidget *box2 = gtk_vbox_new (FALSE, 10);
-		  gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
-		  gtk_container_add(GTK_CONTAINER(frame), box2);
-		  gtk_widget_show (box2);
-
-		  GtkWidget *label = gtk_label_new("This will run color histogram matching"
-			  " over the image using parameters from the main search window.");
-		  gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-		  gtk_box_pack_start (GTK_BOX (box2), label, TRUE, TRUE, 0);
-		  gtk_widget_show (label);
-
-		  GtkWidget *pb = gtk_progress_bar_new();
-		  gtk_widget_show(pb);
-		  highlight_info.progress_bar = pb;
-		  gtk_box_pack_start (GTK_BOX (box2), pb, TRUE, TRUE, 0);
-
-		  /* couple of buttons */
-		  GtkWidget *buttonbox = gtk_hbox_new(TRUE, 10);
-		  gtk_box_pack_start (GTK_BOX(box2), buttonbox, TRUE, TRUE, 0);
-		  gtk_widget_show(buttonbox);
-
-		  GtkWidget *button = gtk_button_new_with_label ("Highlight");
-		  g_signal_connect_after(GTK_OBJECT(button), "clicked",
-					 GTK_SIGNAL_FUNC(cb_run_highlight), NULL);
-		  gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
-		  GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-		  gtk_widget_show (button);
-
-		  button = gtk_button_new_with_label ("Clear");
-		  g_signal_connect_after(GTK_OBJECT(button), "clicked",
-					 GTK_SIGNAL_FUNC(cb_clear_highlight_layer),
-					 NULL);
-		  gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
-		  gtk_widget_show (button);
-		}
 
 		popup_window.image_area = gtk_viewport_new(NULL, NULL);
 		gtk_widget_show(popup_window.image_area);

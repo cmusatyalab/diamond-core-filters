@@ -477,7 +477,6 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 
 	for (i = 0; i < num_searches ; i++) {
 		snapobj = snap_searches[i];
-		printf("search %d obj %p \n", i, snapobj);
 		if (snapobj->is_selected()) {
 			snapobj->save_edits();
 			snapobj->write_fspec(fspec);
