@@ -30,7 +30,8 @@ LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -ltools -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -lopencv  -lglib
+LIBS += -lopencv  
+#LIBS += -lglib
 
 #
 LIBDIR += -L../../lib/libsearchlet -L../../lib/libfilter 
