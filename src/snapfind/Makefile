@@ -177,8 +177,13 @@ profile: profile.o $(SEARCHLET_OBJS)
 foo: foo.o rgb_histo_search.o snap_search.o window_search.o example_search.o
 	$(CC) $(CFLAGS) -o foo foo.o rgb_histo_search.o snap_search.o window_search.o example_search.o
 
+histo_bench: histo_bench.o $(SEARCHLET_OBJS)
+	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -rdynamic -o histo_bench histo_bench.o $(SEARCHLET_OBJS) $(LIBS)  $(LIBDIR) 
+
+
+
 face_benchmark: face_benchmark.o $(SEARCHLET_OBJS)
-	$(CC) $(CFLAGS) $(DYNAMIC) -rdynamic -o face_benchmark face_benchmark.o $(SEARCHLET_OBJS) $(LIBS)  $(LIBDIR) 
+	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -rdynamic -o face_benchmark face_benchmark.o $(SEARCHLET_OBJS) $(LIBS)  $(LIBDIR) 
 
 experiment_%: experiment_%.o $(SEARCHLET_OBJS)
 	$(CC) $(CFLAGS) -o $@ $< \

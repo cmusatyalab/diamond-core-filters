@@ -18,6 +18,7 @@
 
 #include "searchlet_api.h"
 #include "ring.h"
+#include "lib_od.h"
 #include "face_search.h"
 #include "fil_histo.h"
 #include "image_tools.h"
@@ -183,6 +184,8 @@ dump_state()
 
     free(dev_stats);
 
+    fflush(stdout);
+    sleep(1);
     /*
      * Dump the dclt state.  XXX assumes this is in the local path */
     err = system("./dctl -r");
@@ -193,13 +196,32 @@ dump_state()
 
 }
 
+void
+dump_id(ls_obj_handle_t handle)
+{
+	lf_fhandle_t	fhandle;
+	off_t		size;
+	int		err;
+	obj_id_t	obj_id;
+
+	size = sizeof(obj_id);	
+	err = lf_read_attr(fhandle, handle, "MY_OID",  &size, 
+		(char *)&obj_id);
+	if (err) {
+		fprintf(stdout, "OID Unknown\n");
+	} else {
+		fprintf(stdout, "OID %016llX.%016llX \n",
+		   obj_id.dev_id, obj_id.local_id);
+	
+	}
+}
 
 /*
  * This function initiates the search by building a filter
  * specification, setting the searchlet and then starting the search.
  */
 int
-do_search()
+do_bench_search()
 {
     int             err;
     int             count = 0;
@@ -221,6 +243,7 @@ do_search()
             return (count);
         } else if (err == 0) {
             count++;
+	    dump_id(cur_obj);
             ls_release_object(shandle, cur_obj);
         } else {
             fprintf(stderr, "get_next_obj: failed on %d \n", err);
@@ -268,13 +291,12 @@ usage()
 }
 
 
-#define	MAX_GROUPS	32
+#define	MAX_GROUPS	64
 
 int
 main(int argc, char **argv)
 {
     int             err;
-    groupid_t       gid = 2;
     char           *searchlet_file = NULL;
     char           *fspec_file = NULL;
     char           *config_file = NULL;
@@ -357,7 +379,7 @@ main(int argc, char **argv)
      */
     err = gettimeofday(&tv1, &tz);
 
-    count = do_search();
+    count = do_bench_search();
 
     /*
      * get stop time 
@@ -372,8 +394,8 @@ main(int argc, char **argv)
     }
 
     fprintf(stdout, " Found %d items in %d.%d  \n", count, secs, usec);
-
+	sleep(1);
     dump_state();
 
-
+    exit(0);
 }

@@ -889,6 +889,7 @@ new_search_panel(void)
 	return(frame);
 }
 
+
 static GtkWidget *
 existing_search_panel(void)
 {
