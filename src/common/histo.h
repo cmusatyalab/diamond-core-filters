@@ -44,7 +44,11 @@ typedef struct patch_t {
                                                                                       
                                                                                       
 typedef TAILQ_HEAD(patchlist_t, patch_t) patchlist_t;
-                                                                                      
+
+typedef enum {
+	HISTO_INTERPOLATED,
+	HISTO_SIMPLE
+} histo_type_t;
                                                                           
 typedef struct histo_config {
     char *  name;       /* name of this search */
@@ -55,8 +59,9 @@ typedef struct histo_config {
     int stride;         /* x and y strides */
     int bins;           /* number of histo bins */
     double  simularity; /* simularity metric */
-    int distance_type;  /* XXX fix this */
-    int num_patches;    /* num patches to match */
+    int 		distance_type;  /* XXX fix this */
+    int 		num_patches;    /* num patches to match */
+    histo_type_t	type;	/* type of histogram */
     patchlist_t   patchlist;
 } histo_config_t;
 
@@ -70,13 +75,12 @@ void histo_clear(Histo* h);
 /* return the histogram using the ii */
 void normalize_histo(Histo *hist);
 /* compute a histogram from part of an image */
-void histo_fill_from_subimage(Histo* h, const RGBImage* i,
-			      int xstart, int ystart, int xsize, int ysize);
+void histo_fill_from_subimage(Histo* h, const RGBImage* i, int xstart, 
+	int ystart, int xsize, int ysize, histo_type_t type);
 
 /* incremental computation of histogram; subimage moved from oldx,y to xstart,y. */
-void histo_update_subimage(Histo* h, const RGBImage* i,
-			   int oldx, int oldy,
-			   int xstart, int ystart, int xsize, int ysize);
+void histo_update_subimage(Histo* h, const RGBImage* i, int oldx, int oldy,
+	   int xstart, int ystart, int xsize, int ysize, histo_type_t type);
 
 /* Returns the distance between two histogram distributions */
 double histo_distance(const Histo* h1, const Histo* h2);
@@ -93,7 +97,7 @@ void histo_lessen(Histo *h1, const Histo *h2);
  * compute an integral image in histo space with x,y stride of dx,
  * dy. only fills in the data field 
  */
-void histo_compute_ii(const RGBImage *img, HistoII *ii, const int dx, const int dy);
+void histo_compute_ii(const RGBImage *img, HistoII *ii, const int dx, const int dy, histo_type_t type);
 
 /* return the histogram using the ii */
 void histo_get_histo(HistoII *ii, int x, int y, int xsize, int ysize, Histo *h);

@@ -27,6 +27,7 @@ void            histo_print(const Histo * h);
 // (no interpolation)
 void            histo_simple_insert(Histo * h, int r, int g, int b);
 
+
 // Just like histo_simple_insert() except that the eight cells
 // closest to the pixel (r,g,b) are incremented by an appropriate
 // amount -- equivalent to the weight given by bilinear
@@ -34,8 +35,6 @@ void            histo_simple_insert(Histo * h, int r, int g, int b);
 // 
 void            histo_interpolated_insert(Histo * h, int r, int g, int b);
 
-inline void     histo_interpolated_insert_pixel(Histo * h,
-                                                const RGBPixel * p);
 
 
 /*
@@ -81,6 +80,13 @@ histo_add(Histo * h, int ri, int gi, int bi, double val)
     h->weight += val;
 }
 
+inline void
+histo_remove(Histo * h, int ri, int gi, int bi, double val)
+{
+    h->data[get_index(ri, gi, bi)] -= val;
+    h->weight -= val;
+}
+
 void
 histo_clear(Histo * h)
 {
@@ -116,10 +122,18 @@ histo_simple_insert(Histo * h, int r, int g, int b)
     assert(g >= 0 && g < 256);
     assert(b >= 0 && b < 256);
     const int       SHIFT = 8 - HBIT;
-    // printf("SHIFT = %d\n", SHIFT);
     histo_add(h, r >> SHIFT, g >> SHIFT, b >> SHIFT, 1.0);
 }
 
+void
+histo_simple_remove(Histo * h, int r, int g, int b)
+{
+    assert(r >= 0 && r < 256);
+    assert(g >= 0 && g < 256);
+    assert(b >= 0 && b < 256);
+    const int       SHIFT = 8 - HBIT;
+    histo_remove(h, r >> SHIFT, g >> SHIFT, b >> SHIFT, 1.0);
+}
 
 
 /*
@@ -318,21 +332,33 @@ histo_interpolated_remove(Histo * h, int r, int g, int b)
 }
 
 inline void
-histo_interpolated_remove_pixel(Histo * h, const RGBPixel * p)
+histo_remove_pixel(Histo * h, const RGBPixel * p, histo_type_t type)
 {
-    histo_interpolated_remove(h, p->r, p->g, p->b);
+	if (type == HISTO_INTERPOLATED) {
+    		histo_interpolated_remove(h, p->r, p->g, p->b);
+	} else if (type == HISTO_SIMPLE) {
+    		histo_simple_remove(h, p->r, p->g, p->b);
+	} else {
+		assert(0);
+	}
 }
 
 inline void
-histo_interpolated_insert_pixel(Histo * h, const RGBPixel * p)
+histo_insert_pixel(Histo * h, const RGBPixel * p, histo_type_t type)
 {
-    histo_interpolated_insert(h, p->r, p->g, p->b);
+	if (type == HISTO_INTERPOLATED) {
+    		histo_interpolated_insert(h, p->r, p->g, p->b);
+	} else if (type == HISTO_SIMPLE) {
+    		histo_simple_insert(h, p->r, p->g, p->b);
+	} else {
+		assert(0);
+	}
 }
 
 
 void
-histo_fill_from_subimage(Histo * h, const RGBImage * img,
-                         int xstart, int ystart, int xsize, int ysize)
+histo_fill_from_subimage(Histo * h, const RGBImage * img, int xstart, 
+		int ystart, int xsize, int ysize, histo_type_t type)
 {
     int             i,
                     j;
@@ -340,7 +366,7 @@ histo_fill_from_subimage(Histo * h, const RGBImage * img,
     for (j = 0; j < ysize; j++) {
         const RGBPixel *p = img->data + (ystart + j) * img->width + xstart;
         for (i = 0; i < xsize; i++) {
-            histo_interpolated_insert_pixel(h, p++);
+            histo_insert_pixel(h, p++, type);
         }
     }
 }
@@ -348,7 +374,7 @@ histo_fill_from_subimage(Histo * h, const RGBImage * img,
 void
 histo_update_subimage(Histo * h, const RGBImage * img,
                       int old_xstart, int old_ystart, int new_xstart,
-                      int new_ystart, int xsize, int ysize)
+                      int new_ystart, int xsize, int ysize, histo_type_t type)
 {
     int             xdiff = new_xstart - old_xstart;
     int             i,
@@ -361,7 +387,7 @@ histo_update_subimage(Histo * h, const RGBImage * img,
      */
     if (xdiff > (xsize / 2)) {
         histo_fill_from_subimage(h, img, new_xstart, new_ystart, xsize,
-                                 ysize);
+                                 ysize, type);
         return;
     }
 
@@ -373,7 +399,7 @@ histo_update_subimage(Histo * h, const RGBImage * img,
         const RGBPixel *p =
             img->data + (new_ystart + j) * img->width + old_xstart;
         for (i = 0; i < xdiff; i++) {
-            histo_interpolated_remove_pixel(h, p++);
+            histo_remove_pixel(h, p++, type);
         }
     }
 
@@ -384,7 +410,7 @@ histo_update_subimage(Histo * h, const RGBImage * img,
         const RGBPixel *p = img->data + (new_ystart + j) * img->width +
             old_xstart + xsize;
         for (i = 0; i < xdiff; i++) {
-            histo_interpolated_insert_pixel(h, p++);
+            histo_insert_pixel(h, p++, type);
         }
     }
 }
@@ -495,7 +521,7 @@ if(!(exp)) {								\
 
 void
 histo_compute_ii(const RGBImage * img, HistoII * ii, const int dx,
-                 const int dy)
+                 const int dy, histo_type_t htype)
 {
     const int       width = img->width;
     const int       height = img->height;
@@ -529,7 +555,7 @@ histo_compute_ii(const RGBImage * img, HistoII * ii, const int dx,
             ASSERT(xii < ii->width);
             ASSERT(yii < ii->height);
 
-            histo_fill_from_subimage(&hgram, img, x, y, dx, dy);
+            histo_fill_from_subimage(&hgram, img, x, y, dx, dy, htype);
             histo_accum(&hgram, &(II_PROBE(ii, xii - 1, yii)));
             histo_accum(&hgram, &(II_PROBE(ii, xii, yii - 1)));
             histo_lessen(&hgram, &(II_PROBE(ii, xii - 1, yii - 1)));
@@ -611,7 +637,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
         for (y = 0; !done && y + ysiz <= height; y += dy) {
             if (!ii) {
                 histo_fill_from_subimage(&h2, img, (int) 0, (int) y, xsiz,
-                                         ysiz);
+                                         ysiz, hconfig->type);
                 old_x = 0;
                 old_y = (int) y;
             }
@@ -622,7 +648,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
                     histo_get_histo(ii, (int) x, (int) y, xsiz, ysiz, &h2);
                 } else {
                     histo_update_subimage(&h2, img, old_x, old_y, (int) x,
-                                          (int) y, xsiz, ysiz);
+                                          (int) y, xsiz, ysiz, hconfig->type);
                 }
                 patch = TAILQ_FIRST(&hconfig->patchlist);
 

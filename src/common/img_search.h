@@ -3,6 +3,8 @@
 
 #include <gtk/gtk.h>
 #include "image_common.h"
+#include "common_consts.h"
+#include "histo.h"
 
 
 /* 
@@ -213,10 +215,12 @@ public:
 private:
 	int			bins;
 	int			metric;
+	histo_type_t		htype;
 	GtkObject *	bin_adj;
 	double		simularity;
 	GtkObject *	sim_adj;
 	GtkWidget *	edit_window;
+	GtkWidget *	interpolated_box;
 
 };
 

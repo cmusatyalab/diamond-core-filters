@@ -22,7 +22,7 @@ rgb_histo_search::rgb_histo_search(const char *name, char *descr)
 	simularity = 0.8;
 	bins = 3;
 	edit_window = NULL;
-
+	htype = HISTO_INTERPOLATED;
 }
 
 rgb_histo_search::~rgb_histo_search()
@@ -244,6 +244,15 @@ rgb_histo_search::edit_search()
     gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 
+	interpolated_box = gtk_check_button_new_with_label("Interpolated Histogram");
+	if (htype == HISTO_INTERPOLATED) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(interpolated_box), TRUE);
+	} else {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(interpolated_box), FALSE);
+	}
+	
+    	gtk_box_pack_start(GTK_BOX(container), interpolated_box, FALSE, TRUE, 0);
+
 	opt = gtk_option_menu_new();
 	menu = gtk_menu_new();
  
@@ -291,6 +300,7 @@ void
 rgb_histo_search::save_edits()
 {
 	int		bins;
+	int		val;
 	double	sim;
 
 	/* no active edit window, so return */
@@ -306,6 +316,12 @@ rgb_histo_search::save_edits()
 	sim = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
 	set_simularity(sim);
 
+	val = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(interpolated_box));
+	if (val) {
+		htype = HISTO_INTERPOLATED;
+	} else {
+		htype = HISTO_SIMPLE;
+	}
 	/* call the parent class */	
 	example_search::save_edits();
 }
@@ -357,6 +373,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  %d  # num bins \n", HBINS);
 	fprintf(ostream, "ARG  %f  # simularity \n", simularity);
 	fprintf(ostream, "ARG  %d  # distance metric \n", metric);
+	fprintf(ostream, "ARG  %d  # histo type \n", htype);
 	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
 
 	//printf("XXXX write patch \n");
@@ -364,7 +381,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int	bins;
 		histo_fill_from_subimage(&hgram, cur_patch->patch_image, 
-			0, 0, cur_patch->xsize, cur_patch->ysize);
+			0, 0, cur_patch->xsize, cur_patch->ysize, htype);
 		normalize_histo(&hgram);
 		for (bins=0; bins < (HBINS * HBINS * HBINS); bins++) {
 	 		fprintf(ostream, "ARG  %f  # sample %d val %d \n", 
@@ -421,6 +438,7 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 	hconfig.bins = HBINS;	/* XXX */ 
 	hconfig.simularity = simularity;
 	hconfig.distance_type = metric;
+	hconfig.type = htype;
 
 	TAILQ_INIT(&hconfig.patchlist);
 
@@ -430,8 +448,8 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 		histo_clear(&hpatch->histo);
 		assert(hpatch != NULL);
 			
-		histo_fill_from_subimage(&hpatch->histo, epatch ->patch_image, 
-			0, 0,  epatch->xsize, epatch->ysize);
+		histo_fill_from_subimage(&hpatch->histo, epatch->patch_image, 
+			0, 0,  epatch->xsize, epatch->ysize, htype);
 		normalize_histo(&hpatch->histo);
 		hpatch->histo.weight = 1.0;
 

@@ -24,7 +24,8 @@
 /* #define VERBOSE 1 */
 
 typedef struct {
-    int             scale;
+    int             	scale;
+    histo_type_t	type;
 } hintegrate_data_t;
 
 typedef struct {
@@ -291,12 +292,13 @@ f_init_histo_detect(int numarg, char **args, int blob_len,
     hconfig->bins = atoi(args[6]);
     hconfig->simularity = atof(args[7]);
     hconfig->distance_type = atoi(args[8]);
-    hconfig->num_patches = atoi(args[9]);
+    hconfig->type = atoi(args[9]);
+    hconfig->num_patches = atoi(args[10]);
 
     /*
      * read the histogram patches in 
      */
-    err = patch_spec_read_args(fhandle, hconfig, numarg - 10, args + 10);
+    err = patch_spec_read_args(fhandle, hconfig, numarg - 11, args + 11);
     assert(err);
 
     /*
@@ -387,7 +389,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     	ii->height = height;
     	ii->scalebits = scalebits;
                                                                                                   
-    	histo_compute_ii(img, ii, 1, 1);
+    	histo_compute_ii(img, ii, 1, 1, hconfig->type);
     }
 #ifdef	XXX
     ASSERT(ii);
@@ -529,8 +531,9 @@ f_init_hintegrate(int numarg, char **args, int blob_len, void *blob,
     /*
      * read args 
      */
-    assert(numarg == 1);
+    assert(numarg == 2);
     fstate->scale = atoi(args[0]);
+    fstate->type = atoi(args[1]);
     // printf("fstate !!! %p \n", *data);
     *data = fstate;
     return (0);
@@ -589,7 +592,7 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
     ii->height = height;
     ii->scalebits = scalebits;
 
-    histo_compute_ii(img, ii, fstate->scale, fstate->scale);
+    histo_compute_ii(img, ii, fstate->scale, fstate->scale, fstate->type);
 
     err =
         lf_write_attr(fhandle, ohandles[0], HISTO_II, ii->nbytes,
