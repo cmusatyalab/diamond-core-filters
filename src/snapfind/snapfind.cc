@@ -111,19 +111,12 @@ static struct {
 
 
 
-/* 
- * search entries. sorta constant
- */
-/* XXXX fix this */
-#define	MAX_SEARCHES	64
-img_search * snap_searches[MAX_SEARCHES];
-int num_searches = 0;
-
-
+/* the search entries for this search */
 search_set *	snap_searchset;
 
 static lf_fhandle_t fhandle = 0;	/* XXX */
 
+#define		MAX_SEARCHES	64	/* XXX */
 
 /**********************************************************************/
 
@@ -360,83 +353,6 @@ get_gid_list(gid_list_t *main_region)
 	}
 }
 
-
-/*
- * Build the filters specification into the temp file name
- * "tmp_file".  We walk through all the activated regions and
- * all the them to write out the file.
- */
-
-char *
-build_filter_spec(char *tmp_file)
-{
-	char * 		tmp_storage = NULL;
-	FILE *		fspec;	
-	int			err;
-	int         fd;
-	img_search *		snapobj;
-	img_search *		rgb;
-	search_iter_t		iter;
-
-	tmp_storage = (char *)malloc(L_tmpnam);	/* where is the free for this? XXX */
-	if (tmp_storage == NULL) {
-		printf("XXX failed to alloc memory !!! \n");
-		return(NULL);
-	}
-
-	if(!tmp_file) {
-		tmp_file = tmp_storage;
-		sprintf(tmp_storage, "%sXXXXXX", "/tmp/filspec");
-		fd = mkstemp(tmp_storage);
-	} else {
-		fd = open(tmp_file, O_RDWR|O_CREAT|O_TRUNC, 0666);
-	}
-		
-	if(fd < 0) { 
-		perror(tmp_file);
-		free(tmp_storage); return NULL; 
-	}
-	fspec = fdopen(fd, "w+");
-	if (fspec == NULL) {
-		perror(tmp_file);
-		free(tmp_storage);
-		return(NULL);
-	}
-
-	/* clear the dependancies */
-	snap_searchset->clear_deps();
-
-	/* we always do rgb, XXX should we ??*/
-	rgb = new rgb_img("RGB image", "RGB image");
-	snap_searchset->add_dep(rgb);
-	
-	snap_searchset->reset_search_iter(&iter);
-	while ((snapobj = snap_searchset->get_next_search(&iter)) != NULL) {
-		if (snapobj->is_selected()) {
-			snapobj->save_edits();
-			snapobj->write_fspec(fspec);
-		}
-	}
-
-	/* write dependency list */
-	snap_searchset->reset_dep_iter(&iter);
-	while ((snapobj = snap_searchset->get_next_dep(&iter)) != NULL) {
-		snapobj->write_fspec(fspec);
-	}
-
-
-	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
-	fprintf(fspec, "REQUIRES  RGB  # dependancies \n");
-
-	err = fclose(fspec);	/* closes fd as well */
-	if (err != 0) {
-		printf("XXX failed to close file \n");
-		free(tmp_storage);
-		return(NULL);
-	}
-
-	return(tmp_file);
-}
 
 static void
 do_img_mark(GtkWidget *widget) 
@@ -878,7 +794,7 @@ cb_write_fspec_to_file(GtkWidget *widget, gpointer user_data)
  
   	len = snprintf(buf, BUFSIZ, "%s", selected_filename);
 	assert(len < BUFSIZ);
-  	build_filter_spec(buf);
+  	snap_searchset->build_filter_spec(buf);
 
   	GUI_CALLBACK_LEAVE();
 }
@@ -984,11 +900,7 @@ create_search_window()
 {
     GtkWidget *box2, *box1;
     GtkWidget *separator;
-    GtkWidget *table;
-    GtkWidget *frame, *widget;
-    search_iter_t	iter;
-    int row = 0;        /* current table row */
-	img_search	*snapobj;
+    GtkWidget *frame;
 
     GUI_THREAD_CHECK(); 
 
@@ -996,43 +908,12 @@ create_search_window()
     gtk_widget_show (box1);
 
     frame = gtk_frame_new("Searches");
-    table = gtk_table_new(MAX_SEARCHES+1, 3, FALSE);
-	config_table = table;	/* XXX */
-    gtk_table_set_row_spacings(GTK_TABLE(table), 2);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 4);
-    gtk_container_set_border_width(GTK_CONTAINER(table), 10);
-
-    widget = gtk_label_new("Predicate");
-    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
-	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
-
-    widget = gtk_label_new("Description");
-    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
-	gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
-
-    widget = gtk_label_new("Edit");
-    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
-	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+	config_table = snap_searchset->build_edit_table();
 
 
-	snap_searchset->reset_search_iter(&iter);
-	while ((snapobj = snap_searchset->get_next_search(&iter)) != NULL) {
-		row++;
-		widget = snapobj->get_search_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
-		widget = snapobj->get_config_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
-		widget = snapobj->get_edit_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
-	}
-
-	gtk_container_add(GTK_CONTAINER(frame), table);
+	gtk_container_add(GTK_CONTAINER(frame), config_table);
     gtk_box_pack_start(GTK_BOX(box1), frame, FALSE, FALSE, 10);
-    gtk_widget_show(frame);
-    gtk_widget_show(table);
+    gtk_widget_show_all(frame);
 
     /* Add the start and stop buttons */
 
@@ -1127,8 +1008,6 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 	}
 
 	/* XXXX cleanup all the old searches first */
-
-	num_searches = 0;
 	read_search_config(buf, snap_searchset);
 	
 	err = chdir(olddir);
@@ -1332,17 +1211,10 @@ create_image_info(GtkWidget *container_box, image_info_t *img_info)
 			frame, TRUE, TRUE, 0);
     	gtk_widget_show(img_info->info_box1);
 
-/* 	img_info->info_box2 = gtk_hbox_new (FALSE, 10); */
-/*     	gtk_container_set_border_width(GTK_CONTAINER(img_info->info_box2), 10); */
-/*     	gtk_box_pack_start(GTK_BOX(img_info->parent_box),  */
-/* 			img_info->info_box2, FALSE, FALSE, 0); */
-/*     	gtk_widget_show(img_info->info_box2); */
-
 
 	/* 
 	 * image name
 	 */
-	//sprintf(data, "%-10s:\n", "Name:");
 	img_info->name_tag = gtk_label_new("Name:");
     	gtk_box_pack_start (GTK_BOX(img_info->info_box1), 
 			img_info->name_tag, FALSE, FALSE, 0);
@@ -2071,7 +1943,8 @@ main(int argc, char *argv[])
 	 * initialize and start the background thread 
 	 */
 	init_search();
-	err = pthread_create(&search_thread, PATTR_DEFAULT, sfind_search_main, NULL);
+	err = pthread_create(&search_thread, PATTR_DEFAULT, sfind_search_main,
+		snap_searchset);
 	if (err) {
 		perror("failed to create search thread");
 		exit(1);

@@ -62,11 +62,8 @@ void
 search_set::clear_deps()
 {
 	img_search *old;
-
-	printf("XXXXXXXXXX clear deps \n");
 	while ((old = ss_dep_list.back()) != NULL) {
 		ss_dep_list.pop_back();
-		printf("delete %s \n", old->get_name());
 		delete old;
 	}
 }
@@ -122,3 +119,128 @@ search_set::get_search_count()
 }
 
 
+/*
+ * Build the filters specification into the temp file name
+ * "tmp_file".  We walk through all the activated regions and
+ * all the them to write out the file.
+ */
+
+char *
+search_set::build_filter_spec(char *tmp_file)
+{
+	char * 		tmp_storage = NULL;
+	FILE *		fspec;	
+	int			err;
+	int         fd;
+	img_search *		srch;
+	img_search *		rgb;
+	search_iter_t		iter;
+
+	/* XXX who frees this ?? */
+	tmp_storage = (char *)malloc(L_tmpnam);
+	if (tmp_storage == NULL) {
+		printf("XXX failed to alloc memory !!! \n");
+		return(NULL);
+	}
+
+	if(!tmp_file) {
+		tmp_file = tmp_storage;
+		sprintf(tmp_storage, "%sXXXXXX", "/tmp/filspec");
+		fd = mkstemp(tmp_storage);
+	} else {
+		fd = open(tmp_file, O_RDWR|O_CREAT|O_TRUNC, 0666);
+	}
+		
+	if(fd < 0) { 
+		perror(tmp_file);
+		free(tmp_storage);
+		return NULL; 
+	}
+	fspec = fdopen(fd, "w+");
+	if (fspec == NULL) {
+		perror(tmp_file);
+		free(tmp_storage);
+		return(NULL);
+	}
+
+	/* clear the dependancies */
+	clear_deps();
+
+	/* we always do rgb, XXX should we ??*/
+	rgb = new rgb_img("RGB image", "RGB image");
+	add_dep(rgb);
+	
+	reset_search_iter(&iter);
+	while ((srch = get_next_search(&iter)) != NULL) {
+		if (srch->is_selected()) {
+			srch->save_edits();
+			srch->write_fspec(fspec);
+		}
+	}
+
+	/* write dependency list */
+	reset_dep_iter(&iter);
+	while ((srch = get_next_dep(&iter)) != NULL) {
+		srch->write_fspec(fspec);
+	}
+
+
+	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
+	fprintf(fspec, "REQUIRES  RGB  # dependancies \n");
+
+	/* close the file */
+	err = fclose(fspec);
+	if (err != 0) {
+		printf("XXX failed to close file \n");
+		free(tmp_storage);
+		return(NULL);
+	}
+
+	return(tmp_file);
+}
+
+GtkWidget *
+search_set::build_edit_table()
+{
+
+	GtkWidget *	table;
+	GtkWidget *	widget;
+	int			row = 0;
+	img_search *srch;
+	search_iter_t	iter;
+
+    table = gtk_table_new(get_search_count()+1, 3, FALSE);
+
+    gtk_table_set_row_spacings(GTK_TABLE(table), 2);
+    gtk_table_set_col_spacings(GTK_TABLE(table), 4);
+    gtk_container_set_border_width(GTK_CONTAINER(table), 10);
+
+    widget = gtk_label_new("Predicate");
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_widget_show(widget);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
+
+    widget = gtk_label_new("Description");
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_widget_show(widget);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
+
+    widget = gtk_label_new("Edit");
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_widget_show(widget);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+
+
+	reset_search_iter(&iter);
+	while ((srch = get_next_search(&iter)) != NULL) {
+		row++;
+		widget = srch->get_search_widget();
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
+		widget = srch->get_config_widget();
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
+		widget = srch->get_edit_widget();
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+	}
+    gtk_widget_show(table);
+	return(table);
+}

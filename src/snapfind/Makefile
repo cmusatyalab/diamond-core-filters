@@ -54,7 +54,7 @@ SEARCHLET_OBJS += fil_synth.o
 
 # objects needed to build the main
 SNAPFIND_SRCS = $(SHARED_APP_SRCS) $(SHARED_COMMON_SRCS)
-SNAPFIND_SRCS += snapfind.cc sfind_search.c 
+SNAPFIND_SRCS += snapfind.cc sfind_search.cc
 SNAPFIND_SRCS +=  read_config.cc 
 SNAPFIND_SRCS += stats_win.c rgb.c   
 SNAPFIND_SRCS += snap_popup.cc 

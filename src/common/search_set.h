@@ -34,6 +34,11 @@ public:
 
 	int		get_search_count();
 
+	char * 	build_filter_spec(char *tmp_file);
+
+	GtkWidget * search_set::build_edit_table();
+
+
 private:
 	list<img_search *>		ss_search_list;
 	list<img_search *>		ss_dep_list;
