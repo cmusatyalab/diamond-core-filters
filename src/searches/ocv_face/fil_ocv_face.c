@@ -149,19 +149,15 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
 	bbox_list_t	    blist;
 	int				i;
 	bbox_t *		cur_box;
+	off_t			len;
 
 	lf_log(fhandle, LOGL_TRACE, "f_eval_opencv_fdetect: enter\n");
 
 	/*
 	  * get the img
 	  */
-	img = (RGBImage *) ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
-	if (img == NULL) {
-		img = get_rgb_img(ohandle);
-	}
-	if ((img == NULL)) {
-		return(0);
-	}
+	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
+    assert(err == 0);
 
 
 	TAILQ_INIT(&blist);
@@ -188,10 +184,6 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
 	                    (char *) &pass);
 	assert(!err);
 	lf_log(fhandle, LOGL_TRACE, "found %d faces\n", pass);
-
-	if (img) {
-		ft_free(fhandle, (char *) img);
-	}
 
 
 	lf_log(fhandle, LOGL_TRACE, "f_eval_opencv_fdetect: done\n");

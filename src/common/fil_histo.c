@@ -60,18 +60,14 @@
 
 /* #define VERBOSE 1 */
 
-typedef struct
-{
+typedef struct {
 	int             	scale;
 	histo_type_t	type;
-}
-hintegrate_data_t;
+} hintegrate_data_t;
 
-typedef struct
-{
+typedef struct {
 	int             num_hist;
-}
-hpass_data_t;
+} hpass_data_t;
 
 
 /* call to read the cycle counter */
@@ -142,8 +138,7 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * save img as an attribute 
 	 */
-	err =
-	    lf_write_attr(fhandle, ohandle, RGB_IMAGE, img->nbytes, (char *) img);
+	err = lf_write_attr(fhandle, ohandle, RGB_IMAGE, img->nbytes, (char *) img);
 	ASSERT(!err);
 done:
 	if (img)
@@ -325,7 +320,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	int             rv = 0;     /* return value */
 	bbox_t *		cur_box;
 	int				i;
-	int				ii_alloc = 0;
+	int				ii_alloc = 0, img_alloc = 0;
 	off_t			len;
 
 
@@ -334,22 +329,11 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * get the img 
 	 */
-#ifdef	OLD
-	img = (RGBImage *) ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
-	ASSERT(img);
-	ASSERT(img->type == IMAGE_PPM);
-
-	/*
-	 * get the ii 
-	 */
-	ii = (HistoII *) ft_read_alloc_attr(fhandle, ohandle, HISTO_II);
-	if (ii == NULL) {
-		ii = histo_get_ii(hconfig, img);
-	}
-	ASSERT(ii);
-#else
 	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
-	assert(err == 0);
+	if (err != 0) {
+		img_alloc = 1;	
+		img = get_rgb_img(ohandle);
+	}
 	ASSERT(img->type == IMAGE_PPM);
 
 	err = lf_ref_attr(fhandle, ohandle, HISTO_II, &len, (char **)&ii);
@@ -358,8 +342,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 		ii = histo_get_ii(hconfig, img);
 	}
 
-
-#endif
 	/*
 	 * get nhisto 
 	 */
@@ -424,6 +406,10 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 done:
 	if (ii_alloc) {
 		ft_free(fhandle, (char *) ii);
+	}
+
+	if (img_alloc) {
+		ft_free(fhandle, (char *) img);
 	}
 
 	return rv;
@@ -538,6 +524,8 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
 	int             width,
 	height;
 	int             scalebits;
+	int				img_alloc = 0;
+	off_t			len;
 
 	assert(f_data != NULL);
 	// printf("f_data: %p \n", f_data);
@@ -547,10 +535,9 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
 	/*
 	 * get the img 
 	 */
-	img = (RGBImage *) ft_read_alloc_attr(fhandle, ihandle, RGB_IMAGE);
-
-	/* XXX temporary, if this has been deleted, then recompute */
-	if (img == NULL) {
+	err = lf_ref_attr(fhandle, ihandle, RGB_IMAGE, &len, (char**)&img);
+	if (err != 0) {
+		img_alloc = 1;	
 		img = get_rgb_img(ihandle);
 	}
 
@@ -576,13 +563,14 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
 
 	histo_compute_ii(img, ii, fstate->scale, fstate->scale, fstate->type);
 
-	err =
-	    lf_write_attr(fhandle, ohandles[0], HISTO_II, ii->nbytes,
+
+	err = lf_write_attr(fhandle, ohandles[0], HISTO_II, ii->nbytes,
 	                  (char *) ii);
 	ASSERT(!err);
 done:
-	if (img)
-		ft_free(fhandle, (char *) img);
+	if (img_alloc) {
+		lf_free_buffer(fhandle, (char *) img);
+	}
 	if (ii)
 		lf_free_buffer(fhandle, (char *) ii);
 	lf_log(fhandle, LOGL_TRACE, "f_hintegrate: done");
