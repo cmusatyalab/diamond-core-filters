@@ -10,7 +10,7 @@
 window_search::window_search(const char *name, char *descr)
 	: img_search(name, descr)
 {
-	scale = 1.25;
+	scale = 1.0;
 	testx = 32;
 	testy = 32;
 	stride = 16;

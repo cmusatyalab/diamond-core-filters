@@ -13,7 +13,7 @@ extern "C" {
  * some interfaces to read images from a path/file
  */
 
-RGBImage *create_rgb_image(char *filename);
+RGBImage *create_rgb_image(const char *filename);
 int rgb_write_image(RGBImage *img, const char *filename, const char *path);
 RGBImage *create_rgb_subimage(RGBImage *old, int xoff, int yoff, int xsize, 
 		int ysize);

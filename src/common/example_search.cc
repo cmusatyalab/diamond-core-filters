@@ -11,6 +11,8 @@
 #include "image_tools.h"
 #include "gtk_image_tools.h"
 #include "img_search.h"
+#include "face_consts.h"
+#include "import_sample.h"
 
 
 example_search::example_search(const char *name, char * descr)
@@ -260,7 +262,7 @@ cb_import(GtkWidget *item, gpointer data)
 	example_patch_t		*cur_patch;
 	example_search *	es;
 
-	printf("XXX import \n");
+	open_import_window();
 }
 
 

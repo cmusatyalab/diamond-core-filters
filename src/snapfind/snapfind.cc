@@ -51,6 +51,7 @@
 #include "snap_popup.h"
 #include "search_support.h"
 #include "snapfind.h"
+#include "import_sample.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -924,6 +925,7 @@ cb_save_spec_to_filename()
   	file_selector = gtk_file_selection_new("Filter spec name");
   	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
 
+
   	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
 	    "clicked", G_CALLBACK(cb_write_fspec_to_file),
 	    (gpointer)file_selector);
@@ -1654,6 +1656,12 @@ cb_quit() {
 }
 
 
+static void
+cb_import(GtkWidget *widget, gpointer user_data) 
+{
+	open_import_window();
+}
+
 
 static void
 cb_create(GtkWidget *widget, gpointer user_data) 
@@ -1763,6 +1771,7 @@ static GtkItemFactoryEntry menu_items[] = { /* XXX */
   {"/Searches/New/Face Detect", NULL, G_CALLBACK(cb_create), FACE_SEARCH, "<Item>" },
   {"/Searches/New/Texture", NULL, G_CALLBACK(cb_create), TEXTURE_SEARCH, "<Item>" },
   {"/Searches/New/Regex", NULL, G_CALLBACK(cb_create), REGEX_SEARCH, "<Item>" },
+  {"/Searches/Import Example", NULL, G_CALLBACK(cb_import), 0, "<Item>" },
 
   { "/_View", NULL,  NULL, 0, "<Branch>" },
   { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats), 0,"<Item>" },

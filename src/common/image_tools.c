@@ -70,7 +70,7 @@ skip_space_comments(char *buf, char *endbuf)
  */
 
 RGBImage       *
-create_rgb_image(char *filename)
+create_rgb_image(const char *filename)
 {
     RGBImage       *img;
     int             err;
