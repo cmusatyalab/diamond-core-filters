@@ -20,7 +20,7 @@ Face detector
 
 Regex search
 
-Make texture search work
+BW/Color texture search
 
 Different distance metrics for histogram
 
@@ -31,3 +31,13 @@ Fix file dependancies
 Highlighting support
 
 Clean up config file selection
+
+Text entry to change filter names
+
+Auto save on starting search to $HOME/.whatever (with restore)
+
+User level config file
+
+Import functions autoname conflict resolution (add _v# or something)
+
+
