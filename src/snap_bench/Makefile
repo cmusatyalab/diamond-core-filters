@@ -50,7 +50,7 @@ LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -ltools -llog
 LIBS += -Wl,-no-whole-archive -lfl -lodisk
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -lopencv
+LIBS += -lopencv -lssl
                                                                                 
 #
 LIBDIR += -L../../lib/libsearchlet -L../../lib/libfilter

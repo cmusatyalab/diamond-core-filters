@@ -63,10 +63,10 @@ INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
 # # Set the libraries and the library paths we will need
 # to build these files.
 LIBS += -ldl -lfl -lpthread -lm 
-LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -ltools -llog 
-LIBS += -Wl,-no-whole-archive -lfl -lodisk
+LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -llog 
+LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -lopencv   -lcvaux -llog
+LIBS += -lopencv   -lcvaux -llog -lssl
 #LIBS += -lglib
 
 #
