@@ -40,7 +40,7 @@ typedef struct ii_image {
 typedef struct ii2_image {
 	size_t    nbytes;	/* size of variable struct */
 	dim_t     width, height;
-	double    data[0];	/* variable size struct. width*height
+	float    data[0];	/* variable size struct. width*height
 				 * elements of data follows. */
 } ii2_image_t;
 

@@ -390,7 +390,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 		i++;
 	}
 	fprintf(ostream, "REQUIRES  HISTO_II # dependancies \n");
-	fprintf(ostream, "MERIT 100  # some merit \n");
+	fprintf(ostream, "MERIT 200  # some merit \n");
 	fprintf(ostream, "\n");
 
 	rgb = new histo_ii("Histo II", "Histo II");

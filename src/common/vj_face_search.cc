@@ -436,6 +436,7 @@ vj_face_search::write_fspec(FILE *ostream)
 	 	fprintf(ostream, "INIT_FUNCTION  f_init_bbox_merge  # dependancies \n");
 	 	fprintf(ostream, "FINI_FUNCTION  f_fini_bbox_merge  # dependancies \n");
 	 	fprintf(ostream, "REQUIRES  %s  # dependancies \n",get_name() );
+	 	fprintf(ostream, "MERIT  8  # merit value \n");
 	 	fprintf(ostream, "ARG  %f  # overlap val   \n", overlap_val);
 	}
 
@@ -500,7 +501,7 @@ vj_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 	ii->width = width + 1;
 	ii->height = height + 1;
 
-	size = sizeof(ii2_image_t) + sizeof(double) * (width + 1) * 
+	size = sizeof(ii2_image_t) + sizeof(float) * (width + 1) * 
 		(height + 1);
 	ii2 = (ii2_image_t *) malloc(size);
 	assert(ii2 != NULL);

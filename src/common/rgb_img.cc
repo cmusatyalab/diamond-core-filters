@@ -68,13 +68,13 @@ void
 rgb_img::write_fspec(FILE *ostream)
 {
 
-	fprintf(ostream, "FILTER  RGB  # dependancies \n");
-	fprintf(ostream, "THRESHOLD  1  # dependancies \n");
-	fprintf(ostream, "MERIT  1  # dependancies \n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_pnm2rgb  # dependancies \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_pnm2rgb  # dependancies \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_pnm2rgb  # dependancies \n");
 	fprintf(ostream, "\n\n");
+	fprintf(ostream, "FILTER  RGB  # convert file to rgb \n");
+	fprintf(ostream, "THRESHOLD  1  # this will always pass \n");
+	fprintf(ostream, "MERIT  500  # run this early hint \n");
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_pnm2rgb  # eval function \n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_pnm2rgb  # init function \n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_pnm2rgb  # fini function \n");
 }
 
 void

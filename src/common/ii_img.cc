@@ -77,6 +77,7 @@ ii_img::write_fspec(FILE *ostream)
 	fprintf(ostream, "INIT_FUNCTION  f_init_integrate  # dependancies \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_integrate  # dependancies \n");
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
+	fprintf(ostream, "MERIT  30  # merit value \n");
 
     rgb = new rgb_img("RGB image", "RGB image");
     ss_add_dep(rgb);

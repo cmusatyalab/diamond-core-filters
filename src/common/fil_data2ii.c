@@ -17,8 +17,6 @@
 #include "fil_tools.h"
 #include "fil_assert.h"
 
-
-
 #define MAXCOLS 1281
 
 /*
@@ -28,7 +26,7 @@
 int
 read_sum_data(ffile_t * file,
               u_int32_t * sumarr,
-              double *sumsqarr,
+              float *sumsqarr,
               size_t iiwidth, size_t iiheight, image_type_t imgtype)
 {
     int             err = 0;
@@ -38,7 +36,7 @@ read_sum_data(ffile_t * file,
     size_t          row,
                     col;
     u_int32_t       colsum[MAXCOLS];    /* keep a column total */
-    double          colsumsq[MAXCOLS];
+    float           colsumsq[MAXCOLS];
     u_int32_t      *sumarr_end = sumarr + (iiwidth * iiheight);
     int             isRGBA;
 
@@ -142,7 +140,7 @@ read_sum_data(ffile_t * file,
 int
 rgb_integrate(RGBImage * img,
               u_int32_t * sumarr,
-              double *sumsqarr, size_t iiwidth, size_t iiheight)
+              float *sumsqarr, size_t iiwidth, size_t iiheight)
 {
     int             err = 0;
     int             count;
@@ -151,7 +149,7 @@ rgb_integrate(RGBImage * img,
     size_t          row,
                     col;
     u_int32_t       colsum[MAXCOLS];    /* keep a column total */
-    double          colsumsq[MAXCOLS];
+    float          colsumsq[MAXCOLS];
     u_int32_t      *sumarr_end = sumarr + (iiwidth * iiheight);
     unsigned char  *fdata = NULL;
 
@@ -310,7 +308,7 @@ f_eval_integrate(lf_obj_handle_t ohandle, int numout,
     /*
      * create image to hold the squared-integral image 
      */
-    bytes = sizeof(ii_image_t) + sizeof(double) * (width + 1) * (height + 1);
+    bytes = sizeof(ii2_image_t) + sizeof(float) * (width + 1) * (height + 1);
     err = lf_alloc_buffer(fhandle, bytes, (char **) &img2);
     FILTER_ASSERT(!err, "alloc");
     img2->nbytes = bytes;
@@ -334,6 +332,7 @@ f_eval_integrate(lf_obj_handle_t ohandle, int numout,
     err = lf_write_attr(fhandle, ohandle, II_SQ_DATA, img2->nbytes,
                       (char *) img2);
     FILTER_ASSERT(!err, "write_attr");
+
 
 done:
     if (rgbimg) {

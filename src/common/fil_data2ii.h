@@ -11,7 +11,7 @@ int f_eval_integrate(lf_obj_handle_t ohandle, int numout,
 			lf_obj_handle_t *ohandles, void *fdata);
 
 int rgb_integrate(RGBImage * img, u_int32_t * sumarr, 
-	double *sumsqarr, size_t iiwidth, size_t iiheight);
+	float *sumsqarr, size_t iiwidth, size_t iiheight);
 
 #ifdef __cplusplus
 }

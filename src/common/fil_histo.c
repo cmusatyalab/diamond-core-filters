@@ -19,7 +19,6 @@
 #include "rgb.h"
 #include "histo.h"
 #include "fil_histo.h"
-#include "fil_tools.h"
 
 /* #define VERBOSE 1 */
 
@@ -102,7 +101,6 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
     }
 #endif
 
-
     /*
      * read the header and figure out the dimensions 
      */
@@ -164,7 +162,6 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
     err =
         lf_write_attr(fhandle, ohandle, RGB_IMAGE, img->nbytes, (char *) img);
     ASSERT(!err);
-
   done:
     if (img)
         lf_free_buffer(fhandle, (char *) img);
@@ -565,6 +562,7 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
     height = (img->height >> scalebits) + 1;
     nbytes = width * height * sizeof(Histo) + sizeof(HistoII);
 
+
     err = lf_alloc_buffer(fhandle, nbytes, (char **) &ii);
     ASSERT(!err);
     ASSERT(ii);
@@ -578,7 +576,7 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
     err =
         lf_write_attr(fhandle, ohandles[0], HISTO_II, ii->nbytes,
                       (char *) ii);
-    ASSERT(!err);
+	ASSERT(!err);
   done:
     if (img)
         ft_free(fhandle, (char *) img);

@@ -77,6 +77,7 @@ histo_ii::write_fspec(FILE *ostream)
 	fprintf(ostream, "INIT_FUNCTION  f_init_hintegrate  # init fn \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_hintegrate  # fini fn \n");
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
+	fprintf(ostream, "MERIT  200  # merit value \n");
 	fprintf(ostream, "ARG  4  # dependancies \n");
 	fprintf(ostream, "ARG  %d  # dependancies \n", HISTO_INTERPOLATED);
 
