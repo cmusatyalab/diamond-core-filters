@@ -64,11 +64,12 @@ public:
 	GtkWidget *get_display();
 
 	void 		set_image(RGBImage *img);
-	GtkWidget *clear_image();
+	void 		reset_display();
 	void		process_expose(GtkWidget *widget,
 				GdkEventExpose *event);
 	void		event_realize();
 	void		draw_res(GtkWidget *widget);
+
 	void		motion_notify(GtkWidget *widget,
 				GdkEventMotion *event);
 	void		button_press(GtkWidget *widget,
@@ -88,8 +89,6 @@ public:
 	int 		num_selections();
 	void  		get_selection(int num, bbox_t *bbox);
 	RGBImage   *	get_image();
-
-
 
 private:
 	GtkWidget *	di_drawingarea;

@@ -289,8 +289,6 @@ remove_func(GtkWidget *widget, void *container)
 }
 
 
-
-
 void
 display_img::clear_selections()
 {
@@ -489,6 +487,32 @@ display_img::set_image(RGBImage *img)
 
     	pthread_mutex_lock(&di_mutex);
 	di_cur_img = nimg;
+	di_button_down = 0;
+
+	release_rgb_image(di_layers[DI_IMG_LAYER]);
+	di_layers[DI_IMG_LAYER] = di_cur_img;
+	for(i=DI_IMG_LAYER+1; i<DI_MAX_LAYERS; i++) {
+		release_rgb_image(di_layers[i]);
+		di_layers[i] = rgbimg_new(di_cur_img); 
+		rgbimg_clear(di_layers[i]);
+	}
+    	pthread_mutex_unlock(&di_mutex);
+
+	/* clean up old realize state */
+	event_realize();
+
+  	gtk_widget_queue_draw_area(di_drawingarea,
+			     0, 0, di_width, di_height);
+
+}
+
+void
+display_img::reset_display()
+{
+	int	i;
+
+    	pthread_mutex_lock(&di_mutex);
+	di_cur_img = rgbimg_blank_image(di_width, di_height);
 	di_button_down = 0;
 
 	release_rgb_image(di_layers[DI_IMG_LAYER]);
