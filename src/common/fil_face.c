@@ -58,9 +58,9 @@ f_init_opencv_fdetect(int numarg, char **args, int blob_len, void *blob_data,
     fconfig->name = strdup(args[0]);
     assert(fconfig->name != NULL);
     fconfig->scale_mult = atof(args[1]);
-    fconfig->xsize = atof(args[2]);
-    fconfig->ysize = atof(args[3]);
-    fconfig->stride = atof(args[4]);
+    fconfig->xsize = atoi(args[2]);
+    fconfig->ysize = atoi(args[3]);
+    fconfig->stride = atoi(args[4]);
     /*
      * XXX skip 5 for now ?? 
      */

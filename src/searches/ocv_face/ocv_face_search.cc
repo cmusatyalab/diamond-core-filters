@@ -357,74 +357,41 @@ ocv_face_search::write_config(FILE *ostream, const char *dirname)
 	return;
 }
 
-CvHidHaarClassifierCascade* 
-new_face_detector(void)
-{
-
-        CvHaarClassifierCascade* cascade;
-        CvHidHaarClassifierCascade* hid_cascade;
-
-        cascade = cvLoadHaarClassifierCascade("<default_face_cascade>", 
-				cvSize(24,24));
-        hid_cascade = cvCreateHidHaarClassifierCascade(cascade, 0, 0, 0, 1);
-        cvReleaseHaarClassifierCascade(&cascade);
-
-		
-        return hid_cascade;
-}
-
-CvSeq *
-DetectFaces(IplImage * image, CvMemStorage * storage, bbox_list_t *blist)
-{
-	int 		i;
-	CvAvgComp	r1;	
-	bbox_t	*	bb;
-
-        CvHidHaarClassifierCascade* cascade = new_face_detector();
-        CvSeq* faces;
-
-        /* use the fastest variant */
-
-        faces = cvHaarDetectObjects( image, cascade, storage, 1.2, 2, 
-			CV_HAAR_DO_CANNY_PRUNING );
-
-        cvReleaseHidHaarClassifierCascade( &cascade );
-
-	for (i = 0; i < faces->total; i++) {
-		r1 = *(CvAvgComp*)cvGetSeqElem(faces, i, NULL);
-		bb = (bbox_t *)malloc(sizeof(*bb));
-		assert(bb != NULL);
-		bb->min_x = r1.rect.x;
-		bb->min_y = r1.rect.y;
-		bb->max_x = r1.rect.x + r1.rect.width;
-		bb->max_y = r1.rect.y + r1.rect.height;
-		bb->distance = 0.0;
-		TAILQ_INSERT_TAIL(blist, bb, link);
-	}
-		
-        return faces;
-}
-
-
-static void
-open_cv_search(RGBImage *rgb, bbox_list_t *blist) 
-{
-        CvMemStorage * storage = cvCreateMemStorage(0);
-        CvSeq * faces = NULL;
-        IplImage * gray = get_gray_ipl_image(rgb);       // convert to greyscale
-        faces = DetectFaces(gray, storage, blist);
-} 
-
 
 void
 ocv_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 {
+	opencv_fdetect_t fconfig;
+ 	CvHaarClassifierCascade *cascade;
+	int			pass;
 
-	fconfig_fdetect_t	fconfig;
 
-	save_edits();
+        save_edits();
+                                                                                
+                                                                                
+        fconfig.name = strdup(get_name());
+        assert(fconfig.name != NULL);
+                                                                                
+        fconfig.scale_mult = get_scale();
+        fconfig.xsize = get_testx();
+        fconfig.ysize = get_testy();
+        fconfig.stride = get_stride();
+	fconfig.support = support_matches;
 
-	open_cv_search(img, blist);
+
+	 cascade = cvLoadHaarClassifierCascade("<default_face_cascade>",
+                        cvSize(fconfig.xsize, fconfig.ysize));
+        /* XXX check args */
+    	fconfig.haar_cascade = cvCreateHidHaarClassifierCascade(
+                cascade, 0, 0, 0, 1);
+    	cvReleaseHaarClassifierCascade(&cascade);
+
+ 	pass = opencv_face_scan(img, blist, &fconfig);
+
+	/* cleanup */
+	cvReleaseHidHaarClassifierCascade(&fconfig.haar_cascade);
+	free(fconfig.name);
+
 	
 	return;
 }

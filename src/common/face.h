@@ -102,11 +102,11 @@ typedef struct fconfig_fdetect {
  */
 typedef struct opencv_fdetect {
 	char *		name;
-	double		xsize;
-	double		ysize;
-	float		stride;
+	int		xsize;
+	int		ysize;
+	int		stride;
 	float		scale_mult;
-	float		support;
+	int		support;
 	CvHidHaarClassifierCascade	*haar_cascade;	
 } opencv_fdetect_t;
 
