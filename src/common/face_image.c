@@ -334,3 +334,5 @@ image_fill_bbox_scale(RGBImage * img, bbox_t * bbox, int scale,
         }
     }
 }
+
+
