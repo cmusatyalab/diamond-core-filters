@@ -425,7 +425,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     /*
      * XXX ?? 
      */
-    rv = (pass >= hconfig->req_matches);
+    rv = pass;
 
 done:
     if (img)

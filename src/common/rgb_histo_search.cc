@@ -348,7 +348,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", 1);	/* XXX should we change */
+	fprintf(ostream, "THRESHOLD %d \n", get_matches());	/* XXX should we change */
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo_detect \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_histo_detect \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_histo_detect \n");
@@ -424,6 +424,7 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 	example_patch_t* epatch;
 	int				i;
 	int				pass;
+	HistoII *		ii;
 
 	save_edits();
 
@@ -458,8 +459,8 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 	}
 	hconfig.num_patches = i;
 
-
-	pass =  histo_scan_image(hconfig.name, img, NULL, &hconfig, 
+	ii = histo_get_ii(&hconfig, img);
+	pass =  histo_scan_image(hconfig.name, img, ii, &hconfig, 
 		INT_MAX /* XXX */, blist);
     
 

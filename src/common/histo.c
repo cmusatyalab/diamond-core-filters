@@ -895,20 +895,22 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 
 #else
 
+#define	LARGE_DIST		500;
 int
 histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
                  histo_config_t * hconfig,
                  int num_req, bbox_list_t *blist)
 {
 	float          x, y;          /* XXX */
-    	float          d;
-    	dim_t           xsiz = hconfig->xsize;
+   	float          d;
+   	dim_t           xsiz = hconfig->xsize;
     dim_t           ysiz = hconfig->ysize;
 	bbox_t	 *		bbox;
-	bbox_t	  		best_box;
+	bbox_t*	  		best_box;
     patch_t        *patch;
     int             done = 0;
     int             pass;
+	int				count;
     float          scale_factor = hconfig->scale;
     const dim_t     width = img->width;
     const dim_t     height = img->height;
@@ -921,7 +923,12 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 	/* XXX move this to init code later */
 	build_lkuptables(red_lkup, green_lkup, blue_lkup);
 
-	best_box.distance = 500;
+	if (num_req < 10) {
+		best_box = (bbox_t *) malloc(sizeof(*best_box) * num_req);
+		for (count = 0; count < num_req; count++) {
+			best_box[count].distance = LARGE_DIST;
+		}
+	}
     	pass = 0;
     	for (x=0; !done && x + hconfig->stride <= width; x += (float)hconfig->stride) {
 	    for (y = 0; !done && y + hconfig->stride <= height; y += (float)hconfig->stride) {
@@ -934,14 +941,28 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
                     	d = histo_distance(&patch->histo, &h2);
                    	patch = TAILQ_NEXT(patch, link);
 
-                    if ((num_req == 1) && (d < (1.0 - hconfig->simularity))  && 
-						(d < best_box.distance)) {  /* found match */
-					 	best_box.min_x = x;
-                        best_box.min_y = y;
-                        best_box.max_x = x + xsiz;    /* XXX scale */
-                        best_box.max_y = y + ysiz;
-                        best_box.distance = d;
-                    } else if ((num_req > 1) && 
+                    if ((num_req < 10) && (d < (1.0 - hconfig->simularity))  && 
+						(d < best_box[num_req - 1].distance)) {  /* found match */
+
+						bbox_t	temp_box;	
+
+					 	best_box[num_req - 1].min_x = x;
+                        best_box[num_req - 1].min_y = y;
+                        best_box[num_req - 1].max_x = x + xsiz; 
+                        best_box[num_req - 1].max_y = y + ysiz;
+                        best_box[num_req - 1].distance = d;
+
+						for (count = num_req - 1; count > 0; count--) {
+                        	if (best_box[count].distance < 	
+								best_box[count-1].distance) {
+								temp_box = best_box[count];
+								best_box[count] = best_box[count - 1];
+								best_box[count - 1] = temp_box;	
+							} else {
+								break;
+							}
+						}
+                    } else if ((num_req >= 10) && 
 						(d < (1.0 - hconfig->simularity))) {  /* found match */
 						bbox = (bbox_t *) malloc(sizeof(*bbox));
 						bbox->min_x = x;
@@ -968,18 +989,20 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
         }                       /* for y */
     }                           /* for scale */
 
-	 if ((num_req == 1) && (best_box.distance < (1.0 - hconfig->simularity))) {
-            pass++;
-            bbox = (bbox_t *)malloc(sizeof(*bbox));
-            assert(bbox != NULL);
-            bbox->min_x = best_box.min_x;
-            bbox->min_y = best_box.min_y;
-            bbox->max_x = best_box.max_x;
-            bbox->max_y = best_box.max_y;
-            bbox->distance = best_box.distance;
-            TAILQ_INSERT_TAIL(blist, bbox, link);
+	 if ((num_req < 10) && (best_box[num_req - 1].distance < (1.0 - hconfig->simularity))) {
+			for (count = 0; count < num_req; count++) {
+	            pass++;
+            	bbox = (bbox_t *)malloc(sizeof(*bbox));
+            	assert(bbox != NULL);
+            	bbox->min_x = best_box[count].min_x;
+            	bbox->min_y = best_box[count].min_y;
+            	bbox->max_x = best_box[count].max_x;
+            	bbox->max_y = best_box[count].max_y;
+            	bbox->distance = best_box[count].distance;
+            	TAILQ_INSERT_TAIL(blist, bbox, link);
+			}
+			free(best_box);
     }
-
 
     return pass;
 }

@@ -370,7 +370,7 @@ texture_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", 1);	/* XXX should we change */
+	fprintf(ostream, "THRESHOLD %d \n", get_matches());
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_texture_detect \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_texture_detect \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_texture_detect \n");

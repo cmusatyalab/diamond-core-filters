@@ -270,7 +270,7 @@ dump_matches(ls_obj_handle_t handle)
 		if (!err) {
 			prod *= (1.0 - param.distance);
 			sum += (1.0 - param.distance);
-			fprintf(stdout, "%s %f ", param.name, (1.0 - param.distance));
+			//fprintf(stdout, "%s %f ", param.name, (1.0 - param.distance));
 		}
 	}
 	fprintf(stdout, "prod %f sum %f ", prod, sum);

@@ -40,6 +40,13 @@ window_search::set_matches(char * data)
 	return;
 }
 
+int
+window_search::get_matches()
+{
+	return(num_matches);
+}
+
+
 
 void
 window_search::set_stride(int new_stride)

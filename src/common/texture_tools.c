@@ -174,14 +174,21 @@ texture_test_entire_image_variance(IplImage * img, texture_args_t * targs,
     int             test_x,
                     test_y;
     int             passed = 0;
+	int				num_req = targs->min_matches;
+	int				count;
     bbox_t         *bbox;
-    bbox_t          best_box;
+    bbox_t          *best_box;
     int             extra_pixels_w = img->width % (1 << NUM_LAP_PYR_LEVELS);
     int             extra_pixels_h = img->height % (1 << NUM_LAP_PYR_LEVELS);
     cvSetImageROI(img, cvRect(0, 0, img->width - extra_pixels_w,
                               img->height - extra_pixels_h));
 
-    best_box.distance = 500.0;
+	if (num_req < 10) {
+        best_box = (bbox_t *) malloc(sizeof(*best_box) * num_req);
+        for (count = 0; count < num_req; count++) {
+            best_box[count].distance = 500;
+        }
+    }
 
     if (targs->num_samples >= 2) {
         for (i = 0; i < NUM_LAP_PYR_LEVELS * targs->num_channels; i++) {
@@ -264,15 +271,27 @@ texture_test_entire_image_variance(IplImage * img, texture_args_t * targs,
                     }
                 }
 
-                if ((targs->min_matches == 1) &&
-                    (min_distance <= targs->max_distance) &&
-                    (min_distance < best_box.distance)) {
-                    best_box.min_x = x;
-                    best_box.min_y = y;
-                    best_box.max_x = x + test_x;    /* XXX scale */
-                    best_box.max_y = y + test_y;
-                    best_box.distance = min_distance;
-                } else if ((targs->min_matches > 1) &&
+				if ((num_req < 10) && (min_distance <= targs->max_distance)  &&
+                        (min_distance < best_box[num_req - 1].distance)) {
+                        bbox_t  temp_box;
+                                                                                
+                        best_box[num_req - 1].min_x = x;
+                        best_box[num_req - 1].min_y = y;
+                        best_box[num_req - 1].max_x = x + test_x;
+                        best_box[num_req - 1].max_y = y + test_y;
+                        best_box[num_req - 1].distance = min_distance;
+                                                                                
+                        for (count = num_req - 1; count > 0; count--) {
+                            if (best_box[count].distance <
+                                best_box[count-1].distance) {
+                                temp_box = best_box[count];
+                                best_box[count] = best_box[count - 1];
+                                best_box[count - 1] = temp_box;
+                            } else {
+                                break;
+                            }
+                        }
+                } else if ((targs->min_matches >= 10) &&
                            (min_distance < targs->max_distance)) {
                     passed++;
                     bbox = (bbox_t *) malloc(sizeof(*bbox));
@@ -294,18 +313,23 @@ texture_test_entire_image_variance(IplImage * img, texture_args_t * targs,
         }
     }
 
-    if ((targs->min_matches == 1)
-        && (best_box.distance < targs->max_distance)) {
-        passed++;
-        bbox = (bbox_t *) malloc(sizeof(*bbox));
-        assert(bbox != NULL);
-        bbox->min_x = best_box.min_x;
-        bbox->min_y = best_box.min_y;
-        bbox->max_x = best_box.max_x;
-        bbox->max_y = best_box.max_y;
-        bbox->distance = best_box.distance;
-        TAILQ_INSERT_TAIL(blist, bbox, link);
+                                                                                
+     if ((num_req < 10) && (best_box[num_req - 1].distance < targs->max_distance)) {
+                                                                                
+            for (count = 0; count < num_req; count++) {
+                passed++;
+                bbox = (bbox_t *)malloc(sizeof(*bbox));
+                assert(bbox != NULL);
+                bbox->min_x = best_box[count].min_x;
+                bbox->min_y = best_box[count].min_y;
+                bbox->max_x = best_box[count].max_x;
+                bbox->max_y = best_box[count].max_y;
+                bbox->distance = best_box[count].distance;
+                TAILQ_INSERT_TAIL(blist, bbox, link);
+            }
+            free(best_box);
     }
+
 
   done:
 

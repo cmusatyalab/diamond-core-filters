@@ -117,6 +117,7 @@ public:
 
 	void set_matches(int new_match);
 	void set_matches(char *data);
+	int get_matches();
 
 	GtkWidget *	get_window_cntrl();
 	void		close_edit_win();
