@@ -47,6 +47,7 @@
 #include "snap_search.h"
 #include "sfind_search.h"
 #include "snap_popup.h"
+#include "search_support.h"
 #include "snapfind.h"
 
 /* number of thumbnails to show */
@@ -1726,40 +1727,89 @@ cb_quit() {
 
 
 
+static void
+cb_create(GtkWidget *widget, gpointer user_data) 
+{
+	GtkWidget 	*hbox;
+	GtkWidget	*dialog;
+	GtkWidget	*label;
+	GtkWidget	*entry;
+	int		x, result;
+	const char *		new_name;
+	search_types_t	stype;
+	snap_search *	ssearch;
+	x = (int) user_data;
+
+	stype = (search_types_t)x;
+
+	/* get the search name from the user */
+	dialog = gtk_dialog_new_with_buttons("Search Name",
+                                GTK_WINDOW(popup_window.window),
+				GTK_DIALOG_DESTROY_WITH_PARENT,
+                                GTK_STOCK_OK, GTK_RESPONSE_NONE, 
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
+
+	hbox = gtk_hbox_new(FALSE, 10);
+	label = gtk_label_new("Search Name");
+	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, FALSE, 0);
+	
+	entry = gtk_entry_new();
+	gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, FALSE, 0);
+	
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), hbox);
+	gtk_widget_show_all(dialog);
+
+redo:
+	result = gtk_dialog_run(GTK_DIALOG(dialog));
+
+	if (result == GTK_RESPONSE_CANCEL) {
+		return;
+	} else {
+		new_name = gtk_entry_get_text(GTK_ENTRY(entry));
+		if (strlen(new_name) == 0) {
+			/* XXX feedback on why this doesn't work */
+			goto redo;		
+		}
+		/* XXX check for name conflicts */
+		ssearch = create_search(stype, new_name);
+		assert(ssearch != NULL);	
+
+	}
+	gtk_widget_destroy(dialog);
+
+	/* XXX get the name from the user */
+
+	/* 	 */
+	printf("cp create %d \n", stype);
+
+}
+
 
 /* Our menu, an array of GtkItemFactoryEntry structures that defines each menu item */
 static GtkItemFactoryEntry menu_items[] = { /* XXX */
 
-  { "/_File",         NULL,         NULL,           0, "<Branch>" },
-  //  { "/File/_New",     "<control>N", (GtkItemFactoryCallback)print_hello,    0, "<StockItem>", GTK_STOCK_NEW },
-  //  { "/File/_Open",    "<control>O", (GtkItemFactoryCallback)print_hello,    0, "<StockItem>", GTK_STOCK_OPEN },
-  //  { "/File/_Save",    "<control>S", (GtkItemFactoryCallback)print_hello,    0, "<StockItem>", GTK_STOCK_SAVE },
-  //  { "/File/Save _As", NULL,         NULL,           0, "<Item>" },
-  {"/File/Load Search", NULL,  G_CALLBACK(cb_load_search), 0, "<Item>" },
-  {"/File/Import Search", NULL,  G_CALLBACK(cb_import_search), 0, "<Item>" },
-  { "/File/Save Search As.",   NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
+  { "/_File", NULL,  NULL,           0, "<Branch>" },
+  { "/File/Load Search", NULL, G_CALLBACK(cb_load_search), 0, "<Item>" },
+  { "/File/Import Search", NULL, G_CALLBACK(cb_import_search), 0, "<Item>" },
+  { "/File/Save As", NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
   { "/File/sep1",     NULL,         NULL,           0, "<Separator>" },
-  { "/File/_Quit",    "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 0, "<StockItem>", GTK_STOCK_QUIT },
-  { "/_View",                NULL,  NULL,                                  0, "<Branch>" },
-  { "/_View/Stats Window",   "<CTRL>I",  G_CALLBACK(cb_toggle_stats),   0, "<Item>" },
+  { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 0, "<StockItem>", GTK_STOCK_QUIT },
 
-  { "/Options",                 NULL, NULL, 0, "<Branch>" },
+  { "/_Searches", NULL, NULL, 0, "<Branch>" },
+  {"/Searches/New", NULL, NULL, 0, "<Branch>"},
+  {"/Searches/New/RGB Histogram", NULL, G_CALLBACK(cb_create), RGB_HISTO_SEARCH, "<Item>" },
+  {"/Searches/New/Face Detect", NULL, G_CALLBACK(cb_create), FACE_SEARCH, "<Item>" },
+  {"/Searches/New/Texture", NULL, G_CALLBACK(cb_create), TEXTURE_SEARCH, "<Item>" },
+  {"/Searches/New/Regex", NULL, G_CALLBACK(cb_create), REGEX_SEARCH, "<Item>" },
+
+  { "/_View", NULL,  NULL, 0, "<Branch>" },
+  { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats), 0,"<Item>" },
+
+  { "/Options",             NULL, NULL, 0, "<Branch>" },
   { "/Options/sep1",            NULL, NULL, 0, "<Separator>" },
-  //{ "/Options/Expert Mode",     NULL, G_CALLBACK(cb_toggle_expert_mode), 0, "<CheckItem>" },
-  { "/Options/Expert Mode",     "<CTRL>E", G_CALLBACK(cb_toggle_expert_mode), 0, "<CheckItem>" },
   { "/Options/Dump Attributes", NULL, G_CALLBACK(cb_toggle_dump_attributes), 0, "<CheckItem>" },
-
   { "/Albums",                  NULL, NULL, 0, "<Branch>" },
   { "/Albums/tear",             NULL, NULL, 0, "<Tearoff>" },
-
-  //  { "/Options/tear",  NULL,         NULL,           0, "<Tearoff>" },
-  //  { "/Options/Check", NULL,         (GtkItemFactoryCallback)print_toggle,   1, "<CheckItem>" },
-  //  { "/Options/sep",   NULL,         NULL,           0, "<Separator>" },
-  //  { "/Options/Rad1",  NULL,         (GtkItemFactoryCallback)print_selected, 1, "<RadioItem>" },
-  //  { "/Options/Rad2",  NULL,         (GtkItemFactoryCallback)print_selected, 2, "/Options/Rad1" },
-  //  { "/Options/Rad3",  NULL,         (GtkItemFactoryCallback)print_selected, 3, "/Options/Rad1" },
-  //  { "/_Help",         NULL,         NULL,           0, "<LastBranch>" },
-  //  { "/_Help/About",   NULL,         NULL,           0, "<Item>" },
   { NULL, NULL, NULL }
 };
 

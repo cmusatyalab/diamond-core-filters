@@ -644,7 +644,7 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 		GUI_CALLBACK_LEAVE();
 		return(TRUE);
 		/* XXX make sure the name already exists */
-    }
+   	 }
 
 	/* create the new search and put it in the global list */
 	ssearch = create_search(stype, sname);
