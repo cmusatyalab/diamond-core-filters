@@ -47,9 +47,9 @@ SHARED_SEARCHLET_SRCS = image_tools.c
 
 SHARED_SEARCHLET_OBJS = image_tools.o
       
-SHARED_APP_SRCS = 
+SHARED_APP_SRCS = rgb.c 
                             
-SHARED_APP_OBJS = image_tools.o
+SHARED_APP_OBJS = image_tools.o rgb.o
  
 SHARED_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_APP_SRCS) $(SHARED_HEADERS)
                             
@@ -87,7 +87,7 @@ SNAPFIND_SRCS += facedet.c sfind_tools.c fil_data2ii.c fil_file.c
 
 SNAPFIND_OBJS = $(SHARED_APP_OBJS)
 SNAPFIND_OBJS += snapfind.o face_tools.o face_image.o sfind_search.o read_config.o \
-	histo.o fil_tools.o stats_win.o rgb.o gui_thread.o \
+	histo.o fil_tools.o stats_win.o gui_thread.o \
 	texture_tools.o rgb_histo_search.o \
 	texture_search.o \
 	snap_search.o window_search.o example_search.o gtk_image_tools.o \
