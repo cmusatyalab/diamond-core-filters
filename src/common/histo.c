@@ -473,7 +473,6 @@ lh_histo_interpolated_remove(Histo * h, int r, int g, int b)
     bilow = blue_lkup[b].index_low;
     bihigh = blue_lkup[b].index_high;
 
-
     val = rfraclow * gfraclow * bfraclow;
     h->data[rilow + gilow + bilow] -= val;
 
