@@ -268,7 +268,6 @@ build_lkuptables(histo_lkup_t * rlkup, histo_lkup_t *glkup, histo_lkup_t *blkup)
 		return;
 	}
 
-	printf("build lkup !!!!!!!!!!! \n");
 	for (i=0; i < 256; i++) {
     	idx = i >> HII_SHIFT;
      	high_frac = (i & HII_MASK) * HII_SCALE;
@@ -282,7 +281,6 @@ build_lkuptables(histo_lkup_t * rlkup, histo_lkup_t *glkup, histo_lkup_t *blkup)
 		glkup[i].low = low_frac;
 		
 
-		printf("XXXXXXXXXX  build: %d %f %f \n", i, high_frac, low_frac);
 		rlkup[i].index_low = idx * HBINS * HBINS;
 		rlkup[i].index_high = (idx + 1) * HBINS * HBINS;
 
