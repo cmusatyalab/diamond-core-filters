@@ -24,8 +24,7 @@ INCDIR += -I../../lib/libdconfig
 INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I` 
 
 
-#
-# Set the libraries and the library paths we will need
+# # Set the libraries and the library paths we will need
 # to build these files.
 LIBS += -ldl -lfl -lpthread -lm 
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -ltools -llog 

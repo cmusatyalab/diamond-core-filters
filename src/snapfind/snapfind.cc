@@ -357,7 +357,7 @@ get_gid_list(gid_list_t *main_region)
 	    err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
 	    assert(!err);
 		for (j=0; j < num_gids; j++) {
-	      main_region->gids[main_region->ngids++] = gids[i];
+	      main_region->gids[main_region->ngids++] = gids[j];
 		}
 	  }
 	}
