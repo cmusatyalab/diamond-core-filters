@@ -67,7 +67,6 @@ rgb_img::save_edits()
 void
 rgb_img::write_fspec(FILE *ostream)
 {
-
 	fprintf(ostream, "\n\n");
 	fprintf(ostream, "FILTER  RGB  # convert file to rgb \n");
 	fprintf(ostream, "THRESHOLD  1  # this will always pass \n");
