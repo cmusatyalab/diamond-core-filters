@@ -96,7 +96,7 @@ read_texture_args(lf_fhandle_t fhandle, texture_args_t *texture_args,
 	assert(texture_args->sample_values != NULL);
 	for (s_index = 0; s_index < texture_args->num_samples; s_index++) {
 		texture_args->sample_values[s_index] =
-			malloc(sizeof(double) * 
+			(double *)malloc(sizeof(double) * 
 				(NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS));
 		for (f_index = 0; f_index < NUM_LAP_PYR_LEVELS*texture_args->num_channels;
 		     f_index++) {

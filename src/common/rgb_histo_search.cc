@@ -50,8 +50,21 @@
 #include "img_search.h"
 #include "fil_histo.h"
 #include "search_set.h"
+#include "read_config.h"
 
 #define	MAX_DISPLAY_NAME	64
+
+void
+rgb_histo_init()
+{
+	rgb_histo_factory *fac; 
+	printf("histo init \n");
+
+	fac = new rgb_histo_factory;
+
+	read_config_register("rgb_histogram", fac);	
+
+}
 
 rgb_histo_search::rgb_histo_search(const char *name, char *descr)
 		: example_search(name, descr)

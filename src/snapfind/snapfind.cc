@@ -1857,6 +1857,9 @@ set_export_threshold(char *arg)
 	return 0;
 }
 
+/* XXX fix */
+void rgb_histo_init();
+
 int
 main(int argc, char *argv[])
 {
@@ -1990,6 +1993,8 @@ main(int argc, char *argv[])
 	}
 	//gtk_timeout_add(100, func, NULL);
 
+	/* XXX for now */
+	rgb_histo_init();
 
 	/*
 	 * Start the main loop processing for the GUI.

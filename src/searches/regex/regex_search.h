@@ -132,6 +132,13 @@ private:
 };
 
 
+/* factory class for creating new image searches */
+class img_factory {
+public:
+    virtual img_search *create(const char *name) = 0;
+};
+
+
 
 /* 
  * The class for doing windowed searches over
@@ -272,8 +279,16 @@ private:
 	GtkObject *	sim_adj;
 	GtkWidget *	edit_window;
 	GtkWidget *	interpolated_box;
-
 };
+
+                                                                                
+class rgb_histo_factory: public img_factory {
+public:
+   img_search *create(const char *name) {
+ 		return new rgb_histo_search(name, "RGB Histogram");
+   }
+};
+
 
 class texture_search: public example_search {
 public:
@@ -316,6 +331,14 @@ private:
 	GtkWidget *	gray_widget;
 	GtkWidget *	rgb_widget;
 };
+
+class texture_factory: public img_factory {
+public:
+   img_search *create(const char *name) {
+ 		return new texture_search(name, "DOG Texture");
+   }
+};
+
 
 
 class vj_face_search: public window_search {
@@ -365,6 +388,15 @@ private:
 	GtkWidget *	overlap_widget;
 };
 
+class vj_face_factory: public img_factory {
+public:
+   img_search *create(const char *name) {
+ 		return new vj_face_search(name, "VJ Face");
+   }
+};
+
+
+
 class ocv_face_search: public window_search {
 public:
 	ocv_face_search(const char *name, char *descr);
@@ -398,6 +430,13 @@ private:
 	GtkObject *	support_widget;
 };
 
+class ocv_face_factory: public img_factory {
+public:
+   img_search *create(const char *name) {
+ 		return new ocv_face_search(name, "OCV Face");
+   }
+};
+
 
 class rgb_img: public img_search {
 public:
@@ -426,8 +465,6 @@ public:
 	void	write_config(FILE* stream, const char *data_dir);
 	int handle_config(config_types_t conf_type, char *data);
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
-
-
 private:
 };
 
