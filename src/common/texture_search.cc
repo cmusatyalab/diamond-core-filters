@@ -399,6 +399,10 @@ texture_search::write_fspec(FILE *ostream)
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int j;
 		int neww, newh;
+		if ((cur_patch->patch_image->width < 32) || 
+			(cur_patch->patch_image->height < 32)) {
+			continue;
+		}
 
 		neww = cur_patch->xsize;
 		newh = cur_patch->ysize;
@@ -498,6 +502,11 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int j;
+		if ((cur_patch->patch_image->width < 32) || 
+			(cur_patch->patch_image->height < 32)) {
+			continue;
+		}
+						
 		tmp_img = create_rgb_subimage(cur_patch->patch_image,
 			0, 0, 32, 32);
 		if (channels == 1) {
