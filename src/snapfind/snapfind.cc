@@ -1205,6 +1205,17 @@ cb_toggle_stats( gpointer   callback_data,
     GUI_CALLBACK_LEAVE();
 }
 
+/* For the check button */
+static void
+cb_toggle_progress(gpointer   callback_data,
+		 guint      callback_action,
+		 GtkWidget *menu_item )
+{
+    GUI_CALLBACK_ENTER();
+    toggle_progress_win(shandle, expert_mode);
+    GUI_CALLBACK_LEAVE();
+}
+
 
 /* For the check button */
 static void
@@ -1628,6 +1639,7 @@ static GtkItemFactoryEntry menu_items[] = { /* XXX */
 
   { "/_View", NULL,  NULL, 0, "<Branch>" },
   { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats), 0,"<Item>" },
+  { "/_View/Progress Window", "<CTRL>P",  G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
 
   { "/Options",             NULL, NULL, 0, "<Branch>" },
   { "/Options/sep1",            NULL, NULL, 0, "<Separator>" },

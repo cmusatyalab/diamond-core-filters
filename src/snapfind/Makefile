@@ -93,14 +93,14 @@ SEARCHLET_LIBDIR +=
 # objects needed to build the main
 SNAPFIND_SRCS = $(SHARED_APP_SRCS) $(SHARED_COMMON_SRCS)
 SNAPFIND_SRCS += snapfind.cc sfind_search.cc
-SNAPFIND_SRCS +=  read_config.cc 
+SNAPFIND_SRCS +=  read_config.cc  stats_win.c
 SNAPFIND_SRCS += progress_win.cc rgb.c   
 SNAPFIND_SRCS += snap_popup.cc graph_win.cc
 SNAPFIND_SRCS += sfind_tools.c 
 
 SNAPFIND_OBJS = $(SHARED_APP_OBJS) $(SHARED_COMMON_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
-SNAPFIND_OBJS += progress_win.o snap_popup.o 
+SNAPFIND_OBJS += progress_win.o snap_popup.o  stats_win.o
 SNAPFIND_OBJS += sfind_tools.o  fil_histo.o graph_win.o
 
 DEBUG_SRCS = face.c
@@ -128,7 +128,7 @@ include ${DIAMOND_ROOT}/Makefile.template
 # XXX
 CFLAGS += -finline-functions -funroll-loops
 # turns on unsafe fp optimizations; we don't require strict IEEE
-CFLAGS += -ffast-math
+CFLAGS += -ffast-math -malign-double
 
 ifeq ($(OSTYPE),linux)
 DYNAMIC = -rdynamic

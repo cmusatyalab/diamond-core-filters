@@ -63,12 +63,11 @@
 // #define SUMMARY_FONT_NAME "helvetica 14"
 
 
-pthread_t       stats_thread;
-int             thread_close;
+static pthread_t       stats_thread;
+static int             thread_close;
 
-GtkWidget      *stats_window = NULL;
-GtkWidget      *stats_box = NULL;
-GtkWidget      *stats_table = NULL;
+static GtkWidget      *progress_window = NULL;
+static GtkWidget      *progress_box = NULL;
 
 static int      verbose_mode = 1;
 
@@ -195,11 +194,6 @@ new_page(char *name, int num_dev)
 
 
     for (i = 0; i < num_dev; i++) {
-        int             rsize;
-
-        //rsize = gtk_table_get_row_spacing(GTK_TABLE(stats_table), i + 1);
-        //gtk_table_set_row_spacing(GTK_TABLE(stats_table), i, rsize);
-
         init_filt_data(&new_page->fp_data[i]);
         gtk_table_attach_defaults(GTK_TABLE(new_page->fp_table),
                                   new_page->fp_data[i].frame, 0, 1, (i + 1),
@@ -406,37 +400,6 @@ get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
 
 
 
-void
-attach_data_rows(int dev, int num_filt, int verbose)
-{
-
-    device_progress_t *dstatus;
-    // int i;
-
-    GUI_THREAD_CHECK();
-
-    dstatus = &devinfo[dev];
-
-    gtk_table_attach_defaults(GTK_TABLE(stats_table), dstatus->name_frame,
-                              0, 1, (dev + 1), (dev + 2));
-
-    gtk_table_attach_defaults(GTK_TABLE(stats_table), dstatus->prog_frame,
-                              1, 2, (dev + 1), (dev + 2));
-
-#ifdef  XXX
-    if (verbose) {
-        for (i = 0; i < num_filt; i++) {
-            gtk_table_attach_defaults(GTK_TABLE(stats_table),
-                                      dstatus->filt_stats[i].frame, (i + 2),
-                                      (i + 3), (dev + 1), (dev + 2));
-            /*
-             * XXX init_filt_data(&dstatus->filt_stats[i]); 
-             */
-        }
-    }
-#endif
-}
-
 
 
 void
@@ -488,13 +451,12 @@ update_dev_status(int dev, dev_stats_t * dstats, int verbose)
 }
 
 
-float
-timeval_to_float(struct timeval *tv)
+double
+timeval_to_double(struct timeval *tv)
 {
-	float 	val;
-
-	val = (float)tv->tv_usec/1000000.0;
-	val += (float)tv->tv_sec;
+	double 	val;
+	val = (double)tv->tv_usec/1000000.0;
+	val += (double)tv->tv_sec;
 	return(val);
 }
 
@@ -511,18 +473,13 @@ stats_main(void *data)
     ls_search_handle_t shandle;
     int             num_dev;
     ls_dev_handle_t dev_list[MAX_DEVICES];
-    int             i,
-                    err,
-                    len, id;
+    int             i, err, len, id;
     dev_stats_t    *dstats;
-    char           *emsg;
-	float			time = 0.0;
-	float			val = 1.0;
-	float			done;
-	float			total;
-	float			complete;
-	float			start;
-	float			stop;
+    double			time = 0.0;
+	double			done;
+	double			total;
+	double			start;
+	double			stop;
 	struct	timeval	tv;
 	struct	timezone tz;
 	int			last_id = -1;
@@ -532,20 +489,22 @@ stats_main(void *data)
 
     dstats = (dev_stats_t *) malloc(DEV_STATS_SIZE(MAX_FILT));
     assert(dstats);
-    /*
-     * Get a list of the devices.
-     */
-    num_dev = MAX_DEVICES;
-    err = ls_get_dev_list(shandle, dev_list, &num_dev);
-    if (err != 0) {
-        printf("ls_get_dev_list: %d ", err);
-        exit(1);
-    }
 
     while (1) {
         if (thread_close) {
             pthread_exit(0);
         }
+    	/*
+     	 * Get a list of the devices.
+     	 */
+    	num_dev = MAX_DEVICES;
+    	err = ls_get_dev_list(shandle, dev_list, &num_dev);
+    	if (err != 0) {
+        	printf("ls_get_dev_list: %d ", err);
+        	exit(1);
+    	}
+
+
 		done = 0.0;
 		total = 0.0;
 
@@ -561,25 +520,28 @@ stats_main(void *data)
 				printf("failed to get dev stats %d \n", err);
 				exit(1);
 			}
-			total += (float)dstats->ds_objs_total;
-			done += (float)dstats->ds_objs_processed;
+			total += (double)dstats->ds_objs_total;
+			done += (double)dstats->ds_objs_processed;
+			// XXX printf("done %f \n", done);
 		}
 	
 		gettimeofday(&tv, &tz);
-		start = timeval_to_float(&search_start);
-		stop = timeval_to_float(&tv);
+		start = timeval_to_double(&search_start);
+		stop = timeval_to_double(&tv);
+		time = stop - start;
+		// XXX printf("time %f \n", time);
 
 		id = search_number % 8;
 
-		//if (last_id != id) {
+		if (last_id != id) {
 			//printf("clearing series \n");
-			//gwin->clear_series(id);	
-		//}
-		//last_id = id;
+			gwin->clear_series(id);	
+		}
+		last_id = id;
 
-		time = stop - start;
 		if (time > 2.5)  {
-			gwin->add_point(time, done, id);
+			// XXX printf("done %f \n", done);
+			gwin->add_point((double)time, done, id);
 		}
 wait:
 		sleep(1);
@@ -591,7 +553,7 @@ wait:
 void
 stats_close(GtkWidget * window)
 {
-    stats_window = NULL;
+    progress_window = NULL;
 
     thread_close = 1;
 }
@@ -602,29 +564,28 @@ open_progress_win()
 {
     GtkWidget *	gwidget;
 
-    if (!stats_window) {
+    if (!progress_window) {
 
         GUI_THREAD_CHECK();
 
-        stats_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-        gtk_window_set_title(GTK_WINDOW(stats_window), "Stats");
-        gtk_widget_set_name(stats_window, "stats_window");
-        g_signal_connect(G_OBJECT(stats_window), "destroy",
+        progress_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+        gtk_window_set_title(GTK_WINDOW(progress_window), "Stats");
+        gtk_widget_set_name(progress_window, "progress_window");
+        g_signal_connect(G_OBJECT(progress_window), "destroy",
                          G_CALLBACK(stats_close), NULL);
         /*
          * don't show window until we add all the components (for correct
          * sizing) 
          */
-        // gtk_widget_show(stats_window);
 
-        stats_box = gtk_hbox_new(FALSE, 0);
-        gtk_container_add(GTK_CONTAINER(stats_window), stats_box);
+        progress_box = gtk_hbox_new(FALSE, 0);
+        gtk_container_add(GTK_CONTAINER(progress_window), progress_box);
 
-		gwin = new graph_win(0.0, 100.0, 0.0, 10000.0);
+	gwin = new graph_win(0.0, 10.0, 0.0, 100.0);
 	
 	gwidget = gwin->get_graph_display(PROGRESS_X_SIZE, PROGRESS_Y_SIZE);
-	gtk_box_pack_start(GTK_BOX(stats_box), gwidget, FALSE, TRUE, 0);
-        gtk_widget_show_all(stats_window);
+	gtk_box_pack_start(GTK_BOX(progress_box), gwidget, FALSE, TRUE, 0);
+        gtk_widget_show_all(progress_window);
     }
 }
 
@@ -636,14 +597,14 @@ open_progress_win()
  * search.
  */
 void
-create_stats_win(ls_search_handle_t shandle, int verbose)
+create_progress_win(ls_search_handle_t shandle, int verbose)
 {
     int             err;
 
     /*
      * if we already have the window, don't do anything.
      */
-    if (stats_window != NULL) {
+    if (progress_window != NULL) {
         return;
     }
     //verbose_mode = verbose;
@@ -679,10 +640,10 @@ create_stats_win(ls_search_handle_t shandle, int verbose)
 
 
 void
-close_stats_win()
+close_progress_win()
 {
-    if (stats_window) {
-        gtk_object_destroy(GTK_OBJECT(stats_window));
+    if (progress_window) {
+        gtk_object_destroy(GTK_OBJECT(progress_window));
         // stats_close(NULL);
     }
 }
@@ -690,11 +651,11 @@ close_stats_win()
 
 
 void
-toggle_stats_win(ls_search_handle_t shandle, int verbose)
+toggle_progress_win(ls_search_handle_t shandle, int verbose)
 {
-    if (stats_window) {
-        close_stats_win();
+    if (progress_window) {
+        close_progress_win();
     } else {
-        create_stats_win(shandle, verbose);
+        create_progress_win(shandle, verbose);
     }
 }

@@ -75,8 +75,8 @@ enum gw_layers_t {
 };
 
 typedef struct {
-	float	x;
-	float	y;
+	double	x;
+	double	y;
 } point_t;
 
 typedef	vector<point_t>::iterator	point_iter_t;
@@ -96,14 +96,15 @@ typedef struct {
  */
 class graph_win {
 public:
-	graph_win(const float xmin, const float xmax, const float ymin, const float ymax);
+	graph_win(const double xmin, const double xmax, const double ymin, const double ymax);
 
 	virtual ~graph_win();
 
 	GtkWidget *	get_graph_display(const int xsize, const int ysize);
 
 
-	void	add_point(const float x, const float y, int series);
+	void	add_point(const double x, const double y, int series);
+	void	draw_point(const double x, const double y, int series);
 	void	clear_series(int series);
 	
 	void	clear_graph();
@@ -120,16 +121,21 @@ private:
 	void	init_series();
 	void	redraw_series();
 	void	redraw_series(int series);
+	void	scale_x_up(double x);
+	void	scale_y_up(double y);
+
 
 	/* XXX create some state to keep track of the points */
 
-	float	gw_xmin;
-	float	gw_xmax;
-	float	gw_xspan;
+	double	gw_xmin;
+	double	gw_xmax;
+	double	gw_xspan;
+	double	gw_orig_xmax;
 
-	float	gw_ymin;
-	float	gw_ymax;
-	float	gw_yspan;
+	double	gw_ymin;
+	double	gw_ymax;
+	double	gw_yspan;
+	double	gw_orig_ymax;
 
 
 	int		gw_width;

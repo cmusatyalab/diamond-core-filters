@@ -114,16 +114,18 @@ compute_scale(RGBImage * img, int xdim, int ydim)
 }
                                                                                 
 
-graph_win::graph_win(const float xmin, const float xmax, const float ymin, const float ymax)
+graph_win::graph_win(const double xmin, const double xmax, const double ymin, const double ymax)
 {
 
 	gw_xmin = xmin;
 	gw_xmax = xmax;
 	gw_xspan = xmax - xmin;
-	
+	gw_orig_xmax = xmax;
+		
 	gw_ymin = ymin;
 	gw_ymax = ymax;
 	gw_yspan = ymax - ymin;
+	gw_orig_ymax = ymax;
 
 	gw_active_win = 0;
 
@@ -378,12 +380,14 @@ graph_win::redraw_series()
 	init_window();
 
 	for (i=0; i < GW_MAX_SERIES; i++) {
+		gw_series[i].lastx = 0 + X_ZERO_OFFSET;
+		gw_series[i].lasty = gw_height - Y_ZERO_OFFSET;
 		for (iter = gw_series[i].points.begin(); 
 		  iter != gw_series[i].points.end(); iter++) {
-			add_point(iter->x, iter->y, i);
+			draw_point(iter->x, iter->y, i);
 		}
 	}
-	printf("done redra\n");
+	gtk_widget_queue_draw_area(gw_drawingarea, 0, 0, gw_width, gw_height);
 }
 
 
@@ -391,28 +395,91 @@ void
 graph_win::clear_series(int series)
 {
 
-	printf("clear series\n");
-	//redraw_series();
+	/* erase the points in this series */
+	gw_series[series].points.erase(gw_series[series].points.begin(), 
+		gw_series[series].points.end());
+
+	redraw_series();
 }
 
 void
-graph_win::add_point(const float x, const float y, int series)
+graph_win::scale_x_up(const double x)
 {
-	int	pixelx, pixely;
+	double 	newx;
+	double 	mult;
+
+	
+
+	assert(x > gw_xmax);
+	newx = x/0.75;
+
+	mult = newx/gw_orig_xmax;
+	newx = ceill(mult) * gw_orig_xmax;
+	
+	gw_xmax = newx;
+	gw_xspan = gw_xmax - gw_xmin;
+
+	redraw_series();	
+}
+
+void
+graph_win::scale_y_up(const double y)
+{
+	double 	newy;
+	double 	mult;
+
+	assert(y > gw_ymax);
+
+	newy = y/0.75;
+
+	mult = newy/gw_orig_ymax;
+	newy = ceill(mult) * gw_orig_ymax;
+
+	gw_ymax = newy;
+	gw_yspan = gw_ymax - gw_ymin;
+
+	redraw_series();	
+}
+
+
+void
+graph_win::add_point(const double x, const double y, int series)
+{
 	point_t		point;
 
 	assert(series < GW_MAX_SERIES);
+
+	if (x >  gw_xmax) {
+		scale_x_up(x);
+	}
+	
+	if (y > gw_ymax) {
+		scale_y_up(y);
+	}
 
 	point.x = x;
 	point.y = y;
 	gw_series[series].points.push_back(point);
 
+	draw_point(x, y, series);
+
+	gtk_widget_queue_draw_area(gw_drawingarea, 0, 0, gw_width, gw_height);
+}
+
+
+
+void
+graph_win::draw_point(const double x, const double y, int series)
+{
+	int pixelx, pixely;
+
+	assert(series < GW_MAX_SERIES);
 
 	/* XXX deal withoffset for margins, etc. */
-	pixelx = (int)(((x - gw_xmin) /gw_xspan) * (float)gw_xdisp) +
+	pixelx = (int)(((x - gw_xmin) /gw_xspan) * (double)gw_xdisp) +
 		X_ZERO_OFFSET ;
 
-	pixely = (int)(((gw_ymax - y)/gw_yspan) * (float)gw_ydisp) +
+	pixely = (int)(((gw_ymax - y)/gw_yspan) * (double)gw_ydisp) +
 		Y_END_OFFSET;
 
 	if (pixelx > (gw_width - X_END_OFFSET)) {
@@ -434,9 +501,7 @@ graph_win::add_point(const float x, const float y, int series)
 	gw_series[series].lastx = pixelx;
 	gw_series[series].lasty = pixely;
 
-	gtk_widget_queue_draw_area(gw_drawingarea, 0, 0, gw_width, gw_height);
 }
-
 
 void
 graph_win::init_window()
