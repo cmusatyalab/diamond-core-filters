@@ -38,7 +38,6 @@ img_search::img_search(const char *name, char *descr)
 
 img_search::~img_search()
 {
-	printf("snap destruct \n");
 	free(display_name);
 	free(descript);
 	return;

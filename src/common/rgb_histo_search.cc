@@ -161,8 +161,6 @@ void
 rgb_histo_search::close_edit_win()
 {
 
-	printf("close edit window \n");
-
 	/* save any changes from the edit windows */
 	save_edits();
 

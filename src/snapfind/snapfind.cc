@@ -412,7 +412,6 @@ ss_add_dep(img_search *dep)
 	/* XXX TODO:  look for better method */
 	for (i=0; i < num_deps; i++) {
 		if (strcmp(dep->get_name(), snap_deps[i]->get_name()) == 0) {
-			fprintf(stdout, "dup dependency %s \n", dep->get_name());
 			delete dep;
 			return;
 		}

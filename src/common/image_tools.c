@@ -196,7 +196,8 @@ rgb_write_image(RGBImage * img, const char *filename, const char *dir)
     fprintf(fp, "255\n");
 
     for (i = 0; i < (img->height * img->width); i++) {
-        fwrite(&img->data[i], 3, 1, fp);
+        err = fwrite(&img->data[i], 3, 1, fp);
+	assert(err == 1);
     }
 
     fclose(fp);
@@ -306,9 +307,6 @@ pnm_parse_header(char *buf, size_t buflen,
     /*
      * we are assuming that buflen > sizeof the whole header XXX 
      */
-    if (buflen < 1023) {
-        return (1);
-    }
 
     startbuf = buf;
     endbuf = buf + buflen;
