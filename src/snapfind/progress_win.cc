@@ -71,6 +71,8 @@ static GtkWidget      *progress_box = NULL;
 
 static int      verbose_mode = 1;
 
+static GtkWidget	*progress_bar;
+
 #define		PROGRESS_X_SIZE		600
 #define		PROGRESS_Y_SIZE		400
 
@@ -383,7 +385,6 @@ get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
         return (name_unknown);
     }
 
-
     hent = gethostbyaddr((char *) &dchar.dc_devid, sizeof(dchar.dc_devid),
                       AF_INET);
     if (hent == NULL) {
@@ -397,8 +398,6 @@ get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
     return (hent->h_name);
 
 }
-
-
 
 
 
@@ -480,6 +479,7 @@ stats_main(void *data)
 	double			total;
 	double			start;
 	double			stop;
+	double			completed;
 	struct	timeval	tv;
 	struct	timezone tz;
 	int			last_id = -1;
@@ -525,6 +525,14 @@ stats_main(void *data)
 			// XXX printf("done %f \n", done);
 		}
 	
+   
+		completed = done/total; 
+        if (!(completed <= 1.0)) {
+            completed = 1.0;
+        }
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress_bar),
+                                 completed);
+
 		gettimeofday(&tv, &tz);
 		start = timeval_to_double(&search_start);
 		stop = timeval_to_double(&tv);
@@ -563,6 +571,8 @@ void
 open_progress_win()
 {
     GtkWidget *	gwidget;
+    GtkWidget *	hbox;
+    GtkWidget *	label;
 
     if (!progress_window) {
 
@@ -578,13 +588,26 @@ open_progress_win()
          * sizing) 
          */
 
-        progress_box = gtk_hbox_new(FALSE, 0);
+        progress_box = gtk_vbox_new(FALSE, 0);
         gtk_container_add(GTK_CONTAINER(progress_window), progress_box);
 
 	gwin = new graph_win(0.0, 30.0, 0.0, 5000.0);
 	
 	gwidget = gwin->get_graph_display(PROGRESS_X_SIZE, PROGRESS_Y_SIZE);
 	gtk_box_pack_start(GTK_BOX(progress_box), gwidget, FALSE, TRUE, 0);
+
+
+	   	hbox =  gtk_hbox_new(FALSE, 10);
+		gtk_box_pack_start(GTK_BOX(progress_box), hbox, FALSE, TRUE, 0);
+
+		label =  gtk_label_new("Current Progress");
+		gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
+
+		progress_bar = gtk_progress_bar_new();
+		gtk_box_pack_start(GTK_BOX(hbox), progress_bar, TRUE, TRUE, 0);
+
+	
+
         gtk_widget_show_all(progress_window);
     }
 }
