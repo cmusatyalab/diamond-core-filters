@@ -9,7 +9,7 @@
 // Code to support texture filters
 // Derek Hoiem 2003.05.21
 int
-texture_test_entire_image(IplImage * img, texture_args_t *targs, bbox_list_t *blist)
+texture_test_entire_image_maholonobis(IplImage * img, texture_args_t *targs, bbox_list_t *blist)
 {
 
     /*
@@ -54,18 +54,6 @@ texture_test_entire_image(IplImage * img, texture_args_t *targs, bbox_list_t *bl
 	  // unbiased population estimation of variance
 	  variance[i] = variance[i]/(targs->num_samples-1);
 
-	  // old code below
-/*             mean_sample_diff[i] = 0.0; */
-/*             for (s = 0; s < targs->num_samples; s++) { */
-/*                 mean_sample_diff[i] += targs->sample_values[s][i]; */
-/*             } */
-/*             mean_sample_diff[i] /= (double) targs->num_samples; */
-/*             ave_sample_mean_diff[i] = 0; */
-/*             for (s = 0; s < targs->num_samples; s++) { */
-/*                 ave_sample_mean_diff[i] += */
-/*                     fabs(targs->sample_values[s][i] - mean_sample_diff[i]); */
-/*             } */
-/*             ave_sample_mean_diff[i] /= (double) targs->num_samples; */
         }
 
     }
@@ -146,8 +134,9 @@ done:
     return (passed);
 }
 
+
 int
-old_texture_test_entire_image(IplImage * img, texture_args_t *targs,
+texture_test_entire_image_variance(IplImage * img, texture_args_t *targs,
 	bbox_list_t *blist)
 {
 
@@ -160,15 +149,17 @@ old_texture_test_entire_image(IplImage * img, texture_args_t *targs,
 
     double          distance;
     double          min_distance;   // min distance for one window from all samples
-    int             passed = 0;
     int             i, s, x, y; 
 	int				test_x, test_y;
+    int             passed = 0;
     bbox_t*         bbox;
-    int		    quit_on_pass = 1; //quits as soon as its known that the image passes
+    bbox_t         	best_box;
     int             extra_pixels_w = img->width % (1 << NUM_LAP_PYR_LEVELS);
     int             extra_pixels_h = img->height % (1 << NUM_LAP_PYR_LEVELS);
     cvSetImageROI(img, cvRect(0, 0, img->width - extra_pixels_w,
                          img->height - extra_pixels_h));
+
+	best_box.distance = 500.0;
 
     if (targs->num_samples >= 2) {
         for (i = 0; i < NUM_LAP_PYR_LEVELS * targs->num_channels; i++) {
@@ -241,19 +232,27 @@ old_texture_test_entire_image(IplImage * img, texture_args_t *targs,
                 	}
      	      	}
 
-
-            	if (min_distance <= targs->max_distance) {
-                	passed++;
-					bbox = (bbox_t *)malloc(sizeof(*bbox));
-					assert(bbox != NULL);
-					bbox->min_x = x;
-					bbox->min_y = y;
-					bbox->max_x = x + test_x;	/* XXX scale */
-					bbox->max_y = y + test_y;
-		 			bbox->distance = min_distance;
-					TAILQ_INSERT_TAIL(blist, bbox, link);
+            	if ((targs->min_matches == 1) &&
+					(min_distance <= targs->max_distance) && 
+					(min_distance < best_box.distance)) {
+						best_box.min_x = x;
+						best_box.min_y = y;
+						best_box.max_x = x + test_x;	/* XXX scale */
+						best_box.max_y = y + test_y;
+		 				best_box.distance = min_distance;
+            	} else if ((targs->min_matches > 1) && 
+					(min_distance < targs->max_distance)) {
+                		passed++;
+						bbox = (bbox_t *)malloc(sizeof(*bbox));
+						assert(bbox != NULL);
+						bbox->min_x = x;
+						bbox->min_y = y;
+						bbox->max_x = x + test_x;	/* XXX scale */
+						bbox->max_y = y + test_y;
+		 				bbox->distance = min_distance;
+						TAILQ_INSERT_TAIL(blist, bbox, link);
 		
-                	if (quit_on_pass && (passed >= targs->min_matches)) {
+                	if (passed >= targs->min_matches) {
                     	goto done;
                 	}
             	}
@@ -261,11 +260,131 @@ old_texture_test_entire_image(IplImage * img, texture_args_t *targs,
         }
 	}
 
+	if ((targs->min_matches == 1) && (best_box.distance < targs->max_distance)){
+			passed++;
+			bbox = (bbox_t *)malloc(sizeof(*bbox));
+			assert(bbox != NULL);
+			bbox->min_x = best_box.min_x;
+			bbox->min_y = best_box.min_y;
+			bbox->max_x = best_box.max_x;
+			bbox->max_y = best_box.max_y;
+			bbox->distance = best_box.distance;
+			TAILQ_INSERT_TAIL(blist, bbox, link);
+	}
+
 done:
 
     cvResetImageROI(img);
     return (passed);
 }
+
+
+/*
+ * This tests each of the different images by comparing a singe
+ * each patch.  If any of the patches are close enought,
+ * then this is good.
+ */
+
+int
+texture_test_entire_image_pairwise(IplImage * img, texture_args_t *targs,
+	bbox_list_t *blist)
+{
+
+    /*
+     * first process entire image 
+     */
+    double          feature_val[NUM_LAP_PYR_LEVELS * TEXTURE_MAX_CHANNELS];
+    double          distance;
+    double          min_distance;   // min distance for one window from all samples
+    int             i, s, x, y; 
+	int				test_x, test_y;
+    int             passed = 0;
+    bbox_t*         bbox;
+    bbox_t         	best_box;
+    int             extra_pixels_w = img->width % (1 << NUM_LAP_PYR_LEVELS);
+    int             extra_pixels_h = img->height % (1 << NUM_LAP_PYR_LEVELS);
+    cvSetImageROI(img, cvRect(0, 0, img->width - extra_pixels_w,
+                         img->height - extra_pixels_h));
+
+	best_box.distance = 500000.0;
+
+    /*
+     * test each subwindow 
+     */
+	for (test_x = targs->box_width, test_y = targs->box_height; 
+		((test_x < img->width) && (test_y < img->height)); 
+	     test_x = (int)((float)test_x * targs->scale),
+		 test_y = (int)((float)test_y * targs->scale)) {
+
+    	for (x = 0; (x + test_x) < img->width; x += targs->step) {
+        	for (y = 0; (y + test_y) < img->height; y += targs->step) {
+            	texture_get_lap_pyr_features_from_subimage(img, 
+						targs->num_channels, x, y, test_x, test_y, feature_val);
+
+            	min_distance = 100000.0;	/* XXX really large float */
+           		for (s = 0; s < targs->num_samples; s++) {
+                	distance = 0.0;
+             		for (i=0; i < NUM_LAP_PYR_LEVELS*targs->num_channels; i++) {
+						if (feature_val[i] > targs->sample_values[s][i]) {
+							distance += fabs(feature_val[i] - targs->sample_values[s][i])/
+								feature_val[i];
+						} else {
+							distance += fabs(feature_val[i] - targs->sample_values[s][i])/
+								targs->sample_values[s][i];
+						}
+                	}
+					distance = distance/(float)(NUM_LAP_PYR_LEVELS*targs->num_channels);
+                	if (distance < min_distance) {
+                    	min_distance = distance;
+                	}
+     	      	}
+
+            	if ((targs->min_matches == 1) &&
+					(min_distance <= targs->max_distance) && 
+					(min_distance < best_box.distance)) {
+						best_box.min_x = x;
+						best_box.min_y = y;
+						best_box.max_x = x + test_x;	/* XXX scale */
+						best_box.max_y = y + test_y;
+		 				best_box.distance = min_distance;
+            	} else if ((targs->min_matches > 1) && 
+					(min_distance < targs->max_distance)) {
+                		passed++;
+						bbox = (bbox_t *)malloc(sizeof(*bbox));
+						assert(bbox != NULL);
+						bbox->min_x = x;
+						bbox->min_y = y;
+						bbox->max_x = x + test_x;	/* XXX scale */
+						bbox->max_y = y + test_y;
+		 				bbox->distance = min_distance;
+						TAILQ_INSERT_TAIL(blist, bbox, link);
+		
+                	if (passed >= targs->min_matches) {
+                    	goto done;
+                	}
+            	}
+			}
+        }
+	}
+
+	if ((targs->min_matches == 1) && (best_box.distance < targs->max_distance)){
+			passed++;
+			bbox = (bbox_t *)malloc(sizeof(*bbox));
+			assert(bbox != NULL);
+			bbox->min_x = best_box.min_x;
+			bbox->min_y = best_box.min_y;
+			bbox->max_x = best_box.max_x;
+			bbox->max_y = best_box.max_y;
+			bbox->distance = best_box.distance;
+			TAILQ_INSERT_TAIL(blist, bbox, link);
+	}
+
+done:
+
+    cvResetImageROI(img);
+    return (passed);
+}
+
 /*
  * gets features from a single subwindow 
  */

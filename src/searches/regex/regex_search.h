@@ -4,6 +4,7 @@
 #include <gtk/gtk.h>
 #include "image_common.h"
 #include "common_consts.h"
+#include "texture_tools.h"
 #include "histo.h"
 
 
@@ -254,9 +255,11 @@ public:
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
 private:
-	int			method;
-	double		simularity;
-	int			channels;
+	int					method;
+	double				simularity;
+	int					channels;
+	texture_dist_t		distance_metric;
+	GtkWidget *			distance_menu;
 
 	GtkObject *	sim_adj;
 	GtkWidget *	edit_window;

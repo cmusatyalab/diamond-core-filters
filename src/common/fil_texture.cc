@@ -41,15 +41,18 @@ read_texture_args(lf_fhandle_t fhandle, texture_args_t *texture_args,
   	texture_args->step = atoi(args[4]);
   	texture_args->min_matches = atoi(args[5]);
 	// <-- for normalized
- 	texture_args->max_distance = (1.0 - atof(args[6])) * NUM_LAP_PYR_LEVELS; 
+ 	//texture_args->max_distance = (1.0 - atof(args[6])) * NUM_LAP_PYR_LEVELS; 
+ 	texture_args->max_distance = (1.0 - atof(args[6]));
 
   	texture_args->num_channels = atoi(args[7]);
+  	
+	texture_args->texture_distance = (texture_dist_t) atoi(args[8]);
 
-	texture_args->num_samples = atoi(args[8]);
+	texture_args->num_samples = atoi(args[9]);
 	/* read in the arguments for each sample */
 
 
-	args += 9;
+	args += 10;
 
   	texture_args->sample_values = new (double*)[texture_args->num_samples];
   	for (s_index = 0; s_index < texture_args->num_samples; s_index++) {
@@ -142,8 +145,16 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
   dst_img = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 1);
 
   TAILQ_INIT(&blist); 
-  //pass = texture_test_entire_image(img, targs, &blist);
-  pass = old_texture_test_entire_image(img, targs, &blist);
+
+  if (targs->texture_distance == TEXTURE_DIST_MAHOLONOBIS) {
+  	pass = texture_test_entire_image_maholonobis(img, targs, &blist);
+  } else if (targs->texture_distance == TEXTURE_DIST_VARIANCE) {
+  	pass = texture_test_entire_image_variance(img, targs, &blist);
+  } else if (targs->texture_distance == TEXTURE_DIST_PAIRWISE) {
+  	pass = texture_test_entire_image_pairwise(img, targs, &blist);
+  } else {
+	assert(0);
+  }
   if (pass >= targs->min_matches) {
 
     /* increase num_histo counter (for boxes in app)*/

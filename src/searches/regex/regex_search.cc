@@ -191,7 +191,7 @@ regex_search::write_config(FILE *ostream, const char *dirname)
 	 * This should never be an editable search, so this function should
 	 * never be called.
 	 */
-	assert(0);
+	// XXX fix asap assert(0);
 	return;
 }
 

@@ -596,7 +596,7 @@ histo_print_ii(HistoII * ii)
     }
 }
 
-
+#ifdef XXX
 
 /*
  * generate all the possible windows and test them 
@@ -679,3 +679,107 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 
     return pass;
 }
+
+#else
+
+int
+histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
+                 histo_config_t * hconfig,
+                 int num_req, bbox_list_t *blist)
+{
+    float          x, y;          /* XXX */
+    float          d;
+    dim_t           xsiz = hconfig->xsize;
+    dim_t           ysiz = hconfig->ysize;
+	bbox_t	 *		bbox;
+	bbox_t	  		best_box;
+    patch_t        *patch;
+    int             done = 0;
+    int             pass;
+    float          scale;
+    float          scale_factor = hconfig->scale;
+    const dim_t     width = img->width;
+    const dim_t     height = img->height;
+    int             inspected = 0;
+    Histo           h2;         /* histogram for each region tested */
+    int             old_x = 0, old_y = 0;
+
+	best_box.distance = 500;
+    pass = 0;
+    for (scale = 1.0; (scale * ysiz) < height; scale *= scale_factor) {
+        xsiz = (dim_t) scale *hconfig->xsize;
+        ysiz = (dim_t) scale *hconfig->ysize;
+
+        for (y = 0; !done && y + ysiz <= height; y += (float)hconfig->stride) {
+            if (!ii) {
+                histo_fill_from_subimage(&h2, img, (int) 0, (int) y, xsiz,
+                                         ysiz, hconfig->type);
+                old_x = 0;
+                old_y = (int) y;
+            }
+            for (x = 0; !done && x + xsiz <= width; x += (float)hconfig->stride) {
+                inspected++;
+                // histo_print_ii(ii);
+                if (ii) {
+                    histo_get_histo(ii, (int) x, (int) y, xsiz, ysiz, &h2);
+                } else {
+                    histo_update_subimage(&h2, img, old_x, old_y, (int) x,
+                                          (int) y, xsiz, ysiz, hconfig->type);
+                }
+                patch = TAILQ_FIRST(&hconfig->patchlist);
+
+                while (!done && patch) {    /* foreach patch */
+                    d = histo_distance(&patch->histo, &h2);
+                   	patch = TAILQ_NEXT(patch, link);
+
+                    if ((num_req == 1) && (d < (1.0 - hconfig->simularity))  && 
+						(d < best_box.distance)) {  /* found match */
+					 	best_box.min_x = x;
+                        best_box.min_y = y;
+                        best_box.max_x = x + xsiz;    /* XXX scale */
+                        best_box.max_y = y + ysiz;
+                        best_box.distance = d;
+                    } else if ((num_req > 1) && 
+						(d < (1.0 - hconfig->simularity))) {  /* found match */
+						bbox = (bbox_t *) malloc(sizeof(*bbox));
+						bbox->min_x = x;
+						bbox->min_y = y;
+						bbox->max_x = x + xsiz;
+						bbox->max_y = y + ysiz;
+						bbox->distance = d;
+
+						TAILQ_INSERT_TAIL(blist, bbox, link);
+                        pass++;
+                        /*
+                         * use passed in pthreshold instead of
+                         * fsp->pthreshold 
+                         */
+                        if (pass >= num_req)
+                            done = 1;
+                        break;  /* no need to check other patches */
+                    }
+                }               /* foreach patch */
+
+                old_x = (int) x;
+                old_y = (int) y;
+
+            }                   /* for x */
+        }                       /* for y */
+    }                           /* for scale */
+
+	 if ((num_req == 1) && (best_box.distance < (1.0 - hconfig->simularity))) {
+            pass++;
+            bbox = (bbox_t *)malloc(sizeof(*bbox));
+            assert(bbox != NULL);
+            bbox->min_x = best_box.min_x;
+            bbox->min_y = best_box.min_y;
+            bbox->max_x = best_box.max_x;
+            bbox->max_y = best_box.max_y;
+            bbox->distance = best_box.distance;
+            TAILQ_INSERT_TAIL(blist, bbox, link);
+    }
+
+
+    return pass;
+}
+#endif

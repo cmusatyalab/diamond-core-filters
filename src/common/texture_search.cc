@@ -17,9 +17,9 @@ texture_search::texture_search(const char *name, char *descr)
 	: example_search(name, descr)
 {
 	edit_window = NULL;
-	simularity = 0.70;
+	simularity = 0.90;
 	channels = 3;
-
+	distance_metric = TEXTURE_DIST_PAIRWISE; 
 }
 
 texture_search::~texture_search()
@@ -153,7 +153,7 @@ make_menu_item (gchar* name, GCallback callback, gpointer  data)
 {
 	GtkWidget *item; 
                                                                                
-	item = gtk_menu_item_new_with_label (name); 
+	item = gtk_menu_item_new_with_label(name); 
 	g_signal_connect (G_OBJECT (item), "activate", callback, (gpointer) data); 
 	gtk_widget_show(item); 
                                                                                
@@ -264,6 +264,26 @@ texture_search::edit_search()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gray_widget), TRUE);
 	}
 
+
+	distance_menu = gtk_option_menu_new();
+	menu = gtk_menu_new();
+
+	/* these must be declared as the order of the enum  */
+	item = gtk_menu_item_new_with_label("Maholonibis");
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item); 
+	item = gtk_menu_item_new_with_label("Variance");
+	gtk_menu_shell_append(GTK_MENU_SHELL (menu), item); 
+	item = gtk_menu_item_new_with_label("Pairwise");
+	gtk_menu_shell_append (GTK_MENU_SHELL(menu), item); 
+
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(distance_menu), menu);
+	gtk_box_pack_start(GTK_BOX(container), distance_menu, FALSE, TRUE, 0);
+	/* set the default value in the GUI */
+	gtk_option_menu_set_history(GTK_OPTION_MENU(distance_menu), (guint)distance_metric);
+
+
+
+
 	opt = gtk_option_menu_new();
 	menu = gtk_menu_new();
  
@@ -320,6 +340,9 @@ texture_search::save_edits()
 		set_channels(1);
 	}
 
+	distance_metric =  
+		(texture_dist_t)gtk_option_menu_get_history(GTK_OPTION_MENU(distance_menu));
+
 	/* call the parent class */	
 	example_search::save_edits();
 }
@@ -333,6 +356,7 @@ void
 texture_search::write_fspec(FILE *ostream)
 {
 	IplImage	*img;
+	RGBImage	*rimg;
 	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
 	example_patch_t	*cur_patch;
 	img_search *	rgb;
@@ -368,19 +392,26 @@ texture_search::write_fspec(FILE *ostream)
 
 	 fprintf(ostream, "ARG  %f  # simularity \n", simularity);
 	 fprintf(ostream, "ARG  %d  # channels \n", channels);
+	 fprintf(ostream, "ARG  %d  # distance type \n", distance_metric);
 	 fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
 
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int j;
-		if (channels == 1) {
-			img = get_gray_ipl_image(cur_patch->patch_image);
-		} else {
-			img = get_rgb_ipl_image(cur_patch->patch_image);
-		}
+		rimg = create_rgb_subimage(cur_patch->patch_image,
+			0, 0, 32, 32);
 
+		if (channels == 1) {
+			img = get_gray_ipl_image(rimg);
+		} else {
+			img = get_rgb_ipl_image(rimg);
+		}
+#ifdef	XXX
 	  	texture_get_lap_pyr_features_from_subimage(img, channels, 0, 0,
-				cur_patch->xsize, cur_patch->ysize, 
-		   		feature_vals);
+				cur_patch->xsize, cur_patch->ysize, feature_vals);
+#else
+	  	texture_get_lap_pyr_features_from_subimage(img, channels, 0, 0,
+				32, 32, feature_vals);
+#endif
 
 		for (j=0; j < (NUM_LAP_PYR_LEVELS*channels); j++) {
 	 		fprintf(ostream, "ARG  %f  # sample %d val %d \n", 
@@ -421,6 +452,7 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	example_patch_t	*cur_patch;
 	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
 	IplImage *		iimg;
+	RGBImage *		tmp_img;
 	int				i;
 	int				pass;
 	double *		data_arr;
@@ -435,7 +467,7 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	targs.step = get_stride(); 
 	targs.scale = get_scale();
 	targs.min_matches = INT_MAX; 	/* get all bounding boxes */
-	targs.max_distance = (1.0 - simularity) * NUM_LAP_PYR_LEVELS ; 
+	targs.max_distance = (1.0 - simularity);
 	targs.num_channels = channels;
 
 	i = 0;
@@ -450,15 +482,22 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int j;
+		tmp_img = create_rgb_subimage(cur_patch->patch_image,
+			0, 0, 32, 32);
 		if (channels == 1) {
-			iimg = get_gray_ipl_image(cur_patch->patch_image);
+			iimg = get_gray_ipl_image(tmp_img);
 		} else {
-			iimg = get_rgb_ipl_image(cur_patch->patch_image);
+			iimg = get_rgb_ipl_image(tmp_img);
 		}
-
+#ifdef	XXX
 	  	texture_get_lap_pyr_features_from_subimage(iimg, channels, 0, 0,
 				cur_patch->xsize, cur_patch->ysize, 
 		   		feature_vals);
+#else
+	  	texture_get_lap_pyr_features_from_subimage(iimg, channels, 0, 0,
+				cur_patch->xsize, cur_patch->ysize, 
+		   		feature_vals);
+#endif
 
 		/* XXX free iimg */
 		data_arr = (double *)malloc(sizeof(double) * NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS);
@@ -468,6 +507,8 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 		}
 		targs.sample_values[i] = data_arr;
 		i++;	/* count thenumber of samples for debugging */
+
+		release_rgb_image(tmp_img);
 	}
 	if (channels == 1) {
 		iimg = get_gray_ipl_image(rimg);
@@ -475,10 +516,14 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 		iimg = get_rgb_ipl_image(rimg);
 	}
 
-	//pass = texture_test_entire_image(iimg, &targs, blist);
-	pass = old_texture_test_entire_image(iimg, &targs, blist);
+	if (distance_metric == TEXTURE_DIST_MAHOLONOBIS) {
+		pass = texture_test_entire_image_maholonobis(iimg, &targs, blist);
+	} else if (distance_metric == TEXTURE_DIST_VARIANCE) {
+		pass = texture_test_entire_image_variance(iimg, &targs, blist);
+	} else if (distance_metric == TEXTURE_DIST_PAIRWISE)  {
+		pass = texture_test_entire_image_pairwise(iimg, &targs, blist);
+	}
     
-
 	                                                                                 
 	/* XXX cleanup */
 

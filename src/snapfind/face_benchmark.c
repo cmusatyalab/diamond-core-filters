@@ -208,12 +208,72 @@ dump_id(ls_obj_handle_t handle)
 	err = lf_read_attr(fhandle, handle, "MY_OID",  &size, 
 		(char *)&obj_id);
 	if (err) {
-		fprintf(stdout, "OID Unknown\n");
+		fprintf(stdout, "OID Unknown ");
 	} else {
-		fprintf(stdout, "OID %016llX.%016llX \n",
+		fprintf(stdout, "OID %016llX.%016llX ",
 		   obj_id.dev_id, obj_id.local_id);
 	
 	}
+}
+
+void
+dump_name(ls_obj_handle_t handle)
+{
+	lf_fhandle_t	fhandle;
+	off_t		size;
+	int		err;
+	int			i;
+	char		big_buffer[MAX_NAME];
+
+	size = MAX_NAME;
+	err = lf_read_attr(fhandle, handle, DISPLAY_NAME,  &size, 
+		(char *)big_buffer);
+	if (err) {
+		fprintf(stdout, "name: Unknown ");
+	} else {
+		for (i=0; i < strlen(big_buffer); i++) {
+			if (big_buffer[i] == ' ') {
+				big_buffer[i] = '_';
+			}
+		}
+		fprintf(stdout, "name: %s ", big_buffer);
+	}
+}
+
+void
+dump_matches(ls_obj_handle_t handle)
+{
+	lf_fhandle_t	fhandle;
+	off_t		size;
+	int		err;
+	char		big_buffer[MAX_NAME];
+	int			num_histo;
+	search_param_t		param;
+	int				i;
+	double			prod = 1.0;
+	double			sum = 0.0;
+
+	size = sizeof(num_histo);
+	err = lf_read_attr(fhandle, handle, NUM_HISTO, &size, 
+		(char *)&num_histo);
+	if (err) {
+		return;
+	}
+
+	for (i=0; i <num_histo; i++) {
+
+		sprintf(big_buffer, HISTO_BBOX_FMT, i); 
+		size = sizeof(param);
+		err = lf_read_attr(fhandle, handle, big_buffer, &size, 	
+			(char *)&param);
+
+		if (!err) {
+			prod *= (1.0 - param.distance);
+			sum += (1.0 - param.distance);
+			fprintf(stdout, "%s %f ", param.name, (1.0 - param.distance));
+		}
+	}
+	fprintf(stdout, "prod %f sum %f ", prod, sum);
 }
 
 /*
@@ -243,7 +303,10 @@ do_bench_search()
             return (count);
         } else if (err == 0) {
             count++;
-	    dump_id(cur_obj);
+	    	dump_id(cur_obj);
+	    	dump_name(cur_obj);
+			dump_matches(cur_obj);
+			fprintf(stdout, "\n");
             ls_release_object(shandle, cur_obj);
         } else {
             fprintf(stderr, "get_next_obj: failed on %d \n", err);

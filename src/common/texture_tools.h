@@ -13,6 +13,13 @@
 #define TEXTURE_MAX_CHANNELS 	3
 
 
+typedef	enum {
+	TEXTURE_DIST_MAHOLONOBIS,
+	TEXTURE_DIST_VARIANCE,
+	TEXTURE_DIST_PAIRWISE
+} texture_dist_t;
+
+
 
 typedef struct texture_args_t {
     char* 		name;
@@ -25,6 +32,7 @@ typedef struct texture_args_t {
     double 		scale;
     int 		min_matches;
     int 		num_channels;
+	texture_dist_t	texture_distance;
 } texture_args_t;
 
 /** 
@@ -45,9 +53,11 @@ extern "C" {
 #endif
 
 	
-int texture_test_entire_image(IplImage *img, texture_args_t *targs, 
+int texture_test_entire_image_maholonobis(IplImage *img, texture_args_t *targs, 
 		bbox_list_t *blist);
-int old_texture_test_entire_image(IplImage *img, texture_args_t *targs, 
+int texture_test_entire_image_variance(IplImage *img, texture_args_t *targs, 
+		bbox_list_t *blist);
+int texture_test_entire_image_pairwise(IplImage *img, texture_args_t *targs, 
 		bbox_list_t *blist);
 				       
 				       
