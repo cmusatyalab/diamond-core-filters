@@ -45,7 +45,7 @@ SHARED_HEADERS = rgb.h image_tools.h common_consts.h img_search.h
 SHARED_HEADERS += image_common.h texture_tools.h fil_tools.h 
 SHARED_HEADERS += face_tools.h fil_data2ii.h facedet.h filter_api.h
 SHARED_HEADERS += face.h fil_histo.h histo.h gtk_image_tools.h
-SHARED_HEADERS += fil_texture.h face_data.h
+SHARED_HEADERS += fil_texture.h face_data.h fil_file.h fil_assert.h
 
 SHARED_COMMON_SRCS = image_tools.c histo.c face_tools.c texture_tools.c
 SHARED_COMMON_SRCS += facedet.c  fil_data2ii.c
