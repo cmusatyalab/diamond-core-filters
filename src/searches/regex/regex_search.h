@@ -28,6 +28,7 @@ typedef enum {
 	END_TOK,
 	MERGE_TOK,
 	OVERLAP_TOK,
+	SUPPORT_TOK,
 } config_types_t;
 
 
@@ -37,7 +38,8 @@ typedef enum {
 typedef enum {
 	TEXTURE_SEARCH,
 	RGB_HISTO_SEARCH,
-	FACE_SEARCH,
+	VJ_FACE_SEARCH,
+	OCV_FACE_SEARCH,
 	REGEX_SEARCH,
 } search_types_t; 
 
@@ -305,7 +307,6 @@ private:
 	int			start_stage;
 	int			end_stage;
 	int			do_merge;
-	int			use_opencv;
 	float		overlap_val;
 
 	GtkWidget *	edit_window;
@@ -315,9 +316,41 @@ private:
 	GtkWidget *	face_merge;
 	GtkObject *	merge_overlap;
 	GtkWidget *	overlap_widget;
-	GtkWidget *	opencv_widget;
-	GtkWidget *	vj_widget;
 };
+
+class ocv_face_search: public window_search {
+public:
+	ocv_face_search(const char *name, char *descr);
+	~ocv_face_search(void);
+
+	void	save_edits();
+	void 	write_fspec(FILE* stream);
+	void	write_config(FILE* stream, const char *data_dir);
+
+	virtual void 	edit_search();
+	virtual void	close_edit_win();
+
+	/* set the min number of faces required */
+	void 		set_face_count(char *data);
+	void 		set_face_count(int new_count);
+
+	/* set the min number of faces required */
+	void 		set_support(char *data);
+	void 		set_support(int new_count);
+
+	int handle_config(config_types_t conf_type, char *data);
+
+	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
+
+private:
+	int			face_count;
+	int			support_matches;
+
+	GtkWidget *	edit_window;
+	GtkObject *	count_widget;
+	GtkObject *	support_widget;
+};
+
 
 class rgb_img: public img_search {
 public:

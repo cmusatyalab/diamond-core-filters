@@ -23,3 +23,6 @@ int pgm_file_read_data(ffile_t *file, RGBImage *img);
 
 /* wrapper around p*n_file_read_data */
 int pnm_file_read_data(ffile_t *file, RGBImage *img);
+
+RGBImage * get_rgb_img(lf_obj_handle_t ohandle);
+

@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <opencv/cv.h>
+#include <opencv/cvaux.h>
 
 #include "queue.h"
 #include "ring.h"
@@ -115,5 +116,41 @@ face_scan_image(ii_image_t *ii, ii2_image_t * ii2, fconfig_fdetect_t *fconfig,
 
 	return(pass);
 }
+
+int
+opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
+{
+	int 		i;
+	CvAvgComp	r1;	
+	bbox_t	*	bb;
+	CvMemStorage *	storage = cvCreateMemStorage(0);
+	IplImage *	gray;	
+        CvSeq* 		faces;
+
+
+	gray = get_gray_ipl_image(rgb);
+
+
+	/* XXX fix args */	
+        faces = cvHaarDetectObjects(gray, fconfig->haar_cascade, storage, 
+		fconfig->scale_mult, fconfig->support, CV_HAAR_DO_CANNY_PRUNING);
+
+
+	/* XXX who cleans up the faces */
+	for (i = 0; i < faces->total; i++) {
+		r1 = *(CvAvgComp*)cvGetSeqElem(faces, i, NULL);
+		bb = (bbox_t *)malloc(sizeof(*bb));
+		assert(bb != NULL);
+		bb->min_x = r1.rect.x;
+		bb->min_y = r1.rect.y;
+		bb->max_x = r1.rect.x + r1.rect.width;
+		bb->max_y = r1.rect.y + r1.rect.height;
+		bb->distance = 0.0;
+		TAILQ_INSERT_TAIL(blist, bb, link);
+	}
+		
+        return(faces->total);
+}
+
 
 

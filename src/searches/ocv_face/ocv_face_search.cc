@@ -21,36 +21,30 @@
 
 #define	MAX_DISPLAY_NAME	64
 
-vj_face_search::vj_face_search(const char *name, char *descr)
+ocv_face_search::ocv_face_search(const char *name, char *descr)
 	: window_search(name, descr)
 {
 	face_count = 1;
-	start_stage = 0;
-	end_stage = 37;
-	do_merge = 1;
-	overlap_val = 0.75;
+	support_matches = 2;
 
 	edit_window = NULL;
 	count_widget = NULL;
-	start_widget = NULL;
-	end_widget = NULL;
-	face_merge = NULL;
-	merge_overlap = NULL;
+	support_widget = NULL;
 
-	set_scale(1.20);
-	set_stride(1);
-	set_testx(24);
-	set_testy(24);
+        set_scale(1.20);
+        set_stride(1);
+        set_testx(24);
+        set_testy(24);
 }
 
-vj_face_search::~vj_face_search()
+ocv_face_search::~ocv_face_search()
 {
 	return;
 }
 
 
 void
-vj_face_search::set_face_count(char *data)
+ocv_face_search::set_face_count(char *data)
 {
 	int		new_count = atoi(data);
 
@@ -59,7 +53,7 @@ vj_face_search::set_face_count(char *data)
 }
 
 void
-vj_face_search::set_face_count(int new_count)
+ocv_face_search::set_face_count(int new_count)
 {
 	if (new_count < 0) {
 		new_count = 0;
@@ -69,62 +63,30 @@ vj_face_search::set_face_count(int new_count)
 	return;
 }
 
-#define	VJ_FACE_MIN_STAGE	0
-#define	VJ_FACE_MAX_STAGE	37
-
 void
-vj_face_search::set_start_level(char *data)
+ocv_face_search::set_support(char *data)
 {
-	int		new_level = atoi(data);
+	int		new_count = atoi(data);
 
-	set_start_level(new_level);
+	set_support(new_count);
 	return;
 }
 
 void
-vj_face_search::set_start_level(int new_level)
+ocv_face_search::set_support(int new_count)
 {
-	if (new_level < VJ_FACE_MIN_STAGE) {
-		new_level = VJ_FACE_MIN_STAGE;
+	if (new_count < 0) {
+		new_count = 0;
 	}
 
-	if (new_level > VJ_FACE_MAX_STAGE) {
-		new_level = VJ_FACE_MAX_STAGE;
-	}
-
-	start_stage = new_level;
+	support_matches = new_count;
 	return;
 }
 
-
-
-void
-vj_face_search::set_end_level(char *data)
-{
-	int		new_level = atoi(data);
-
-	set_end_level(new_level);
-	return;
-}
-
-void
-vj_face_search::set_end_level(int new_level)
-{
-	if (new_level < VJ_FACE_MIN_STAGE) {
-		new_level = VJ_FACE_MIN_STAGE;
-	}
-
-	if (new_level > VJ_FACE_MAX_STAGE) { new_level = VJ_FACE_MAX_STAGE;
-	}
-
-	/* XXX deal with case where end start overlap ??? */
-	end_stage = new_level;
-	return;
-}
 
 
 int
-vj_face_search::handle_config(config_types_t conf_type, char *data)
+ocv_face_search::handle_config(config_types_t conf_type, char *data)
 {
 	int	err;	
 	
@@ -134,25 +96,12 @@ vj_face_search::handle_config(config_types_t conf_type, char *data)
 			err = 0;
 			break;
 
-		case START_TOK:
-			set_start_level(data);
+		case SUPPORT_TOK:
+			set_support(data);
 			err = 0;
 			break;
 
-		case END_TOK:
-			set_end_level(data);
-			err = 0;
-			break;
-
-		case MERGE_TOK:
-			do_merge = atoi(data);
-			err = 0;
-			break;
-
-		case OVERLAP_TOK:
-			overlap_val = atof(data);
-			err = 0;
-			break;
+		/* XXX support ?? */
 
 		default:
 			err = window_search::handle_config(conf_type, data);
@@ -220,7 +169,7 @@ cb_close_edit_window(GtkWidget* item, gpointer data)
 
 
 void
-vj_face_search::close_edit_win()
+ocv_face_search::close_edit_win()
 {
 
 	/* save any changes from the edit windows */
@@ -240,27 +189,9 @@ edit_search_done_cb(GtkButton *item, gpointer data)
 		gtk_widget_destroy(widget);
 }
 
-static void
-cb_merge_face(GtkWidget *widget, gpointer ptr)
-{
-	vj_face_search *face;
-
-	face = (vj_face_search *)ptr;
-
-	face->update_toggle();
-}
-
-
 
 void
-vj_face_search::update_toggle()
-{
-	do_merge = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(face_merge));
-	gtk_widget_set_sensitive(overlap_widget, do_merge);
-}
-
-void
-vj_face_search::edit_search()
+ocv_face_search::edit_search()
 {
 	GtkWidget * 	widget;
 	GtkWidget * 	box;
@@ -314,27 +245,12 @@ vj_face_search::edit_search()
         face_count, 1.0, &count_widget);
     gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
-    widget = create_slider_entry("Start Stage", 0.0, 38.0, 0,
-        start_stage, 1.0, &start_widget);
+    widget = create_slider_entry("Num Supporting", 0.0, 20.0, 0,
+        support_matches, 1.0, &support_widget);
     gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
-    widget = create_slider_entry("End Stage", 0.0, 38.0, 0,
-        end_stage, 1.0, &end_widget);
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
-	face_merge = gtk_check_button_new_with_label("Merge Faces");
-	gtk_box_pack_start(GTK_BOX(container), face_merge, FALSE, TRUE, 0);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(face_merge), do_merge);
- 
-    overlap_widget = create_slider_entry("Overlap Value", 0.0, 1.0, 2,
-        overlap_val, 0.1, &merge_overlap);
-    gtk_box_pack_start(GTK_BOX(container), overlap_widget, FALSE, FALSE, 0);
-	update_toggle();
-	g_signal_connect(G_OBJECT(face_merge), "toggled", G_CALLBACK(cb_merge_face),
-		(void *)this);
-
-
-	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
+     gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
 
     gtk_widget_show(container);
 
@@ -358,7 +274,7 @@ vj_face_search::edit_search()
  */
 
 void
-vj_face_search::save_edits()
+ocv_face_search::save_edits()
 {
 	int		val;
 
@@ -370,16 +286,9 @@ vj_face_search::save_edits()
 	val = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(count_widget));
 	set_face_count(val);
 
-	val = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(start_widget));
-	set_start_level(val);
-
-	val = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(end_widget));
-	set_end_level(val);
-
-	do_merge = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(face_merge));
-	overlap_val = (float)gtk_adjustment_get_value(GTK_ADJUSTMENT(merge_overlap));
-
-
+	val = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(support_widget));
+	/* XXX use accessor method ?? */
+	support_matches = val;
 
 	/* call the parent class */	
 	window_search::save_edits();
@@ -391,7 +300,7 @@ vj_face_search::save_edits()
  */
 
 void
-vj_face_search::write_fspec(FILE *ostream)
+ocv_face_search::write_fspec(FILE *ostream)
 {
 	img_search *	ss;
 	save_edits();
@@ -402,11 +311,12 @@ vj_face_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", 1);	/* XXX should we change */
+	fprintf(ostream, "THRESHOLD %d \n", face_count);
 
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_vj_detect \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_vj_detect \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_vj_detect \n");
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_opencv_fdetect \n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_opencv_fdetect \n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_opencv_fdetect \n");
+
 	fprintf(ostream, "ARG  %s  # name \n", get_name());
 	
 	/*
@@ -417,116 +327,105 @@ vj_face_search::write_fspec(FILE *ostream)
 	 */
 	window_search::write_fspec(ostream);
 
-	/*
-	 * Now write the state needed that is just dependant on the histogram
-	 * search.  This will have the histo releated parameters
-	 * as well as the linearized histograms.
-	 */
 
-	fprintf(ostream, "ARG  %d  # num faces \n", face_count);
-	fprintf(ostream, "ARG  %d  # start stage \n", start_stage);
-	fprintf(ostream, "ARG  %d  # end_stage \n", end_stage);
+	fprintf(ostream, "ARG  %d  # support  \n", support_matches);
 
-	/* XXX fix RGB */
-	fprintf(ostream, "REQUIRES  INTEGRATE  # dependancies \n");
+	/* XXX can we use the integrate somehow in opencv ?? */
+	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
 	fprintf(ostream, "MERIT  10  # some relative cost \n");
 	fprintf(ostream, "\n");
-
-	ss = new ii_img("II image", "II image");
-	ss_add_dep(ss);
-
-	if (do_merge) {
-	 	fprintf(ostream, "\n");
-	 	fprintf(ostream, "FILTER  MERGE  # name \n");
-	 	fprintf(ostream, "THRESHOLD  1  # threshold \n");
-	 	fprintf(ostream, "EVAL_FUNCTION f_eval_bbox_merge # eval fn\n");
-	 	fprintf(ostream, "INIT_FUNCTION f_init_bbox_merge # init fn\n");
-	 	fprintf(ostream, "FINI_FUNCTION f_fini_bbox_merge # fini fn\n");
-	 	fprintf(ostream, "REQUIRES  %s  # dependencies \n",get_name() );
-	 	fprintf(ostream, "MERIT  8  # merit value \n");
-	 	fprintf(ostream, "ARG  %f  # overlap val   \n", overlap_val);
-	}
 
 	ss = new rgb_img("RGB image", "RGB image");
 	ss_add_dep(ss);
 }
 
 void
-vj_face_search::write_config(FILE *ostream, const char *dirname)
+ocv_face_search::write_config(FILE *ostream, const char *dirname)
 {
 
 	save_edits();
 
 	/* create the search configuration */
 	fprintf(ostream, "\n\n");
-	fprintf(ostream, "SEARCH vj_face_search %s\n", get_name());
+	fprintf(ostream, "SEARCH ocv_face_search %s\n", get_name());
 
 	fprintf(ostream, "NUMFACE %d \n", face_count);
-	fprintf(ostream, "START %d \n", start_stage);
-	fprintf(ostream, "END %d \n", end_stage);
-	fprintf(ostream, "MERGE %d \n", do_merge);
-	fprintf(ostream, "OVERLAP %f \n", overlap_val);
+	/* XXXX save support */
+	fprintf(ostream, "SUPPORT %d \n", support_matches);
 
 	window_search::write_config(ostream, dirname);
 	return;
 }
 
+CvHidHaarClassifierCascade* 
+new_face_detector(void)
+{
+
+        CvHaarClassifierCascade* cascade;
+        CvHidHaarClassifierCascade* hid_cascade;
+
+        cascade = cvLoadHaarClassifierCascade("<default_face_cascade>", 
+				cvSize(24,24));
+        hid_cascade = cvCreateHidHaarClassifierCascade(cascade, 0, 0, 0, 1);
+        cvReleaseHaarClassifierCascade(&cascade);
+
+		
+        return hid_cascade;
+}
+
+CvSeq *
+DetectFaces(IplImage * image, CvMemStorage * storage, bbox_list_t *blist)
+{
+	int 		i;
+	CvAvgComp	r1;	
+	bbox_t	*	bb;
+
+        CvHidHaarClassifierCascade* cascade = new_face_detector();
+        CvSeq* faces;
+
+        /* use the fastest variant */
+
+        faces = cvHaarDetectObjects( image, cascade, storage, 1.2, 2, 
+			CV_HAAR_DO_CANNY_PRUNING );
+
+        cvReleaseHidHaarClassifierCascade( &cascade );
+
+	for (i = 0; i < faces->total; i++) {
+		r1 = *(CvAvgComp*)cvGetSeqElem(faces, i, NULL);
+		bb = (bbox_t *)malloc(sizeof(*bb));
+		assert(bb != NULL);
+		bb->min_x = r1.rect.x;
+		bb->min_y = r1.rect.y;
+		bb->max_x = r1.rect.x + r1.rect.width;
+		bb->max_y = r1.rect.y + r1.rect.height;
+		bb->distance = 0.0;
+		TAILQ_INSERT_TAIL(blist, bb, link);
+	}
+		
+        return faces;
+}
+
+
+static void
+open_cv_search(RGBImage *rgb, bbox_list_t *blist) 
+{
+        CvMemStorage * storage = cvCreateMemStorage(0);
+        CvSeq * faces = NULL;
+        IplImage * gray = get_gray_ipl_image(rgb);       // convert to greyscale
+        faces = DetectFaces(gray, storage, blist);
+} 
 
 
 void
-vj_face_search::region_match(RGBImage *img, bbox_list_t *blist)
+ocv_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 {
 
 	fconfig_fdetect_t	fconfig;
-	ii_image_t	 *	ii;
-	ii2_image_t	 *	ii2;
-	int				pass;
-	int				size;
-	int				width, height;
 
 	save_edits();
 
-	/* XXX */
-	init_classifier();
+	open_cv_search(img, blist);
 	
-	fconfig.name = strdup(get_name());
-	assert(fconfig.name != NULL);
-
-	fconfig.scale_mult = get_scale();
-	fconfig.xsize = get_testx();
-	fconfig.ysize = get_testy();
-	fconfig.stride = get_stride();
-	fconfig.lev1 = start_stage;
-	fconfig.lev2 = end_stage;
-
-	width = img->width;
-	height = img->height;
-
-	size = sizeof(ii_image_t) + sizeof(uint32_t) * (width + 1) * 
-		(height + 1);
-	ii = (ii_image_t *) malloc(size);
-	assert(ii != NULL);
-	ii->nbytes = size;
-	ii->width = width + 1;
-	ii->height = height + 1;
-	
-	size = sizeof(ii2_image_t) + sizeof(float) * (width + 1) * 
-		(height + 1);
-	ii2 = (ii2_image_t *) malloc(size);
-	assert(ii2 != NULL);
-	ii2->nbytes = size;
-	ii2->width = width + 1;
-	ii2->height = height + 1;
-	
-	/* build the integral image */
-	rgb_integrate(img, ii->data, ii2->data, width + 1, height + 1);
-	
-	/* scan the image using the set parameters */
-	pass = face_scan_image(ii, ii2, &fconfig, blist, height, width);
-	
-	/* free any allocated state */
-	free(ii);
-	free(ii2);
 	return;
 }
 

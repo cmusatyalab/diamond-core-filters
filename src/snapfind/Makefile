@@ -71,7 +71,7 @@ SHARED_APP_SRCS += window_search.cc example_search.cc
 SHARED_APP_SRCS += rgb_histo_search.cc rgb_img.cc
 SHARED_APP_SRCS += regex_search.cc ii_img.cc
 SHARED_APP_SRCS += gtk_image_tools.c histo_ii.cc
-SHARED_APP_SRCS += import_sample.cc
+SHARED_APP_SRCS += import_sample.cc ocv_face_search.cc
                             
 SHARED_APP_OBJS = rgb.o img_search.o
 SHARED_APP_OBJS += texture_search.o vj_face_search.o
@@ -79,7 +79,7 @@ SHARED_APP_OBJS += window_search.o example_search.o
 SHARED_APP_OBJS += rgb_histo_search.o rgb_img.o
 SHARED_APP_OBJS += regex_search.o ii_img.o
 SHARED_APP_OBJS += gtk_image_tools.o  histo_ii.o
-SHARED_APP_OBJS += import_sample.o
+SHARED_APP_OBJS += import_sample.o ocv_face_search.o
  
 SHARED_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_APP_SRCS) $(SHARED_HEADERS)
 SHARED_SRCS += $(SHARED_COMMON_SRCS)                            

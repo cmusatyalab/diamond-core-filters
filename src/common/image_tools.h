@@ -19,6 +19,7 @@ RGBImage *create_rgb_subimage(RGBImage *old, int xoff, int yoff, int xsize,
 		int ysize);
 void release_rgb_image(RGBImage *);
 
+
 IplImage *create_gray_ipl_image(char *filename);
 IplImage *create_rgb_ipl_image(char *filename);
 

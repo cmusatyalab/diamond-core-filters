@@ -3,6 +3,8 @@
 #define _FACE_H_
 
 #include <sys/types.h>
+#include <opencv/cv.h>
+#include <opencv/cvaux.h>
 #include "queue.h"
 
 /* image dimension */
@@ -92,6 +94,22 @@ typedef struct fconfig_fdetect {
 	double		stride;
 	double		scale_mult;
 } fconfig_fdetect_t;
+
+
+/*
+ * Structure we use to keep track of the state
+ * used for the filter config.
+ */
+typedef struct opencv_fdetect {
+	char *		name;
+	double		xsize;
+	double		ysize;
+	float		stride;
+	float		scale_mult;
+	float		support;
+	CvHidHaarClassifierCascade	*haar_cascade;	
+} opencv_fdetect_t;
+
 
 
 #define FILTER_TYPE_COLOR 0

@@ -9,6 +9,8 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include <opencv/cv.h>
+#include <opencv/cvaux.h>
 
 #include "filter_api.h"
 #include "fil_face.h"
@@ -17,6 +19,7 @@
 #include "facedet.h"
 #include "merge_faces.h"
 #include "fil_tools.h"
+#include "fil_image_tools.h"
 #include "image_common.h"
 
 typedef struct {
@@ -39,9 +42,121 @@ process_region(ii_image_t * ii, int lev1, int lev2, region_t * bboxp,
     return found;
 }
 
+int
+f_init_opencv_fdetect(int numarg, char **args, int blob_len, void *blob_data,
+              void **fdatap)
+{
+
+    opencv_fdetect_t *fconfig;
+    lf_fhandle_t    fhandle = 0;    /* XXX */
+    CvHaarClassifierCascade *cascade;
+
+
+    fconfig = (opencv_fdetect_t *) malloc(sizeof(*fconfig));
+    assert(fconfig != NULL);
+
+    fconfig->name = strdup(args[0]);
+    assert(fconfig->name != NULL);
+    fconfig->scale_mult = atof(args[1]);
+    fconfig->xsize = atof(args[2]);
+    fconfig->ysize = atof(args[3]);
+    fconfig->stride = atof(args[4]);
+    /*
+     * XXX skip 5 for now ?? 
+     */
+    fconfig->support = atoi(args[6]);
+
+    if (fconfig->scale_mult <= 1) {
+        lf_log(fhandle, LOGL_TRACE,
+               "scale multiplier must be > 1; got %f\n", fconfig->scale_mult);
+        exit(1);
+    }
+
+    cascade = cvLoadHaarClassifierCascade("<default_face_cascade>",
+			cvSize(fconfig->xsize, fconfig->ysize));
+	/* XXX check args */
+    fconfig->haar_cascade = cvCreateHidHaarClassifierCascade(
+		cascade, 0, 0, 0, 1);
+    cvReleaseHaarClassifierCascade(&cascade);
+
+    *fdatap = fconfig;
+    return (0);
+}
+
 
 int
-f_init_detect(int numarg, char **args, int blob_len, void *blob_data,
+f_fini_opencv_fdetect(void *fdata)
+{
+    opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
+
+    cvReleaseHidHaarClassifierCascade(&fconfig->haar_cascade);
+    free(fconfig);
+    return (0);
+}
+
+
+int
+f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
+	lf_obj_handle_t * ohandles, void *fdata)
+{
+    int             pass = 0;
+    RGBImage *		img;
+    search_param_t  param;
+    opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
+    int             err;
+    lf_fhandle_t    fhandle = 0;    /* XXX */
+    bbox_list_t	    blist;
+    int				i;
+    bbox_t *		cur_box;
+
+    lf_log(fhandle, LOGL_TRACE, "f_eval_opencv_fdetect: enter\n");
+
+   /*
+     * get the img
+     */
+    img = (RGBImage *) ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
+    if (img == NULL) {
+	img = get_rgb_img(ohandle);
+    }
+    assert(img);
+    assert(img->type == IMAGE_PPM);
+
+
+    TAILQ_INIT(&blist);
+    pass = opencv_face_scan(img, &blist, fconfig);
+
+    i = 0;
+    while (!(TAILQ_EMPTY(&blist))) {
+	cur_box = TAILQ_FIRST(&blist);
+	param.type = PARAM_FACE;
+	param.bbox.xmin = cur_box->min_x;
+	param.bbox.ymin = cur_box->min_y;
+	param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
+	param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
+	write_param(fhandle, ohandle, FACE_BBOX_FMT, &param, i);
+	TAILQ_REMOVE(&blist, cur_box, link);
+	free(cur_box);
+	i++;
+    }
+
+    /*
+     * save 'pass' in attribs 
+     */
+    err = lf_write_attr(fhandle, ohandle, NUM_FACE, sizeof(int),
+                      (char *) &pass);
+    assert(!err);
+    lf_log(fhandle, LOGL_TRACE, "found %d faces\n", pass);
+
+
+    lf_log(fhandle, LOGL_TRACE, "f_eval_opencv_fdetect: done\n");
+    return pass;
+}
+
+
+
+
+int
+f_init_vj_detect(int numarg, char **args, int blob_len, void *blob_data,
               void **fdatap)
 {
 
@@ -82,12 +197,13 @@ f_init_detect(int numarg, char **args, int blob_len, void *blob_data,
         exit(1);
     }
 
+
     *fdatap = fconfig;
     return (0);
 }
 
 int
-f_fini_detect(void *fdata)
+f_fini_vj_detect(void *fdata)
 {
     fconfig_fdetect_t *fconfig = (fconfig_fdetect_t *) fdata;
 
@@ -103,8 +219,8 @@ f_fini_detect(void *fdata)
  */
 
 int
-f_eval_detect(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
-              void *fdata)
+f_eval_vj_detect(lf_obj_handle_t ohandle, int numout, 
+	lf_obj_handle_t * ohandles, void *fdata)
 {
     int             pass = 0;
     ii_image_t     *ii;
@@ -244,6 +360,8 @@ f_eval_detect(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
 }
 
 
+
+
 int
 f_init_bbox_merge(int numarg, char **args, int blob_len, void *blob,
                   void **fdatap)
@@ -286,8 +404,10 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, int numout,
      */
     bsize = sizeof(int);
     err = lf_read_attr(fhandle, ohandle, NUM_FACE, &bsize, (char *) &count);
-    if (err)
+    if (err) {
+	printf("Failed to read num face \n");
         count = 0;              /* XXX */
+    }
 
     lf_log(fhandle, LOGL_TRACE, "bbox_merge: incount = %d\n", count);
 

@@ -44,6 +44,7 @@ NUMFACE[ \t]+[0-9]+ { cur_search->handle_config(NUMF_TOK, eat_token(yytext));}
 START[ \t]+[0-9]+ { cur_search->handle_config(START_TOK, eat_token(yytext));}
 END[ \t]+[0-9]+ { cur_search->handle_config(END_TOK, eat_token(yytext));}
 MERGE[ \t]+[0-9]+ { cur_search->handle_config(MERGE_TOK, eat_token(yytext));}
+SUPPORT[ \t]+[0-9]+ { cur_search->handle_config(SUPPORT_TOK, eat_token(yytext));}
 OVERLAP[ \t]+{FLOAT} { cur_search->handle_config(OVERLAP_TOK, eat_token(yytext));}
 METHOD[ \t]+{FLOAT} { cur_search->handle_config(METHOD_TOK, eat_token(yytext));}
 PATCHFILE[ \t]+[[:alnum:]_"."-/]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+ { cur_search->handle_config(PATCHFILE_TOK, eat_token(yytext));}
@@ -111,7 +112,10 @@ new_search(char *str)
 		cur_search = create_search(TEXTURE_SEARCH, name);
 		assert(cur_search != NULL);
 	} else if (strcmp(type, "vj_face_search") == 0) {
-		cur_search = create_search(FACE_SEARCH, name);
+		cur_search = create_search(VJ_FACE_SEARCH, name);
+		assert(cur_search != NULL);
+	} else if (strcmp(type, "ocv_face_search") == 0) {
+		cur_search = create_search(OCV_FACE_SEARCH, name);
 		assert(cur_search != NULL);
 	} else {
 		printf("uknown type: <%s> \n", type);

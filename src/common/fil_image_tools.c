@@ -19,7 +19,7 @@ pnm_file_read_header(ffile_t * file,
 
     ff_getbuf(file, &buf, &buflen);
     err = pnm_parse_header(buf, buflen, width, height, magic, headerlen);
-    ASSERTX(err = err, !err);
+    assert(!err);
     file->type = *magic;
 
     ff_consume(file, *headerlen);
@@ -163,4 +163,68 @@ pnm_file_read_data(ffile_t * file, RGBImage * img)
 
   done:
     return err;
+}
+
+RGBImage *
+get_rgb_img(lf_obj_handle_t ohandle)
+{
+    RGBImage       *img;
+    int             err = 0,
+        pass = 1;
+    lf_fhandle_t    fhandle = 0;
+    int             width,
+                    height,
+                    headerlen;
+    off_t           bytes;
+    image_type_t    magic;
+    ffile_t         file;
+
+
+    /*
+     * read the header and figure out the dimensions 
+     */
+    ff_open(fhandle, ohandle, &file);
+    err = pnm_file_read_header(&file, &width, &height, &magic, &headerlen);
+    assert(!err);
+
+    /*
+     * create image to hold the data 
+     */
+    bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
+    err = lf_alloc_buffer(fhandle, bytes, (char **) &img);
+    assert(!err);
+    assert(img);
+    img->nbytes = bytes;
+    img->height = height;
+    img->width = width;
+    img->type = magic;
+
+    /*
+     * read the data into img 
+     */
+    /*
+     * this should be elsewhere... 
+     */
+    switch (img->type) {
+    case IMAGE_PPM:
+        err = ppm_file_read_data(&file, img);
+        assert(!err);
+        break;
+
+    case IMAGE_PGM:
+        err = pgm_file_read_data(&file, img);
+        assert(!err);
+        break;
+
+    default:
+        assert(0 && "unsupported image format");
+        /*
+         * should close file as well XXX 
+         */
+    }
+    return(img);
+
+done:
+    return(NULL);
+   
 }
