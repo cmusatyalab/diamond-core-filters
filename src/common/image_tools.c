@@ -461,9 +461,10 @@ create_gray_ipl_image(char *filename)
      * read the data into img 
      */
     {
+		char *bufp;
         pnm_state_t    *state;
         state = pnm_state_new(img);
-        char           *bufp = &buf[headerlen];
+        bufp = &buf[headerlen];
         buflen -= headerlen;
         do {
             err = ppm_add_data(state, bufp, buflen);
