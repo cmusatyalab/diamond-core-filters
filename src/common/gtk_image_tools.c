@@ -3,8 +3,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
-
+#include <assert.h> 
 #include <opencv/cv.h>
 #include <gtk/gtk.h>
 
@@ -58,3 +57,22 @@ rgbimage_to_gtkimage(RGBImage * img)
     assert(image);
     return image;
 }
+
+void
+show_popup_error(const char *source, const char *err_str, GtkWidget *win)
+{
+	GtkWidget *	dialog;
+	GtkWidget *	label;
+	int			result;
+	
+ 	dialog = gtk_dialog_new_with_buttons(source, GTK_WINDOW(win),
+		GTK_DIALOG_DESTROY_WITH_PARENT,
+        GTK_STOCK_OK, GTK_RESPONSE_NONE, NULL);
+	label = gtk_label_new(err_str);
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), label);
+	gtk_widget_show_all(dialog);
+	result = gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
+
+}
+

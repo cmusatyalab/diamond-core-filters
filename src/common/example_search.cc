@@ -259,9 +259,6 @@ example_search::remove_patch(example_patch_t *patch)
 static void
 cb_import(GtkWidget *item, gpointer data)
 {
-	example_patch_t		*cur_patch;
-	example_search *	es;
-
 	open_import_window();
 }
 

@@ -12,8 +12,8 @@ extern "C" {
 #endif
 
 GdkPixbuf* rgbimage_to_pixbuf(RGBImage *img);
-
 GtkWidget* rgbimage_to_gtkimage(RGBImage *img);
+void show_popup_error(const char *lable, const char *err_str, GtkWidget *win);
 
 	
 #ifdef __cplusplus
