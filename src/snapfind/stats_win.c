@@ -385,8 +385,7 @@ get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
     }
 
 
-    hent =
-        gethostbyaddr((char *) &dchar.dc_devid, sizeof(dchar.dc_devid),
+    hent = gethostbyaddr((char *) &dchar.dc_devid, sizeof(dchar.dc_devid),
                       AF_INET);
     if (hent == NULL) {
         /*
@@ -417,6 +416,7 @@ new_dev_status(ls_search_handle_t shandle, int dev,
 
     dstatus->name_frame = gtk_frame_new(NULL);
     dstatus->name_box = gtk_hbox_new(FALSE, 10);
+
     gtk_container_set_border_width(GTK_CONTAINER(dstatus->name_box), 4);
     gtk_widget_show(dstatus->name_box);
     gtk_container_add(GTK_CONTAINER(dstatus->name_frame), dstatus->name_box);
@@ -582,6 +582,10 @@ update_dev_status(int dev, dev_stats_t * dstats, int verbose)
 }
 
 
+/*
+ * Setup the table for each of the devices.
+ */
+ 
 void
 setup_table(dev_stats_t * dstats, int num_dev, int verbose)
 {
@@ -598,18 +602,15 @@ setup_table(dev_stats_t * dstats, int num_dev, int verbose)
     row = num_dev + 1;          /* 1=headings */
 
     stats_table = gtk_table_new(row, col, FALSE);
-    gtk_box_pack_start(GTK_BOX(stats_box), stats_table, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(stats_box), stats_table, FALSE, TRUE, 0);
 
 
     frame = gtk_frame_new(NULL);
     box = gtk_hbox_new(FALSE, 10);
     gtk_container_add(GTK_CONTAINER(frame), box);
-    gtk_widget_show(box);
-    gtk_widget_show(frame);
 
     label = gtk_label_new("Devices");
-    gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
-    gtk_widget_show(label);
+    gtk_box_pack_start(GTK_BOX(box), label, FALSE, TRUE, 0);
     gtk_widget_set_name(label, "heading");
     gtk_table_attach_defaults(GTK_TABLE(stats_table), frame, 0, 1, 0, 1);
 
@@ -618,13 +619,10 @@ setup_table(dev_stats_t * dstats, int num_dev, int verbose)
     frame = gtk_frame_new(NULL);
     box = gtk_hbox_new(FALSE, 10);
     gtk_container_add(GTK_CONTAINER(frame), box);
-    gtk_widget_show(box);
-    gtk_widget_show(frame);
 
     label = gtk_label_new("Progress");
-    gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(box), label, FALSE, TRUE, 0);
     gtk_widget_set_name(label, "heading");
-    gtk_widget_show(label);
     gtk_table_attach_defaults(GTK_TABLE(stats_table), frame, 1, 2, 0, 1);
 
 #ifdef  XXX
@@ -634,11 +632,9 @@ setup_table(dev_stats_t * dstats, int num_dev, int verbose)
     frame = gtk_frame_new(NULL);
     box = gtk_hbox_new(FALSE, 10);
     gtk_container_add(GTK_CONTAINER(frame), box);
-    gtk_widget_show(box);
-    gtk_widget_show(frame);
 
     label = gtk_label_new("Filters");
-    gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(box), label, FALSE, TRUE, 0);
     gtk_widget_set_name(label, "heading");
     if (verbose) {
         gtk_widget_show(label);
@@ -654,12 +650,11 @@ setup_table(dev_stats_t * dstats, int num_dev, int verbose)
     // XXX frame = gtk_frame_new(NULL);
     box = gtk_hbox_new(FALSE, 10);
     // XXX gtk_container_add(GTK_CONTAINER(frame), box);
-    gtk_widget_show(box);
     // XXX gtk_widget_show(frame);
 
     page_master.pm_notebook = gtk_notebook_new();
 
-    gtk_box_pack_start(GTK_BOX(box), page_master.pm_notebook, FALSE, FALSE,
+    gtk_box_pack_start(GTK_BOX(box), page_master.pm_notebook, FALSE, TRUE,
                        0);
     gtk_widget_set_name(label, "heading");
     if (verbose) {
@@ -676,7 +671,7 @@ setup_table(dev_stats_t * dstats, int num_dev, int verbose)
         attach_data_rows(i, dstats->ds_num_filters, verbose);
     }
 
-    gtk_widget_show(stats_table);
+    gtk_widget_show_all(stats_table);
 }
 
 
@@ -816,11 +811,12 @@ create_stats_win(ls_search_handle_t shandle, int verbose)
     if (stats_window != NULL) {
         return;
     }
-    verbose_mode = verbose;
+    //verbose_mode = verbose;
     /*
      * XXX 
      */
-    verbose_mode = 0;
+    //verbose_mode = 0;
+    verbose_mode = 1;
 
     /*
      * First we create a section that keeps track
