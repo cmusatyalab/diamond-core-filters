@@ -82,7 +82,7 @@ ff_get_block(ffile_t * fh, size_t size)
     /*
      * assert(!err && "lf_next_block"); 
      */
-    ASSERTX((fh->len = 0), !err);
+    ASSERTX((fh->len == 0), !err);
 
 done:
     return err;
