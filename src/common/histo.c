@@ -925,12 +925,10 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
     	pass = 0;
     	for (x=0; !done && x + hconfig->stride <= width; x += (float)hconfig->stride) {
 	    for (y = 0; !done && y + hconfig->stride <= height; y += (float)hconfig->stride) {
-
 		xsiz = hconfig->xsize;
 		ysiz = hconfig->ysize;
 		while (((x + xsiz) < width) && ((y + ysiz) < height)) {
 			histo_get_histo(ii, (int) x, (int) y, xsiz, ysiz, &h2);
-
                 	patch = TAILQ_FIRST(&hconfig->patchlist);
                 	while (!done && patch) {    /* foreach patch */
                     	d = histo_distance(&patch->histo, &h2);
