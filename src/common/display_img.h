@@ -1,6 +1,9 @@
 #ifndef _DISPLAY_IMG_H_
 #define _DISPLAY_IMG_H_	1
 
+#include "image_common.h"
+
+
 #define	MAX_SELECT	24
 
 /*

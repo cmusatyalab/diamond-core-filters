@@ -146,20 +146,19 @@ display_img::process_expose(GtkWidget *widget, GdkEventExpose *event)
 				   &event->area);
 
 	
-	printf("width %d hgt %d \n", width, height);
 	for(int i=0; i<DI_MAX_LAYERS; i++) {
 		int pht = gdk_pixbuf_get_height(di_pixbufs[i]);
 		assert(event->area.y + height <= pht);
 		assert(width >= 0);
 		assert(height >= 0);
 		gdk_pixbuf_render_to_drawable_alpha(di_pixbufs[i],
-						    widget->window,
-						    event->area.x, event->area.y,
-						    event->area.x, event->area.y,
-						    width, height,
-						    GDK_PIXBUF_ALPHA_FULL, 1, /* ignored */
-						    GDK_RGB_DITHER_MAX,
-						    0, 0);
+					    widget->window,
+					    event->area.x, event->area.y,
+					    event->area.x, event->area.y,
+					    width, height,
+					    GDK_PIXBUF_ALPHA_FULL, 1, /* ign */
+					    GDK_RGB_DITHER_MAX,
+					    0, 0);
 	}
     	pthread_mutex_unlock(&di_mutex);
 
@@ -431,7 +430,6 @@ display_img::set_image(RGBImage *img)
         int 	scale;
 	int	i;
 
-	printf("set image %p \n", img);
 	scale = (int)ceil(compute_scale(img, di_width, di_height));
         nimg = image_gen_image_scale(img, scale);
 
