@@ -290,10 +290,8 @@ make_gimage(RGBImage *img, int dest_width, int dest_height) {
 		exit(1);
 	}
 
-//	scaled_pbuf = gdk_pixbuf_scale_simple(pbuf, dest_width, dest_height, GDK_INTERP_BILINEAR);
 
 	GtkWidget *image;
-	//image = gtk_image_new_from_pixbuf(scaled_pbuf);
 	image = gtk_image_new_from_pixbuf(pbuf);
 	assert(image);
 
