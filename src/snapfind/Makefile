@@ -43,7 +43,7 @@ CLEAN_OTHERS += read_config.cc
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = fil_data2ii.c fil_face.c fil_file.c facedet.c
-SEARCHLET_SRCS += lib_filter_ext.c fil_image_tools.c image_tools.c 
+SEARCHLET_SRCS += fil_image_tools.c image_tools.c 
 SEARCHLET_SRCS += histo.c fil_histo.c merge_faces.c fil_tools.c 
 SEARCHLET_SRCS += texture_tools.c fil_regex.c
 SEARCHLET_SRCS += fil_data2cv.c fil_texture.cc 
@@ -52,7 +52,7 @@ SEARCHLET_SRCS += fil_synth.c face_tools.c
 
 
 SEARCHLET_OBJS = fil_data2ii.o fil_face.o fil_file.o facedet.o 
-SEARCHLET_OBJS += lib_filter_ext.o fil_image_tools.o image_tools.o histo.o 
+SEARCHLET_OBJS += fil_image_tools.o image_tools.o histo.o 
 SEARCHLET_OBJS += fil_histo.o merge_faces.o fil_tools.o texture_tools.o 
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o fil_texture.o 
 #SEARCHLET_OBJS += fil_arena.o arena_tools.o
