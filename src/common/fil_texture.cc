@@ -159,6 +159,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
   IplImage 	*dst_img = NULL;
   RGBImage      * rgb_img = NULL;
   off_t 		bsize;
+  float			min_simularity;
   lf_fhandle_t 	fhandle = 0; /* XXX */
   texture_args_t  *targs = (texture_args_t *)f_datap;
   bbox_list_t		blist;
@@ -199,7 +200,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
   }
   if (pass >= targs->min_matches) {
 
-    /* increase num_histo counter (for boxes in app)*/
+  	/* increase num_histo counter (for boxes in app)*/
     int num_histo = 0;
     bsize = sizeof(int);
     err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
@@ -214,6 +215,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
     ASSERT(!err);
 
 
+	min_simularity = 2.0;
 	i = num_histo;
 	while (!(TAILQ_EMPTY(&blist))) {
 		cur_box = TAILQ_FIRST(&blist);
@@ -223,6 +225,11 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
         param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
         param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
 		param.distance = cur_box->distance;
+
+		if ((1.0 - param.distance) < min_simularity) {
+			min_simularity = 1.0 - param.distance;
+		}
+
         strncpy(param.name, targs->name, PARAM_NAME_MAX);
         param.name[PARAM_NAME_MAX] = '\0';
         param.id = i;
@@ -239,8 +246,17 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
     num_histo = num_histo+pass;
     err = lf_write_attr(fhandle, ohandle, NUM_HISTO, sizeof(int), (char *)&num_histo);
     ASSERT(!err);
-  }
 
+  	if (min_simularity == 2.0) {
+		pass = 0;
+		printf("min unchange \n");
+  	} else {
+		pass = (int)(100.0 * min_simularity);
+		printf("min change \n");
+  	}
+  } else {
+	pass = 0;
+  }
 done:
   
   if (dst_img) cvReleaseImage(&dst_img);
