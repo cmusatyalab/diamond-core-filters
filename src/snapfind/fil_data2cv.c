@@ -86,11 +86,11 @@ f_get_rgba_ipl_Image(lf_obj_handle_t ohandle, int numout,
 
     pass = 1;
 
-  done:
+done:
 
     release_rgb_image(tmp_img);
 
-
+    ff_close(&file);
     return pass;
 
 }
@@ -168,7 +168,7 @@ f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, int numout,
 
     pass = 1;
 
-  done:
+done:
 
     if (tmp_img) {
         lf_free_buffer(fhandle, (char *) tmp_img);
@@ -186,153 +186,3 @@ f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, int numout,
 }
 
 
-/*
- * int 
- */
-/*
- * f_makecvii(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t *ohandles, 
- */
-/*
- * int numarg, char **args) 
- */
-/*
- * { 
- */
-/*
- * IplImage *img, *sum, *sum2; 
- */
-/*
- * //ii_image_t *img, *img2; 
- */
-/*
- * ffile_t file; 
- */
-/*
- * int err = 0, pass = 1; 
- */
-/*
- * lf_fhandle_t fhandle = 0; 
- */
-/*
- * int width, height, headerlen; 
- */
-
-/*
- * fprintf(stderr, "\nf_integrate: enter\n"); 
- */
-
-/*
- * /\* read the header and figure out the dimensions *\/ 
- */
-/*
- * ff_open(fhandle, ohandle, &file); 
- */
-/*
- * err = pgm_read_header(&file, &width, &height, &headerlen); 
- */
-/*
- * FILTER_ASSERT(!err, "read header"); 
- */
-/*
- * fprintf(stderr, "got image: width=%d, height=%d\n", width, height); 
- */
-
-/*
- * /\* save some attribs *\/ 
- */
-/*
- * lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int), (char
- * *)&headerlen); 
- */
-/*
- * lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *)&height); 
- */
-/*
- * lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *)&width); 
- */
-
-/*
- * /\* create image to hold the data *\/ 
- */
-/*
- * img = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 1); 
- */
-/*
- * FILTER_ASSERT(img, "cvCreateImage"); 
- */
-
-/*
- * /\* read the data into img *\/ 
- */
-/*
- * err = pgm_read_data(&file, img->imageData, width, height); 
- */
-/*
- * FILTER_ASSERT(!err, "read data"); 
- */
-
-/*
- * /\* create image for integral, sq-integral *\/ 
- */
-/*
- * sum = cvCreateImage(cvSize(width, height), IPL_DEPTH_32S, 1); 
- */
-/*
- * FILTER_ASSERT(sum, "cvCreateImage"); 
- */
-/*
- * sum2 = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 1); 
- */
-/*
- * FILTER_ASSERT(sum, "cvCreateImage"); 
- */
-
-/*
- * /\* compute integrals *\/ 
- */
-/*
- * cvIntegral(img, sum, sum2, NULL); 
- */
-
-/*
- * #if 0 
- */
-/*
- * /\* release base image *\/ 
- */
-/*
- * cvReleaseImage(&img); 
- */
-/*
- * #else 
- */
-/*
- * /\* save img as an attribute *\/ 
- */
-/*
- * lf_write_attr(fhandle, ohandle, CV_IMAGE, sizeof(char*), (char *)img); 
- */
-/*
- * #endif 
- */
-/*
- * lf_write_attr(fhandle, ohandle, II_DATA, sizeof(char*), (char *)&sum); /\* 
- * XXX *\/ 
- */
-/*
- * lf_write_attr(fhandle, ohandle, II_SQ_DATA, sizeof(char*), (char *)&sum2); 
- * /\* XXX *\/ 
- */
-
-/*
- * done: 
- */
-/*
- * fprintf(stderr, "f_integrate: done\n\n"); 
- */
-/*
- * return pass; 
- */
-/*
- * } 
- */

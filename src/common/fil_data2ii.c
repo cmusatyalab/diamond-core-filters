@@ -278,11 +278,6 @@ f_eval_integrate(lf_obj_handle_t ohandle, int numout,
     /*
      * read the header and figure out the dimensions 
      */
-    // ff_open(fhandle, ohandle, &file);
-    // err = pnm_file_read_header(&file, &width, &height, &magic,
-    // &headerlen);
-    // FILTER_ASSERT(!err, "read header");
-    // FILTER_ASSERT(magic == IMAGE_PGM, "PGM");
 
     lf_log(fhandle, LOGL_TRACE, "got image: width=%d, height=%d\n", width,
            height);

@@ -24,7 +24,7 @@ pnm_file_read_header(ffile_t * file,
 
     ff_consume(file, *headerlen);
 
-  done:
+done:
     return err;
 }
 
@@ -168,7 +168,7 @@ pnm_file_read_data(ffile_t * file, RGBImage * img)
 RGBImage *
 get_rgb_img(lf_obj_handle_t ohandle)
 {
-    RGBImage       *img;
+    RGBImage       *img = NULL;
     int             err = 0,
         pass = 1;
     lf_fhandle_t    fhandle = 0;
@@ -222,9 +222,9 @@ get_rgb_img(lf_obj_handle_t ohandle)
          * should close file as well XXX 
          */
     }
-    return(img);
 
 done:
-    return(NULL);
+	ff_close(&file);
+    return(img);
    
 }
