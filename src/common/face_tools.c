@@ -83,8 +83,6 @@ face_scan_image(ii_image_t *ii, ii2_image_t * ii2, fconfig_fdetect_t *fconfig,
 	xsiz = fconfig->xsize;
 	ysiz = fconfig->ysize;
 
-	printf("%d > %d \n", fconfig->lev1, fconfig->lev2);
-
 	for (scale = 1; got_work; scale *= fconfig->scale_mult) {
 		/*
 	 	 * each time we change the scale, readjust the feature table 
