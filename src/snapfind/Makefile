@@ -30,7 +30,7 @@ LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -ltools -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -lopencv 
+LIBS += -lopencv  -lglib
 
 #
 LIBDIR += -L../../lib/libsearchlet -L../../lib/libfilter 
@@ -155,7 +155,7 @@ clean-targets:	clean-experiments
 default: $(TARGETS)
 
 snap_searchlet.so: $(SEARCHLET_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS)  -lm -Wl,-static -lopencv 
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS)  -lm -Wl,-static -lopencv  -lglib
 
 libssearch.a: $(SEARCHLET_OBJS)
 	$(AR) r $@ $(SEARCHLET_OBJS)

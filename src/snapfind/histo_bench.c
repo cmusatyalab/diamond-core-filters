@@ -20,11 +20,7 @@ static unsigned long long
 read_cycle()
 {
         unsigned long long      foo;
-                                                                               
-                                                                               
         rdtscll(foo);
-                                                                               
-                                                                               
         return(foo);
 }
 
@@ -40,7 +36,6 @@ do_test(RGBImage *img)
 	HistoII *		ii;
  	bbox_list_t            blist;
 	TAILQ_INIT(&blist);
-
 
         hconfig.name = strdup("foo");
         hconfig.req_matches = 1;        /* XXX */
@@ -67,11 +62,14 @@ do_test(RGBImage *img)
 
 	start = read_cycle();
 	ii = histo_get_ii(&hconfig, img);
-        pass =  histo_scan_image(hconfig.name, img, NULL, &hconfig,
+	stop = read_cycle();
+	printf("ii time %lld \n", (stop - start));
+
+	start = read_cycle();
+        pass =  histo_scan_image(hconfig.name, img, ii, &hconfig,
                 INT_MAX /* XXX */, &blist);
 	stop = read_cycle();
-
-	printf("total time %lld \n", (stop - start));
+	printf("scan time %lld \n", (stop - start));
 }
 
 
