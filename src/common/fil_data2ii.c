@@ -9,9 +9,10 @@
 #include <ctype.h>
 
 #include "filter_api.h"
-#include "fil_file.h"
-#include "fil_image_tools.h"
+//#include "fil_file.h"
+//#include "fil_image_tools.h"
 #include "face.h"
+#include "rgb.h"
 #include "fil_data2ii.h"
 #include "fil_tools.h"
 #include "fil_assert.h"
