@@ -367,10 +367,10 @@ enable_image_control(image_control_t *img_cntrl)
 
 
 static void
-build_search_from_gui(topo_region_t *main_region) 
+get_gid_list(gid_list_t *main_region) 
 {
-
-	int i;
+	int	i;
+	int j;
 	/* 
 	 * figure out the args and build message
 	 */
@@ -380,14 +380,12 @@ build_search_from_gui(topo_region_t *main_region)
 	  if(collections[i].active) {
 	    int err;
 	    int num_gids = MAX_ALBUMS;
-	    groupid_t gids[MAX_ALBUMS], *gptr;
+	    groupid_t gids[MAX_ALBUMS];
 	    err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
 	    assert(!err);
-	    gptr = gids;
-	    while(num_gids) {
-	      main_region->gids[main_region->ngids++] = *gptr++;
-	      num_gids--;
-	    }
+		for (j=0; j < num_gids; j++) {
+	      main_region->gids[main_region->ngids++] = gids[i];
+		}
 	  }
 	}
 }
@@ -432,7 +430,7 @@ ss_add_dep(snap_search *dep)
  */
 
 char *
-build_filter_spec(char *tmp_file, topo_region_t *main_region)
+build_filter_spec(char *tmp_file)
 {
 	char * 		tmp_storage = NULL;
 	FILE *		fspec;	
@@ -916,8 +914,8 @@ cb_start_search(GtkButton* item, gpointer data)
 	clear_thumbnails();
 
 	/* another global, ack!! this should be on the heap XXX */
-	static topo_region_t main_region;
-	build_search_from_gui(&main_region);
+	static gid_list_t gid_list;
+	get_gid_list(&gid_list);
 
 	pthread_mutex_lock(&display_mutex);
 	image_controls.cur_op = CNTRL_NEXT;
@@ -940,7 +938,7 @@ cb_start_search(GtkButton* item, gpointer data)
 		exit(1);
 	}
 	message->type = START_SEARCH;
-	message->data = (void *)&main_region;
+	message->data = (void *)&gid_list;
 	err = ring_enq(to_search_thread, message);
 	if (err) {
 		printf("XXX failed to enq message \n");
@@ -973,7 +971,7 @@ static void
 cb_save_spec_to_filename(GtkWidget *widget, gpointer user_data) 
 {
   GtkWidget *file_selector = (GtkWidget *)user_data;
-  topo_region_t 	main_region;
+  gid_list_t 	gid_list;
   const gchar *selected_filename;
   char buf[BUFSIZ];
 
@@ -981,10 +979,10 @@ cb_save_spec_to_filename(GtkWidget *widget, gpointer user_data)
 
   selected_filename = gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_selector));
  
-  build_search_from_gui(&main_region);
+  get_gid_list(&gid_list);
   printf("saving spec to: %s\n", selected_filename);
   sprintf(buf, "%s", selected_filename);
-  build_filter_spec(buf, &main_region);
+  build_filter_spec(buf);
 
   GUI_CALLBACK_LEAVE();
 }

@@ -23,17 +23,10 @@ typedef struct main_scape_t {
 
 /* this struct is used to send info from the GUI to the search
  * thread.  */
-typedef	struct topo_region {
-	int 			min_faces;
-	int			face_levels;
-
-	int			nscapes;
-	main_scape_t		scapes[MAX_SCAPE];
-//	int                     req_scapes;
+typedef	struct gid_list {
         int                     ngids;
         groupid_t               gids[MAX_ALBUMS];
-        char                    search_string[MAX_STRING];
-} topo_region_t;
+} gid_list_t;
 
 
 typedef enum message_ops {
@@ -80,8 +73,8 @@ extern "C" {
 #endif
                                                                                
 void * sfind_search_main(void *);
-char *build_filter_spec(char *file, topo_region_t *main_region);
-void do_search(topo_region_t *main_region, char *opt_filename);
+char *build_filter_spec(char *file);
+void do_search(gid_list_t *main_region, char *opt_filename);
 
 #ifdef __cplusplus
 }
