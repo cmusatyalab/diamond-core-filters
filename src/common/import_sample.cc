@@ -569,7 +569,7 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	idx = (int) g_object_get_data(G_OBJECT(active_item), "user data");
 	stype = (search_types_t )idx;
    
-	sname =  gtk_entry_get_text(GTK_ENTRY(import_window.search_name));
+	sname = gtk_entry_get_text(GTK_ENTRY(import_window.search_name));
 	if (strlen(sname) < 1) {
 		show_popup_error("Filter name", "Please provide a name", import_window.window);
 		GUI_CALLBACK_LEAVE();
