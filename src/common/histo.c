@@ -16,10 +16,10 @@
  */
 
 /* Accessor functions to histogram */
-inline double   histo_get(const Histo * h, int ri, int gi, int bi);
+inline float   histo_get(const Histo * h, int ri, int gi, int bi);
 
 /* Like histo_set() except val is added to current contents of that bin */
-inline void     histo_add(Histo * h, int ri, int gi, int bi, double val);
+inline void     histo_add(Histo * h, int ri, int gi, int bi, float val);
 
 void            histo_print(const Histo * h);
 
@@ -65,7 +65,7 @@ get_index(int ri, int gi, int bi)
     return (ri * HBINS * HBINS + gi * HBINS + bi);
 }
 
-inline double
+inline float
 histo_get(const Histo * h, int ri, int gi, int bi)
 {
     return h->data[get_index(ri, gi, bi)];
@@ -74,14 +74,14 @@ histo_get(const Histo * h, int ri, int gi, int bi)
 
 
 inline void
-histo_add(Histo * h, int ri, int gi, int bi, double val)
+histo_add(Histo * h, int ri, int gi, int bi, float val)
 {
     h->data[get_index(ri, gi, bi)] += val;
     h->weight += val;
 }
 
 inline void
-histo_remove(Histo * h, int ri, int gi, int bi, double val)
+histo_remove(Histo * h, int ri, int gi, int bi, float val)
 {
     h->data[get_index(ri, gi, bi)] -= val;
     h->weight -= val;
@@ -90,7 +90,7 @@ histo_remove(Histo * h, int ri, int gi, int bi, double val)
 void
 histo_clear(Histo * h)
 {
-    double         *d = h->data;
+    float         *d = h->data;
     int             i;
     for (i = 0; i < HBINS * HBINS * HBINS; i++) {
         *d++ = 0.0;
@@ -108,7 +108,7 @@ histo_print(const Histo * h)
     for (ri = 0; ri < HBINS; ri++) {
         for (gi = 0; gi < HBINS; gi++) {
             for (bi = 0; bi < HBINS; bi++) {
-                double          val = histo_get(h, ri, gi, bi);
+                float          val = histo_get(h, ri, gi, bi);
                 printf("bin[%d,%d,%d] = %f\n", ri, gi, bi, val);
             }
         }
@@ -145,7 +145,7 @@ histo_simple_remove(Histo * h, int r, int g, int b)
 
 #define	HII_SHIFT 	(8 - HBIT)
 #define HII_MASK 	((1<<HII_SHIFT) - 1)
-#define	HII_SCALE	((double)1.0/(double)(1<<HII_SHIFT))
+#define	HII_SCALE	((float)1.0/(float)(1<<HII_SHIFT))
 
 void
 histo_interpolated_insert(Histo * h, int r, int g, int b)
@@ -157,10 +157,10 @@ histo_interpolated_insert(Histo * h, int r, int g, int b)
                     gihigh,
                     bilow,
                     bihigh;
-    double          rfraclow,
+    float          rfraclow,
                     gfraclow,
                     bfraclow;
-    double          val;
+    float          val;
     assert(r >= 0 && r < 256);
     assert(g >= 0 && g < 256);
     assert(b >= 0 && b < 256);
@@ -173,9 +173,9 @@ histo_interpolated_insert(Histo * h, int r, int g, int b)
     assert((bi >= 0) && (bi < HBINS));
 
     // The fractional value is given by the low-order bits
-    double          rfrac = (r & HII_MASK) * HII_SCALE;
-    double          gfrac = (g & HII_MASK) * HII_SCALE;
-    double          bfrac = (b & HII_MASK) * HII_SCALE;
+    float          rfrac = (r & HII_MASK) * HII_SCALE;
+    float          gfrac = (g & HII_MASK) * HII_SCALE;
+    float          bfrac = (b & HII_MASK) * HII_SCALE;
     assert((rfrac >= 0.0) && (rfrac < 1.0));
     assert((gfrac >= 0.0) && (gfrac < 1.0));
     assert((bfrac >= 0.0) && (bfrac < 1.0));
@@ -244,6 +244,110 @@ histo_interpolated_insert(Histo * h, int r, int g, int b)
 }
 
 void
+lh_histo_interpolated_insert(Histo * h, int r, int g, int b)
+{
+    assert(h);
+    int             rilow,
+                    rihigh,
+                    gilow,
+                    gihigh,
+                    bilow,
+                    bihigh;
+    float          rfraclow,
+                    gfraclow,
+                    bfraclow;
+    float          val;
+    assert(r >= 0 && r < 256);
+    assert(g >= 0 && g < 256);
+    assert(b >= 0 && b < 256);
+
+
+    int             ri = r >> HII_SHIFT;
+    int             gi = g >> HII_SHIFT;
+    int             bi = b >> HII_SHIFT;
+    assert((ri >= 0) && (ri < HBINS));
+    assert((gi >= 0) && (gi < HBINS));
+    assert((bi >= 0) && (bi < HBINS));
+
+    // The fractional value is given by the low-order bits
+    float          rfrac = (r & HII_MASK) * HII_SCALE;
+    float          gfrac = (g & HII_MASK) * HII_SCALE;
+    float          bfrac = (b & HII_MASK) * HII_SCALE;
+    assert((rfrac >= 0.0) && (rfrac < 1.0));
+    assert((gfrac >= 0.0) && (gfrac < 1.0));
+    assert((bfrac >= 0.0) && (bfrac < 1.0));
+
+
+    for (red = red_lkup[r].low; red < red_lkup[r].high; red++) {
+    	for (green = green_lkup[g].low; green < green_lkup[g].high; green++) {
+    		for (blue = blue_lkup[b].low; blue < blue_lkup[b].high; green++) {
+
+
+    }
+
+
+    rilow = ri * HBINS * HBINS;
+    rihigh = (ri + 1) * HBINS * HBINS;
+    assert(is_within_bounds(rilow));
+    assert(is_within_bounds(rihigh));
+
+    gilow = gi * HBINS;
+    gihigh = (gi + 1) * HBINS;
+    assert(is_within_bounds(gilow));
+    assert(is_within_bounds(gihigh));
+
+    bilow = bi;
+    bihigh = (bi + 1);
+    assert(is_within_bounds(bilow));
+    assert(is_within_bounds(bihigh));
+
+
+    rfraclow = 1.0 - rfrac;
+    gfraclow = 1.0 - gfrac;
+    bfraclow = 1.0 - bfrac;
+
+    val = rfraclow * gfraclow * bfraclow;
+    assert(is_within_bounds(rilow + gilow + bilow));
+    h->data[rilow + gilow + bilow] += val;
+    h->weight += val;
+
+    val = rfraclow * gfraclow * bfrac;
+    assert(is_within_bounds(rilow + gilow + bihigh));
+    h->data[rilow + gilow + bihigh] += val;
+    h->weight += val;
+
+    val = rfraclow * gfrac * bfraclow;
+    assert(is_within_bounds(rilow + gihigh + bilow));
+    h->data[rilow + gihigh + bilow] += val;
+    h->weight += val;
+
+    val = rfraclow * gfrac * bfrac;
+    assert(is_within_bounds(rilow + gihigh + bihigh));
+    h->data[rilow + gihigh + bihigh] += val;
+    h->weight += val;
+
+    val = rfrac * gfraclow * bfraclow;
+    assert(is_within_bounds(rihigh + gilow + bilow));
+    h->data[rihigh + gilow + bilow] += val;
+    h->weight += val;
+
+    val = rfrac * gfraclow * bfrac;
+    assert(is_within_bounds(rihigh + gilow + bihigh));
+    h->data[rihigh + gilow + bihigh] += val;
+    h->weight += val;
+
+    val = rfrac * gfrac * bfraclow;
+    assert(is_within_bounds(rihigh + gihigh + bilow));
+    h->data[rihigh + gihigh + bilow] += val;
+    h->weight += val;
+
+    val = rfrac * gfrac * bfrac;
+    assert(is_within_bounds(rihigh + gihigh + bihigh));
+    h->data[rihigh + gihigh + bihigh] += val;
+    h->weight += val;
+
+}
+void
 histo_interpolated_remove(Histo * h, int r, int g, int b)
 {
     assert(h);
@@ -253,10 +357,10 @@ histo_interpolated_remove(Histo * h, int r, int g, int b)
                     gihigh,
                     bilow,
                     bihigh;
-    double          rfraclow,
+    float          rfraclow,
                     gfraclow,
                     bfraclow;
-    double          val;
+    float          val;
     assert(r >= 0 && r < 256);
     assert(g >= 0 && g < 256);
     assert(b >= 0 && b < 256);
@@ -269,9 +373,9 @@ histo_interpolated_remove(Histo * h, int r, int g, int b)
     assert((bi >= 0) && (bi < HBINS));
 
     // The fractional value is given by the low-order bits
-    double          rfrac = (r & HII_MASK) * HII_SCALE;
-    double          gfrac = (g & HII_MASK) * HII_SCALE;
-    double          bfrac = (b & HII_MASK) * HII_SCALE;
+    float          rfrac = (r & HII_MASK) * HII_SCALE;
+    float          gfrac = (g & HII_MASK) * HII_SCALE;
+    float          bfrac = (b & HII_MASK) * HII_SCALE;
     assert((rfrac >= 0.0) && (rfrac < 1.0));
     assert((gfrac >= 0.0) && (gfrac < 1.0));
     assert((bfrac >= 0.0) && (bfrac < 1.0));
@@ -418,7 +522,7 @@ histo_update_subimage(Histo * h, const RGBImage * img,
 void
 normalize_histo(Histo * h1)
 {
-    double          weight = h1->weight;
+    float          weight = h1->weight;
     int             i;
     for (i = 0; i < HBINS * HBINS * HBINS; i++) {
         h1->data[i] = h1->data[i] / weight;
@@ -427,7 +531,7 @@ normalize_histo(Histo * h1)
 }
 
 // L1 distance over histograms
-double
+float
 histo_distance(const Histo * norm_hist, const Histo * h2)
 {
     int             i;
@@ -436,13 +540,13 @@ histo_distance(const Histo * norm_hist, const Histo * h2)
         fprintf(stderr, "w1=%f, w2=%f\n", norm_hist->weight, h2->weight);
         return (5000.0);        /* XXX some large number */
     }
-    double          weight = h2->weight;
+    float          weight = h2->weight;
     if (weight == 0) {
         return 0.0;
     }
-    double          dist = 0.0;
-    const double   *d1 = norm_hist->data;
-    const double   *d2 = h2->data;
+    float          dist = 0.0;
+    const float   *d1 = norm_hist->data;
+    const float   *d2 = h2->data;
     for (i = 0; i < HBINS * HBINS * HBINS; i++) {
         dist += fabs((*d1++ * weight) - *d2++);
     }
@@ -450,17 +554,17 @@ histo_distance(const Histo * norm_hist, const Histo * h2)
 }
 
 int
-histo_distance_lt(const Histo * h1, const Histo * h2, const double d)
+histo_distance_lt(const Histo * h1, const Histo * h2, const float d)
 {
     assert(h1->weight == h2->weight);   // Not bothering to normalize
-    const double    weight = h1->weight;
+    const float    weight = h1->weight;
     if (weight == 0) {
         return 1;
     }
-    double          dist = 0.0;
-    const double   *d1 = h1->data;
-    const double   *d2 = h2->data;
-    const double    threshold = d * weight / 0.5;
+    float          dist = 0.0;
+    const float   *d1 = h1->data;
+    const float   *d2 = h2->data;
+    const float    threshold = d * weight / 0.5;
     int             i;
     for (i = 0; i < HBINS * HBINS * HBINS; i++) {
         dist += fabs(*d1++ - *d2++);
@@ -478,8 +582,8 @@ void
 histo_accum(Histo * h1, const Histo * h2)
 {
     const int       nbins = HBINS * HBINS * HBINS;
-    double         *d1;
-    const double   *d2;
+    float         *d1;
+    const float   *d2;
     int             i;
     d1 = h1->data;
     d2 = h2->data;
@@ -494,8 +598,8 @@ void
 histo_lessen(Histo * h1, const Histo * h2)
 {
     const int       nbins = HBINS * HBINS * HBINS;
-    double         *d1;
-    const double   *d2;
+    float         *d1;
+    const float   *d2;
     int             i;
 
     d1 = h1->data;
@@ -635,7 +739,6 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
                 old_y = (int) y;
             }
             for (x = 0; !done && x + xsiz <= width; x += (float)hconfig->stride) {
-			printf("x %d y %d xsize %d ysz %d \n", (int)x, (int)y, (int)xsiz, (int)ysiz);
                 inspected++;
                 // histo_print_ii(ii);
                 if (ii) {

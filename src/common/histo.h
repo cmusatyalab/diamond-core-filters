@@ -19,8 +19,8 @@
 /* static const int HBINS = ((1<<HBIT)+1); */
 
 typedef struct {
-  double data[HBINS*HBINS*HBINS];	// 3-D array in a flat format
-  double weight;			// number of points in histogram
+  float data[HBINS*HBINS*HBINS];	// 3-D array in a flat format
+  float weight;			// number of points in histogram
 } Histo;
 /* nb: there is code that relies on the above structure; see patch_spec_*_args() */
 
@@ -38,7 +38,7 @@ typedef struct patch_t {
   Histo     histo;
   char          name[COMMON_MAX_PATH];
   uint32_t         minx, miny;
-  double        threshold;  /* max distance allowed to declare similar */
+  float        threshold;  /* max distance allowed to declare similar */
   TAILQ_ENTRY(patch_t) link;
 } patch_t;
                                                                                       
@@ -53,12 +53,12 @@ typedef enum {
 typedef struct histo_config {
     char *  name;       /* name of this search */
     int req_matches;    /* num pathes that must match */
-    double  scale;      /* scale for search */
+    float  scale;      /* scale for search */
     int   xsize;      /* patch x size */
     int   ysize;      /* patch y size */
     int stride;         /* x and y strides */
     int bins;           /* number of histo bins */
-    double  simularity; /* simularity metric */
+    float  simularity; /* simularity metric */
     int 		distance_type;  /* XXX fix this */
     int 		num_patches;    /* num patches to match */
     histo_type_t	type;	/* type of histogram */
@@ -83,10 +83,10 @@ void histo_update_subimage(Histo* h, const RGBImage* i, int oldx, int oldy,
 	   int xstart, int ystart, int xsize, int ysize, histo_type_t type);
 
 /* Returns the distance between two histogram distributions */
-double histo_distance(const Histo* h1, const Histo* h2);
+float histo_distance(const Histo* h1, const Histo* h2);
 
 /* returns true if the distance between two histograms is less than d */
-int histo_distance_lt(const Histo* h1, const Histo* h2, double d);
+int histo_distance_lt(const Histo* h1, const Histo* h2, float d);
 
 /* h1 += h2 */
 void histo_accum(Histo *h1, const Histo *h2);

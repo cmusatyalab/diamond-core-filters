@@ -50,6 +50,7 @@ do_test(RGBImage *img)
         hconfig.bins = 3;   /* XXX */
         hconfig.simularity = 0.80;
         hconfig.distance_type = 0;
+        hconfig.type = HISTO_INTERPOLATED;
                 
         TAILQ_INIT(&hconfig.patchlist);
         hconfig.num_patches = 1;
@@ -71,14 +72,28 @@ do_test(RGBImage *img)
 	printf("total time %lld \n", (stop - start));
 }
 
+
+usage()
+{
+	fprintf(stderr, "histo_bench <ppm image> ... \n");
+}
 int
 main(int argc, char **argv)
 {
 	RGBImage *	img;
+	int		i;
+	
+	if (argc < 2) {
+		usage();
+		exit(1);
+	}
 
-	img = create_rgb_image(argv[1]);
-	assert(img);
+	for (i=1; i < argc; i++) {
+		img = create_rgb_image(argv[i]);
+		assert(img);
 
-	do_test(img);
+		do_test(img);
+		release_rgb_image(img);
+	}
 
 }
