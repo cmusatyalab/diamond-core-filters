@@ -5,12 +5,11 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
-#include "histo.h"
+//#include "histo.h"
 #include "image_tools.h"
 #include "texture_tools.h"
 #include "img_search.h"
-#include "gui_thread.h"
-#include "snapfind.h"
+//#include "snapfind.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -97,9 +96,7 @@ texture_search::handle_config(config_types_t conf_type, char *data)
 static void 
 cb_update_menu_select(GtkWidget* item, GtkUpdateType  policy)
 {
-        GUI_CALLBACK_ENTER();
 		/* XXXX do something ?? */
-		GUI_CALLBACK_LEAVE();
 } 
 
 
@@ -168,10 +165,8 @@ cb_close_edit_window(GtkWidget* item, gpointer data)
 {
 	texture_search *	search;
 
-    //GUI_CALLBACK_ENTER();
 	search = (texture_search *)data;
 	search->close_edit_win();
-    //GUI_CALLBACK_LEAVE();
 }
 
 
@@ -193,9 +188,7 @@ static void
 edit_search_done_cb(GtkButton *item, gpointer data)
 {
 	GtkWidget * widget = (GtkWidget *)data;
-	GUI_CALLBACK_ENTER();
 	gtk_widget_destroy(widget);
-	GUI_CALLBACK_LEAVE();
 }
 
 

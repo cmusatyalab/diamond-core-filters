@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <assert.h>
+#include <errno.h>
 #include "queue.h"
 #include "rgb.h"
 #include "histo.h"
