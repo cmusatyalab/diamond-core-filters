@@ -37,3 +37,6 @@ User level config file
 Import functions autoname conflict resolution (add _v# or something)
 
 Scale for textures
+
+Talk to Rahul about different patch sizes for added texture
+patches.  Currently crashes if they are not regular.

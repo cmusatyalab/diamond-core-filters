@@ -7,6 +7,7 @@
 #include "queue.h"
 #include "fil_histo.h"
 #include "snap_search.h"
+#include "search_support.h"
 
 static char *eat_token(char *tok);
 static void new_search(char *tok);
@@ -105,11 +106,14 @@ new_search(char *str)
 	}
 
 	if (strcmp(type, "rgb_histogram") == 0) {
-		cur_search = new rgb_histo_search(name, "RGB Histogram");
+		cur_search = create_search(RGB_HISTO_SEARCH, name);
+		assert(cur_search != NULL);
 	} else if (strcmp(type, "texture") == 0) {
-		cur_search = new texture_search(name, "Texture Search");
+		cur_search = create_search(TEXTURE_SEARCH, name);
+		assert(cur_search != NULL);
 	} else if (strcmp(type, "vj_face_search") == 0) {
-		cur_search = new vj_face_search(name, "VJ Face Detect");
+		cur_search = create_search(FACE_SEARCH, name);
+		assert(cur_search != NULL);
 	} else {
 		printf("uknown type: <%s> \n", type);
 		exit(1);

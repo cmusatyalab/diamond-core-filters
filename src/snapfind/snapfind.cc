@@ -46,6 +46,8 @@
 #include "texture_tools.h"
 #include "snap_search.h"
 #include "sfind_search.h"
+#include "snap_popup.h"
+#include "snapfind.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -54,6 +56,9 @@ static const int TABLE_ROWS = 2;
 static int default_min_faces = 0;
 static int default_face_levels = 37;
 
+
+thumblist_t thumbnails = TAILQ_HEAD_INITIALIZER(thumbnails);
+thumbnail_t *cur_thumbnail = NULL;
 
 /* XXX move these later to common header */
 #define	TO_SEARCH_RING_SIZE		512
@@ -68,6 +73,9 @@ GtkTooltips *tooltips = NULL;
 char *read_spec_filename = NULL;
 
 
+
+/* XXXX fix this */ 
+GtkWidget *config_table;
 
 typedef struct export_threshold_t {
   char *name;
@@ -101,51 +109,24 @@ static struct {
 /* 
  * scapes entries. sorta contant
  */
-/* XXXX help */
+/* XXXX fix this */
 #define	MAX_SEARCHES	64
-static snap_search * snap_searches[MAX_SEARCHES];
-static int num_searches = 0;
+snap_search * snap_searches[MAX_SEARCHES];
+int num_searches = 0;
 
 
 static lf_fhandle_t fhandle = 0;	/* XXX */
 
 
-/* ******************************************************************************** */
+/**********************************************************************/
 
 /*
  * state required to support popup window to show fullsize img
  */
 
-enum layers_t {
-	IMG_LAYER = 0,
-	RES_LAYER,
-	HIGHLIGHT_LAYER,
-	SELECT_LAYER,
-	MAX_LAYERS
-};
+pop_win_t	 popup_window = {NULL, NULL, NULL};
 
 
-struct {
-  GtkWidget 	*window;
-  image_hooks_t   *hooks;
-  GtkWidget 	*drawing_area;
-  GdkPixbuf       *pixbufs[MAX_LAYERS];
-  RGBImage        *layers[MAX_LAYERS];
-  GtkWidget       *statusbar;
-  GtkWidget 	*scroll;
-  GtkWidget 	*image_area;
-  GtkWidget 	*face_cb_area;
-  GtkWidget 	*histo_cb_area;
-  int             nfaces;
-  GtkWidget *select_button;
-  int x1, y1, x2, y2;
-  int button_down;
-  GtkWidget *scape_entry;
-  GtkWidget *color, *texture;
-  bbox_t selections[MAX_SELECT];
-  int    nselections;
-
-} popup_window = {NULL, NULL, NULL};
 
 /* ********************************************************************** */
 
@@ -154,35 +135,6 @@ struct {
 struct {
   int total_seen, total_marked;
 } user_measurement = { 0, 0 };
-
-/* ********************************************************************** */
-static const int THUMBSIZE_X = 200;
-static const int THUMBSIZE_Y = 150;
-
-/* this is a misnomer; the thumbnail keeps everything we want to know
- * about an image */
-typedef struct thumbnail_t {
-	RGBImage 	*img;	/* the thumbnail image */
-	GtkWidget 	*viewport; /* the viewport that contains the image */
-	GtkWidget 	*gimage; /* the image widget */
-	TAILQ_ENTRY(thumbnail_t) link;
-	char 		name[MAX_NAME];	/* name of image */
-	int		nboxes;	/* number of histo regions */
-	int             nfaces;	/* number of faces */
-	//ls_obj_handle_t ohandle;
-	//RGBImageRC	*fullimage; /* the full-sized image */
-	image_hooks_t   *hooks;
-        int              marked; /* if the user 'marked' this thumbnail */
-        GtkWidget       *frame;
-} thumbnail_t;
-
-typedef TAILQ_HEAD(thumblist_t, thumbnail_t) thumblist_t;
-static thumblist_t thumbnails = TAILQ_HEAD_INITIALIZER(thumbnails);
-static thumbnail_t *cur_thumbnail = NULL;
-
-static void clear_thumbnails();
-/* ******************************************************************************** */
-
 
 
 typedef enum {
@@ -235,17 +187,6 @@ int		dobj_cnt = 0;
 static pthread_t	display_thread_info;
 static int		display_thread_running = 0;
 
-/* 
- * global state used for highlighting (running filters locally)
- */
-static struct {
-	pthread_mutex_t mutex;
-	int 		thread_running;
-	pthread_t 	thread;
-	GtkWidget       *progress_bar;
-} highlight_info = { PTHREAD_MUTEX_INITIALIZER, 0 };
-
-
 /*
  * Display the cond variables.
  */
@@ -260,11 +201,9 @@ static pthread_mutex_t	thumb_mutex = PTHREAD_MUTEX_INITIALIZER;
  * some prototypes 
  */
 
-static region_t draw_bounding_box(RGBImage *img, int scale, 
+extern region_t draw_bounding_box(RGBImage *img, int scale, 
 				  lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
 				  RGBPixel color, RGBPixel mask, char *fmt, int i);
-static GtkWidget *describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
-					int i, GtkWidget **button);
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
 
 /* from read_config.l */
@@ -273,11 +212,7 @@ extern int read_search_config(char *fname, snap_search **list, int *num);
 /* from face_search.c */
 extern void drain_ring(ring_data_t *ring);
 
-static void read_histo_tabs(fsp_histo_t *fsp, int i);
-static void *histo_scan_main(void *ptr);
 static void highlight_progress_f(void *widget, int val, int total);
-static void kill_highlight_thread(int run);
-static void cb_draw_res_layer(GtkWidget *widget, gpointer ptr);
 
 
 /* ********************************************************************** */
@@ -361,33 +296,6 @@ make_gimage(RGBImage *img, int dest_width, int dest_height) {
 }
 
 
-/* 
- * read i-th entry values from widgets into fsp struct.
- */
-static void
-read_histo_tabs(fsp_histo_t *fsp, int i) 
-{
-	double d;
-
-	GUI_THREAD_CHECK(); 
-
-	/* negate */
-#ifdef	XXX_NOW
-	fsp->negate = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(scapes[i].notb));
-	/* distance */
-	d = (100.0 - gtk_range_get_value(GTK_RANGE(scapes[i].slider))) / 100;
-	if(fsp->negate) {
-		fsp->ndistance = d;
-	} else {
-		fsp->pdistance = d;
-	}
-
-	/* dx, dy */
-	fsp->dx = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(scapes[i].xstride));
-	fsp->dy = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(scapes[i].ystride));
-	
-#endif
-}
 
 
 static void
@@ -453,40 +361,43 @@ enable_image_control(image_control_t *img_cntrl)
 }
 
 
-/* 
- * draw a bounding box into image at scale. bbox is read from object(!)
- */
-static region_t
-draw_bounding_box(RGBImage *img, int scale, 
-		  lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
-		  RGBPixel color, RGBPixel mask, char *fmt, int i) {
-	search_param_t 	param;	
-	int 		err;
-	bbox_t		bbox;
 
-	err = read_param(fhandle, ohandle, fmt, &param, i);
-				
-	bbox.min_x = param.bbox.xmin;
-	bbox.min_y = param.bbox.ymin;
-	bbox.max_x = param.bbox.xmin + param.bbox.xsiz - 1;
-	bbox.max_y = param.bbox.ymin + param.bbox.ysiz - 1;
+static void
+build_search_from_gui(topo_region_t *main_region) 
+{
 
-	if (err) {
-		//printf("XXXX failed to get bbox %d\n", i);
-	} else {
-		image_draw_bbox_scale(img, &bbox, scale, mask, color);
-		//image_fill_bbox_scale(img, &bbox, scale, mask, color);
+	int i;
+	/* 
+	 * figure out the args and build message
+	 */
+	for(i=0; i<MAX_ALBUMS && collections[i].name; i++) {
+	  /* if collection active, figure out the gids and add to out list
+	   * allows duplicates XXX */
+	  if(collections[i].active) {
+	    int err;
+	    int num_gids = MAX_ALBUMS;
+	    groupid_t gids[MAX_ALBUMS], *gptr;
+	    err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
+	    assert(!err);
+	    gptr = gids;
+	    while(num_gids) {
+	      main_region->gids[main_region->ngids++] = *gptr++;
+	      num_gids--;
+	    }
+	    //printf("gid %d active\n",  collections[i].id);
+	  }
 	}
-	
-	return param.bbox;
 }
 
-
+/*
+ * Build the filters specification into the temp file name
+ * "tmp_file".  We walk through all the activated regions and
+ * all the them to write out the file.
+ */
 
 char *
 build_filter_spec(char *tmp_file, topo_region_t *main_region)
-{
-
+{ 
 	char * 		tmp_storage = NULL;
 	FILE *		fspec;	
 	int		err;
@@ -539,770 +450,6 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 		return(NULL);
 	}
 	return(tmp_file);
-}
-
-/* ********************************************************************** */
-/* callback functions */
-/* ********************************************************************** */
-
-
-
-static void 
-cb_next_image(GtkButton* item, gpointer data)
-{
-	GUI_CALLBACK_ENTER();
-	image_controls.zlevel = gtk_spin_button_get_value_as_int(
-			GTK_SPIN_BUTTON(image_controls.zbutton));
-	clear_thumbnails();
-	GUI_CALLBACK_LEAVE(); /* need to put this here instead of at
-				 end because signal wakes up another
-				 thread immediately... */
-
-	pthread_mutex_lock(&display_mutex);
-	image_controls.cur_op = CNTRL_NEXT;
-	pthread_cond_signal(&display_cond);
-	pthread_mutex_unlock(&display_mutex);
-
-}
-
-
-
-static void
-cb_img_info(GtkWidget *widget, gpointer data) 
-{
-	thumbnail_t *thumb;
-
-	GUI_CALLBACK_ENTER();
-	thumb = (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
-
-	/* the data gpointer passed in seems to not be the data
-	 * pointer we gave gtk. instead, we save a pointer in the
-	 * widget. -RW */
-
-	//fprintf(stderr, "thumb=%p\n", thumb);
-
-	if(thumb->img) {
-		write_image_info(&image_information, thumb->name, thumb->nboxes);
-	}
-	GUI_CALLBACK_LEAVE();
-}
-
-
-static void
-cb_popup_window_close(GtkWidget *window) {
-/* 	image_hooks_t *hooks; */
-/* 	hooks = (image_hooks_t *)gtk_object_get_user_data(GTK_OBJECT(window)); */
-/* 	ih_drop_ref(hooks); */
-
-        GUI_CALLBACK_ENTER();
-
-	kill_highlight_thread(0);
-
-	popup_window.window = NULL;
-	ih_drop_ref(popup_window.hooks, fhandle);
-	popup_window.hooks = NULL;
-
-        GUI_CALLBACK_LEAVE();
-}
-
-
-
-
-static void
-remove_func(GtkWidget *widget, void *container) 
-{
-  GUI_THREAD_CHECK(); 
-  gtk_container_remove(GTK_CONTAINER(container), widget);
-}
-
-
-static gboolean
-cb_test_region(GtkWidget *widget, GdkEventButton *event, gpointer ptr) 
-{
-
-	GUI_CALLBACK_ENTER();
-	
-	char buf[BUFSIZ];
-	sprintf(buf, "mouse click at %.2f, %.2f", event->x, event->y);
-	guint id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
-						"test region");
-	gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
-
-
-        GUI_CALLBACK_LEAVE();
-	return TRUE;
-}
-
-
-static void
-kill_highlight_thread(int run) 
-{
-
-	GUI_THREAD_CHECK();
-
-	pthread_mutex_lock(&highlight_info.mutex);	
-	if(highlight_info.thread_running) {
-		int err = pthread_cancel(highlight_info.thread);
-		//assert(!err);
-		if(!err) {
-			/* should do this in a cleanup function XXX */
-			ih_drop_ref(popup_window.hooks, fhandle);
-			highlight_info.thread_running = 0;
-			/* child should not be inside gui, since we
-			 * are in a callback here, and presumable own
-			 * the lock. */
-			//GUI_THREAD_LEFT(); /* XXX */
-			pthread_join(highlight_info.thread, NULL);
-		}
-	}
-	highlight_info.thread_running = run;
-	pthread_mutex_unlock(&highlight_info.mutex);
-}
-
-
-static void
-cb_clear_select(GtkWidget *widget, GdkEventButton *event, gpointer ptr) 
-{
-	RGBImage *img;
-
-        GUI_CALLBACK_ENTER();
-
-	img = popup_window.layers[SELECT_LAYER];
-
-	rgbimg_clear(img);
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-				   0, 0,
-				   img->width,
-				   img->height);
-        GUI_CALLBACK_LEAVE();
-
-	popup_window.nselections = 0;
-}
-
-static void
-cb_clear_highlight_layer(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
-{
-	RGBImage *img;
-
-        GUI_CALLBACK_ENTER();
-	
-	kill_highlight_thread(0);
-
-	img = popup_window.layers[HIGHLIGHT_LAYER];
-
-	rgbimg_clear(img);
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-				   0, 0,
-				   img->width,
-				   img->height);
-
-	/* XXX */
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(highlight_info.progress_bar), 0);
-
-        GUI_CALLBACK_LEAVE();
-}
-
-static void
-cb_run_highlight()
-{
-
-	GUI_CALLBACK_ENTER();
-
-	kill_highlight_thread(1);
-	int err = pthread_create(&highlight_info.thread, PATTR_DEFAULT, histo_scan_main, NULL);
-	assert(!err);
-
-	GUI_CALLBACK_LEAVE();
-}
-
-static inline int
-min(int a, int b) { 
-	return ( (a < b) ? a : b );
-}
-static inline int
-max(int a, int b) { 
-	return ( (a > b) ? a : b );
-}
-
-static gboolean
-expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data) 
-{
-	RGBImage *img = (RGBImage *)data;
-	int width, height;
-
-	width = min(event->area.width, img->width - event->area.x);
-	height = min(event->area.height, img->height - event->area.y);
-
-	if(width <= 0 || height <= 0) {
-		goto done;
-	}
-	assert(widget == popup_window.drawing_area);
-
-	gdk_window_clear_area (widget->window,
-			       event->area.x, event->area.y,
-			       event->area.width, event->area.height); 
-	gdk_gc_set_clip_rectangle (widget->style->fg_gc[widget->state],
-				   &event->area);
-
-	for(int i=0; i<MAX_LAYERS; i++) {
-		int pht = gdk_pixbuf_get_height(popup_window.pixbufs[i]);
-		assert(event->area.y + height <= pht);
-		assert(width >= 0);
-		assert(height >= 0);
-		gdk_pixbuf_render_to_drawable_alpha(popup_window.pixbufs[i],
-						    widget->window,
-						    event->area.x, event->area.y,
-						    event->area.x, event->area.y,
-						    width, height,
-						    GDK_PIXBUF_ALPHA_FULL, 1, /* ignored */
-						    GDK_RGB_DITHER_MAX,
-						    0, 0);
-	}
-
-	gdk_gc_set_clip_rectangle (widget->style->fg_gc[widget->state],
-				   NULL);
-
- done:
-	return TRUE;
-}
-
-static gboolean
-realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data) {
-	
-	assert(widget == popup_window.drawing_area);
-
-	for(int i=0; i<MAX_LAYERS; i++) {
-		popup_window.pixbufs[i] = pb_from_img(popup_window.layers[i]);
-	}
-	
-	return TRUE;
-}
-
-#define COORDS_TO_BBOX(bbox,container) 		\
-{						\
-  bbox.min_x = min(container.x1, container.x2);	\
-  bbox.max_x = max(container.x1, container.x2);	\
-  bbox.min_y = min(container.y1, container.y2);	\
-  bbox.max_y = max(container.y1, container.y2);	\
-}
-
-
-static gboolean
-cb_grab_selection(GtkWidget *widget, GdkEventAny *event, gpointer data) 
-{
-	int err;
-	char buf[BUFSIZ] = "created new scene";
-	int n, row;
-#ifdef	XXX_NOW
-	fsp_histo_t *fsp = &scapes[nscapes].fsp_info;
-  int color;			/* if color (else texture) */
-
-  GUI_CALLBACK_ENTER();
-  color = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(popup_window.color)));
-
-  if(nscapes >= MAX_SCAPE) {
-    sprintf(buf, "ERROR too many scapes!");
-    err = 1;
-    goto done;
-  }
-
-  row = nscapes + 1;	/* 1 is heading */
-  n = nscapes;
-
-  memset(&scapes[nscapes].fsp_info, 0, sizeof(fsp_histo_t));
-  TAILQ_INIT(&scapes[nscapes].fsp_info.patchlist);
-  TAILQ_INIT(&scapes[nscapes].fsp_info.texture_features_list);
-  scapes[nscapes].fsp_info.npatches = 0;
-
-  if(color) {
-    fsp->xsiz = STD_COLOR_SIZE;
-    fsp->ysiz = STD_COLOR_SIZE;
-    fsp->dx = fsp->dy = STD_COLOR_SIZE;
-    fsp->type = FILTER_TYPE_COLOR;
-  } else {
-    fsp->xsiz = MIN_TEXTURE_SIZE;
-    fsp->ysiz = MIN_TEXTURE_SIZE;
-    fsp->dx = fsp->dy = MIN_TEXTURE_SIZE;
-    fsp->type = FILTER_TYPE_TEXTURE;
-  }
-  set_fsp_defaults(fsp);
-
-  {
-    const char *name = gtk_entry_get_text(GTK_ENTRY(popup_window.scape_entry));
-    if(strlen(name) < 1) {
-      sprintf(buf, "ERROR bad name!");
-      goto done;
-    }
-    scapes[nscapes].name = strdup(name);
-
-	{ 
-		size_t i;
-		for (i=0; i < strlen(scapes[nscapes].name); i++) {
-			if (scapes[nscapes].name[i] == ' ') {
-				scapes[nscapes].name[i] = '_';
-			}
-		}
-	}
-    scapes[nscapes].file = NULL;
-  }
-
-  for(int i=0; i<popup_window.nselections; i++) {
-      if(color) {
-		err = img_inst_histogram(popup_window.hooks->img, 
-				 popup_window.selections[i],
-				 &scapes[nscapes].fsp_info);
-      } else {
-#ifdef	XXX_ASK_RAHUL
-	err = texture_inst_features_from_img(popup_window.hooks->img, 
-					     popup_window.selections[i],
-					     &scapes[nscapes].fsp_info);
-#endif
-      }
-      if(err) {
-	sprintf(buf, "ERROR creating scene (patch too small?)");    
-	goto done;
-      }
-  }
-
-  /* now we are done. */
-  nscapes++;
-
-  add_scape_widgets1(gui.scapes_tables[0], row, &scapes[n]);
-  add_scape_widgets2(gui.scapes_tables[1], row, &scapes[n]);
-
-#endif
-done:
-  guint id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
-					  "selection");
-  gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
-  
-  GUI_CALLBACK_LEAVE();
-  return TRUE;
-}
-
-
-static void
-clear_selection( GtkWidget *widget ) {
-  bbox_t bbox;
-
-  GUI_THREAD_CHECK();
-  COORDS_TO_BBOX(bbox, popup_window);
-
-  image_fill_bbox_scale(popup_window.layers[SELECT_LAYER], &bbox, 1, 
-			colorMask, clearColor);
-
-  /* refresh */
-  gtk_widget_queue_draw_area(popup_window.drawing_area,
-			     bbox.min_x, bbox.min_y,
-			     bbox.max_x - bbox.min_x + 1, 
-			     bbox.max_y - bbox.min_y + 1);
-
-}
-
-static void
-redraw_selections() {
-
-  GUI_THREAD_CHECK();
-  RGBImage *img = popup_window.layers[SELECT_LAYER];
-
-  rgbimg_clear(img);
-
-  for(int i=0; i<popup_window.nselections; i++) {
-    image_fill_bbox_scale(popup_window.layers[SELECT_LAYER], 
-			  &popup_window.selections[i], 
-			  1, hilitMask, hilitRed);
-    image_draw_bbox_scale(popup_window.layers[SELECT_LAYER],
-			  &popup_window.selections[i], 
-			  1, colorMask, red);
-  }
-
-  gtk_widget_queue_draw_area(popup_window.drawing_area,
-			     0, 0,
-			     img->width,
-			     img->height);
-}
-
-static void
-draw_selection( GtkWidget *widget ) {
-/*   GdkPixmap* pixmap; */
-  bbox_t bbox;
-
-  GUI_THREAD_CHECK();
-  COORDS_TO_BBOX(bbox, popup_window);
-
-  image_fill_bbox_scale(popup_window.layers[SELECT_LAYER], &bbox, 1, hilitMask, hilitRed);
-  image_draw_bbox_scale(popup_window.layers[SELECT_LAYER], &bbox, 1, colorMask, red);
-
-  /* refresh */
-  gtk_widget_queue_draw_area(popup_window.drawing_area,
-			     bbox.min_x, bbox.min_y,
-			     bbox.max_x - bbox.min_x + 1, 
-			     bbox.max_y - bbox.min_y + 1);
-
-
-}
-
-static gboolean
-cb_button_press_event( GtkWidget      *widget,
-		       GdkEventButton *event )
-{
-
-  GUI_CALLBACK_ENTER();
-
-  if (event->button == 1) {
-    popup_window.x1 = (int)event->x;
-    popup_window.y1 = (int)event->y;
-    popup_window.x2 = (int)event->x;
-    popup_window.y2 = (int)event->y;
-    popup_window.button_down = 1;
-  }
-
-  GUI_CALLBACK_LEAVE();
-  return TRUE;
-}
-
-static gboolean
-cb_button_release_event(GtkWidget* widget, GdkEventButton *event)
-{
-
-  GUI_CALLBACK_ENTER();
-
-  if (event->button != 1) {
-    goto done;
-  }
-
-  popup_window.x2 = (int)event->x;
-  popup_window.y2 = (int)event->y;
-  popup_window.button_down = 0;
-
-  draw_selection(widget);
-
-  gtk_widget_grab_focus (popup_window.select_button);
-
-
-  if(popup_window.nselections >= MAX_SELECT) {
-    popup_window.nselections--;	/* overwrite last one */
-  }
-  bbox_t bbox;
-  COORDS_TO_BBOX(bbox, popup_window);
-  img_constrain_bbox(&bbox, popup_window.hooks->img);
-  popup_window.selections[popup_window.nselections++] = bbox;
-
-  redraw_selections();
-
- done:
-  GUI_CALLBACK_LEAVE();
-  return TRUE;
-}
-
-static gboolean
-cb_motion_notify_event( GtkWidget *widget,
-			GdkEventMotion *event )
-{
-  int x, y;
-  GdkModifierType state;
-
-  GUI_CALLBACK_ENTER();
-
-  if (event->is_hint) {
-    gdk_window_get_pointer (event->window, &x, &y, &state);
-  } else {
-    x = (int)event->x;
-    y = (int)event->y;
-    state = (GdkModifierType)event->state;
-  }
-  
-  if (state & GDK_BUTTON1_MASK && popup_window.button_down) {
-
-    clear_selection(widget);
-    popup_window.x2 = x;
-    popup_window.y2 = y;
-
-    //draw_brush(widget);
-    draw_selection(widget);
- }
-
-  GUI_CALLBACK_LEAVE();
-  return TRUE;
-}
-
-
-static void
-do_img_popup(GtkWidget *widget) {
-        thumbnail_t *thumb;
-	GtkWidget *eb;
-	GtkWidget *frame;
-	GtkWidget *image;
-
-
-	thumb= (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
-
-	/* the data gpointer passed in seems to not be the data
-	 * pointer we gave gtk. instead, we save a pointer in the
-	 * widget. (maybe the prototype didn't match) -RW */
-
-	if(!thumb->img) goto done;
-
-	if(!popup_window.window) {
-		popup_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-		gtk_window_set_title(GTK_WINDOW(popup_window.window), "Image");
-		gtk_window_set_default_size(GTK_WINDOW(popup_window.window), 750, 350);
-		g_signal_connect (G_OBJECT (popup_window.window), "destroy",
-				  G_CALLBACK (cb_popup_window_close), NULL);
-
-		GtkWidget *box1 = gtk_vbox_new(FALSE, 0);
-
-		popup_window.statusbar = gtk_statusbar_new();
-		gtk_box_pack_end(GTK_BOX(box1), popup_window.statusbar, FALSE, FALSE, 0);
-		gtk_widget_show(popup_window.statusbar);
-
-		GtkWidget *pane = gtk_hpaned_new();
-		gtk_box_pack_start(GTK_BOX(box1), pane, TRUE, TRUE, 0);
-		gtk_widget_show(pane);
-
-		gtk_container_add(GTK_CONTAINER(popup_window.window), box1);
-		gtk_widget_show(box1);
-
-		/* box to hold controls */
-		box1 = gtk_vbox_new(FALSE, 10);
-		gtk_container_set_border_width(GTK_CONTAINER(box1), 4);
-		gtk_widget_show(box1);
-		gtk_paned_pack1(GTK_PANED(pane), box1, FALSE, TRUE);
-
-		frame = gtk_frame_new("Search Results");
-		gtk_box_pack_start(GTK_BOX(box1), frame, FALSE, FALSE, 0);
-		gtk_widget_show(frame);
-		GtkWidget *box3 = gtk_vbox_new(FALSE, 0);
-		gtk_container_add(GTK_CONTAINER(frame), box3);
-		gtk_widget_show(box3);
-
-		popup_window.face_cb_area = gtk_vbox_new(FALSE, 0);
-		popup_window.histo_cb_area = gtk_vbox_new(FALSE, 0);
-		gtk_box_pack_start(GTK_BOX (box3), popup_window.face_cb_area, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX (box3), popup_window.histo_cb_area, FALSE, FALSE, 0);
-		gtk_widget_show(popup_window.face_cb_area);
-		gtk_widget_show(popup_window.histo_cb_area);
-
-		/* 
-		 * Refinement
-		 */			
-		{
-		  frame = gtk_frame_new("Refinement");
-		  gtk_box_pack_end (GTK_BOX (box1), frame, FALSE, FALSE, 0);
-		  gtk_widget_show(frame);
-		  
-		  GtkWidget *box2 = gtk_vbox_new (FALSE, 10);
-		  gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
-		  gtk_container_add(GTK_CONTAINER(frame), box2);
-		  gtk_widget_show (box2);
-		  
-		  /* hbox */
-		  GtkWidget *hbox = gtk_hbox_new(FALSE, 10);
-		  gtk_box_pack_start (GTK_BOX(box2), hbox, TRUE, TRUE, 0);
-		  gtk_widget_show(hbox);
-
-		  widget = gtk_label_new("Name");
-		  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-		  gtk_widget_show(widget);
-
-		  popup_window.scape_entry = gtk_entry_new();
-		  gtk_widget_show(popup_window.scape_entry);
-		  gtk_entry_set_activates_default(GTK_ENTRY(popup_window.scape_entry),
-						  TRUE);
-		  gtk_box_pack_start (GTK_BOX (hbox), popup_window.scape_entry,
-				      TRUE, TRUE, 0);
-
-		  /* hbox */
-		  hbox = gtk_hbox_new(FALSE, 10);
-		  gtk_box_pack_start (GTK_BOX(box2), hbox, FALSE, FALSE, 0);
-		  gtk_widget_show(hbox);
-
-		  widget = gtk_label_new("Type");
-		  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-		  gtk_widget_show(widget);
-
-		  popup_window.color = gtk_radio_button_new_with_label(NULL, "Color");
-		  popup_window.texture = gtk_radio_button_new_with_label_from_widget
-		    (GTK_RADIO_BUTTON(popup_window.color), "Texture");
-		  gtk_widget_show(popup_window.color);
-		  gtk_widget_show(popup_window.texture);
-		  gtk_box_pack_start (GTK_BOX (hbox), popup_window.color,
-				      FALSE, FALSE, 0);
-		  gtk_box_pack_start (GTK_BOX (hbox), popup_window.texture,
-				      FALSE, FALSE, 0);
-
-		  /* couple of buttons */
-		  GtkWidget *buttonbox = gtk_hbox_new(TRUE, 10);
-		  gtk_box_pack_start (GTK_BOX(box2), buttonbox, TRUE, TRUE, 0);
-		  gtk_widget_show(buttonbox);
-		  
-		  GtkWidget *button = gtk_button_new_with_label ("Make Patch");
-		  popup_window.select_button = button;
-		  g_signal_connect_after(GTK_OBJECT(button), "clicked",
-					 GTK_SIGNAL_FUNC(cb_grab_selection), NULL);
-		  gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
-		  GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-		  gtk_widget_show (button);
-		  
-		  button = gtk_button_new_with_label ("Clear");
-		  g_signal_connect_after(GTK_OBJECT(button), "clicked",
-					 GTK_SIGNAL_FUNC(cb_clear_select), NULL);
-		  gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
-		  gtk_widget_show (button);
-		}
-
-		/* 
-		 * Highlighting
-		 */
-		{
-		  frame = gtk_frame_new("Highlighting");
-		  gtk_box_pack_end (GTK_BOX (box1), frame, FALSE, FALSE, 0);
-		  gtk_widget_show(frame);
-
-		  /* start button area */
-		  GtkWidget *box2 = gtk_vbox_new (FALSE, 10);
-		  gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
-		  gtk_container_add(GTK_CONTAINER(frame), box2);
-		  gtk_widget_show (box2);
-
-		  GtkWidget *label = gtk_label_new("This will run color histogram matching"
-			  " over the image using parameters from the main search window.");
-		  gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-		  gtk_box_pack_start (GTK_BOX (box2), label, TRUE, TRUE, 0);
-		  gtk_widget_show (label);
-
-		  GtkWidget *pb = gtk_progress_bar_new();
-		  gtk_widget_show(pb);
-		  highlight_info.progress_bar = pb;
-		  gtk_box_pack_start (GTK_BOX (box2), pb, TRUE, TRUE, 0);
-
-		  /* couple of buttons */
-		  GtkWidget *buttonbox = gtk_hbox_new(TRUE, 10);
-		  gtk_box_pack_start (GTK_BOX(box2), buttonbox, TRUE, TRUE, 0);
-		  gtk_widget_show(buttonbox);
-
-		  GtkWidget *button = gtk_button_new_with_label ("Highlight");
-		  g_signal_connect_after(GTK_OBJECT(button), "clicked",
-					 GTK_SIGNAL_FUNC(cb_run_highlight), NULL);
-		  gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
-		  GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-		  gtk_widget_show (button);
-
-		  button = gtk_button_new_with_label ("Clear");
-		  g_signal_connect_after(GTK_OBJECT(button), "clicked",
-					 GTK_SIGNAL_FUNC(cb_clear_highlight_layer),
-					 NULL);
-		  gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
-		  gtk_widget_show (button);
-		}
-
-		popup_window.image_area = gtk_viewport_new(NULL, NULL);
-		gtk_widget_show(popup_window.image_area);
-
-		gtk_paned_pack2(GTK_PANED(pane), popup_window.image_area, TRUE, TRUE);
-
-	} else {
-		kill_highlight_thread(0);
-		
-		/* XXX */
-		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(highlight_info.progress_bar), 0);
-		gtk_container_remove(GTK_CONTAINER(popup_window.image_area), 
-				     popup_window.scroll);
-		ih_drop_ref(popup_window.hooks, fhandle);
-
-		gdk_window_raise(GTK_WIDGET(popup_window.window)->window);
-		
-	}
-	
-	/* note there is a slight race condition here, if the thumb gets overwritten */
-	ih_get_ref(thumb->hooks);
-	popup_window.hooks = thumb->hooks;
-	popup_window.layers[IMG_LAYER] = thumb->hooks->img;
-	for(int i=IMG_LAYER+1; i<MAX_LAYERS; i++) {
-		popup_window.layers[i] = rgbimg_new(thumb->hooks->img); /* XXX */
-	}
-	//gtk_object_set_user_data(GTK_OBJECT(popup_window.window), thumb->fullimage);
-
-	char buf[MAX_NAME];
-	sprintf(buf, "Image: %s", thumb->name);
-	gtk_window_set_title(GTK_WINDOW(popup_window.window), buf);
-
-
-	image = popup_window.drawing_area = gtk_drawing_area_new();
-	GTK_WIDGET_UNSET_FLAGS (image, GTK_CAN_DEFAULT);
-	gtk_drawing_area_size(GTK_DRAWING_AREA(image), 
-			      popup_window.hooks->img->width,
-			      popup_window.hooks->img->height);
-	gtk_signal_connect(GTK_OBJECT(image), "expose-event",
-			   GTK_SIGNAL_FUNC(expose_event), popup_window.hooks->img);
-	gtk_signal_connect(GTK_OBJECT(image), "realize",
-			   GTK_SIGNAL_FUNC(realize_event), NULL);
-
-	popup_window.scroll = gtk_scrolled_window_new(NULL, NULL);
-
-	eb = gtk_event_box_new();
-	gtk_object_set_user_data(GTK_OBJECT(eb), NULL);
-	gtk_container_add(GTK_CONTAINER(eb), image);
-	gtk_widget_show(eb);
-
-	/* additional events for selection */
-	g_signal_connect (G_OBJECT (eb), "motion_notify_event",
-			  G_CALLBACK (cb_motion_notify_event), NULL);
-	g_signal_connect (G_OBJECT (eb), "button_press_event",
-			  G_CALLBACK (cb_button_press_event), NULL);
-	g_signal_connect (G_OBJECT (eb), "button_release_event",
-			  G_CALLBACK (cb_button_release_event), NULL);
-	gtk_widget_set_events (eb, GDK_EXPOSURE_MASK
-			       | GDK_LEAVE_NOTIFY_MASK
-			       | GDK_BUTTON_PRESS_MASK
-			       | GDK_POINTER_MOTION_MASK
-			       | GDK_POINTER_MOTION_HINT_MASK);
-
-	popup_window.nselections = 0;
-
-	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(popup_window.scroll),
-					      eb);
-	gtk_widget_show(image);
-	gtk_widget_show(popup_window.scroll);
-	gtk_container_add(GTK_CONTAINER(popup_window.image_area), popup_window.scroll);
-
-
-	/* 
-	 * add widgets to show search results 
-	 */
-	gtk_container_foreach(GTK_CONTAINER(popup_window.face_cb_area), remove_func, 
-			      popup_window.face_cb_area);
-	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area), remove_func, 
-			      popup_window.histo_cb_area);
-
-	{
-	    GtkWidget *button = NULL;
-
-	    popup_window.nfaces = thumb->nfaces;
-	    if(thumb->nfaces) {
-		    sprintf(buf, "faces (%d)", thumb->nfaces);
-		    button = gtk_check_button_new_with_label(buf);
-		    g_signal_connect (G_OBJECT(button), "toggled",
-				      G_CALLBACK(cb_draw_res_layer), NULL);
-		    gtk_box_pack_start(GTK_BOX(popup_window.face_cb_area), button,
-				       FALSE, FALSE, 0);
-		    gtk_widget_show(button);
-	    }
-
-	    for(int i=0; i<thumb->nboxes; i++) {
-		GtkWidget *widget;
-		widget = describe_hbbox(fhandle, popup_window.hooks->ohandle, 
-					       i, &button);
-		gtk_box_pack_start(GTK_BOX(popup_window.histo_cb_area), widget,
-				   FALSE, FALSE, 0);
-	    }
-	}
-
-	gtk_widget_queue_resize(popup_window.window);
-	gtk_widget_show(popup_window.window);
-
- done:
-	return;
 }
 
 static void
@@ -1456,271 +603,6 @@ highlight_progress_f(void *widget, int val, int total)
 	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(widget), fraction);
 	GUI_THREAD_LEAVE();
 }
-
-
-static void *
-histo_scan_main(void *ptr) 
-{
-	int insp=0, pass=0;
-	int err;
-
-	err = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-	assert(!err);
-	err = pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
-	assert(!err);
-
-	ih_get_ref(popup_window.hooks);
-	guint id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
-						"histo");
-#ifdef	XXX_NOW
-	for(int i=0; i<nscapes; i++) {
-	  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(scapes[i].cb))) {
-
-		  /* XXX this is probably unsafe (pointers in struct) */
- 		  fsp_histo_t fsp = scapes[i].fsp_info;
-
-		  /* set the values in the fsp_histo_t we are sending to the search thread.
-		   * not reqd if we updated defaults above */
-		  GUI_THREAD_ENTER();
-		  read_histo_tabs(&fsp, i);
-		  GUI_THREAD_LEAVE();
-
-		  /* update statusbar */
-		  char buf[BUFSIZ];
-		  sprintf(buf, "host scan (%s)...", scapes[i].name);
-		  GUI_THREAD_ENTER();
-		  gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
-		  GUI_THREAD_LEAVE();
-
-		   /* XXX */
-		  patch_t *patch;
-		  double distance = (fsp.negate ? fsp.ndistance : fsp.pdistance);
-		  if (fsp.type == FILTER_TYPE_TEXTURE) {
-		    distance = distance*NUM_LAP_PYR_LEVELS;
-		    
-		    IplImage* ipl_img;
-		    IplImage* dst_img;
-		    if (TEXTURE_NUM_CHANNELS==1) {
-		      ipl_img = get_gray_ipl_image(popup_window.hooks->img);
-		    }
-		    else if (TEXTURE_NUM_CHANNELS == 3) {
-		      ipl_img = get_rgb_ipl_image(popup_window.hooks->img);
-		    }
-		    dst_img = cvCreateImage(cvSize(ipl_img->width, ipl_img->height), IPL_DEPTH_8U, 1);
-		    cvZero(dst_img);
-		    
-		    double **samples = new double*[fsp.npatches];
-		    texture_features_t* texture_patch;
-		    int s = 0;
-		    TAILQ_FOREACH(texture_patch, &fsp.texture_features_list, link) {
-		      samples[s] = new double[NUM_LAP_PYR_LEVELS*TEXTURE_NUM_CHANNELS];
-		      for (int i=0; i<NUM_LAP_PYR_LEVELS*TEXTURE_NUM_CHANNELS; i++) {
-			samples[s][i] = texture_patch->feature_values[i];
-		      }
-		      s++;
-		    }
-		    int minx, miny;
-		    texture_test_entire_image(ipl_img, fsp.npatches, samples, distance, 0, fsp.dx, fsp.dy,
-					      fsp.xsiz, fsp.ysiz, &minx, &miny, dst_img);
-
-		    double pass_box;
-		    bbox_t bbox;
-		    insp = dst_img->width/fsp.dx * dst_img->height/fsp.dy;
-		    pass = 0;
-		    int num_seen=0;
-		    for (int x=0; (x+fsp.xsiz)<dst_img->width; x++) {
-		      for (int y=0; (y+fsp.ysiz)<dst_img->height; y++) {
-			num_seen++;
-			pass_box = cvGetReal2D(dst_img, y, x);
-			if (pass_box) {
-			  pass++;
-			  bbox.min_x = x;
-			  bbox.min_y = y;
-			  bbox.max_x = x + fsp.xsiz -1;
-			  bbox.max_y = y + fsp.ysiz -1;
-			  highlight_box_f(popup_window.layers[HIGHLIGHT_LAYER], bbox);
-			}
-			//highlight_progress_f(highlight_info.progress_bar, num_seen/(fsp.dx*fsp.dy), insp);			
-		      }
-		    }
-		    cvReleaseImage(&dst_img);
-		    cvReleaseImage(&ipl_img);
-		    for (int i=0; i<s; i++) {
-		      delete[] samples[i];
-		    }
-		    delete[] samples;
-		  }
-		  
-		  else if (fsp.type == FILTER_TYPE_COLOR) {
-		    TAILQ_FOREACH(patch, &fsp.patchlist, link) {
-		      patch->threshold = distance; 
-		    }
-		    if(!popup_window.hooks->histo_ii) {
-		      popup_window.hooks->histo_ii =
-		      (HistoII *)ft_read_alloc_attr(fhandle, 
-						    popup_window.hooks->ohandle,
-						    HISTO_II);
-		    }
-
-		    assert(insp >= pass);
-		    histo_scan_image(scapes[i].name,
-				     popup_window.hooks->img,
-				     popup_window.hooks->histo_ii,
-				     &fsp,
-				     INT_MAX, /* get all matching bboxes */
-				     &insp, &pass,
-				     highlight_box_f, popup_window.layers[HIGHLIGHT_LAYER],
-				     highlight_progress_f, highlight_info.progress_bar);
-		    assert(insp >= pass); 
-		  }
-			   
-		  //fprintf(stderr, "threshold = %.2f\n", distance);
-		  highlight_progress_f(highlight_info.progress_bar, 1, 1);
-
-		  GUI_THREAD_ENTER();
-		  /* update statusbar */
-		  gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, "ready.");
-		  GUI_THREAD_LEAVE();
-	  }
-	}
-#endif
-
-
-	pthread_mutex_lock(&highlight_info.mutex);	
-	highlight_info.thread_running = 0;
-	ih_drop_ref(popup_window.hooks, fhandle);
-	pthread_mutex_unlock(&highlight_info.mutex);	
-
-	/* update statusbar */
-	GUI_THREAD_ENTER();
-	char buf[BUFSIZ];
-	sprintf(buf, "highlighting complete; passed %d of %d area tests (%.0f%%).",
-		pass, insp, 100.0 * pass / insp);
-	gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
-	GUI_THREAD_LEAVE();
-
-	pthread_exit(NULL);
-	return NULL;
-}
-
-
-static void
-draw_hbbox_func(GtkWidget *widget, void *ptr) {
-	int i = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget)));
-	region_t region;
-	RGBPixel mask = colorMask;
-	RGBPixel color = green;
-
-	GUI_THREAD_CHECK(); 
-
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-		/* don't draw, but still need to refresh */
-		mask = clearMask;
-		
-		/* can't draw clear, lest we wipe out overlapping box */
-		//color = clearColor;
-	}
-
-	region = draw_bounding_box(popup_window.layers[RES_LAYER], 1, fhandle,
-				   popup_window.hooks->ohandle,
-				   color, mask, HISTO_BBOX_FMT, i);
-	
-	/* refresh */
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-				   region.xmin, region.ymin,
-				   region.xsiz, region.ysiz);
-}
-
-static void
-draw_face_func(GtkWidget *widget, void *ptr) {
-	region_t region;
-	RGBPixel mask = colorMask;
-	RGBPixel color = red;
-	int num_faces = popup_window.nfaces;
-
-	/* draw faces, if on */
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-		/* don't draw, but still need to refresh */
-		mask = clearMask;
-	}
-
-	for(int i=0; i<num_faces; i++) {
-		region = draw_bounding_box(popup_window.layers[RES_LAYER], 1, fhandle,
-					   popup_window.hooks->ohandle,
-					   color, mask, FACE_BBOX_FMT, i);
-		/* refresh */
-		gtk_widget_queue_draw_area(popup_window.drawing_area,
-					   region.xmin, region.ymin,
-					   region.xsiz, region.ysiz);
-
-	}
-
-}
-
-
-/* draw all the bounding boxes */
-static void
-cb_draw_res_layer(GtkWidget *widget, gpointer ptr) {
-
-        GUI_CALLBACK_ENTER();
-	
-	/* although we clear the pixbuf data here, we still need to
-	 * generate refreshes for either the whole image or the parts
-	 * that we cleared. */
-	rgbimg_clear(popup_window.layers[RES_LAYER]);
-
-	/* draw faces (presumably there's only one checkbox, but that's ok) */
-	gtk_container_foreach(GTK_CONTAINER(popup_window.face_cb_area), draw_face_func, 
-			      popup_window.face_cb_area);
-
-	/* draw histo bboxes, if on */
-	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area), draw_hbbox_func, 
-			      popup_window.histo_cb_area);
-
-        GUI_CALLBACK_LEAVE();
-}
-
-
-
-
-
-
-static GtkWidget *
-describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
-		      GtkWidget **button) {
-	search_param_t 	param;	
-	int 		err;
-
-	GUI_THREAD_CHECK(); 
-	
-	err = read_param(fhandle, ohandle, HISTO_BBOX_FMT, &param, i);
-	if (err) {
-/* 		label = gtk_label_new("ERR"); */
-/* 		gtk_box_pack_start(GTK_BOX(container), label, TRUE, TRUE, 0); */
-/* 		gtk_widget_show(label); */
-	} else {
-		char buf[BUFSIZ];
-		
-		if(param.type == PARAM_HISTO) {
-			sprintf(buf, "%s (similarity %.0f%%)", 
-				param.name,
-				100 - 100.0*param.distance);
-			*button = gtk_check_button_new_with_label(buf);
-			g_signal_connect (G_OBJECT(*button), "toggled",
-					  G_CALLBACK(cb_draw_res_layer), GINT_TO_POINTER(i));
-			gtk_object_set_user_data(GTK_OBJECT(*button), GINT_TO_POINTER(i));
-
-
-			gtk_widget_show(*button);
-		}
-	}
-
-	return *button;
-}
-
-
-
-
 
 
 
@@ -1935,60 +817,6 @@ display_thread(void *data)
 
 
 
-static void
-build_search_from_gui(topo_region_t *main_region) 
-{
-
-	/* 
-	 * figure out the args and build message
-	 */
-	main_region->min_faces = (int)gtk_range_get_value(GTK_RANGE(gui.min_faces));
-	main_region->face_levels = (int)gtk_range_get_value(GTK_RANGE(gui.face_levels));
-	main_region->ngids = 0;
-	int i;
-	for(i=0; i<MAX_ALBUMS && collections[i].name; i++) {
-	  /* if collection active, figure out the gids and add to out list
-	   * allows duplicates XXX */
-	  if(collections[i].active) {
-	    int err;
-	    int num_gids = MAX_ALBUMS;
-	    groupid_t gids[MAX_ALBUMS], *gptr;
-	    err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
-	    assert(!err);
-	    gptr = gids;
-	    while(num_gids) {
-	      main_region->gids[main_region->ngids++] = *gptr++;
-	      num_gids--;
-	    }
-	    //printf("gid %d active\n",  collections[i].id);
-	  }
-	}
-#ifdef	XXX
-	//assert(main_region->ngids);
-	main_region->nscapes = 0;
-	assert(nscapes < MAX_SCAPE);
-	for(int i=0; i<nscapes; i++) {
-	  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(scapes[i].cb))) {
-	    main_scape_t *scape;
-
-	    scape = &main_region->scapes[main_region->nscapes++];
-	    strncpy(scape->name, scapes[i].name, MAX_NAME);
-
-	    /* XXX this is probably unsafe (pointers in struct) */
-	    scape->fsp_info = scapes[i].fsp_info;
-
-	    /* set the values in the fsp_histo_t we are sending to the search thread.
-	     * not reqd if we updated defaults above */
-	    read_histo_tabs(&scape->fsp_info, i);
-	  }
-	}
-	strncpy(main_region->search_string, gtk_entry_get_text(GTK_ENTRY(gui.attribute_entry)),
-		MAX_STRING-1);
-	main_region->search_string[MAX_STRING-1] = '\0';
-
-#endif
-
-}
 
 static void 
 cb_stop_search(GtkButton* item, gpointer data)
@@ -2044,19 +872,9 @@ cb_start_search(GtkButton* item, gpointer data)
     	gtk_widget_set_sensitive(gui.stop_button, TRUE);
 	clear_thumbnails();
 
-#if 0
-	/* 
-	 * update defaults
-	 */
-	for(int i=0; i<nscapes; i++) {
-		read_histo_tabs(&scapes[i].fsp_info, i);
-	}
-#endif
-
-
-	/* another global, ack!! this should be on the heap XXX */
-	static topo_region_t main_region; 
-	build_search_from_gui(&main_region);
+        /* another global, ack!! this should be on the heap XXX */
+        static topo_region_t main_region;
+        build_search_from_gui(&main_region);
 
 	pthread_mutex_lock(&display_mutex);
 	image_controls.cur_op = CNTRL_NEXT;
@@ -2111,15 +929,15 @@ cb_start_search(GtkButton* item, gpointer data)
 static void
 cb_save_spec_to_filename(GtkWidget *widget, gpointer user_data) 
 {
-  topo_region_t main_region;
   GtkWidget *file_selector = (GtkWidget *)user_data;
+  topo_region_t 	main_region;
   const gchar *selected_filename;
   char buf[BUFSIZ];
 
   GUI_CALLBACK_ENTER();
 
-  selected_filename = gtk_file_selection_get_filename (GTK_FILE_SELECTION (file_selector));
-  
+  selected_filename = gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_selector));
+ 
   build_search_from_gui(&main_region);
   printf("saving spec to: %s\n", selected_filename);
   sprintf(buf, "%s", selected_filename);
@@ -2170,15 +988,28 @@ write_search_config(const char *dirname, snap_search **searches, int nsearches)
 	fclose(conf_file);
 }
 
+void
+update_search_entry(snap_search *cur_search, int row)
+{
+    	GtkWidget *widget;
+	widget = cur_search->get_search_widget();
+	gtk_table_attach_defaults(GTK_TABLE(config_table), widget, 0, 1, 
+		row+1, row+2);
+	widget = cur_search->get_config_widget();
+	gtk_table_attach_defaults(GTK_TABLE(config_table), widget, 1, 2, 
+		row+1, row+2);
+	widget = cur_search->get_edit_widget();
+	gtk_table_attach_defaults(GTK_TABLE(config_table), widget, 2, 3, 
+		row+1, row+2);
+}
 
 static GtkWidget *
 create_search_window()
 {
-    GtkWidget *box2, *box3, *box1;
+    GtkWidget *box2, *box1;
     GtkWidget *separator;
     GtkWidget *table;
     GtkWidget *frame, *widget;
-    GtkWidget *snap_cntrl;
     int row = 0;        /* current table row */
 	int			i;
 
@@ -2187,10 +1018,9 @@ create_search_window()
     box1 = gtk_vbox_new (FALSE, 0);
     gtk_widget_show (box1);
 
-
-	/* XXX */
     frame = gtk_frame_new("Searches");
-    table = gtk_table_new(num_searches+1, 3, FALSE);
+    table = gtk_table_new(MAX_SEARCHES+1, 3, FALSE);
+	config_table = table;	/* XXX */
     gtk_table_set_row_spacings(GTK_TABLE(table), 2);
     gtk_table_set_col_spacings(GTK_TABLE(table), 4);
     gtk_container_set_border_width(GTK_CONTAINER(table), 10);
@@ -2257,7 +1087,6 @@ create_search_window()
 static void
 cb_load_search_from_dir(GtkWidget *widget, gpointer user_data) 
 {
-	topo_region_t main_region;
 	GtkWidget *file_selector = (GtkWidget *)user_data;
 	const gchar *dirname;
 	char *	olddir;
@@ -2295,7 +1124,6 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 static void
 cb_save_search_dir(GtkWidget *widget, gpointer user_data) 
 {
-	topo_region_t main_region;
 	GtkWidget *file_selector = (GtkWidget *)user_data;
 	const gchar *dirname;
 	char buf[BUFSIZ];
@@ -2557,6 +1385,44 @@ create_image_info(GtkWidget *container_box, image_info_t *img_info)
 }
 
 
+static void 
+cb_next_image(GtkButton* item, gpointer data)
+{
+	GUI_CALLBACK_ENTER();
+	image_controls.zlevel = gtk_spin_button_get_value_as_int(
+			GTK_SPIN_BUTTON(image_controls.zbutton));
+	clear_thumbnails();
+	GUI_CALLBACK_LEAVE(); /* need to put this here instead of at
+				 end because signal wakes up another
+				 thread immediately... */
+
+	pthread_mutex_lock(&display_mutex);
+	image_controls.cur_op = CNTRL_NEXT;
+	pthread_cond_signal(&display_cond);
+	pthread_mutex_unlock(&display_mutex);
+
+}
+
+
+static void
+cb_img_info(GtkWidget *widget, gpointer data) 
+{
+	thumbnail_t *thumb;
+
+	GUI_CALLBACK_ENTER();
+	thumb = (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
+
+	/* the data gpointer passed in seems to not be the data
+	 * pointer we gave gtk. instead, we save a pointer in the
+	 * widget. -RW */
+
+	//fprintf(stderr, "thumb=%p\n", thumb);
+
+	if(thumb->img) {
+		write_image_info(&image_information, thumb->name, thumb->nboxes);
+	}
+	GUI_CALLBACK_LEAVE();
+}
 
 
 static void
@@ -3140,82 +2006,6 @@ main(int argc, char *argv[])
 	  }
 	  collections[pos].name = NULL;
 	}
-
-#ifdef	XXX_NOW
-	/* 
-	 * some special argument processing before we run the gui 
-	 */
-
-	printf("scapes present:");
-	for(int i=0; i<nscapes; i++) {
-		printf(" %s", scapes[i].name);
-	}
-	printf("\n");
-
-	export_threshold_t *et;
-	printf("scapes requested:");
-	TAILQ_FOREACH(et, &export_list, link) {
-	  printf(" %s (distance=%.2f)", et->name, et->distance);
-	  for(int i=0; i<nscapes; i++) {
-	    if(strcmp(et->name, scapes[i].name) == 0) {
-	      et->index = i;
-	    }
-	  }
-	  if(et->index < 0) {
-	    fprintf(stderr, "unrecognized filter: %s\n", et->name);
-	    exit(1);
-	  }
-	}
-	printf("\n");
-
-	topo_region_t main_region;
-
-	if(dump_spec_file || dump_objects) {
-	  /* build a main_region */
-
-	  main_region.min_faces = default_min_faces;
-	  main_region.face_levels = default_face_levels;
-	  main_region.nscapes = 0;
-
-	  TAILQ_FOREACH(et, &export_list, link) {
-	    main_scape_t *scape;
-	    
-	    scape = &main_region.scapes[main_region.nscapes++];
-	    strncpy(scape->name, scapes[et->index].name, MAX_NAME);
-/* 	    strncpy(scape->path, scapes[et->index].file, MAX_PATH); */
-	    /* XXX this is probably unsafe (pointers in struct) */
-	    scape->fsp_info = scapes[et->index].fsp_info;
-	    scape->fsp_info.pdistance = et->distance;
-	    
-	    /* set the values in the fsp_histo_t we are sending to the search thread.
-	     * not reqd if we updated defaults above */
-	    //read_histo_tabs(&scape->fsp_info, et->index);
-	  }
-	}
-
-	if(dump_spec_file) {
-	  build_filter_spec(dump_spec_file, &main_region);
-	  exit(0);
-	}
-
-	if(dump_objects) {
-	  init_search();
-	  do_search(&main_region, read_spec_filename); /* setup shandle */
-	  int err = 0;
-	  while(!err) {
-	    ls_obj_handle_t cur_obj;
-	    err = ls_next_object(shandle, &cur_obj, 0);	/* blocking */
-	    if(!err) {
-	      printf("\nOBJECT\n");
-	      //lf_dump_attr(fhandle, cur_obj);
-	      ls_release_object(shandle, cur_obj);
-	    } else {
-	      fprintf(stderr, "err = %d\n", err);
-	    }
-	  }
-	  exit(0);
-	}
-#endif
 
 
 	/*
