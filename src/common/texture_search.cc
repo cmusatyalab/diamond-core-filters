@@ -439,7 +439,7 @@ texture_search::write_fspec(FILE *ostream)
 		i++;	/* count thenumber of samples for debugging */
 	}
 	 fprintf(ostream, "REQUIRES  RGB # dependencies \n");
-	 fprintf(ostream, "MERIT  1000 # some relative cost \n");
+	 fprintf(ostream, "MERIT  100 # some relative cost \n");
 
     rgb = new rgb_img("RGB image", "RGB image");
     ss_add_dep(rgb);
@@ -552,9 +552,7 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 		pass = texture_test_entire_image_pairwise(iimg, &targs, blist);
 	}
     
-	                                                                                 
 	/* XXX cleanup */
-
 	return;
 }
 
