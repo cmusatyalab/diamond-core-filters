@@ -326,40 +326,31 @@ lh_histo_interpolated_insert(Histo * h, int r, int g, int b)
 
 
     val = rfraclow * gfraclow * bfraclow;
-    assert(is_within_bounds(rilow + gilow + bilow));
     h->data[rilow + gilow + bilow] += val;
 
     val = rfraclow * gfraclow * bfrac;
-    assert(is_within_bounds(rilow + gilow + bihigh));
     h->data[rilow + gilow + bihigh] += val;
 
     val = rfraclow * gfrac * bfraclow;
-    assert(is_within_bounds(rilow + gihigh + bilow));
     h->data[rilow + gihigh + bilow] += val;
 
     val = rfraclow * gfrac * bfrac;
-    assert(is_within_bounds(rilow + gihigh + bihigh));
     h->data[rilow + gihigh + bihigh] += val;
 
     val = rfrac * gfraclow * bfraclow;
-    assert(is_within_bounds(rihigh + gilow + bilow));
     h->data[rihigh + gilow + bilow] += val;
 
     val = rfrac * gfraclow * bfrac;
-    assert(is_within_bounds(rihigh + gilow + bihigh));
     h->data[rihigh + gilow + bihigh] += val;
 
     val = rfrac * gfrac * bfraclow;
-    assert(is_within_bounds(rihigh + gihigh + bilow));
     h->data[rihigh + gihigh + bilow] += val;
 
     val = rfrac * gfrac * bfrac;
-    assert(is_within_bounds(rihigh + gihigh + bihigh));
     h->data[rihigh + gihigh + bihigh] += val;
 
-
+	/* increase the weight (number of pixels that have been added */
     h->weight++;
-
 }
 
 void
@@ -765,7 +756,7 @@ histo_get_ii(histo_config_t *hconfig, RGBImage *img)
 	if (hconfig->scale > 9000.0) {
 		gcd = hconfig->stride;
 	} else {
-		gcd = 1;
+		gcd = hconfig->stride;
 	}
                                                                               	
 	scalebits = log2_int(gcd);
@@ -918,11 +909,9 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
     patch_t        *patch;
     int             done = 0;
     int             pass;
-    float          scale;
     float          scale_factor = hconfig->scale;
     const dim_t     width = img->width;
     const dim_t     height = img->height;
-    int             inspected = 0;
     Histo           h2;         /* histogram for each region tested */
 
 	assert(ii != NULL);

@@ -88,13 +88,12 @@ texture_test_entire_image_maholonobis(IplImage * img, texture_args_t *targs, bbo
     /*
      * test each subwindow 
      */
-	for (test_x = targs->box_width, test_y = targs->box_height; 
-		((test_x < img->width) && (test_y < img->height)); 
-	     test_x = (int)((float)test_x * targs->scale),
-		 test_y = (int)((float)test_y * targs->scale)) {
-
-    	for (x = 0; (x + test_x) < img->width; x += targs->step) {
-        	for (y = 0; (y + test_y) < img->height; y += targs->step) {
+	for (x = 0; (x + targs->box_width) < img->width; x += targs->step) {
+		for (y = 0; (y + targs->box_height) < img->height; y += targs->step) {
+	     	test_x = (int)targs->box_width;;
+	     	test_y = (int)targs->box_height;;
+		
+			while (((x + test_x) > img->width) && ((y + test_y) > img->height)){
             	texture_get_lap_pyr_features_from_subimage(img, 
 						targs->num_channels, x, y, test_x, test_y, feature_val);
             	distance = 0.0;
@@ -124,6 +123,8 @@ texture_test_entire_image_maholonobis(IplImage * img, texture_args_t *targs, bbo
                     	goto done;
                 	}
             	}
+				test_x *= targs->scale;
+				test_y *= targs->scale;
 			}
         }
 	}
@@ -207,13 +208,13 @@ texture_test_entire_image_variance(IplImage * img, texture_args_t *targs,
     /*
      * test each subwindow 
      */
-	for (test_x = targs->box_width, test_y = targs->box_height; 
-		((test_x < img->width) && (test_y < img->height)); 
-	     test_x = (int)((float)test_x * targs->scale),
-		 test_y = (int)((float)test_y * targs->scale)) {
-
-    	for (x = 0; (x + test_x) < img->width; x += targs->step) {
-        	for (y = 0; (y + test_y) < img->height; y += targs->step) {
+	for (x = 0; (x + targs->box_width) < img->width; x += targs->step) {
+		for (y = 0; (y + targs->box_height) < img->height; y += targs->step) {
+	     	test_x = (int)targs->box_width;;
+	     	test_y = (int)targs->box_height;;
+		
+			while (((x + test_x) > img->width) && ((y + test_y) > img->height)){
+		
             	texture_get_lap_pyr_features_from_subimage(img, 
 						targs->num_channels, x, y, test_x, test_y, feature_val);
             	distance = 0.0;
@@ -256,6 +257,8 @@ texture_test_entire_image_variance(IplImage * img, texture_args_t *targs,
                     	goto done;
                 	}
             	}
+				test_x *= targs->scale;
+				test_y *= targs->scale;
 			}
         }
 	}
@@ -311,13 +314,12 @@ texture_test_entire_image_pairwise(IplImage * img, texture_args_t *targs,
     /*
      * test each subwindow 
      */
-	for (test_x = targs->box_width, test_y = targs->box_height; 
-		((test_x < img->width) && (test_y < img->height)); 
-	     test_x = (int)((float)test_x * targs->scale),
-		 test_y = (int)((float)test_y * targs->scale)) {
-
-    	for (x = 0; (x + test_x) < img->width; x += targs->step) {
-        	for (y = 0; (y + test_y) < img->height; y += targs->step) {
+	for (x = 0; (x + targs->box_width) < img->width; x += targs->step) {
+		for (y = 0; (y + targs->box_height) < img->height; y += targs->step) {
+	     	test_x = (int)targs->box_width;;
+	     	test_y = (int)targs->box_height;;
+		
+			while (((x + test_x) > img->width) && ((y + test_y) > img->height)){
             	texture_get_lap_pyr_features_from_subimage(img, 
 						targs->num_channels, x, y, test_x, test_y, feature_val);
 
@@ -363,6 +365,8 @@ texture_test_entire_image_pairwise(IplImage * img, texture_args_t *targs,
                     	goto done;
                 	}
             	}
+				test_x *= targs->scale;
+				test_y *= targs->scale;
 			}
         }
 	}
