@@ -155,8 +155,8 @@ new_page(char *name, int num_dev)
     for (i = 0; i < num_dev; i++) {
         int             rsize;
 
-        rsize = gtk_table_get_row_spacing(GTK_TABLE(stats_table), i + 1);
-        gtk_table_set_row_spacing(GTK_TABLE(stats_table), i, rsize);
+        //rsize = gtk_table_get_row_spacing(GTK_TABLE(stats_table), i + 1);
+        //gtk_table_set_row_spacing(GTK_TABLE(stats_table), i, rsize);
 
         init_filt_data(&new_page->fp_data[i]);
         gtk_table_attach_defaults(GTK_TABLE(new_page->fp_table),
