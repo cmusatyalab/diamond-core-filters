@@ -161,23 +161,35 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
 	IplImage 	*dst_img = NULL;
 	RGBImage      * rgb_img = NULL;
 	off_t 		bsize;
+	off_t 		len;
 	float			min_simularity;
 	lf_fhandle_t 	fhandle = 0; /* XXX */
 	texture_args_t  *targs = (texture_args_t *)f_datap;
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
 	int				i;
+	int			rgb_alloc = 0;
 	search_param_t param;
 	int ntexture;
 
 	lf_log(fhandle, LOGL_TRACE, "f_texture_detect: enter");
 
-
+#ifdef	OLD
 	rgb_img = (RGBImage*)ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
 	if (rgb_img == NULL) {
 		rgb_img = get_rgb_img(ohandle);
 	}
 	ASSERT(rgb_img);
+#else
+        err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
+        assert(err == 0);
+	if (rgb_img == NULL) {
+		rgb_alloc = 1;
+		rgb_img = get_rgb_img(ohandle);
+	}
+	ASSERT(rgb_img);
+
+#endif
 
 
 	if (targs->num_channels == 1) {
@@ -269,7 +281,7 @@ done:
 	if (img) {
 		cvReleaseImage(&img);
 	}
-	if (rgb_img) {
+	if (rgb_alloc) {
 		ft_free(fhandle, (char*)rgb_img);
 	}
 
