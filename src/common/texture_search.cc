@@ -356,6 +356,7 @@ void
 texture_search::write_fspec(FILE *ostream)
 {
 	IplImage	*img;
+	IplImage	*scale_img;
 	RGBImage	*rimg;
 	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
 	example_patch_t	*cur_patch;
@@ -397,19 +398,33 @@ texture_search::write_fspec(FILE *ostream)
 
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int j;
+		int neww, newh;
+
+		neww = cur_patch->xsize;
+		newh = cur_patch->ysize;
+
+		/* XXX only works for assume we want squares */
+		if (neww > newh) {
+			neww = newh;
+		} else {
+			newh = neww;
+
+		}
 		rimg = create_rgb_subimage(cur_patch->patch_image,
-			0, 0, 32, 32);
+			0, 0, neww, newh);
 
 		if (channels == 1) {
 			img = get_gray_ipl_image(rimg);
 		} else {
 			img = get_rgb_ipl_image(rimg);
 		}
+		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U, channels);
+		cvResize(img, scale_img, CV_INTER_LINEAR);
 #ifdef	XXX
 	  	texture_get_lap_pyr_features_from_subimage(img, channels, 0, 0,
 				cur_patch->xsize, cur_patch->ysize, feature_vals);
 #else
-	  	texture_get_lap_pyr_features_from_subimage(img, channels, 0, 0,
+	  	texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
 				32, 32, feature_vals);
 #endif
 
@@ -452,6 +467,7 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	example_patch_t	*cur_patch;
 	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
 	IplImage *		iimg;
+	IplImage *		scale_img;
 	RGBImage *		tmp_img;
 	int				i;
 	int				pass;
@@ -489,12 +505,15 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 		} else {
 			iimg = get_rgb_ipl_image(tmp_img);
 		}
+		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U, channels);
+		cvResize(iimg, scale_img, CV_INTER_LINEAR);
+
 #ifdef	XXX
 	  	texture_get_lap_pyr_features_from_subimage(iimg, channels, 0, 0,
 				cur_patch->xsize, cur_patch->ysize, 
 		   		feature_vals);
 #else
-	  	texture_get_lap_pyr_features_from_subimage(iimg, channels, 0, 0,
+	  	texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
 				cur_patch->xsize, cur_patch->ysize, 
 		   		feature_vals);
 #endif
