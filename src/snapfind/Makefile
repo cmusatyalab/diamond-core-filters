@@ -68,7 +68,7 @@ SNAPFIND_SRCS += texture_tools.c arena_tools.c gtk_image_tools.c
 SNAPFIND_SRCS += snap_search.cc window_search.cc example_search.cc
 SNAPFIND_SRCS += texture_search.cc vj_face_search.cc search_support.cc
 SNAPFIND_SRCS += snap_popup.cc rgb_img.cc ii_img.cc regex_search.cc
-SNAPFIND_SRCS += facedet.c sfind_tools.c
+SNAPFIND_SRCS += facedet.c sfind_tools.c fil_data2ii.c fil_file.c
 
 SNAPFIND_OBJS = snapfind.o face_tools.o face_image.o sfind_search.o face_search.o read_config.o \
 	image_tools.o histo.o fil_tools.o stats_win.o rgb.o gui_thread.o \
@@ -76,7 +76,7 @@ SNAPFIND_OBJS = snapfind.o face_tools.o face_image.o sfind_search.o face_search.
 	texture_search.o \
 	snap_search.o window_search.o example_search.o gtk_image_tools.o \
 	vj_face_search.o search_support.o snap_popup.o rgb_img.o ii_img.o \
-	regex_search.o facedet.o sfind_tools.o
+	regex_search.o facedet.o sfind_tools.o fil_data2ii.o fil_file.o
 
 
 
