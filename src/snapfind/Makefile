@@ -94,14 +94,14 @@ SEARCHLET_LIBDIR +=
 SNAPFIND_SRCS = $(SHARED_APP_SRCS) $(SHARED_COMMON_SRCS)
 SNAPFIND_SRCS += snapfind.cc sfind_search.cc
 SNAPFIND_SRCS +=  read_config.cc 
-SNAPFIND_SRCS += stats_win.c rgb.c   
-SNAPFIND_SRCS += snap_popup.cc 
+SNAPFIND_SRCS += progress_win.cc rgb.c   
+SNAPFIND_SRCS += snap_popup.cc graph_win.cc
 SNAPFIND_SRCS += sfind_tools.c 
 
 SNAPFIND_OBJS = $(SHARED_APP_OBJS) $(SHARED_COMMON_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
-SNAPFIND_OBJS += stats_win.o snap_popup.o 
-SNAPFIND_OBJS += sfind_tools.o  fil_histo.o
+SNAPFIND_OBJS += progress_win.o snap_popup.o 
+SNAPFIND_OBJS += sfind_tools.o  fil_histo.o graph_win.o
 
 DEBUG_SRCS = face.c
 DEBUG_OBJS = face.o
