@@ -91,10 +91,13 @@ read_texture_args(lf_fhandle_t fhandle, texture_args_t *texture_args,
 
 	args += 10;
 
-	texture_args->sample_values = new (double*)[texture_args->num_samples];
+	texture_args->sample_values = (double **) 
+		malloc(sizeof(double *) * texture_args->num_samples);
+	assert(texture_args->sample_values != NULL);
 	for (s_index = 0; s_index < texture_args->num_samples; s_index++) {
 		texture_args->sample_values[s_index] =
-		    new double[NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS];
+			malloc(sizeof(double) * 
+				(NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS));
 		for (f_index = 0; f_index < NUM_LAP_PYR_LEVELS*texture_args->num_channels;
 		     f_index++) {
 			texture_args->sample_values[s_index][f_index] = atof(*args);
@@ -142,9 +145,9 @@ f_fini_texture_detect(void *f_datap)
 	int		i;
 
 	for (i=0; i<targs->num_samples; i++) {
-		delete[] targs->sample_values[i];
+		free(targs->sample_values[i]);
 	}
-	delete[] targs->sample_values;
+	free(targs->sample_values);
 	lf_free_buffer(fhandle, (char*)targs);
 	return(0);
 }

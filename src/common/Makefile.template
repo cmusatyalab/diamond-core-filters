@@ -8,6 +8,8 @@ SHARED_HEADERS += fil_texture.h face_data.h fil_file.h fil_assert.h
 SHARED_HEADERS += fil_image_tools.h fil_face.h merge_faces.h
 SHARED_HEADERS += import_sample.h face_consts.h gui_thread.h face_image.h
 SHARED_HEADERS += search_support.h search_set.h display_img.h
+SHARED_HEADERS += gabor_texture_search.h
+
 
 SHARED_COMMON_SRCS = image_tools.c histo.c face_tools.c texture_tools.c
 SHARED_COMMON_SRCS += facedet.c  fil_data2ii.c fil_tools.c fil_file.c
@@ -31,7 +33,7 @@ SHARED_APP_SRCS += rgb_histo_search.cc rgb_img.cc
 SHARED_APP_SRCS += regex_search.cc ii_img.cc face_image.c
 SHARED_APP_SRCS += gtk_image_tools.c histo_ii.cc search_support.cc
 SHARED_APP_SRCS += import_sample.cc ocv_face_search.cc gui_thread.c
-SHARED_APP_SRCS += display_img.cc
+SHARED_APP_SRCS += display_img.cc gabor_texture_search.cc
                             
 SHARED_APP_OBJS = img_search.o search_set.o
 SHARED_APP_OBJS += texture_search.o vj_face_search.o
@@ -40,7 +42,7 @@ SHARED_APP_OBJS += rgb_histo_search.o rgb_img.o
 SHARED_APP_OBJS += regex_search.o ii_img.o face_image.o
 SHARED_APP_OBJS += gtk_image_tools.o  histo_ii.o search_support.o
 SHARED_APP_OBJS += import_sample.o ocv_face_search.o gui_thread.o
-SHARED_APP_OBJS += display_img.o
+SHARED_APP_OBJS += display_img.o gabor_texture_search.o
  
 SHARED_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_APP_SRCS) $(SHARED_HEADERS)
 SHARED_SRCS += $(SHARED_COMMON_SRCS)                            
