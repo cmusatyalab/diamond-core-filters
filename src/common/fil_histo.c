@@ -354,7 +354,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 
 	err = lf_ref_attr(fhandle, ohandle, HISTO_II, &len, (char **)&ii);
 	if (err != 0) {
-		printf("ii ref failed \n");
 		ii_alloc = 1;
 		ii = histo_get_ii(hconfig, img);
 	}
