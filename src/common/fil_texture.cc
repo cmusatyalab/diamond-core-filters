@@ -133,6 +133,11 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
   lf_log(fhandle, LOGL_TRACE, "\nf_texture_detect: enter\n");
   //img = (IplImage *)ft_read_alloc_attr(fhandle, ohandle, GRAY_IPL_IMAGE);
   rgb_img = (RGBImage*)ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
+  /* XXX temporary, if this has been deleted, then recompute */
+  if (img == NULL) {
+    rgb_img = get_rgb_img(ohandle);
+  }
+
   ASSERT(rgb_img);
   if (targs->num_channels == 1) {
     img = get_gray_ipl_image(rgb_img);

@@ -574,6 +574,12 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
      * get the img 
      */
     img = (RGBImage *) ft_read_alloc_attr(fhandle, ihandle, RGB_IMAGE);
+
+	/* XXX temporary, if this has been deleted, then recompute */	
+	if (img == NULL) {
+		img = get_rgb_img(ihandle);
+	}
+
     ASSERT(img);
     ASSERT(img->type == IMAGE_PPM);
 
