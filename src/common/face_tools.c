@@ -96,11 +96,6 @@ face_scan_image(ii_image_t *ii, ii2_image_t * ii2, fconfig_fdetect_t *fconfig,
 				if (test_region(ii, fconfig->lev1, fconfig->lev2,
 						(int) x, (int)y, scale, img_var)) { 
 
-					printf("match: l1 %d l2 %d x %d y %d scale %f var %f \n",
-						fconfig->lev1, fconfig->lev2, (int)x, (int)y,
-					 	scale, img_var);
-	
-		
 					bbox = (bbox_t *)malloc(sizeof(*bbox));
 					assert(bbox != NULL);
 					bbox->min_x = x;

@@ -75,6 +75,8 @@ int dump_objects = 0;		/* just dump all the objects and exit (no gui) */
 GtkTooltips *tooltips = NULL;
 char *read_spec_filename = NULL;
 
+/* XXX */
+int do_display = 1;
 
 
 /* XXXX fix this */ 
@@ -741,7 +743,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	if(!cur_thumbnail) {
 		cur_thumbnail = TAILQ_FIRST(&thumbnails);
 	}
-	if(cur_thumbnail->img) { /* cleanup */
+	if (cur_thumbnail->img) { /* cleanup */
 		gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport), 
 				     cur_thumbnail->gimage);
 		lf_free_buffer(fhandle, (char *)cur_thumbnail->img); /* XXX */
@@ -818,38 +820,41 @@ display_thread(void *data)
 	message_t *		message;
 	struct timespec timeout;
 
+
 	while (1) {
 
-        pthread_mutex_lock(&ring_mutex);
-		message = (message_t *)ring_deq(from_search_thread);
-		pthread_mutex_unlock(&ring_mutex);
+		if (do_display) {
+        	pthread_mutex_lock(&ring_mutex);
+			message = (message_t *)ring_deq(from_search_thread);
+			pthread_mutex_unlock(&ring_mutex);
 
-		if (message != NULL) {
-			switch (message->type) {
-			case NEXT_OBJECT:
-				display_thumbnail((ls_obj_handle_t)message->data);
-				break;
+			if (message != NULL) {
+				switch (message->type) {
+				case NEXT_OBJECT:
+					display_thumbnail((ls_obj_handle_t)message->data);
+					break;
 
-			case DONE_OBJECTS:
-				/*
-				 * We are done recieving objects.
-				 * We need to disable the thread
-				 * image controls and enable start
-				 * search button.
-				 */
-
+				case DONE_OBJECTS:
+					/*
+				 	* We are done recieving objects.
+				 	* We need to disable the thread
+				 	* image controls and enable start
+				 	* search button.
+				 	*/
+	
+					free(message);
+					gtk_widget_set_sensitive(gui.start_button, TRUE);
+					gtk_widget_set_sensitive(gui.stop_button, FALSE);
+					display_thread_running = 0;
+					pthread_exit(0);
+					break;
+					
+				default:
+					break;
+	
+				}
 				free(message);
-				gtk_widget_set_sensitive(gui.start_button, TRUE);
-				gtk_widget_set_sensitive(gui.stop_button, FALSE);
-				display_thread_running = 0;
-				pthread_exit(0);
-				break;
-				
-			default:
-				break;
-
 			}
-			free(message);
 		}
 
 		timeout.tv_sec = 0;
@@ -860,24 +865,22 @@ display_thread(void *data)
 	return 0;
 }
 
-
-static void 
-cb_stop_search(GtkButton* item, gpointer data)
+static void
+stop_search()
 {
 	message_t *		message;
 	int			err;
 
-	GUI_CALLBACK_ENTER();
-
 	/*
 	 * Toggle the start and stop buttons.
 	 */
-    	gtk_widget_set_sensitive(gui.start_button, TRUE);
+	gtk_widget_set_sensitive(gui.start_button, TRUE);
+
 	/* we should not be messing with the default. this is here so
 	 * that we can trigger a search from the text entry without a
 	 * return-pressed handler.  XXX */
 	gtk_widget_grab_default (gui.start_button);
-    	gtk_widget_set_sensitive(gui.stop_button, FALSE);
+	gtk_widget_set_sensitive(gui.stop_button, FALSE);
 
 	message = (message_t *)malloc(sizeof(*message));
 	if (message == NULL) {
@@ -893,10 +896,16 @@ cb_stop_search(GtkButton* item, gpointer data)
 		printf("XXX failed to enq message \n");
 		exit(1);
 	}
-	//fprintf(stderr, "facemain: enq TERM_SEARCH\n");
-
-        GUI_CALLBACK_LEAVE();
 }
+
+static void 
+cb_stop_search(GtkButton* item, gpointer data)
+{
+	GUI_CALLBACK_ENTER();
+	stop_search();
+	GUI_CALLBACK_LEAVE();
+}
+
 
 static void 
 cb_start_search(GtkButton* item, gpointer data)
@@ -930,9 +939,7 @@ cb_start_search(GtkButton* item, gpointer data)
 	pthread_mutex_unlock(&ring_mutex);
 
 
-	/* 
-	 * send the message
-	 */
+	/* send the message */
 	message = (message_t *)malloc(sizeof(*message));
 	if (message == NULL) {
 		printf("failed to allocate message \n");
@@ -945,8 +952,6 @@ cb_start_search(GtkButton* item, gpointer data)
 		printf("XXX failed to enq message \n");
 		exit(1);
 	}
-
-	//fprintf(stderr, "facemain: enq START_SEARCH\n");
 
 	GUI_CALLBACK_LEAVE();	/* need to do this before signal (below) */
 
@@ -962,7 +967,6 @@ cb_start_search(GtkButton* item, gpointer data)
 		pthread_cond_signal(&display_cond);
 		pthread_mutex_unlock(&display_mutex);
 	}
-
 }
 
 
@@ -1155,6 +1159,7 @@ cb_import_search_from_dir(GtkWidget *widget, gpointer user_data)
 	assert(err == 0);
 	free(olddir);
 
+	stop_search();
 	gtk_widget_destroy(gui.search_widget);
     gui.search_widget = create_search_window();
     gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
@@ -1193,6 +1198,7 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 	assert(err == 0);
 	free(olddir);
 
+	stop_search();
 	gtk_widget_destroy(gui.search_widget);
     gui.search_widget = create_search_window();
     gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
@@ -1621,7 +1627,7 @@ create_display_region(GtkWidget *main_box)
 
 	GtkWidget *thumbnail_view;
 	thumbnail_view = gtk_table_new(TABLE_ROWS, TABLE_COLS, TRUE);
-	gtk_box_pack_start(GTK_BOX (box2), thumbnail_view, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX (box2), thumbnail_view, FALSE, TRUE, 0);
 	for(int i=0; i< TABLE_ROWS; i++) {
 		for(int j=0; j< TABLE_COLS; j++) {
 			GtkWidget *widget, *eb;

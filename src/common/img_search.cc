@@ -301,15 +301,15 @@ img_search::close_edit_win()
 GtkWidget *
 img_search::get_edit_widget()
 {
-	GtkWidget * start_button;
+	GtkWidget * ebutton;
 
 	/* create the display label */
-	start_button = gtk_button_new_with_label("Edit");
-	g_signal_connect(G_OBJECT(start_button), "clicked",
+	ebutton = gtk_button_new_with_label("Edit");
+	g_signal_connect(G_OBJECT(ebutton), "clicked",
                      G_CALLBACK(edit_search_cb), this);
-   	GTK_WIDGET_SET_FLAGS(start_button, GTK_CAN_DEFAULT);
-   	gtk_widget_show (start_button);
-	return(start_button);
+   	GTK_WIDGET_SET_FLAGS(ebutton, GTK_CAN_DEFAULT);
+   	gtk_widget_show (ebutton);
+	return(ebutton);
 }
 
 void
