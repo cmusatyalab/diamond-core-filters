@@ -36,6 +36,8 @@ typedef	struct pop_win {
   GtkWidget 	*image_area;
   GtkWidget 	*face_cb_area;
   GtkWidget 	*histo_cb_area;
+  GtkWidget 	*drawbox;
+  GtkWidget 	*drawhl;
   GtkWidget 	*example_list;
   GtkWidget 	*search_type;
   GtkWidget *	search_name;

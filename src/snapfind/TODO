@@ -1,5 +1,3 @@
-Add search dependency support
-
 Create new searches
 
 Use google for sample images
@@ -12,15 +10,9 @@ Variable number of bins in histogram
 
 use histo II
 
-Face detector
-
-Regex search
-
 Different distance metrics for histogram
 
 Fix file dependancies
-
-Highlighting support
 
 Clean up config file selection
 
@@ -38,3 +30,5 @@ patches.  Currently crashes if they are not regular.
 Check for name conflicts in the searches
 
 Check for spaces when creating new search from the popup window
+
+More sophisitcated dependencie search

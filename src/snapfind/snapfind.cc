@@ -108,7 +108,7 @@ static struct {
 
 
 /* 
- * scapes entries. sorta contant
+ * search entries. sorta constant
  */
 /* XXXX fix this */
 #define	MAX_SEARCHES	64
@@ -611,13 +611,11 @@ timeout_write_dobjs(gpointer label)
 /* ********************************************************************** */
 
 static void
-highlight_box_f(void *cont, search_param_t *param) {
+highlight_box_f(void *cont, search_param_t *param) 
+{
 	RGBImage *img = (RGBImage *)cont;
 	bbox_t bbox;
 
-	//fprintf(stderr, "found bbox\n");
-
-	
 	bbox.min_x = param->bbox.xmin;
 	bbox.min_y = param->bbox.ymin;
 	bbox.max_x = param->bbox.xmin + param->bbox.xsiz - 1;
@@ -633,7 +631,8 @@ highlight_box_f(void *cont, search_param_t *param) {
 }
 
 static void
-highlight_box_f(RGBImage *img, bbox_t bbox) {
+highlight_box_f(RGBImage *img, bbox_t bbox) 
+{
 	image_fill_bbox_scale(img, &bbox, 1, hilitMask, hilit);
 
 	GUI_THREAD_ENTER();
@@ -796,19 +795,17 @@ display_thumbnail(ls_obj_handle_t ohandle)
 static void
 clear_thumbnails() 
 {
-	//thumbnail_t *cur_thumbnail;
-
 	clear_image_info(&image_information);
 
 	pthread_mutex_lock(&thumb_mutex);
 	TAILQ_FOREACH(cur_thumbnail, &thumbnails, link) {
-		if(cur_thumbnail->img) { /* cleanup */
+		if (cur_thumbnail->img) { /* cleanup */
 			gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport), 
 					     cur_thumbnail->gimage);
 			free(cur_thumbnail->img); /* XXX */
 			ih_drop_ref(cur_thumbnail->hooks, fhandle);
 			cur_thumbnail->img = NULL;
-	}
+		}
 		
 	}
 	cur_thumbnail = NULL;
@@ -822,9 +819,6 @@ display_thread(void *data)
 	message_t *		message;
 	struct timespec timeout;
 
-
-	//fprintf(stderr, "DISPLAY THREAD STARTING\n");
-
 	while (1) {
 
         pthread_mutex_lock(&ring_mutex);
@@ -834,10 +828,7 @@ display_thread(void *data)
 		if (message != NULL) {
 			switch (message->type) {
 			case NEXT_OBJECT:
-
-				//fprintf(stderr, "display obj...\n"); /* XXX */
 				display_thumbnail((ls_obj_handle_t)message->data);
-				//fprintf(stderr, "display obj done.\n");   /* XXX */
 				break;
 
 			case DONE_OBJECTS:
@@ -920,13 +911,13 @@ cb_start_search(GtkButton* item, gpointer data)
 	 * Disable the start search button and enable the stop search
 	 * button.
 	 */
-    	gtk_widget_set_sensitive(gui.start_button, FALSE);
-    	gtk_widget_set_sensitive(gui.stop_button, TRUE);
+	gtk_widget_set_sensitive(gui.start_button, FALSE);
+	gtk_widget_set_sensitive(gui.stop_button, TRUE);
 	clear_thumbnails();
 
-        /* another global, ack!! this should be on the heap XXX */
-        static topo_region_t main_region;
-        build_search_from_gui(&main_region);
+	/* another global, ack!! this should be on the heap XXX */
+	static topo_region_t main_region;
+	build_search_from_gui(&main_region);
 
 	pthread_mutex_lock(&display_mutex);
 	image_controls.cur_op = CNTRL_NEXT;
@@ -958,7 +949,7 @@ cb_start_search(GtkButton* item, gpointer data)
 
 	//fprintf(stderr, "facemain: enq START_SEARCH\n");
 
-        GUI_CALLBACK_LEAVE();	/* need to do this before signal (below) */
+	GUI_CALLBACK_LEAVE();	/* need to do this before signal (below) */
 
 	if(!display_thread_running) {
 		display_thread_running = 1;

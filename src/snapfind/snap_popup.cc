@@ -56,7 +56,6 @@ static struct {
 	pthread_mutex_t mutex;
 	int 		thread_running;
 	pthread_t 	thread;
-	GtkWidget       *progress_bar;
 } highlight_info = { PTHREAD_MUTEX_INITIALIZER, 0 };
 
 /* forward function declarations */
@@ -278,7 +277,8 @@ draw_hbbox_func(GtkWidget *widget, void *ptr)
 }
 
 static void
-draw_face_func(GtkWidget *widget, void *ptr) {
+draw_face_func(GtkWidget *widget, void *ptr) 
+{
 	region_t region;
 	RGBPixel mask = colorMask;
 	RGBPixel color = red;
@@ -319,10 +319,14 @@ highlight_box_f(RGBImage *img, bbox_t * bbox)
 void *
 image_highlight_main(void *ptr) 
 {
-	int insp=0, pass=0;
 	bbox_t *		cur_bb;
 	bbox_list_t		bblist;
+  	char 			buf[BUFSIZ];
+	RGBImage *		hl_img;
+	RGBPixel mask = colorMask;
+	RGBPixel color = red;
 	guint			id;
+	int				use_box;
 	int err;
 	int	i;
 
@@ -332,13 +336,27 @@ image_highlight_main(void *ptr)
 	assert(!err);
 
 	ih_get_ref(popup_window.hooks);
-	id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
-						"histo");
+	id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar), "histo");
+
+	/* look at toggle button to see if we use the boxes or shading */
+	use_box = 
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(popup_window.drawbox));
 
 	/* 
 	 * go through each of the searches, if highlight is selected,
 	 * then eval the regions according to the values.
 	 */
+
+	
+	hl_img = popup_window.layers[HIGHLIGHT_LAYER];
+	rgbimg_clear(hl_img);
+
+	GUI_THREAD_ENTER();
+	gtk_widget_queue_draw_area(popup_window.drawing_area, 0, 0,
+			hl_img->width, hl_img->height);
+	GUI_THREAD_LEAVE();
+
+	popup_window.nselections = 0;
 	for (i=0; i < num_searches; i++) {
 		/* if highligh isn't selected, then go to next object */
 		if (snap_searches[i]->is_hl_selected() == 0) {
@@ -347,147 +365,55 @@ image_highlight_main(void *ptr)
 
 		TAILQ_INIT(&bblist);
 
+  		snprintf(buf, BUFSIZ, "scanning %s ...", snap_searches[i]->get_name());
+		buf[BUFSIZ - 1] = '\0';
+		GUI_THREAD_ENTER();
+		gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
+		GUI_THREAD_LEAVE();
+
 		snap_searches[i]->region_match(popup_window.hooks->img, &bblist);
 
+  		snprintf(buf, BUFSIZ, "highlighting %s", snap_searches[i]->get_name());
+		buf[BUFSIZ - 1] = '\0';
+		GUI_THREAD_ENTER();
+		gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
+		GUI_THREAD_LEAVE();
+
+
+		/* for each bounding box, draw region on the overlay */
 		TAILQ_FOREACH(cur_bb, &bblist, link) {
-	  		highlight_box_f(popup_window.layers[HIGHLIGHT_LAYER], cur_bb);
-			/* XXXXXXXX free bbox */
+			if (use_box) { 
+				image_draw_bbox_scale(hl_img, cur_bb, 1, mask, color);
+			} else {
+				image_fill_bbox_scale(hl_img, cur_bb, 1, hilitMask, hilit);
+			}
+			TAILQ_REMOVE(&bblist, cur_bb, link);
+			free(cur_bb);
 		}
 
-#ifdef	XXX
-		/* new objects, let's highlight   */
+		/* ask the windowing system to redraw the affected region */	
+		GUI_THREAD_ENTER();
+		gtk_widget_queue_draw_area(popup_window.drawing_area, 0, 0,
+			hl_img->width, hl_img->height);
+		GUI_THREAD_LEAVE();
 
-	  	bbox.min_x = 0;
-	  	bbox.min_y = 0;
-	  	bbox.max_x = 100;
-	  	bbox.max_y = 100;
-	  	highlight_box_f(popup_window.layers[HIGHLIGHT_LAYER], bbox);
-#endif
-
+  		snprintf(buf, BUFSIZ, "done %s", snap_searches[i]->get_name());
+		buf[BUFSIZ - 1] = '\0';
+		GUI_THREAD_ENTER();
+		gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
+		GUI_THREAD_LEAVE();
 	}
 
-#ifdef	XXX_NOW
-	for(int i=0; i<nscapes; i++) {
-	  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(scapes[i].cb))) {
-
-		  /* XXX this is probably unsafe (pointers in struct) */
- 		  fsp_histo_t fsp = scapes[i].fsp_info;
-
-		  /* set the values in the fsp_histo_t we are sending to the
-	           *search thread.
-		   * update statusbar */
-		  char buf[BUFSIZ];
-		  sprintf(buf, "host scan (%s)...", scapes[i].name);
-		  GUI_THREAD_ENTER();
-		  gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
-		  GUI_THREAD_LEAVE();
-
-		   /* XXX */
-		  patch_t *patch;
-		  double distance = (fsp.negate ? fsp.ndistance : fsp.pdistance);
-		  if (fsp.type == FILTER_TYPE_TEXTURE) {
-		    distance = distance*NUM_LAP_PYR_LEVELS;
-		    
-		    IplImage* ipl_img;
-		    IplImage* dst_img;
-		    if (TEXTURE_NUM_CHANNELS==1) {
-		      ipl_img = get_gray_ipl_image(popup_window.hooks->img);
-		    }
-		    else if (TEXTURE_NUM_CHANNELS == 3) {
-		      ipl_img = get_rgb_ipl_image(popup_window.hooks->img);
-		    }
-		    dst_img = cvCreateImage(cvSize(ipl_img->width, ipl_img->height), IPL_DEPTH_8U, 1);
-		    cvZero(dst_img);
-		    
-		    double **samples = new double*[fsp.npatches];
-		    texture_features_t* texture_patch;
-		    int s = 0;
-		    TAILQ_FOREACH(texture_patch, &fsp.texture_features_list, link) {
-		      samples[s] = new double[NUM_LAP_PYR_LEVELS*TEXTURE_NUM_CHANNELS];
-		      for (int i=0; i<NUM_LAP_PYR_LEVELS*TEXTURE_NUM_CHANNELS; i++) {
-				samples[s][i] = texture_patch->feature_values[i];
-		      }
-		      s++;
-		    }
-		    int minx, miny;
-		    texture_test_entire_image(ipl_img, fsp.npatches, samples, distance, 0, fsp.dx, fsp.dy,
-					      fsp.xsiz, fsp.ysiz, &minx, &miny, dst_img);
-
-		    double pass_box;
-		    bbox_t bbox;
-		    insp = dst_img->width/fsp.dx * dst_img->height/fsp.dy;
-		    pass = 0;
-		    int num_seen=0;
-		    for (int x=0; (x+fsp.xsiz)<dst_img->width; x++) {
-		      for (int y=0; (y+fsp.ysiz)<dst_img->height; y++) {
-			num_seen++;
-			pass_box = cvGetReal2D(dst_img, y, x);
-			if (pass_box) {
-			  pass++;
-			  bbox.min_x = x;
-			  bbox.min_y = y;
-			  bbox.max_x = x + fsp.xsiz -1;
-			  bbox.max_y = y + fsp.ysiz -1;
-			  highlight_box_f(popup_window.layers[HIGHLIGHT_LAYER], bbox);
-			}
-			//highlight_progress_f(highlight_info.progress_bar, num_seen/(fsp.dx*fsp.dy), insp);			
-		      }
-		    }
-		    cvReleaseImage(&dst_img);
-		    cvReleaseImage(&ipl_img);
-		    for (int i=0; i<s; i++) {
-		      delete[] samples[i];
-		    }
-		    delete[] samples;
-		  }
-		  
-		  else if (fsp.type == FILTER_TYPE_COLOR) {
-		    TAILQ_FOREACH(patch, &fsp.patchlist, link) {
-		      patch->threshold = distance; 
-		    }
-		    if(!popup_window.hooks->histo_ii) {
-		      popup_window.hooks->histo_ii =
-		      (HistoII *)ft_read_alloc_attr(fhandle, 
-						    popup_window.hooks->ohandle,
-						    HISTO_II);
-		    }
-
-		    assert(insp >= pass);
-		    histo_scan_image(scapes[i].name,
-				     popup_window.hooks->img,
-				     popup_window.hooks->histo_ii,
-				     &fsp,
-				     INT_MAX, /* get all matching bboxes */
-				     &insp, &pass,
-				     highlight_box_f, popup_window.layers[HIGHLIGHT_LAYER],
-				     highlight_progress_f, highlight_info.progress_bar);
-		    assert(insp >= pass); 
-		  }
-			   
-		  //fprintf(stderr, "threshold = %.2f\n", distance);
-		  highlight_progress_f(highlight_info.progress_bar, 1, 1);
-
-		  GUI_THREAD_ENTER();
-		  /* update statusbar */
-		  gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, "ready.");
-		  GUI_THREAD_LEAVE();
-	  }
-	}
-#endif
-
+	/* update statusbar */ snprintf(buf, BUFSIZ, "Highlight complete");
+	buf[BUFSIZ - 1] = '\0';
+	GUI_THREAD_ENTER();
+	gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
+	GUI_THREAD_LEAVE();
 
 	pthread_mutex_lock(&highlight_info.mutex);	
 	highlight_info.thread_running = 0;
 	ih_drop_ref(popup_window.hooks, fhandle);
 	pthread_mutex_unlock(&highlight_info.mutex);	
-
-	/* update statusbar */
-	GUI_THREAD_ENTER();
-	char buf[BUFSIZ];
-	sprintf(buf, "highlighting complete; passed %d of %d area tests (%.0f%%).",
-		pass, insp, 100.0 * pass / insp);
-	gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
-	GUI_THREAD_LEAVE();
 
 	pthread_exit(NULL);
 	return NULL;
@@ -501,7 +427,6 @@ cb_popup_window_close(GtkWidget *window)
 	GUI_CALLBACK_ENTER();
 
 	kill_highlight_thread(0);
-
 	popup_window.window = NULL;
 	ih_drop_ref(popup_window.hooks, fhandle);
 	popup_window.hooks = NULL;
@@ -515,25 +440,26 @@ cb_popup_window_close(GtkWidget *window)
 static void
 remove_func(GtkWidget *widget, void *container) 
 {
-  GUI_THREAD_CHECK(); 
-  gtk_container_remove(GTK_CONTAINER(container), widget);
+  	GUI_THREAD_CHECK(); 
+  	gtk_container_remove(GTK_CONTAINER(container), widget);
 }
 
 
 static gboolean
 cb_test_region(GtkWidget *widget, GdkEventButton *event, gpointer ptr) 
 {
+	guint	id;
+	char buf[BUFSIZ];
 
 	GUI_CALLBACK_ENTER();
-	
-	char buf[BUFSIZ];
+
 	sprintf(buf, "mouse click at %.2f, %.2f", event->x, event->y);
-	guint id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
+	id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
 						"test region");
 	gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
 
 
-        GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_LEAVE();
 	return TRUE;
 }
 
@@ -569,16 +495,14 @@ cb_clear_select(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
 {
 	RGBImage *img;
 
-        GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 
 	img = popup_window.layers[SELECT_LAYER];
 
 	rgbimg_clear(img);
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-				   0, 0,
-				   img->width,
+	gtk_widget_queue_draw_area(popup_window.drawing_area, 0, 0, img->width,
 				   img->height);
-        GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_LEAVE();
 
 	popup_window.nselections = 0;
 }
@@ -588,7 +512,7 @@ cb_clear_highlight_layer(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
 {
 	RGBImage *img;
 
-        GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 	
 	kill_highlight_thread(0);
 
@@ -600,10 +524,7 @@ cb_clear_highlight_layer(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
 				   img->width,
 				   img->height);
 
-	/* XXX */
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(highlight_info.progress_bar), 0);
-
-        GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_LEAVE();
 }
 
 static void
@@ -627,6 +548,7 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	GtkWidget *	active_item;
 	snap_search *ssearch;
 	int	   	idx;
+	guint	id;
   	GUI_CALLBACK_ENTER();
 
 	active_item = gtk_menu_get_active(GTK_MENU(popup_window.example_list));
@@ -646,12 +568,12 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	/* popup the edit window */ 
 	ssearch->edit_search();
 
-  guint id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
+  	id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
 					  "selection");
-  gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
+  	gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
   
-  GUI_CALLBACK_LEAVE();
-  return TRUE;
+  	GUI_CALLBACK_LEAVE();
+  	return TRUE;
 }
 
 void
@@ -780,7 +702,8 @@ redraw_selections()
 }
 
 static void
-draw_selection( GtkWidget *widget ) {
+draw_selection( GtkWidget *widget ) 
+{
 /*   GdkPixmap* pixmap; */
   bbox_t bbox;
 
@@ -891,25 +814,25 @@ cb_motion_notify_event( GtkWidget *widget,
 GtkWidget *
 get_example_menu(void)
 {
-        GtkWidget *     menu;
-        GtkWidget *     item;
+	GtkWidget *     menu;
+	GtkWidget *     item;
 	snap_search *	cur_search;
 	int		i;
                                                                                 
-        menu = gtk_menu_new();
+	menu = gtk_menu_new();
                          
 	for (i=0;i<num_searches; i++) {
 		cur_search = snap_searches[i];
 		if (cur_search->is_example() == 0) {
 			continue;
 		}
-        	item = gtk_menu_item_new_with_label(cur_search->get_name());
-        	gtk_widget_show(item);
-        	g_object_set_data(G_OBJECT(item), "user data", (void *)i);
-        	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		item = gtk_menu_item_new_with_label(cur_search->get_name());
+		gtk_widget_show(item);
+		g_object_set_data(G_OBJECT(item), "user data", (void *)i);
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 	}
                                        
-        return(menu);
+	return(menu);
 }
                                                                                 
 /*
@@ -1117,26 +1040,32 @@ highlight_panel(void)
 	box = highlight_select();
   	gtk_box_pack_start(GTK_BOX(box2), box, FALSE, TRUE, 0);
 
+	box = gtk_hbox_new(TRUE, 10);
+	gtk_box_pack_start(GTK_BOX(box2), box, FALSE, TRUE, 0);
 
-	GtkWidget *pb = gtk_progress_bar_new();
-  	highlight_info.progress_bar = pb;
-  	gtk_box_pack_start (GTK_BOX (box2), pb, TRUE, TRUE, 0);
+	popup_window.drawbox = gtk_radio_button_new_with_label(NULL, "Outline");
+    gtk_box_pack_start(GTK_BOX(box), popup_window.drawbox, FALSE, TRUE, 0);
+    popup_window.drawhl = gtk_radio_button_new_with_label_from_widget(
+        GTK_RADIO_BUTTON(popup_window.drawbox), "Shade");
+    gtk_box_pack_start(GTK_BOX(box), popup_window.drawhl, FALSE, TRUE, 0);
 
-  	/* couple of buttons */
-  	GtkWidget *buttonbox = gtk_hbox_new(TRUE, 10);
-  	gtk_box_pack_start (GTK_BOX(box2), buttonbox, TRUE, TRUE, 0);
-  	gtk_widget_show(buttonbox);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(popup_window.drawhl), TRUE);
+                                                                                     
+  	/* Buttons to draw/clear the highlighting */
+  	box = gtk_hbox_new(TRUE, 10);
+  	gtk_box_pack_start (GTK_BOX(box2), box, TRUE, TRUE, 0);
+
 
   	GtkWidget *button = gtk_button_new_with_label ("Highlight");
   	g_signal_connect_after(GTK_OBJECT(button), "clicked",
 			 	GTK_SIGNAL_FUNC(cb_run_highlight), NULL);
-  	gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
+  	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
   	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
 
   	button = gtk_button_new_with_label ("Clear");
   	g_signal_connect_after(GTK_OBJECT(button), "clicked",
 					 GTK_SIGNAL_FUNC(cb_clear_highlight_layer), NULL);
-  	gtk_box_pack_start (GTK_BOX (buttonbox), button, TRUE, TRUE, 0);
+  	gtk_box_pack_start (GTK_BOX (box), button, TRUE, TRUE, 0);
 
 	gtk_widget_show_all(frame);
 	return(frame);
@@ -1267,14 +1196,11 @@ do_img_popup(GtkWidget *widget)
 	} else {
 		kill_highlight_thread(0);
 		
-		/* XXX */
-		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(highlight_info.progress_bar), 0);
 		gtk_container_remove(GTK_CONTAINER(popup_window.image_area), 
 				     popup_window.scroll);
 		ih_drop_ref(popup_window.hooks, fhandle);
 
 		gdk_window_raise(GTK_WIDGET(popup_window.window)->window);
-		
 	}
 	
 	/* note there is a slight race condition here, if the thumb gets overwritten */
