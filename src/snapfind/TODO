@@ -26,5 +26,8 @@ Different distance metrics for histogram
 
 Remove Save from file list
 
+Fix file dependancies
 
+Highlighting support
 
+Clean up config file selection
