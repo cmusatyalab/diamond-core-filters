@@ -126,6 +126,7 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 	CvMemStorage *	storage = cvCreateMemStorage(0);
 	IplImage *	gray;	
 	CvSeq* 		faces;
+	int			total;
 
 
 	/* XXX we should find some way to reuse IPL */
@@ -133,7 +134,7 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 
 
 	/* XXX fix args */	
-        faces = cvHaarDetectObjects(gray, fconfig->haar_cascade, storage, 
+	faces = cvHaarDetectObjects(gray, fconfig->haar_cascade, storage, 
 		fconfig->scale_mult, fconfig->support, CV_HAAR_DO_CANNY_PRUNING);
 
 
@@ -150,8 +151,12 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 		TAILQ_INSERT_TAIL(blist, bb, link);
 	}
 
+	/* faces will be relased by the cvReleaseMemStorage */
+
+	total = faces->total;
+	cvReleaseMemStorage(&storage);
 	cvReleaseImage(&gray);		
-	return(faces->total);
+	return(total);
 }
 
 
