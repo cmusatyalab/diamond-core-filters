@@ -389,7 +389,6 @@ build_search_from_gui(topo_region_t *main_region)
 	      main_region->gids[main_region->ngids++] = *gptr++;
 	      num_gids--;
 	    }
-	    //printf("gid %d active\n",  collections[i].id);
 	  }
 	}
 }
@@ -875,8 +874,7 @@ cb_stop_search(GtkButton* item, gpointer data)
 	message_t *		message;
 	int			err;
 
-        GUI_CALLBACK_ENTER();
-	//printf("stop search !! \n");
+	GUI_CALLBACK_ENTER();
 
 	/*
 	 * Toggle the start and stop buttons.
@@ -912,8 +910,7 @@ cb_start_search(GtkButton* item, gpointer data)
 	message_t *		message;
 	int			err;
 
-        GUI_CALLBACK_ENTER();
-	printf("starting search !! \n");
+	GUI_CALLBACK_ENTER();
 
 	/*
 	 * Disable the start search button and enable the stop search
@@ -1136,6 +1133,43 @@ create_search_window()
 
 
 static void
+cb_import_search_from_dir(GtkWidget *widget, gpointer user_data) 
+{
+	GtkWidget *file_selector = (GtkWidget *)user_data;
+	const gchar *dirname;
+	char *	olddir;
+	int			err;
+	char buf[BUFSIZ];
+
+	GUI_CALLBACK_ENTER();
+
+	dirname = gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_selector));
+	sprintf(buf, "%s/%s", dirname, SEARCH_CONFIG_FILE);
+
+	olddir = getcwd(NULL, 0);
+
+	err = chdir(dirname);
+	assert(err == 0);
+
+	/* XXXX cleanup all the old searches first */
+
+	printf("Reading scapes: %s ...\n", buf);
+	read_search_config(buf, snap_searches, &num_searches);
+	printf("Done reading scapes...\n");
+	
+	err = chdir(olddir);
+	assert(err == 0);
+	free(olddir);
+
+	gtk_widget_destroy(gui.search_widget);
+    gui.search_widget = create_search_window();
+    gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
+		FALSE, FALSE, 10);
+
+	GUI_CALLBACK_LEAVE();
+}
+
+static void
 cb_load_search_from_dir(GtkWidget *widget, gpointer user_data) 
 {
 	GtkWidget *file_selector = (GtkWidget *)user_data;
@@ -1156,6 +1190,7 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 
 	/* XXXX cleanup all the old searches first */
 
+	num_searches = 0;
 	printf("Reading scapes: %s ...\n", buf);
 	read_search_config(buf, snap_searches, &num_searches);
 	printf("Done reading scapes...\n");
@@ -1206,15 +1241,14 @@ cb_load_search()
 	GtkWidget *file_selector;
 
   	GUI_CALLBACK_ENTER();
-	printf("load search \n");
 
 	/* Create the selector */
   	file_selector = gtk_file_selection_new("Dir name for search");
   	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
 
   	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
-		    "clicked", G_CALLBACK(cb_load_search_from_dir),
-		    (gpointer) file_selector);
+	    "clicked", G_CALLBACK(cb_load_search_from_dir),
+	    (gpointer) file_selector);
    			   
   	/* 
      * Ensure that the dialog box is destroyed when the user clicks a button. 
@@ -1235,43 +1269,38 @@ cb_load_search()
 	GUI_CALLBACK_LEAVE();
 }
 
-
 static void
-cb_save_search() 
+cb_import_search() 
 {
-  GtkWidget *file_selector;
+	GtkWidget *file_selector;
 
-  GUI_CALLBACK_ENTER();
-  printf("save search \n");
-  GUI_CALLBACK_LEAVE();
-  return;
+  	GUI_CALLBACK_ENTER();
 
-  /* Create the selector */
-  file_selector = gtk_file_selection_new("Filename for filter spec.");
-  //gtk_file_selection_set_filename(GTK_FILE_SELECTION(file_selector),
-				  //"sample.spec");
-  gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
+	/* Create the selector */
+  	file_selector = gtk_file_selection_new("Dir name for search");
+  	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
 
-  g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
-		    "clicked",
-		    G_CALLBACK(cb_save_spec_to_filename),
-		    (gpointer) file_selector);
+  	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
+	    "clicked", G_CALLBACK(cb_import_search_from_dir),
+	    (gpointer)file_selector);
    			   
-  /* Ensure that the dialog box is destroyed when the user clicks a button. */
-  g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
+  	/* 
+     * Ensure that the dialog box is destroyed when the user clicks a button. 
+	 * Use swapper here to get the right argument to destroy (YUCK).
+     */
+  	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
 			    "clicked",
-			    G_CALLBACK (gtk_widget_destroy), 
-			    (gpointer) file_selector); 
+			    G_CALLBACK(gtk_widget_destroy), 
+			    (gpointer)file_selector); 
 
-  g_signal_connect_swapped (GTK_OBJECT (GTK_FILE_SELECTION (file_selector)->cancel_button),
+	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->cancel_button),
 			    "clicked",
 			    G_CALLBACK (gtk_widget_destroy),
 			    (gpointer) file_selector); 
-   
-   /* Display that dialog */
-   gtk_widget_show (file_selector);
 
-  GUI_CALLBACK_LEAVE();
+	/* Display that dialog */
+	gtk_widget_show(file_selector);
+	GUI_CALLBACK_LEAVE();
 }
 
 static void
@@ -1707,7 +1736,7 @@ static GtkItemFactoryEntry menu_items[] = { /* XXX */
   //  { "/File/_Save",    "<control>S", (GtkItemFactoryCallback)print_hello,    0, "<StockItem>", GTK_STOCK_SAVE },
   //  { "/File/Save _As", NULL,         NULL,           0, "<Item>" },
   { "/File/Load Search",   NULL,  G_CALLBACK(cb_load_search),   0, "<Item>" },
-  { "/File/Save Search",   NULL,  G_CALLBACK(cb_save_search),   0, "<Item>" },
+  { "/File/Import Search",   NULL,  G_CALLBACK(cb_import_search),   0, "<Item>" },
   { "/File/Save Search As.",   NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
   { "/File/sep1",     NULL,         NULL,           0, "<Separator>" },
   { "/File/_Quit",    "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 0, "<StockItem>", GTK_STOCK_QUIT },

@@ -581,7 +581,6 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	active_item = gtk_menu_get_active(GTK_MENU(popup_window.example_list));
 
 	idx = (int)g_object_get_data(G_OBJECT(active_item), "user data");
-	printf("item match %p %d \n", active_item, idx);
 
 	assert(idx >= 0);
 	assert(idx < num_searches);

@@ -81,8 +81,6 @@ new_search(char *str)
 	char *type;
 	int		i, maxlen;
 
-	printf("XXX new search !! %s \n", str);
-
 	maxlen = strlen(str) + 1;
 	for (i=0; i < maxlen; i++) {
 		if (isspace(str[i]) || (str[i] == '\0')) {
@@ -99,8 +97,6 @@ new_search(char *str)
 	strncpy(type, str, i);
 	type[i] = '\0';
 	name = eat_token(str);		
-
-	printf("search <name %s> <type %s> \n", name, type);
 
 	if (num_ss >= max_ss) {
 		printf("too many searches \n");
@@ -137,7 +133,7 @@ read_search_config(char *fname, snap_search **list, int *num)
 {
 	int err;
 
-	num_ss = 0;
+	num_ss = *num;
 	sslist = list;
 
 	yyin = fopen(fname, "r");
