@@ -339,6 +339,8 @@ do_bench_search()
         exit(1);
     }
 
+    fprintf(stderr, "starting loop \n");
+    fflush(stderr);
     while (1) {
         err = ls_next_object(shandle, &cur_obj, 0);
         if (err == ENOENT) {
@@ -349,13 +351,15 @@ do_bench_search()
             dump_name(cur_obj);
             dump_matches(cur_obj);
             fprintf(stdout, "\n");
+	    fflush(stdout);
             ls_release_object(shandle, cur_obj);
         } else {
             fprintf(stderr, "get_next_obj: failed on %d \n", err);
             exit(1);
         }
-
     }
+    fprintf(stderr, "ending loop \n");
+    fflush(stderr);
 
 }
 
@@ -500,6 +504,7 @@ main(int argc, char **argv)
     }
 
     fprintf(stdout, " Found %d items in %d.%d  \n", count, secs, usec);
+    fflush(stdout);
     sleep(1);
     dump_state();
 
