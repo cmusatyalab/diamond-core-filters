@@ -95,8 +95,3 @@ compute_scale(RGBImage * img, int xdim, int ydim)
     return scale;
 }
 
-
-
-
-
-

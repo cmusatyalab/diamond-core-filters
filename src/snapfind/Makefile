@@ -62,7 +62,7 @@ SNAPFIND_SRCS += sfind_tools.c
 
 SNAPFIND_OBJS = $(SHARED_APP_OBJS) $(SHARED_COMMON_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
-SNAPFIND_OBJS += stats_win.o fil_image_tools.o snap_popup.o 
+SNAPFIND_OBJS += stats_win.o snap_popup.o 
 SNAPFIND_OBJS += sfind_tools.o  fil_histo.o
 
 DEBUG_SRCS = face.c
