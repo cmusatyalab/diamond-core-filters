@@ -54,6 +54,11 @@ void create_progress_win(ls_search_handle_t shandle, int expert);
 void toggle_progress_win(ls_search_handle_t shandle, int expert);
 void close_progress_win();
 
+
+void create_ccontrol_win(ls_search_handle_t shandle, int expert);
+void toggle_ccontrol_win(ls_search_handle_t shandle, int expert);
+void close_ccontrol_win();
+
 void init_search();
 
 void drain_ring(ring_data_t *ring);
