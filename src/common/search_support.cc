@@ -100,13 +100,13 @@ int
 search_exists(const char *name, search_set *set)
 {
 	img_search *cur;
+	search_iter_t	iter;
 
-	cur = set->get_first_search();
-	while (cur != NULL) {
+	set->reset_search_iter(&iter);
+	while ((cur = set->get_next_search(&iter)) != NULL) {
 		if (strcmp(cur->get_name(), name) == 0) {
 			return(1);
 		}
-		cur = set->get_next_search();
 	}
 	return(0);
 }

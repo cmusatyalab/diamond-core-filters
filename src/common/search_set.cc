@@ -16,8 +16,6 @@
 
 search_set::search_set()
 {
-	ss_cur_search = ss_search_list.end();
-	ss_cur_dep = ss_dep_list.end();
 	return;
 }
 
@@ -30,9 +28,7 @@ search_set::~search_set()
 void
 search_set::add_search(img_search *new_search)
 {
-
 	ss_search_list.push_back(new_search);
-
 }
 
 
@@ -58,47 +54,45 @@ search_set::clear_deps()
 
 
                                                                                 
-img_search *
-search_set::get_first_search()
+void
+search_set::reset_search_iter(search_iter_t *iter)
 {
-	ss_cur_search = ss_search_list.begin();
-	return(get_next_search());
+	*iter = ss_search_list.begin();
 }
 
 
 img_search *
-search_set::get_next_search()
+search_set::get_next_search(search_iter_t *iter)
 {
 	img_search  *	dsearch;
 
-	if (ss_cur_search == ss_search_list.end()) {
+	if (*iter == ss_search_list.end()) {
 		return(NULL);
 	}
 
-	dsearch = *ss_cur_search;
-	ss_cur_search++;
+	dsearch = **iter;
+	(*iter)++;
 	return(dsearch);
 }
 
 
-img_search *
-search_set::get_first_dep()
+void
+search_set::reset_dep_iter(search_iter_t *iter)
 {
-	ss_cur_dep = ss_dep_list.begin();
-	return(get_next_dep());
+	*iter = ss_dep_list.begin();
 }
 
 
 img_search *
-search_set::get_next_dep()
+search_set::get_next_dep(search_iter_t *iter)
 {
 	img_search  *	dsearch;
 
-	if (ss_cur_dep == ss_dep_list.end()) {
+	if (*iter == ss_dep_list.end()) {
 		return(NULL);
 	}
-	dsearch = *ss_cur_dep;
-	ss_cur_dep++;	
+	dsearch = **iter;
+	(*iter)++;
 	return(dsearch);	
 }
 

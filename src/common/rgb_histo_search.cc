@@ -393,9 +393,11 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "MERIT 200  # some merit \n");
 	fprintf(ostream, "\n");
 
+	printf("rgb_hist: ss_add_histii \n");
 	rgb = new histo_ii("Histo II", "Histo II");
 	ss_add_dep(rgb);
 
+	printf("rgb_hist: ss_add_rgb \n");
 	rgb = new rgb_img("RGB image", "RGB image");
 	ss_add_dep(rgb);
 }

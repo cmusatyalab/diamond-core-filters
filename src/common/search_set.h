@@ -13,6 +13,8 @@ using namespace	std;
 using namespace	__gnu_cxx;
 
 
+typedef  list<img_search *>::iterator	search_iter_t;
+
 class search_set {
 public:
 	search_set();
@@ -21,25 +23,22 @@ public:
 	void		add_search(img_search *new_search);
 	void		remove_search(img_search *old_search);
 
-	img_search * get_first_search();
-	img_search * get_next_search();
+	void		reset_search_iter(search_iter_t *iter);
+	img_search * 	get_next_search(search_iter_t *iter);
 
 	void		add_dep(img_search *dep_search);
 	void		clear_deps();
 
-	img_search * get_first_dep();
-	img_search * get_next_dep();
+	void 		reset_dep_iter(search_iter_t *iter);
+	img_search * 	get_next_dep(search_iter_t *iter);
 
-
-	int			get_search_count();
+	int		get_search_count();
 
 private:
 	list<img_search *>		ss_search_list;
-	list<img_search *>::iterator	ss_cur_search;
-
 	list<img_search *>		ss_dep_list;
-	list<img_search *>::iterator	ss_cur_dep;
 };
+
 
 
 

@@ -370,16 +370,16 @@ void
 ss_add_dep(img_search *dep)
 {
 	img_search *check;
+	search_iter_t	iter;
 	/* for now we use the name to detect the same dependancy has been added*/
 	/* XXX TODO:  look for better method */
 
-	check = snap_searchset->get_first_dep();
-	while (check != NULL) {
-		if (strcmp(dep->get_name(), check->get_name()) == 0) {
+	snap_searchset->reset_dep_iter(&iter);
+	while ((check = snap_searchset->get_next_dep(&iter)) != NULL) {
+		if (dep == check) {
 			delete dep;
 			return;
 		}
-		check = snap_searchset->get_next_dep();
 	}
 
 	snap_searchset->add_dep(dep);
@@ -401,6 +401,7 @@ build_filter_spec(char *tmp_file)
 	int         fd;
 	img_search *		snapobj;
 	img_search *		rgb;
+	search_iter_t		iter;
 
 	tmp_storage = (char *)malloc(L_tmpnam);	/* where is the free for this? XXX */
 	if (tmp_storage == NULL) {
@@ -432,23 +433,21 @@ build_filter_spec(char *tmp_file)
 
 	/* we always do rgb, XXX should we ??*/
 	rgb = new rgb_img("RGB image", "RGB image");
-    ss_add_dep(rgb);
+    	ss_add_dep(rgb);
 
-
-	snapobj = snap_searchset->get_first_search();
-	while(snapobj != NULL) {
+	
+	snap_searchset->reset_search_iter(&iter);
+	while ((snapobj = snap_searchset->get_next_search(&iter)) != NULL) {
 		if (snapobj->is_selected()) {
 			snapobj->save_edits();
 			snapobj->write_fspec(fspec);
 		}
-		snapobj = snap_searchset->get_next_search();
 	}
 
 	/* write dependency list */
-	snapobj = snap_searchset->get_first_dep();
-	while (snapobj != NULL) {
-			snapobj->write_fspec(fspec);
-			snapobj = snap_searchset->get_next_dep();
+	snap_searchset->reset_dep_iter(&iter);
+	while ((snapobj = snap_searchset->get_next_dep(&iter)) != NULL) {
+		snapobj->write_fspec(fspec);
 	}
 
 
@@ -954,6 +953,7 @@ write_search_config(const char *dirname, search_set *set)
 	FILE *		conf_file;
 	char		buffer[256];	/* XXX check */
 	img_search *snapobj;
+	search_iter_t	iter;
 
 
 	/* Do some test on the dir */
@@ -982,10 +982,9 @@ write_search_config(const char *dirname, search_set *set)
 	conf_file = fopen(buffer, "w");
 
 
-	snapobj = snap_searchset->get_first_search();
-	while(snapobj != NULL) {
+	snap_searchset->reset_search_iter(&iter);
+	while ((snapobj = snap_searchset->get_next_search(&iter)) != NULL) {
 		snapobj->write_config(conf_file, dirname);
-		snapobj = snap_searchset->get_next_search();
 	}
 
 	fclose(conf_file);
@@ -1013,6 +1012,7 @@ create_search_window()
     GtkWidget *separator;
     GtkWidget *table;
     GtkWidget *frame, *widget;
+    search_iter_t	iter;
     int row = 0;        /* current table row */
 	img_search	*snapobj;
 
@@ -1044,8 +1044,8 @@ create_search_window()
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
 
 
-	snapobj = snap_searchset->get_first_search();
-	while(snapobj != NULL) {
+	snap_searchset->reset_search_iter(&iter);
+	while ((snapobj = snap_searchset->get_next_search(&iter)) != NULL) {
 		row++;
 		widget = snapobj->get_search_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
@@ -1053,8 +1053,6 @@ create_search_window()
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
 		widget = snapobj->get_edit_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
-
-		snapobj = snap_searchset->get_next_search();
 	}
 
 	gtk_container_add(GTK_CONTAINER(frame), table);

@@ -313,6 +313,7 @@ image_highlight_main(void *ptr)
 	RGBImage *		hl_img;
 	RGBPixel mask = colorMask;
 	RGBPixel color = red;
+	search_iter_t		iter;
 	guint			id;
 	int				use_box;
 	img_search *	csearch;
@@ -346,11 +347,11 @@ image_highlight_main(void *ptr)
 
 	popup_window.nselections = 0;
 
-	csearch = sset->get_first_search();
-	while (csearch != NULL) {
+	sset->reset_search_iter(&iter);
+	while ((csearch = sset->get_next_search(&iter)) != NULL) {
 		/* if highligh isn't selected, then go to next object */
 		if (csearch->is_hl_selected() == 0) {
-			goto next;
+			continue;
 		}
 
 		TAILQ_INIT(&bblist);
@@ -392,8 +393,6 @@ image_highlight_main(void *ptr)
 		GUI_THREAD_ENTER();
 		gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
 		GUI_THREAD_LEAVE();
-next:
-		csearch = sset->get_next_search();
 	}
 
 	/* update statusbar */ snprintf(buf, BUFSIZ, "Highlight complete");
@@ -793,20 +792,19 @@ get_example_menu(void)
 	GtkWidget *     item;
 	img_search *	cur_search;
 	int		i;
+	search_iter_t	iter;
                                                                                 
 	menu = gtk_menu_new();
                     
-	cur_search = sset->get_first_search();     
-	while(cur_search != NULL) {
+	sset->reset_search_iter(&iter);
+	while ((cur_search = sset->get_next_search(&iter)) != NULL) {
 		if (cur_search->is_example() == 0) {
-			goto next;
+			continue;
 		}
 		item = gtk_menu_item_new_with_label(cur_search->get_name());
 		gtk_widget_show(item);
 		g_object_set_data(G_OBJECT(item), "user data", (void *)i);
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-next:
-		cur_search = sset->get_next_search();
 	}
                                        
 	return(menu);
@@ -949,6 +947,7 @@ highlight_select()
     GtkWidget *frame, *widget;
     int row = 0;        /* current table row */
 	img_search *	csearch;
+    search_iter_t	iter;
 
     GUI_THREAD_CHECK(); 
 
@@ -976,8 +975,9 @@ highlight_select()
 	gtk_widget_show(widget);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
 
-	csearch = sset->get_first_search();
-	while(csearch != NULL) {
+	
+	sset->reset_search_iter(&iter);
+	while ((csearch = sset->get_next_search(&iter)) != NULL) {
 		row++;
 		widget = csearch->get_highlight_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
@@ -985,7 +985,6 @@ highlight_select()
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
 		widget = csearch->get_edit_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
-		csearch = sset->get_next_search();
 	}
 	gtk_container_add(GTK_CONTAINER(frame), table);
     gtk_box_pack_start(GTK_BOX(box1), frame, FALSE, FALSE, 10);
