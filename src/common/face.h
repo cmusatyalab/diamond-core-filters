@@ -3,8 +3,6 @@
 #define _FACE_H_
 
 #include <sys/types.h>
-//#include "face_consts.h"
-//#include "histo.h"
 #include "queue.h"
 
 /* image dimension */
