@@ -41,8 +41,23 @@ LIBDIR += -L../../lib/libsearchlet -L../../lib/libfilter -L../../lib/libfilterex
 # Other objects to cleanup
 CLEAN_OTHERS += read_config.cc
 
+SHARED_HEADERS = snap_search.h  rgb.h
+                                                                                      
+SHARED_SEARCHLET_SRCS =
+
+SHARED_SEARCHLET_OBJS =
+      
+SHARED_APP_SRCS =
+                            
+SHARED_APP_OBJS =
+ 
+SHARED_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_SEARCHLET_OBJS) $(SHARED_HEADERS)
+                            
+
+
 # objects used to build the searchlet(s)
-SEARCHLET_SRCS = fil_data2ii.c fil_face.c fil_file.c facedet.c
+SEARCHLET_SRCS = $(SHARED_SEARCHLET_SRCS)
+SEARCHLET_SRCS += fil_data2ii.c fil_face.c fil_file.c facedet.c
 SEARCHLET_SRCS += fil_image_tools.c image_tools.c 
 SEARCHLET_SRCS += histo.c fil_histo.c merge_faces.c fil_tools.c 
 SEARCHLET_SRCS += texture_tools.c fil_regex.c
@@ -50,7 +65,8 @@ SEARCHLET_SRCS += fil_data2cv.c fil_texture.cc
 SEARCHLET_SRCS += fil_synth.c face_tools.c
 
 
-SEARCHLET_OBJS = fil_data2ii.o fil_face.o fil_file.o facedet.o 
+SEARCHLET_OBJS = $(SHARED_SEARCHLET_OBJS)
+SEARCHLET_OBJS += fil_data2ii.o fil_face.o fil_file.o facedet.o 
 SEARCHLET_OBJS += fil_image_tools.o image_tools.o histo.o 
 SEARCHLET_OBJS += fil_histo.o merge_faces.o fil_tools.o texture_tools.o 
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o fil_texture.o 
@@ -59,7 +75,8 @@ SEARCHLET_OBJS += fil_synth.o  face_tools.o
 
 
 # objects needed to build the main
-SNAPFIND_SRCS = snapfind.cc face_tools.c face_image.c sfind_search.c 
+SNAPFIND_SRCS = $(SHARED_APP_SRCS)
+SNAPFIND_SRCS += snapfind.cc face_tools.c face_image.c sfind_search.c 
 SNAPFIND_SRCS +=  read_config.cc image_tools.c histo.c 
 SNAPFIND_SRCS += fil_tools.c stats_win.c rgb.c gui_thread.c  
 SNAPFIND_SRCS += texture_tools.c gtk_image_tools.c 
@@ -68,7 +85,8 @@ SNAPFIND_SRCS += texture_search.cc vj_face_search.cc search_support.cc
 SNAPFIND_SRCS += snap_popup.cc rgb_img.cc ii_img.cc regex_search.cc
 SNAPFIND_SRCS += facedet.c sfind_tools.c fil_data2ii.c fil_file.c
 
-SNAPFIND_OBJS = snapfind.o face_tools.o face_image.o sfind_search.o read_config.o \
+SNAPFIND_OBJS = $(SHARED_APP_OBJS)
+SNAPFIND_OBJS += snapfind.o face_tools.o face_image.o sfind_search.o read_config.o \
 	image_tools.o histo.o fil_tools.o stats_win.o rgb.o gui_thread.o \
 	texture_tools.o rgb_histo_search.o \
 	texture_search.o \
@@ -157,6 +175,11 @@ experiments:	$(EXPERIMENT_TGTS)
 
 clean-experiments:
 	$(RM) $(EXPERIMENT_TGTS)
+
+
+$(SHARED_SRCS):
+	ln -f -s ../common_searches/$@
+                                 
 
 
 %.eps:	%.gviz

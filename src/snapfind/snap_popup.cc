@@ -141,7 +141,7 @@ expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	}
 	assert(widget == popup_window.drawing_area);
 
-	gdk_window_clear_area (widget->window,
+	gdk_window_clear_area(widget->window,
 			       event->area.x, event->area.y,
 			       event->area.width, event->area.height); 
 	gdk_gc_set_clip_rectangle (widget->style->fg_gc[widget->state],
@@ -1187,19 +1187,15 @@ do_img_popup(GtkWidget *widget)
 		frame = highlight_panel();
   		gtk_box_pack_end (GTK_BOX (box1), frame, FALSE, FALSE, 0);
 
-
 		popup_window.image_area = gtk_viewport_new(NULL, NULL);
 		gtk_widget_show(popup_window.image_area);
-
 		gtk_paned_pack2(GTK_PANED(pane), popup_window.image_area, TRUE, TRUE);
 
 	} else {
 		kill_highlight_thread(0);
-		
 		gtk_container_remove(GTK_CONTAINER(popup_window.image_area), 
 				     popup_window.scroll);
 		ih_drop_ref(popup_window.hooks, fhandle);
-
 		gdk_window_raise(GTK_WIDGET(popup_window.window)->window);
 	}
 	
