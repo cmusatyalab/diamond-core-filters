@@ -1,6 +1,7 @@
 #ifndef	_IMAGE_COMMON_H_
 #define	_IMAGE_COMMON_H_
 
+#include "queue.h"
 
 typedef	struct bbox {
 	int					min_x;

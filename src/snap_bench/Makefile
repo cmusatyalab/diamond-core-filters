@@ -6,6 +6,7 @@ INCDIR += -I../../lib/libfilterexec
 INCDIR += -I../../lib/libod
 INCDIR += -I../../lib/libfilter
 INCDIR += -I../../apps/common_searches
+INCDIR += -I/usr/local/include/opencv
 
 
 # to build these files.

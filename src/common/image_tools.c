@@ -605,3 +605,24 @@ get_rgb_ipl_image(RGBImage * rgb_img)
     return ipl_rgb_img;
 }
 
+
+void
+img_constrain_bbox(bbox_t * bbox, RGBImage * img)
+{
+                                                                              
+    if (bbox->min_x >= img->width) {
+        bbox->min_x = img->width - 1;
+    }
+    if (bbox->min_y >= img->height) {
+        bbox->min_y = img->height - 1;
+    }
+                                                                              
+    if (bbox->max_x >= img->width) {
+        bbox->max_x = img->width - 1;
+    }
+    if (bbox->max_y >= img->height) {
+        bbox->max_y = img->height - 1;
+    }
+                                                                              
+}
+

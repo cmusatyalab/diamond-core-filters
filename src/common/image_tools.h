@@ -4,6 +4,7 @@
 #include <errno.h>
 #include "rgb.h"
 #include <opencv/cv.h>
+#include "image_common.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +43,9 @@ int pnm_parse_header(char *fdata, size_t nb,
 		     int *width, int *height,
 		     image_type_t *magic, int *headerlen);
 int ppm_add_data(pnm_state_t *, char *fdata, size_t nb);
+
+void img_constrain_bbox(bbox_t * bbox, RGBImage * img);
+
 
 #ifdef __cplusplus
 }

@@ -99,25 +99,4 @@ compute_scale(RGBImage * img, int xdim, int ydim)
 
 
 
-void
-img_constrain_bbox(bbox_t * bbox, RGBImage * img)
-{
-
-    if (bbox->min_x >= img->width) {
-        bbox->min_x = img->width - 1;
-    }
-    if (bbox->min_y >= img->height) {
-        bbox->min_y = img->height - 1;
-    }
-
-    if (bbox->max_x >= img->width) {
-        bbox->max_x = img->width - 1;
-    }
-    if (bbox->max_y >= img->height) {
-        bbox->max_y = img->height - 1;
-    }
-
-}
-
-
 

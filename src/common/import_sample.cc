@@ -15,29 +15,34 @@
 #include <getopt.h>
 
 #include "filter_api.h"
-#include "searchlet_api.h"
+#include "lib_searchlet.h"
+#include "attr.h"
+#include "lib_od.h"
+
 #include "gui_thread.h"
 
 #include "queue.h"
 #include "ring.h"
 #include "rtimer.h"
-#include "sf_consts.h"
+//#include "sf_consts.h"
 
-#include "face_search.h"
+//#include "face_search.h"
 #include "face_image.h" 
 #include "rgb.h"
 #include "face.h"
 #include "fil_tools.h"
 #include "image_tools.h"
-#include "face_widgets.h"
+//#include "face_widgets.h"
 #include "texture_tools.h"
 #include "img_search.h"
-#include "sfind_search.h"
+//#include "sfind_search.h"
 #include "search_support.h"
 #include "gtk_image_tools.h"
-#include "sfind_tools.h"
+//#include "sfind_tools.h"
+/* XXX horible hack */
+#define	MAX_SELECT	32	
 #include "import_sample.h"
-#include "snapfind.h"
+//#include "snapfind.h"
 
 /* XXX fix this */
 extern img_search *snap_searches[];
@@ -1129,7 +1134,7 @@ load_import_file(const char *file)
 {
 	GtkWidget *eb;
 	GtkWidget *image;
-        char buf[MAX_NAME];
+        char buf[COMMON_MAX_NAME];
 
 
 	/* open the and create RGB image */
