@@ -208,7 +208,6 @@ stats_main(void *data)
 		if (completed > 1.0) {
 			completed = 1.0;
 		}
-		printf("completed %f \n", completed);
 
 		/* get currnent time and compute elapsed time */
 		gettimeofday(&tv, &tz);
