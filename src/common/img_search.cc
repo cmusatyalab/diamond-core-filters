@@ -208,15 +208,14 @@ img_search::get_highlight_widget()
 	cb = gtk_check_button_new();
 	g_signal_connect(G_OBJECT(cb), "toggled",
                      G_CALLBACK(hl_toggle_callback), this);
-	gtk_widget_show(cb);
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cb), hl_selected);
 	gtk_box_pack_start(GTK_BOX(hbox), cb, FALSE, FALSE, 0);
-	gtk_widget_show(cb);
 
 	search_label = gtk_label_new(display_name);
 	gtk_box_pack_start(GTK_BOX(hbox), search_label, FALSE, FALSE, 0);
-	gtk_widget_show(search_label);
 
-	gtk_widget_show(hbox);
+	gtk_widget_show_all(hbox);
 	return(hbox);
 }
 
