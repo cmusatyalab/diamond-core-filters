@@ -88,8 +88,8 @@ face_scan_image(ii_image_t *ii, ii2_image_t * ii2, fconfig_fdetect_t *fconfig,
 	 	 * each time we change the scale, readjust the feature table 
 	 	 */
 		scale_feature_table(scale);
-		for (y = 1; y + ysiz <= height; y += fconfig->stride) {
-			for (x = 1; x + xsiz <= width; x += fconfig->stride) {
+		for (x = 1; x + xsiz <= width; x += fconfig->stride) {
+			for (y = 1; y + ysiz <= height; y += fconfig->stride) {
 				img_var = image_variance(ii, ii2, (dim_t) x, (dim_t) y,
 									 (dim_t) xsiz, (dim_t) ysiz, scale);
 
