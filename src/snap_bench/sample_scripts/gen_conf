@@ -1,0 +1,23 @@
+#!/bin/sh
+
+SLOWDOWN=0
+RATES="0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100"
+#RATES="0 10 20 30 40 50 60 70 80 90 100"
+DISKS="09 10 11 12"
+
+for rate in $RATES; do 
+  echo "#!/bin/sh" > bench_conf_$rate
+  for disk_id in $DISKS; do
+    echo ./dctl -w devices.diamond$disk_id.fexec.fixed_ratio=$rate >> bench_conf_$rate
+    echo ./dctl -w devices.diamond$disk_id.fexec.fixed_split=1 >> bench_conf_$rate
+    echo ./dctl -w devices.diamond$disk_id.fexec.cpu_slowdown=$SLOWDOWN >> bench_conf_$rate
+    done
+  echo "sleep 3" >> bench_conf_$rate
+  echo "date" >> bench_conf_$rate
+  chmod +x bench_conf_$rate
+done
+
+
+
+
+
