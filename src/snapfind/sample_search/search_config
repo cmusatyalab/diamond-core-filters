@@ -1,0 +1,23 @@
+
+
+SEARCH rgb_histogram pure_black
+METRIC 0.800000 
+TESTX 32 
+TESTY 32 
+STRIDE 32 
+SCALE 0 
+PATCHFILE pure_black.ex0.ppm 0 0 128 128 
+PATCHFILE pure_black.ex1.ppm 0 0 32 32 
+PATCHFILE pure_black.ex2.ppm 0 0 32 32 
+PATCHFILE pure_black.ex3.ppm 0 0 32 32 
+PATCHFILE pure_black.ex4.ppm 0 0 32 32 
+PATCHFILE pure_black.ex5.ppm 0 0 64 64 
+
+
+SEARCH rgb_histogram pure_black1
+METRIC 0.400000 
+TESTX 32 
+TESTY 32 
+STRIDE 32 
+SCALE 0 
+PATCHFILE pure_black1.ex0.ppm 0 0 32 32 
