@@ -1326,11 +1326,6 @@ cb_toggle_stats( gpointer   callback_data,
 		 GtkWidget *menu_item )
 {
     GUI_CALLBACK_ENTER();
-/*     if(GTK_CHECK_MENU_ITEM (menu_item)->active) { */
-/*       create_stats_win(shandle, expert_mode); */
-/*     } else { */
-/*       close_stats_win(); */
-/*     } */
     toggle_stats_win(shandle, expert_mode);
     GUI_CALLBACK_LEAVE();
 }
