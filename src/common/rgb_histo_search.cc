@@ -389,9 +389,12 @@ rgb_histo_search::write_fspec(FILE *ostream)
 		}
 		i++;
 	}
-	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
+	fprintf(ostream, "REQUIRES  HISTO_II # dependancies \n");
 	fprintf(ostream, "MERIT 100  # some merit \n");
 	fprintf(ostream, "\n");
+
+	rgb = new histo_ii("Histo II", "Histo II");
+	ss_add_dep(rgb);
 
 	rgb = new rgb_img("RGB image", "RGB image");
 	ss_add_dep(rgb);

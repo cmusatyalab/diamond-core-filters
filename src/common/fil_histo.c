@@ -372,8 +372,8 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     ii = (HistoII *) ft_read_alloc_attr(fhandle, ohandle, HISTO_II);
 
     if (ii == NULL) {
-	ii = histo_get_ii(hconfig, img);
-    }
+		ii = histo_get_ii(hconfig, img);
+    } 
     ASSERT(ii);
 
     /*

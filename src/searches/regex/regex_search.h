@@ -348,6 +348,22 @@ public:
 private:
 };
 
+class histo_ii: public img_search {
+public:
+	histo_ii(const char *name, char *descr);
+	~histo_ii(void);
+
+	void	save_edits();
+	void	edit_search();
+	void 	write_fspec(FILE* stream);
+	void	write_config(FILE* stream, const char *data_dir);
+	int handle_config(config_types_t conf_type, char *data);
+	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
+
+private:
+};
+
+
 class regex_search: public img_search {
 public:
 	regex_search(const char *name, char *descr);
