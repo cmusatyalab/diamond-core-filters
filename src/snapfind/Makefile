@@ -86,6 +86,7 @@ SEARCHLET_OBJS = $(SHARED_SEARCHLET_OBJS) $(SHARED_COMMON_OBJS)
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
 SEARCHLET_OBJS += fil_synth.o 
 
+SEARCHLET_LIBS += -lm -lcvaux -lopencv
 
 
 # objects needed to build the main
@@ -147,7 +148,7 @@ clean-targets:	clean-experiments
 default: $(TARGETS)
 
 snap_searchlet.so: $(SEARCHLET_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS)  -lm -Wl,-static -lopencv  -lcvaux $(LIBS) $(LIBDIR)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS) $(SEARCHLET_LIBS)
 
 libssearch.a: $(SEARCHLET_OBJS)
 	$(AR) r $@ $(SEARCHLET_OBJS)

@@ -329,7 +329,6 @@ do_bench_search()
     int             count = 0;
     ls_obj_handle_t cur_obj;
 
-
     /*
      * Go ahead and start the search.
      */
