@@ -32,6 +32,20 @@ typedef struct {
 } hpass_data_t;
 
 
+/* call to read the cycle counter */
+#define rdtscll(val) __asm__ __volatile__("rdtsc" : "=A" (val))
+                                                                                                  
+static unsigned long long
+read_cycle()
+{
+        unsigned long long      foo;
+                                                                                                  
+        rdtscll(foo);
+                                                                                                  
+        return(foo);
+}
+
+
 #define ASSERT(exp)							\
 if(!(exp)) {								\
   lf_log(fhandle, LOGL_ERR, "Assertion %s failed at ", #exp);		\
@@ -316,6 +330,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     int             pass = 0;
     int             err;
     RGBImage       *img = NULL;
+	unsigned long long old, new;
     off_t           bsize;
 	bbox_list_t		blist;
     lf_fhandle_t    fhandle = 0;    /* XXX */
@@ -353,6 +368,29 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
      * get the ii 
      */
     ii = (HistoII *) ft_read_alloc_attr(fhandle, ohandle, HISTO_II);
+
+	//old = read_cycle();
+    if (ii == NULL) {
+	int             width, height;
+    	int             scalebits;
+    	int             nbytes;
+
+
+    	scalebits = log2_int(1);
+    	width = (img->width >> scalebits) + 1;
+    	height = (img->height >> scalebits) + 1;
+    	nbytes = width * height * sizeof(Histo) + sizeof(HistoII);
+                                                                                                  
+    	err = lf_alloc_buffer(fhandle, nbytes, (char **) &ii);
+    	ASSERT(!err);
+    	ASSERT(ii);
+    	ii->nbytes = nbytes;
+    	ii->width = width;
+    	ii->height = height;
+    	ii->scalebits = scalebits;
+                                                                                                  
+    	histo_compute_ii(img, ii, 1, 1);
+    }
 #ifdef	XXX
     ASSERT(ii);
 #endif
@@ -373,9 +411,11 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     context.ohandle = ohandle;
 
 	TAILQ_INIT(&blist);
-
 	pass = 	histo_scan_image(hconfig->name, img, ii, hconfig, hconfig->req_matches,
 		&blist);
+	//new = read_cycle();
+	//new -= old;
+	//printf("cycles %08lld \n", new);
 
 
 	i = nhisto;

@@ -168,7 +168,7 @@ regex_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER  %s  # dependancies \n", get_name());
 	fprintf(ostream, "THRESHOLD  1  # number of hits ?? \n");
-	fprintf(ostream, "MERIT  1  	# guess at cost \n");
+	fprintf(ostream, "MERIT  10000  	# guess at cost \n");
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_regex  # eval function \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_regex  # init function \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_regex  # fini function \n");
