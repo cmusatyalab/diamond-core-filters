@@ -72,7 +72,7 @@ include ${DIAMOND_ROOT}/Makefile.template
 #
 
 snap_bench: $(OBJS)
-	$(CPLUSPLUS) $(CFLAGS) -o snap_bench $(OBJS) $(LIBDIR) $(LIBS)
+	$(CPLUSPLUS) $(CFLAGS) -o snap_bench -rdynamic $(OBJS) $(LIBDIR) $(LIBS)
 
 
 
