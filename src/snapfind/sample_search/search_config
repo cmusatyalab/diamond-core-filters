@@ -27,11 +27,12 @@ PATCHFILE pure_black1.ex0.ppm 0 0 32 32
 
 SEARCH texture waves
 METRIC 0.800000 
+CHANNEL 3 
 TESTX 32 
 TESTY 32 
-STRIDE 32
+STRIDE 32 
 SCALE 1.000000 
-MATCHES 5 
+MATCHES 2 
 PATCHFILE waves.ex0.ppm 0 0 32 32 
 PATCHFILE waves.ex1.ppm 0 0 32 32 
 PATCHFILE waves.ex2.ppm 0 0 32 32 
@@ -40,3 +41,14 @@ PATCHFILE waves.ex4.ppm 0 0 32 32
 PATCHFILE waves.ex5.ppm 0 0 32 32 
 PATCHFILE waves.ex6.ppm 0 0 32 32 
 PATCHFILE waves.ex7.ppm 0 0 32 32 
+
+
+SEARCH vj_face_search faces
+NUMFACE 1 
+START 0 
+END 37 
+TESTX 24 
+TESTY 24 
+STRIDE 8 
+SCALE 1.250000 
+MATCHES 1 

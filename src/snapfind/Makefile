@@ -66,13 +66,15 @@ SNAPFIND_SRCS += face_search.c read_config.cc image_tools.c histo.c
 SNAPFIND_SRCS += fil_tools.c stats_win.c rgb.c gui_thread.c face_widgets.c 
 SNAPFIND_SRCS += texture_tools.c arena_tools.c gtk_image_tools.c 
 SNAPFIND_SRCS += snap_search.cc window_search.cc example_search.cc
-SNAPFIND_SRCS += texture_search.cc 
+SNAPFIND_SRCS += texture_search.cc vj_face_search.cc
 
 SNAPFIND_OBJS = snapfind.o face_tools.o face_image.o sfind_search.o face_search.o read_config.o \
 	image_tools.o histo.o fil_tools.o stats_win.o rgb.o gui_thread.o \
 	face_widgets.o texture_tools.o arena_tools.o rgb_histo_search.o \
 	texture_search.o \
-	snap_search.o window_search.o example_search.o gtk_image_tools.o
+	snap_search.o window_search.o example_search.o gtk_image_tools.o \
+	vj_face_search.o
+
 
 DEBUG_SRCS = face.c
 DEBUG_OBJS = face.o

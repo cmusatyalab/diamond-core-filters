@@ -8,10 +8,8 @@
 #include "fil_histo.h"
 #include "snap_search.h"
 
-static fsp_histo_t *vs = NULL;
-
-static char *eat_token(char *);
-static void new_search(char *);
+static char *eat_token(char *tok);
+static void new_search(char *tok);
 static void error();
 
 /* #define VERBOSE 1 */
@@ -40,6 +38,9 @@ SCALE[ \t]+{FLOAT} { cur_search->handle_config(SCALE_TOK, eat_token(yytext));}
 METRIC[ \t]+{FLOAT} { cur_search->handle_config(METRIC_TOK, eat_token(yytext));}
 MATCHES[ \t]+[0-9]+ { cur_search->handle_config(MATCHES_TOK, eat_token(yytext));}
 CHANNEL[ \t]+[0-9]+ { cur_search->handle_config(CHANNEL_TOK, eat_token(yytext));}
+NUMFACE[ \t]+[0-9]+ { cur_search->handle_config(NUMF_TOK, eat_token(yytext));}
+START[ \t]+[0-9]+ { cur_search->handle_config(START_TOK, eat_token(yytext));}
+END[ \t]+[0-9]+ { cur_search->handle_config(END_TOK, eat_token(yytext));}
 METHOD[ \t]+{FLOAT} { cur_search->handle_config(METHOD_TOK, eat_token(yytext));}
 PATCHFILE[ \t]+[[:alnum:]_"."-/]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+ { cur_search->handle_config(PATCHFILE_TOK, eat_token(yytext));}
 [[:blank:]]
@@ -107,6 +108,8 @@ new_search(char *str)
 		cur_search = new rgb_histo_search(name, "RGB Histogram");
 	} else if (strcmp(type, "texture") == 0) {
 		cur_search = new texture_search(name, "Texture Search");
+	} else if (strcmp(type, "vj_face_search") == 0) {
+		cur_search = new vj_face_search(name, "VJ Face Detect");
 	} else {
 		printf("uknown type: <%s> \n", type);
 		exit(1);
@@ -117,33 +120,6 @@ new_search(char *str)
 }
 
 
-static void
-arena_file() {
-        char path[129];
-        char sign[129];
-        int positive = 0;
-        int x, y;
-        arena_training_t *arena_training;
-
-	sscanf(yytext, "%128s%128s%d%d", path, sign, &x, &y);
-	
-	vs->npatches++;
-        if (vs->type == FILTER_TYPE_ARENA) {
-
-        arena_training = (arena_training_t *)malloc(sizeof(arena_training_t));
-        assert(arena_training);
-	strncpy(arena_training->name, path, MAX_PATH);
-	if (strcmp("POSITIVE", sign) == 0)
-	    positive = 1;
-	if (strcmp("NEGATIVE", sign) == 0)
-	    positive = 0;
-	arena_training->positive = positive;
-	arena_training->minx = x;
-	arena_training->miny = y;
-
-	TAILQ_INSERT_TAIL(&vs->arena_training_list, arena_training, link);
-   }    
-}
 
 
 /*
