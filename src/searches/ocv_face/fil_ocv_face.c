@@ -116,10 +116,11 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
      */
     img = (RGBImage *) ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
     if (img == NULL) {
-	img = get_rgb_img(ohandle);
+		img = get_rgb_img(ohandle);
     }
-    assert(img);
-    assert(img->type == IMAGE_PPM);
+	if ((img == NULL)) {
+		return(0);
+	}
 
 
     TAILQ_INIT(&blist);

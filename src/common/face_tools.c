@@ -125,7 +125,7 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 	bbox_t	*	bb;
 	CvMemStorage *	storage = cvCreateMemStorage(0);
 	IplImage *	gray;	
-        CvSeq* 		faces;
+	CvSeq* 		faces;
 
 
 	gray = get_gray_ipl_image(rgb);
