@@ -852,9 +852,11 @@ cb_grab_selection(GtkWidget *widget, GdkEventAny *event, gpointer data)
 				 popup_window.selections[i],
 				 &scapes[nscapes].fsp_info);
       } else {
+#ifdef	XXX_ASK_RAHUL
 	err = texture_inst_features_from_img(popup_window.hooks->img, 
 					     popup_window.selections[i],
 					     &scapes[nscapes].fsp_info);
+#endif
       }
       if(err) {
 	sprintf(buf, "ERROR creating scene (patch too small?)");    

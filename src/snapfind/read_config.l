@@ -118,41 +118,6 @@ new_search(char *str)
 
 
 static void
-patchfile() 
-{
-	char path[129];
-	int x, y;
-	patch_t *patch;
-	texture_features_t *texture_features;
-
-
-	sscanf(yytext, "%128s%d%d", path, &x, &y);
-#ifdef VERBOSE
-	printf("%s %d %d\n", path, x, y);
-#endif
-
-	vs->npatches++;
-
-	if (vs->type == FILTER_TYPE_COLOR) {
-		patch = (patch_t *)malloc(sizeof(patch_t));
-		assert(patch);
-		strncpy(patch->name, path, MAX_PATH);
-		patch->minx = x;
-		patch->miny = y;
-
-		TAILQ_INSERT_TAIL(&vs->patchlist, patch, link);
-	} else if (vs->type == FILTER_TYPE_TEXTURE) {
-		texture_features = (texture_features_t *)
-				malloc(sizeof(texture_features_t));
-        assert(texture_features);
-		strncpy(texture_features->name, path, MAX_PATH);
-		texture_features->minx = x;
-		texture_features->miny = y;
-		TAILQ_INSERT_TAIL(&vs->texture_features_list, texture_features, link);
-	}
-}
-
-static void
 arena_file() {
         char path[129];
         char sign[129];
