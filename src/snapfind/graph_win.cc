@@ -266,14 +266,147 @@ cb_realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data)
 }
 
 
+
 void
-graph_win::add_point(const float x, const float y)
+graph_win::get_series_color(int i, GdkColor *color)
 {
 
-	int	pixelx, pixely;
-	GdkColor	color;
+	switch(i) {
+		case 0:
+			/* first is red */
+			color->pixel = 0;
+			color->red = 65535;
+			color->green = 0;
+			color->blue = 0;
+			break;
+
+		case 1:
+			/* second is green */
+			color->pixel = 0;
+			color->red = 0;
+			color->green = 65535;
+			color->blue = 0;
+			break;
+
+		case 2:
+			/* third is blue */
+			color->pixel = 0;
+			color->red = 0;
+			color->green = 0;
+			color->blue = 65535;
+			break;
+
+		case 3:
+			/* fourth is red + green */
+			color->pixel = 0;
+			color->red = 65535;
+			color->green = 65535;
+			color->blue = 0;
+			break;
+
+		case 4:
+			/* fifth is red + blue */
+			color->pixel = 0;
+			color->red = 65535;
+			color->green = 0;
+			color->blue = 65535;
+			break;
+
+		case 5:
+			/* sixth is green + blue */
+			color->pixel = 0;
+			color->red = 0;
+			color->green = 65535;
+			color->blue = 65535;
+			break;
+
+		case 6:
+			/* seventh is gray */
+			color->pixel = 0;
+			color->red = 32000;
+			color->green = 32000;
+			color->blue = 32000;
+			break;
+
+		case 7:
+			/* Eighth is black */
+			color->pixel = 0;
+			color->red = 0;
+			color->green = 0;
+			color->blue = 0;
+			break;
+
+		default:
+			assert(0);
+			break;
+	}
+}
+
+void
+graph_win::init_series()
+{
 	GdkColormap	*cmap;
-	GdkGC *		gc;
+	int			i;
+
+	for (i = 0; i < GW_MAX_SERIES; i++) {
+		gw_series[i].gc = gdk_gc_new(gw_pixmap); 
+		cmap = gdk_gc_get_colormap(gw_series[i].gc);
+
+		/* set the color and allocate it from the color map */
+		get_series_color(i, &gw_series[i].color);
+		gdk_colormap_alloc_color(cmap, &gw_series[i].color, TRUE, TRUE);
+
+
+		/* set the gc attributes for the forground, background, and lines */
+		gdk_gc_set_foreground(gw_series[i].gc, &gw_series[i].color);
+		gdk_gc_set_line_attributes(gw_series[i].gc, 2, GDK_LINE_SOLID,
+			GDK_CAP_BUTT, GDK_JOIN_MITER);
+
+		gw_series[i].lastx = 0 + X_ZERO_OFFSET;
+		gw_series[i].lasty = gw_height - Y_ZERO_OFFSET;
+
+		/* XXX deal with datastructure to keep the points */
+	}
+}
+
+void
+graph_win::redraw_series()
+{
+	int	i;
+	point_iter_t	iter;
+
+	init_window();
+
+	for (i=0; i < GW_MAX_SERIES; i++) {
+		for (iter = gw_series[i].points.begin(); 
+		  iter != gw_series[i].points.end(); iter++) {
+			add_point(iter->x, iter->y, i);
+		}
+	}
+	printf("done redra\n");
+}
+
+
+void
+graph_win::clear_series(int series)
+{
+
+	printf("clear series\n");
+	//redraw_series();
+}
+
+void
+graph_win::add_point(const float x, const float y, int series)
+{
+	int	pixelx, pixely;
+	point_t		point;
+
+	assert(series < GW_MAX_SERIES);
+
+	point.x = x;
+	point.y = y;
+	gw_series[series].points.push_back(point);
+
 
 	/* XXX deal withoffset for margins, etc. */
 	pixelx = (int)(((x - gw_xmin) /gw_xspan) * (float)gw_xdisp) +
@@ -295,30 +428,11 @@ graph_win::add_point(const float x, const float y)
 		pixely = Y_END_OFFSET;
 	}
 
-	printf("x %d  y %d \n", pixelx, pixely);
+ 	gdk_draw_line(GDK_DRAWABLE(gw_pixmap), gw_series[series].gc, 
+		gw_series[series].lastx, gw_series[series].lasty, pixelx, pixely);
 
-	gc = gdk_gc_new(gw_pixmap);
-	cmap = gdk_gc_get_colormap(gc);
-	assert(cmap != NULL);
-
-	
-	color.pixel = 0;
-	color.red = 65535;
-	color.green = 0;
-	color.blue = 0;
-
-	gdk_colormap_alloc_color(cmap, &color, TRUE, TRUE);
-
-
-	gdk_gc_set_foreground(gc, &color);
-	gdk_gc_set_line_attributes(gc, 3, GDK_LINE_SOLID, GDK_CAP_BUTT,
-		GDK_JOIN_MITER);
-
- 	gdk_draw_line(GDK_DRAWABLE(gw_pixmap), gc , gw_lastx, gw_lasty,
-		pixelx, pixely);
-
-	gw_lastx = pixelx;
-	gw_lasty = pixely;
+	gw_series[series].lastx = pixelx;
+	gw_series[series].lasty = pixely;
 
 	gtk_widget_queue_draw_area(gw_drawingarea, 0, 0, gw_width, gw_height);
 }
@@ -416,6 +530,7 @@ graph_win::event_realize()
 	gw_pixmap = gdk_pixmap_new(gw_drawingarea->window, gw_width, gw_height, -1);
 
 	init_window();
+	init_series();
 
     // XXpthread_mutex_unlock(&di_mutex);
 	
@@ -449,7 +564,6 @@ GtkWidget *
 graph_win::get_graph_display(int width, int height)
 {
 	GtkWidget *eb;
-	GtkWidget *scroll;
 	int		i;
 
 
@@ -458,13 +572,9 @@ graph_win::get_graph_display(int width, int height)
 	gw_xdisp = width - (X_ZERO_OFFSET + X_END_OFFSET);
 	gw_ydisp = height - (Y_ZERO_OFFSET + Y_END_OFFSET);
 
-	printf("xdisp %d ydisp %d \n", gw_xdisp, gw_ydisp);
-
 	gw_image_area = gtk_viewport_new(NULL, NULL);
 	gw_cur_img = rgbimg_blank_image(gw_width, gw_height);
 
-	gw_lastx = 0 + X_ZERO_OFFSET;
-	gw_lasty = gw_height - Y_ZERO_OFFSET;	/* XXX deal with bar */
 
     // XXX pthread_mutex_lock(&di_mutex);
 	gw_layers[GW_IMG_LAYER] = gw_cur_img;

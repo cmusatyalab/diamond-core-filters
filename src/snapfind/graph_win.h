@@ -38,14 +38,19 @@
 #ifndef	_GRAPH_WIN_H_
 #define	_GRAPH_WIN_H_	1
 
+#include <iostream>
+#include <vector>
+
 #include <gtk/gtk.h>
 #include "image_common.h"
 #include "common_consts.h"
 #include "texture_tools.h"
 #include "histo.h"
 
+using	namespace	std;
+
 /* different pixel offset for placing text and other goodies */
-#define		X_ZERO_OFFSET		50
+#define		X_ZERO_OFFSET		70
 #define		X_FIRST_TEXT_OFFSET	10
 #define		X_END_OFFSET		30
 #define		X_END_TEXT_OFFSET	20
@@ -57,6 +62,9 @@
 
 #define		Y_LABEL_GAP		5
 	
+
+/* The maximum number of series the graph supports */
+#define		GW_MAX_SERIES		8
                                                                                 
 enum gw_layers_t {
     GW_IMG_LAYER = 0,
@@ -65,6 +73,23 @@ enum gw_layers_t {
     GW_SELECT_LAYER,
     GW_MAX_LAYERS
 };
+
+typedef struct {
+	float	x;
+	float	y;
+} point_t;
+
+typedef	vector<point_t>::iterator	point_iter_t;
+
+typedef struct {
+	GdkGC *		gc;
+	GdkColor	color;
+	int			lastx;
+	int			lasty;
+	/* XXX hold the points when I am cool */
+	vector<point_t>	points;
+} series_info_t;
+
 
 /*
  * This is a c++ class that creates a gtk graph window.
@@ -78,7 +103,9 @@ public:
 	GtkWidget *	get_graph_display(const int xsize, const int ysize);
 
 
-	void	add_point(const float x, const float y);	
+	void	add_point(const float x, const float y, int series);
+	void	clear_series(int series);
+	
 	void	clear_graph();
 	void 	event_realize();
 	void 	draw_res(GtkWidget *widget);
@@ -89,6 +116,10 @@ public:
 	
 
 private:
+	void	get_series_color(int series, GdkColor * color);
+	void	init_series();
+	void	redraw_series();
+	void	redraw_series(int series);
 
 	/* XXX create some state to keep track of the points */
 
@@ -106,10 +137,9 @@ private:
 	int		gw_xdisp;
 	int		gw_ydisp;
 
-	int		gw_lastx;
-	int		gw_lasty;
-
 	int		gw_active_win;
+
+	series_info_t	gw_series[GW_MAX_SERIES];	
 
 	char *	display_name;
 	char *	descript;
@@ -124,6 +154,7 @@ private:
     RGBImage   *    gw_layers[GW_MAX_LAYERS];
     RGBImage   *    gw_cur_img;
     GdkPixmap  *    gw_pixmap;
+
 
 };
 

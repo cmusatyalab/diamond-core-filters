@@ -72,6 +72,9 @@ GtkWidget      *stats_table = NULL;
 
 static int      verbose_mode = 1;
 
+#define		PROGRESS_X_SIZE		600
+#define		PROGRESS_Y_SIZE		400
+
 graph_win	*gwin;
 
 void
@@ -485,6 +488,23 @@ update_dev_status(int dev, dev_stats_t * dstats, int verbose)
 }
 
 
+float
+timeval_to_float(struct timeval *tv)
+{
+	float 	val;
+
+	val = (float)tv->tv_usec/1000000.0;
+	val += (float)tv->tv_sec;
+	return(val);
+}
+
+/* XXX global for status window, fix  this someday */
+extern int      search_active;
+extern int      search_number;
+extern struct timeval  search_start;
+                                                                                
+
+
 void           *
 stats_main(void *data)
 {
@@ -493,7 +513,7 @@ stats_main(void *data)
     ls_dev_handle_t dev_list[MAX_DEVICES];
     int             i,
                     err,
-                    len;
+                    len, id;
     dev_stats_t    *dstats;
     char           *emsg;
 	float			time = 0.0;
@@ -501,6 +521,12 @@ stats_main(void *data)
 	float			done;
 	float			total;
 	float			complete;
+	float			start;
+	float			stop;
+	struct	timeval	tv;
+	struct	timezone tz;
+	int			last_id = -1;
+
 
     shandle = (ls_search_handle_t *) data;
 
@@ -520,32 +546,43 @@ stats_main(void *data)
         if (thread_close) {
             pthread_exit(0);
         }
-	done = 0.0;
-	total = 0.0;
+		done = 0.0;
+		total = 0.0;
 
-	time += 1.0;
+		if (!search_active) {
+			goto wait;
+		}
 
-        for (i = 0; i < num_dev; i++) {
-            len = DEV_STATS_SIZE(MAX_FILT);
-            err = ls_get_dev_stats(shandle, dev_list[i], dstats, &len);
-            // dump_stats(dstats);
-            if (err) {
-                printf("failed to get dev stats %d \n", err);
-                exit(1);
-            }
-	    total += (float)dstats->ds_objs_total;
-	    done += (float)dstats->ds_objs_processed;
-        }
-	printf("%f %f \n", done, total);
-	if (total == 0.0) {
-		complete = 0.0;
-	} else {
-		complete = done/total * 100.0;
-	}
-	printf("complete %f total %f \n");
+		for (i = 0; i < num_dev; i++) {
+			len = DEV_STATS_SIZE(MAX_FILT);
+			err = ls_get_dev_stats(shandle, dev_list[i], dstats, &len);
+			// dump_stats(dstats);
+			if (err) {
+				printf("failed to get dev stats %d \n", err);
+				exit(1);
+			}
+			total += (float)dstats->ds_objs_total;
+			done += (float)dstats->ds_objs_processed;
+		}
+	
+		gettimeofday(&tv, &tz);
+		start = timeval_to_float(&search_start);
+		stop = timeval_to_float(&tv);
 
-	gwin->add_point(time, complete);
-        sleep(1);
+		id = search_number % 8;
+
+		//if (last_id != id) {
+			//printf("clearing series \n");
+			//gwin->clear_series(id);	
+		//}
+		//last_id = id;
+
+		time = stop - start;
+		if (time > 2.5)  {
+			gwin->add_point(time, done, id);
+		}
+wait:
+		sleep(1);
     }
 }
 
@@ -583,9 +620,9 @@ open_progress_win()
         stats_box = gtk_hbox_new(FALSE, 0);
         gtk_container_add(GTK_CONTAINER(stats_window), stats_box);
 
-	gwin = new graph_win(0.0, 100.0, 0.0, 100.0);
+		gwin = new graph_win(0.0, 100.0, 0.0, 10000.0);
 	
-	gwidget = gwin->get_graph_display(300, 200);
+	gwidget = gwin->get_graph_display(PROGRESS_X_SIZE, PROGRESS_Y_SIZE);
 	gtk_box_pack_start(GTK_BOX(stats_box), gwidget, FALSE, TRUE, 0);
         gtk_widget_show_all(stats_window);
     }

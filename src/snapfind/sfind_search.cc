@@ -61,8 +61,7 @@
 #include "face_tools.h"
 #include "sfind_search.h"
 
-extern pthread_mutex_t ring_mutex;
-
+extern pthread_mutex_t ring_mutex; 
 /*
  * XXX 
  */
@@ -76,7 +75,12 @@ ls_search_handle_t shandle;
 /*
  * state the is global to all of these functions.
  */
-static int      active = 0;
+/* XXX global for status window, fix  this someday */
+int      search_active = 0;
+static int     active  = 0;
+int      search_number = 0;
+struct timeval	search_start;
+
 static search_set *sset = NULL;
 
 
@@ -204,6 +208,9 @@ drain_ring(ring_data_t * ring)
 void
 handle_message(message_t * new_message)
 {
+	struct timezone tz;
+	int				err;
+
     switch (new_message->type) {
     case START_SEARCH:
 
@@ -216,11 +223,15 @@ handle_message(message_t * new_message)
         pthread_mutex_unlock(&ring_mutex);
         do_search((gid_list_t *) new_message->data, NULL);
         active = 1;
+        search_active = 1;
+		search_number++;
+		err = gettimeofday(&search_start, &tz);
+		assert(err == 0);
         break;
 
     case TERM_SEARCH:
         stop_search(new_message->data);
-        // XXX active = 0;
+        search_active = 0;
         break;
 
         /*
@@ -314,6 +325,7 @@ sfind_search_main(void *foo)
                 nanosleep(&timeout, NULL);
             } else if (err == ENOENT) {
                 fprintf(stderr, "No more objects \n");  /* XXX */
+                search_active = 0;
                 active = 0;
                 message = (message_t *) malloc(sizeof(*message));
                 if (message == NULL) {
