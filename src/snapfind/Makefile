@@ -99,13 +99,13 @@ SNAPFIND_SRCS += snapfind.cc face_image.c sfind_search.c
 SNAPFIND_SRCS +=  read_config.cc search_support.cc
 SNAPFIND_SRCS += stats_win.c rgb.c gui_thread.c  
 SNAPFIND_SRCS += snap_popup.cc 
-SNAPFIND_SRCS += sfind_tools.c 
+SNAPFIND_SRCS += sfind_tools.c import_sample.cc
 
 SNAPFIND_OBJS = $(SHARED_APP_OBJS) $(SHARED_COMMON_OBJS)
 SNAPFIND_OBJS += snapfind.o face_image.o sfind_search.o read_config.o \
 		 stats_win.o gui_thread.o search_support.o \
 	 	fil_image_tools.o snap_popup.o \
-		sfind_tools.o 
+		sfind_tools.o  import_sample.o
 
 
 
