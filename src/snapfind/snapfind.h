@@ -12,7 +12,7 @@ typedef struct thumbnail_t {
 	GtkWidget 	*viewport; /* the viewport that contains the image */
 	GtkWidget 	*gimage; /* the image widget */
 	TAILQ_ENTRY(thumbnail_t) link;
-	char 		name[MAX_NAME];	/* name of image */
+	char 		name[COMMON_MAX_NAME];	/* name of image */
 	int		nboxes;	/* number of histo regions */
 	int             nfaces;	/* number of faces */
 	image_hooks_t   *hooks;
