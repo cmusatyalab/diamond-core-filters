@@ -370,24 +370,6 @@ do_bench_search()
 
 }
 
-
-/*
- * This stops the currently executing search.
- */
-static void
-stop_search(void *data)
-{
-    int             err;
-
-    // fprintf(stderr, "stop search (ls_terminate_search)..\n");
-    err = ls_terminate_search(shandle);
-    if (err != 0) {
-        printf("XXX failed to terminate search \n");
-        exit(1);
-    }
-    fprintf(stderr, "stopped search !!! \n");
-}
-
 int
 configure_devices(char *config_file)
 {

@@ -569,7 +569,9 @@ GtkWidget *
 display_img::get_display()
 {
 	GtkWidget *eb;
+#ifdef	SCROLL
 	GtkWidget *scroll;
+#endif
 	int		i;
 
 	di_image_area = gtk_viewport_new(NULL, NULL);
