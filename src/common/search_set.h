@@ -46,9 +46,7 @@
 #include "lib_searchlet.h"
 #include "img_search.h"
 
-/* XXX */
 using namespace	std;
-//using namespace	__gnu_cxx;
 
 
 /* forward declaration */
@@ -83,7 +81,7 @@ public:
 	img_search *get_next_dep(search_iter_t *iter);
 
 	/* get the number of searches in the set */
-	int			get_search_count();
+	int		get_search_count();
 
 
 	/* calls to register/unregister callback function */
@@ -93,7 +91,7 @@ public:
 	/* method that tells all the callbacks when set is modified */
 	void		notify_update();
 
-	char * 	build_filter_spec(char *tmp_file);
+	char * 		build_filter_spec(char *tmp_file);
 
 	GtkWidget * search_set::build_edit_table();
 
