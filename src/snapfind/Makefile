@@ -44,6 +44,7 @@ LIBDIR += -L../../lib/libdconfig
 SHARED_HEADERS = rgb.h image_tools.h common_consts.h img_search.h
 SHARED_HEADERS += image_common.h texture_tools.h fil_tools.h 
 SHARED_HEADERS += face_tools.h fil_data2ii.h facedet.h filter_api.h
+SHARED_HEADERS += face.h
 
 SHARED_COMMON_SRCS = image_tools.c 
 

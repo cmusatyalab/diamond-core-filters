@@ -27,6 +27,7 @@
 #endif
 
 #include "filter_api.h"
+#include "common_consts.h"
 #include "searchlet_api.h"
 #include "gui_thread.h"
 
@@ -36,7 +37,6 @@
 #include "sf_consts.h"
 
 #include "face_search.h"
-#include "face_tools.h"
 #include "face_image.h"
 #include "rgb.h"
 #include "face.h"
@@ -46,6 +46,8 @@
 #include "texture_tools.h"
 #include "img_search.h"
 #include "sfind_search.h"
+#include "histo.h"
+#include "sfind_tools.h"
 #include "snap_popup.h"
 #include "search_support.h"
 #include "snapfind.h"

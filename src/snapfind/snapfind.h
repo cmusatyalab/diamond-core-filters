@@ -1,7 +1,7 @@
 #ifndef _SNAP_FIND_H_
 #define _SNAP_FIND_H_	1
 
-#include "face_tools.h"	/* XXX can I remove this ??? */
+#include "sfind_tools.h"	/* XXX can I remove this ??? */
 static const int THUMBSIZE_X = 200;
 static const int THUMBSIZE_Y = 150;
 

@@ -24,7 +24,6 @@
 #include "sf_consts.h"
 
 #include "face_search.h"
-#include "face_tools.h"
 #include "face_image.h"
 #include "rgb.h"
 #include "face.h"
@@ -35,6 +34,7 @@
 #include "img_search.h"
 #include "sfind_search.h"
 #include "search_support.h"
+#include "sfind_tools.h"
 #include "snap_popup.h"
 #include "snapfind.h"
 

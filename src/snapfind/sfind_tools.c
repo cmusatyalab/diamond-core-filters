@@ -15,11 +15,11 @@
 #include <opencv/cv.h>
 
 #include "queue.h"
+#include "common_consts.h"
 #include "ring.h"
 #include "rtimer.h"
 
 // #include "face_search.h"
-#include "face_tools.h"
 #include "face_image.h"
 #include "fil_face.h"
 #include "rgb.h"
@@ -27,6 +27,8 @@
 #include "fil_tools.h"
 #include "gui_thread.h"
 #include "image_tools.h"
+#include "histo.h"
+#include "sfind_tools.h"
 #include "texture_tools.h"
 #include "facedet.h"
 
@@ -75,4 +77,47 @@ ih_drop_ref(image_hooks_t * ptr, lf_fhandle_t fhandle)
     }
     pthread_mutex_unlock(&ih_mutex);
 }
+
+static inline double
+max(double a, double b)
+{
+    return a > b ? a : b;
+}
+
+double
+compute_scale(RGBImage * img, int xdim, int ydim)
+{
+    double          scale = 1.0;
+
+    scale = max(scale, (double) img->width / xdim);
+    scale = max(scale, (double) img->height / ydim);
+
+    return scale;
+}
+
+
+
+
+
+void
+img_constrain_bbox(bbox_t * bbox, RGBImage * img)
+{
+
+    if (bbox->min_x >= img->width) {
+        bbox->min_x = img->width - 1;
+    }
+    if (bbox->min_y >= img->height) {
+        bbox->min_y = img->height - 1;
+    }
+
+    if (bbox->max_x >= img->width) {
+        bbox->max_x = img->width - 1;
+    }
+    if (bbox->max_y >= img->height) {
+        bbox->max_y = img->height - 1;
+    }
+
+}
+
+
 
