@@ -149,7 +149,6 @@ struct {
 
 typedef enum {
 	CNTRL_ELEV,
-	//CNTRL_SLOPE,
 	CNTRL_WAIT,
 	CNTRL_NEXT,
 } control_ops_t;
@@ -1553,7 +1552,7 @@ create_image_control(GtkWidget *container_box,
 
 
     	adj = gtk_adjustment_new(2.0, 1.0, 10.0, 1.0, 1.0, 1.0);
-	img_cntrl->zlevel = 2;
+		img_cntrl->zlevel = 2;
     	img_cntrl->zbutton = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 0);
     	gtk_box_pack_start (GTK_BOX(img_cntrl->control_box),img_cntrl->zbutton, 
 			FALSE, FALSE, 0);
@@ -1561,7 +1560,6 @@ create_image_control(GtkWidget *container_box,
 
 
 	img_cntrl->cur_op = CNTRL_ELEV;
-
 }
 
 /*
