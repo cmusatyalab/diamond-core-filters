@@ -17,9 +17,6 @@ extern "C" {
 
 RGBImage *create_rgb_image(const char *filename);
 int rgb_write_image(RGBImage *img, const char *filename, const char *path);
-RGBImage *create_rgb_subimage(RGBImage *old, int xoff, int yoff, int xsize, 
-		int ysize);
-void release_rgb_image(RGBImage *);
 
 
 IplImage *create_gray_ipl_image(char *filename);

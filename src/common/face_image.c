@@ -105,29 +105,19 @@ RGBImage       *
 image_gen_image_scale(RGBImage * data, int scale)
 {
     RGBImage       *img;
-    int             x,
-                    y;
-    int             i,
-                    j;
-    double          cum_r,
-                    cum_g,
-                    cum_b;
-    double          avg_r,
-                    avg_g,
-                    avg_b;
-    double          min_color,
-                    max_color;
+    int             x, y;
+    int             i, j;
+    double          cum_r, cum_g, cum_b;
+    double          avg_r, avg_g, avg_b;
+    double          min_color, max_color;
     double          diff;
-    u_char          red,
-                    green,
-                    blue;
-    int             x_scale,
-                    y_scale;
-
+    u_char          red, green, blue;
+    int             x_scale, y_scale;
 
     assert(data->rows);
     assert(data->columns);
 
+    /* XXX compute new real size */
     img = (RGBImage *) malloc(data->nbytes);
     if (img == NULL) {
         /*
@@ -146,6 +136,8 @@ image_gen_image_scale(RGBImage * data, int scale)
 
     img->columns = data->columns;
     img->rows = data->rows;
+    img->nbytes = data->nbytes;
+    img->type = data->type;
     min_color = 0;
     max_color = 255;
 
@@ -212,43 +204,6 @@ image_gen_image_scale(RGBImage * data, int scale)
 
             write_pixel(img, x, y, (u_char) avg_r, (u_char) avg_g,
                         (u_char) avg_b);
-
-            /*
-             * mult = (avg_color - min_color)/diff; 
-             */
-            /*
-             * if (mult > 1.0) { 
-             */
-            /*
-             * printf("mutl %f \n", mult); 
-             */
-            /*
-             * exit(1); 
-             */
-            /*
-             * } 
-             */
-            /*
-             * red = ((u_char) (mult * (double)RED_SCALE)) + 
-             */
-            /*
-             * RED_BASE; 
-             */
-            /*
-             * green = ((u_char) (mult*(double)GREEN_SCALE)) + 
-             */
-            /*
-             * GREEN_BASE; 
-             */
-            /*
-             * blue = ((u_char) (mult * (double)BLUE_SCALE)) + 
-             */
-            /*
-             * BLUE_BASE; 
-             */
-            /*
-             * write_pixel(dimage, x, y, red, green, blue); 
-             */
         }
     }
 

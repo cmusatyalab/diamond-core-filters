@@ -1,5 +1,5 @@
-#ifndef RGB_H
-#define RGB_H
+#ifndef _RGB_H_
+#define _RGB_H_ 	1
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -66,12 +66,18 @@ RGBImage *rgbimg_dup(RGBImage *srcimg);
 /* wipe image clean */
 void rgbimg_clear(RGBImage *img);
 
-                                                                               
+
+RGBImage *create_rgb_subimage(RGBImage *old, int xoff, int yoff, int xsize, 
+		int ysize);
+void release_rgb_image(RGBImage *);
+
 RGBImage * get_rgb_img(lf_obj_handle_t ohandle);
+
+RGBImage * rgbimg_blank_image(int width, int height);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // RGB_H
+#endif /* !_RGB_H_ */

@@ -16,7 +16,10 @@
 
 search_set::search_set()
 {
+	ss_dep_list.erase(ss_dep_list.begin(), ss_dep_list.end());
+	printf("search set: %p \n", this);
 	return;
+	
 }
 
 search_set::~search_set()
@@ -62,7 +65,9 @@ void
 search_set::clear_deps()
 {
 	img_search *old;
-	while ((old = ss_dep_list.back()) != NULL) {
+
+	while (ss_dep_list.size() > 0) {
+		old = ss_dep_list.back();
 		ss_dep_list.pop_back();
 		delete old;
 	}

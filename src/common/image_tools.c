@@ -206,51 +206,6 @@ rgb_write_image(RGBImage * img, const char *filename, const char *dir)
 }
 
 
-RGBImage       *
-create_rgb_subimage(RGBImage * old_img, int xoff, int yoff, int xsize,
-                    int ysize)
-{
-    RGBImage       *new_img;
-    int             bytes;
-    const RGBPixel *oldp;
-    RGBPixel       *newp;
-    int             i,
-                    j;
-
-
-    assert(old_img->width >= (xoff + xsize));
-    assert(old_img->height >= (yoff + ysize));
-
-    bytes = sizeof(RGBImage) + xsize * ysize * sizeof(RGBPixel);
-    new_img = (RGBImage *) malloc(bytes);
-
-    assert(new_img != NULL);
-
-    new_img->nbytes = bytes;
-    new_img->height = ysize;
-    new_img->width = xsize;
-    new_img->type = old_img->type;
-
-
-    for (j = 0; j < ysize; j++) {
-        oldp = old_img->data + ((yoff + j) * old_img->width) + xoff;
-        newp = new_img->data + (j * new_img->width);
-
-        for (i = 0; i < xsize; i++) {
-            *newp++ = *oldp++;
-        }
-    }
-
-    return new_img;
-}
-void
-release_rgb_image(RGBImage * img)
-{
-    free(img);
-}
-
-
-
 
 /*
  ********************************************************************** */
@@ -664,6 +619,5 @@ img_constrain_bbox(bbox_t * bbox, RGBImage * img)
     if (bbox->max_y >= img->height) {
         bbox->max_y = img->height - 1;
     }
-                                                                              
 }
 
