@@ -948,7 +948,7 @@ highlight_select()
     gtk_widget_show (box1);
 
     frame = gtk_frame_new("Searches");
-    table = gtk_table_new(MAX_SEARCHES+1, 3, FALSE);
+    table = gtk_table_new(num_searches+2, 3, FALSE);
     gtk_table_set_row_spacings(GTK_TABLE(table), 2);
     gtk_table_set_col_spacings(GTK_TABLE(table), 4);
     gtk_container_set_border_width(GTK_CONTAINER(table), 10);

@@ -142,7 +142,8 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
   dst_img = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 1);
 
   TAILQ_INIT(&blist); 
-  pass = texture_test_entire_image(img, targs, &blist);
+  //pass = texture_test_entire_image(img, targs, &blist);
+  pass = old_texture_test_entire_image(img, targs, &blist);
   if (pass >= targs->min_matches) {
 
     /* increase num_histo counter (for boxes in app)*/

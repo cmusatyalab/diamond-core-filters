@@ -475,7 +475,8 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 		iimg = get_rgb_ipl_image(rimg);
 	}
 
-	pass = texture_test_entire_image(iimg, &targs, blist);
+	//pass = texture_test_entire_image(iimg, &targs, blist);
+	pass = old_texture_test_entire_image(iimg, &targs, blist);
     
 
 	                                                                                 

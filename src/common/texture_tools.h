@@ -47,6 +47,8 @@ extern "C" {
 	
 int texture_test_entire_image(IplImage *img, texture_args_t *targs, 
 		bbox_list_t *blist);
+int old_texture_test_entire_image(IplImage *img, texture_args_t *targs, 
+		bbox_list_t *blist);
 				       
 				       
 /* gets features from a single subwindow
