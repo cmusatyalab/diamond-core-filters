@@ -237,7 +237,7 @@ ocv_face_search::edit_search()
   	 * Create the texture parameters.
 	 */
 
-    frame = gtk_frame_new("VJ Face Search");
+    frame = gtk_frame_new("OpenCV Face Search");
     container = gtk_vbox_new(FALSE, 10);
     gtk_container_add(GTK_CONTAINER(frame), container);
                                                                                 
