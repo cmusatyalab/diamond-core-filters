@@ -1,6 +1,6 @@
 /*
- * 	Diamond (Release 1.0)
- *      A system for interactive brute-force search
+ * 	SnapFind (Release 0.9)
+ *      An interactive image search application
  *
  *      Copyright (c) 2002-2005, Intel Corporation
  *      All Rights Reserved
@@ -38,13 +38,9 @@
 #include "lib_dctl.h"
 #include "dctl_common.h"
 #include "lib_odisk.h"
-#include "lib_search_priv.h"
 
 
 #define	MAX_DEVICES	24
-
-// #define SUMMARY_FONT_NAME "helvetica 14"
-
 
 static pthread_t       stats_thread;
 static int             thread_close;
@@ -59,8 +55,7 @@ static GtkWidget      *res_cache;
 
 
 
-typedef struct filt_data
-{
+typedef struct filt_data {
 	GtkWidget      *frame;
 	GtkWidget      *box;
 	GtkWidget      *sbox1;
@@ -73,10 +68,7 @@ typedef struct filt_data
 	GtkWidget      *drop_label;
 	GtkWidget      *nproc_label;
 	GtkWidget      *drop_val;
-}
-filt_data_t;
-
-
+} filt_data_t;
 
 
 
@@ -129,7 +121,6 @@ set_for_each_device(ls_search_handle_t shandle, char *rem_string,
 	char *	   delim;
 	char	    node_name[MAX_BUF];
 	struct hostent *hent;
-	device_handle_t *dhandle;
 
 	/*
 	    	 * Get a list of the devices.
@@ -141,8 +132,10 @@ set_for_each_device(ls_search_handle_t shandle, char *rem_string,
 		exit(1);
 	}
 
+#ifdef	XXX
 	/* for each of these devices */
 	for (i = 0; i < num_dev; i++) {
+		device_handle_t *dhandle;
 		/* XXX huge hack, find another way */
 		dhandle = (device_handle_t *) dev_list[i];
 
@@ -174,6 +167,7 @@ set_for_each_device(ls_search_handle_t shandle, char *rem_string,
 
 		dctl_write_leaf(big_buf, len, val);
 	}
+#endif
 }
 
 

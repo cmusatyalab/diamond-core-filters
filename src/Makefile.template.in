@@ -1,6 +1,6 @@
 #
-#      Diamond (Release 1.0)
-#      A system for interactive brute-force search
+#       SnapFind (Release 0.9)
+#       An interactive image search application
 #
 #      Copyright (c) 2002-2005, Intel Corporation
 #      All Rights Reserved
@@ -11,9 +11,11 @@
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
 
-BUILD_LIB_PATH = $(DIAMOND_ROOT)/target/lib
-BUILD_INC_PATH = $(DIAMOND_ROOT)/target/include
-BUILD_BIN_PATH = $(DIAMOND_ROOT)/target/bin
+
+DIAMOND_INSTALL = /usr/local/diamond
+DIAMOND_LIB_PATH = $(DIAMOND_INSTALL)/lib
+DIAMOND_INC_PATH = $(DIAMOND_INSTALL)/include
+DIAMOND_BIN_PATH = $(DIAMOND_INSTALL)/bin
 
 #  Install the directories
 INSTALLBASE=/usr/local/diamond
@@ -22,10 +24,10 @@ INSTALLDIR_LIB=${INSTALLBASE}/lib
 INSTALLDIR_INCLUDE=${INSTALLBASE}/include
 
 
-INCDIR += -I${BUILD_INC_PATH}
+INCDIR += -I${DIAMOND_INC_PATH}
 
 
-LIBDIR += -L${BUILD_LIB_PATH}
+LIBDIR += -L${DIAMOND_LIB_PATH}
 
 
 # general flags

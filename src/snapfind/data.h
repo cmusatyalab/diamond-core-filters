@@ -1,6 +1,6 @@
 /*
- * 	Diamond (Release 1.0)
- *      A system for interactive brute-force search
+ * 	SnapFind (Release 0.9)
+ *      An interactive image search application
  *
  *      Copyright (c) 2002-2005, Intel Corporation
  *      All Rights Reserved
@@ -10,29 +10,6 @@
  *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
-
-#ifndef DATA_H
-#define DATA_H
-
-#include "facedet.h"
-
-
-
-
-
-// Data for Viola/Jones face detector
-
-
-#define	NUM_LEVELS 	38
-
-const static int num_features_static[38] = {
-  1, 10, 25, 25, 50, 50, 50, 75, 75, 100, 125, 75, 175, 75, 75, 125, 300, 175, 275, 300, 300, 300, 100, 100, 275, 50, 300, 300, 50, 175, 275, 300, 300, 150, 300, 250, 300, 75
-};
-
-const static double theta_static[38] = {
-  0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.156250, 0.234375, 0.625000, 0.546875, 0.703125, 0.625000, 0.468750, 0.722656, 0.468750, 0.263672, 0.546875, 1.174316, 0.703125, 0.859375, 0.888672, 1.093750, 1.098633, 0.234375, 0.312500, 0.781250, 0.000000, 0.761719, 0.825195, 0.000000, 0.234375, 0.468750, 0.371094, 0.478516, 0.078125, 0.234375, 0.000000, 0.061035, 0.078125
-}; 
-
 
 const static Feature feature_set_0[1] = {
   { 6, { {3, 5, 1}, {20, 5, -1}, {3, 8, -2}, {20, 8, 2}, {3, 11, 1}, {20, 11, -1}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} }, -271, -0.226178, 0.434942, -1, 0 }

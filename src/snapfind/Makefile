@@ -1,6 +1,6 @@
 #
-#      Diamond (Release 1.0)
-#      A system for interactive brute-force search
+#       SnapFind (Release 0.9)
+#       An interactive image search application
 #
 #      Copyright (c) 2002-2005, Intel Corporation
 #      All Rights Reserved
@@ -12,15 +12,8 @@
 #
 
 
-CC = gcc
-CPLUSPLUS = g++
 
 CFLAGS += -DDEBUG 
-CFLAGS += -Wall
-CFLAGS += -D_REENTRANT
-CFLAGS += -D_THREAD_SAFE
-#CFLAGS += -DDATA_IN_ATTRS
-#CFLAGS_SHARED = $(CFLAGS) -fPIC FLEX = flex 
 # # Set the include paths.  #
 INCDIR += -I ../../lib/libsearchlet
 INCDIR += -I../../lib/libtools
@@ -50,15 +43,15 @@ LIBDIR += -L../../lib/liblog -L../../lib/libodisk
 LIBDIR += -L../../transport/socket/hoststub -L../../lib/libdctl 
 LIBDIR += -L../../lib/libdconfig
 
-include ../common_searches/Makefile.template
+include ../image_common/Makefile.template
 
 # objects used to build the searchlet(s)
-SEARCHLET_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_COMMON_SRCS)
+SEARCHLET_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_SHARED_SRCS)
 SEARCHLET_SRCS += fil_regex.c
 SEARCHLET_SRCS += fil_data2cv.c 
 SEARCHLET_SRCS += fil_synth.c  
 
-SEARCHLET_OBJS = $(SHARED_SEARCHLET_OBJS) $(SHARED_COMMON_OBJS)
+SEARCHLET_OBJS = $(COMMON_SEARCHLET_OBJS) $(COMMON_SHARED_OBJS)
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
 SEARCHLET_OBJS += fil_synth.o 
 
@@ -67,14 +60,14 @@ SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv
 SEARCHLET_LIBDIR += 
 
 # objects needed to build the main
-SNAPFIND_SRCS = $(SHARED_APP_SRCS) $(SHARED_COMMON_SRCS)
+SNAPFIND_SRCS = $(COMMON_APP_SRCS) $(COMMON_SHARED_SRCS)
 SNAPFIND_SRCS += snapfind.cc sfind_search.cc
 SNAPFIND_SRCS +=  read_config.cc  stats_win.c
 SNAPFIND_SRCS += progress_win.cc rgb.c   
 SNAPFIND_SRCS += snap_popup.cc graph_win.cc cache_control.cc
 SNAPFIND_SRCS += sfind_tools.c 
 
-SNAPFIND_OBJS = $(SHARED_APP_OBJS) $(SHARED_COMMON_OBJS)
+SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
 SNAPFIND_OBJS += progress_win.o snap_popup.o  stats_win.o
 SNAPFIND_OBJS += sfind_tools.o  fil_histo.o graph_win.o cache_control.o
@@ -95,11 +88,11 @@ OBJS = $(SNAPFIND_OBJS) $(SEARCHLET_OBJS) $(DEBUG_OBJS)
 
 #
 # Other objects to cleanup
-CLEAN_OTHERS += read_config.cc $(SHARED_SRCS)
+CLEAN_OTHERS += read_config.cc $(COMMON_SRCS)
 
-TARGETS = $(SHARED_HEADERS) snapfind snap_searchlet.so
+TARGETS = $(COMMON_HEADERS) snapfind snap_searchlet.so
 
-include ${DIAMOND_ROOT}/Makefile.template
+include ${SNAPFIND_ROOT}/Makefile.template
 
 # XXX
 # turns on unsafe fp optimizations; we don't require strict IEEE
@@ -168,8 +161,8 @@ clean-experiments:
 	$(RM) $(EXPERIMENT_TGTS)
 
 
-$(SHARED_SRCS):
-	ln -f -s ../common_searches/$@
+$(COMMON_SRCS):
+	ln -f -s ../image_common/$@
                                  
 
 

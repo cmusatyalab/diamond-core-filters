@@ -1,6 +1,6 @@
 /*
- * 	Diamond (Release 1.0)
- *      A system for interactive brute-force search
+ * 	SnapFind (Release 0.9)
+ *      An interactive image search application
  *
  *      Copyright (c) 2002-2005, Intel Corporation
  *      All Rights Reserved
