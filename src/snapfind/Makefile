@@ -206,3 +206,7 @@ $(SHARED_SRCS):
 deps.gviz::
 	cp /dev/null $@
 	./hviz 5 $(SRCS) >> $@
+
+wavelet-test:	wavelet.o rgb.o
+	$(CC) $(CFLAGS) -o wavelet-test wavelet.o rgb.o -static -lwvlt -lm
+#	$(CC) $(CFLAGS) -o wavelet-test wavelet.o rgb.o $(LIBS) $(LIBDIR) -static -lwvlt
