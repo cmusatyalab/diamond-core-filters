@@ -89,7 +89,9 @@ f_fini_opencv_fdetect(void *fdata)
 {
     opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
 
+	
     cvReleaseHidHaarClassifierCascade(&fconfig->haar_cascade);
+    free(fconfig->name);
     free(fconfig);
     return (0);
 }
@@ -212,6 +214,7 @@ f_fini_vj_detect(void *fdata)
 {
     fconfig_fdetect_t *fconfig = (fconfig_fdetect_t *) fdata;
 
+    free(fconfig->name);
     free(fconfig);
     return (0);
 }
