@@ -1,5 +1,5 @@
-#ifndef HISTO_H
-#define HISTO_H
+#ifndef _HISTO_H_
+#define _HISTO_H_	1
 
 #include "queue.h"
 #include "image_common.h"
@@ -99,6 +99,8 @@ void histo_lessen(Histo *h1, const Histo *h2);
  */
 void histo_compute_ii(const RGBImage *img, HistoII *ii, const int dx, const int dy, histo_type_t type);
 
+HistoII * histo_get_ii(histo_config_t *hconfig, RGBImage *img);
+
 /* return the histogram using the ii */
 void histo_get_histo(HistoII *ii, int x, int y, int xsize, int ysize, Histo *h);
 
@@ -118,4 +120,4 @@ int histo_scan_image(char *filtername, RGBImage *img,
 #endif
 
 
-#endif // HISTO_H
+#endif /* !_HISTO_H_ */

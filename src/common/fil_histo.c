@@ -372,35 +372,9 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     ii = (HistoII *) ft_read_alloc_attr(fhandle, ohandle, HISTO_II);
 
     if (ii == NULL) {
-		int             width, height;
-    	int             scalebits;
-    	int             nbytes;
-
-		/* XXX do better on gcd for scalebits */
- 		if (hconfig->scale > 9000.0) {
-			gcd = hconfig->stride;
-		} else {
-			gcd = 1;
-		}
-
-    	scalebits = log2_int(gcd);
-    	width = (img->width >> scalebits) + 1;
-    	height = (img->height >> scalebits) + 1;
-    	nbytes = width * height * sizeof(Histo) + sizeof(HistoII);
-                                                                                                  
-    	err = lf_alloc_buffer(fhandle, nbytes, (char **) &ii);
-    	ASSERT(!err);
-    	ASSERT(ii);
-    	ii->nbytes = nbytes;
-    	ii->width = width;
-    	ii->height = height;
-    	ii->scalebits = scalebits;
-                                                                                                  
-    	histo_compute_ii(img, ii, gcd, gcd, hconfig->type);
+	ii = histo_get_ii(hconfig, img);
     }
-#ifdef	XXX
     ASSERT(ii);
-#endif
 
     /*
      * get nhisto 

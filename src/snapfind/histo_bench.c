@@ -37,6 +37,7 @@ do_test(RGBImage *img)
         int                             i;
         int                             pass;
 	unsigned long long		start, stop;
+	HistoII *		ii;
  	bbox_list_t            blist;
 	TAILQ_INIT(&blist);
 
@@ -65,6 +66,7 @@ do_test(RGBImage *img)
 	TAILQ_INSERT_TAIL(&hconfig.patchlist, hpatch, link);
 
 	start = read_cycle();
+	ii = histo_get_ii(&hconfig, img);
         pass =  histo_scan_image(hconfig.name, img, NULL, &hconfig,
                 INT_MAX /* XXX */, &blist);
 	stop = read_cycle();

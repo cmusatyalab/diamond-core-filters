@@ -3,7 +3,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdint.h>
-
 #include "fil_tools.h"
 #include "fil_histo.h"
 #include "histo.h"
@@ -751,6 +750,43 @@ histo_compute_ii(const RGBImage * img, HistoII * ii, const int dx,
     }                           /* x */
 }
 
+HistoII *
+histo_get_ii(histo_config_t *hconfig, RGBImage *img)
+{
+	int             ii_width, ii_height;
+	int             scalebits;
+	int             nbytes;
+	int		gcd;
+	int		err;
+	int		fhandle = 0;
+	HistoII *	ii;
+                                                                              
+	/* XXX do better on gcd for scalebits */
+	if (hconfig->scale > 9000.0) {
+		gcd = hconfig->stride;
+	} else {
+		gcd = 1;
+	}
+                                                                              	
+	scalebits = log2_int(gcd);
+	ii_width = (img->width >> scalebits) + 1;
+	ii_height = (img->height >> scalebits) + 1;
+	nbytes = ii_width * ii_height * sizeof(Histo) + sizeof(HistoII);
+                                                                              	
+                                                                              	
+	err = lf_alloc_buffer(fhandle, nbytes, (char **) &ii);
+	assert(!err);
+	assert(ii);
+	ii->nbytes = nbytes;
+	ii->width = ii_width;
+	ii->height = ii_height;
+	ii->scalebits = scalebits;
+	histo_compute_ii(img, ii, gcd, gcd, hconfig->type);
+
+	return(ii);
+}
+
+
 void
 histo_get_histo(HistoII * ii, int x, int y, int xsize, int ysize, Histo * h)
 {
@@ -809,7 +845,6 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
     int             old_x = 0, old_y = 0;
 
 
-	XXX
     pass = 0;
     for (scale = 1.0; (scale * ysiz) < height; scale *= scale_factor) {
         xsiz = (dim_t) scale *hconfig->xsize;
@@ -871,6 +906,100 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 
 int
 histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
+                 histo_config_t * hconfig,
+                 int num_req, bbox_list_t *blist)
+{
+	float          x, y;          /* XXX */
+    	float          d;
+    	dim_t           xsiz = hconfig->xsize;
+    dim_t           ysiz = hconfig->ysize;
+	bbox_t	 *		bbox;
+	bbox_t	  		best_box;
+    patch_t        *patch;
+    int             done = 0;
+    int             pass;
+    float          scale;
+    float          scale_factor = hconfig->scale;
+    const dim_t     width = img->width;
+    const dim_t     height = img->height;
+    int             inspected = 0;
+    Histo           h2;         /* histogram for each region tested */
+
+	assert(ii != NULL);
+
+
+	/* build the lookup tables */
+	/* XXX move this to init code later */
+	build_lkuptables(red_lkup, green_lkup, blue_lkup);
+
+	best_box.distance = 500;
+    	pass = 0;
+    	for (x=0; !done && x + hconfig->stride <= width; x += (float)hconfig->stride) {
+	    for (y = 0; !done && y + hconfig->stride <= height; y += (float)hconfig->stride) {
+
+		xsiz = hconfig->xsize;
+		ysiz = hconfig->ysize;
+		while (((x + xsiz) < width) && ((y + ysiz) < height)) {
+			histo_get_histo(ii, (int) x, (int) y, xsiz, ysiz, &h2);
+
+                	patch = TAILQ_FIRST(&hconfig->patchlist);
+                	while (!done && patch) {    /* foreach patch */
+                    	d = histo_distance(&patch->histo, &h2);
+                   	patch = TAILQ_NEXT(patch, link);
+
+                    if ((num_req == 1) && (d < (1.0 - hconfig->simularity))  && 
+						(d < best_box.distance)) {  /* found match */
+					 	best_box.min_x = x;
+                        best_box.min_y = y;
+                        best_box.max_x = x + xsiz;    /* XXX scale */
+                        best_box.max_y = y + ysiz;
+                        best_box.distance = d;
+                    } else if ((num_req > 1) && 
+						(d < (1.0 - hconfig->simularity))) {  /* found match */
+						bbox = (bbox_t *) malloc(sizeof(*bbox));
+						bbox->min_x = x;
+						bbox->min_y = y;
+						bbox->max_x = x + xsiz;
+						bbox->max_y = y + ysiz;
+						bbox->distance = d;
+
+						TAILQ_INSERT_TAIL(blist, bbox, link);
+                        pass++;
+                        /*
+                         * use passed in pthreshold instead of
+                         * fsp->pthreshold 
+                         */
+                        if (pass >= num_req)
+                            done = 1;
+                        break;  /* no need to check other patches */
+                    }
+                }               /* foreach patch */
+
+		xsiz *= scale_factor;
+		ysiz *= scale_factor;
+            }                   /* for x */
+        }                       /* for y */
+    }                           /* for scale */
+
+	 if ((num_req == 1) && (best_box.distance < (1.0 - hconfig->simularity))) {
+            pass++;
+            bbox = (bbox_t *)malloc(sizeof(*bbox));
+            assert(bbox != NULL);
+            bbox->min_x = best_box.min_x;
+            bbox->min_y = best_box.min_y;
+            bbox->max_x = best_box.max_x;
+            bbox->max_y = best_box.max_y;
+            bbox->distance = best_box.distance;
+            TAILQ_INSERT_TAIL(blist, bbox, link);
+    }
+
+
+    return pass;
+}
+
+
+int
+old_histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
                  histo_config_t * hconfig,
                  int num_req, bbox_list_t *blist)
 {
