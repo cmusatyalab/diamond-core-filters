@@ -83,7 +83,13 @@ window_search::set_scale(char * data)
 double
 window_search::get_scale()
 {
-	return(scale);
+	float	local_scale;
+	if (scale == 1.0) {
+		local_scale = 100000.00;	/* some large number */
+	} else {
+		local_scale = scale;
+	}
+	return(local_scale);
 }
 
 
@@ -302,9 +308,9 @@ window_search::save_edits()
 void
 window_search::write_fspec(FILE *ostream)
 {
-	/* write the related filter spec arguments*/
 
-	fprintf(ostream, "ARG  %9.7f  # Scale \n", scale);
+	/* write the related filter spec arguments*/
+	fprintf(ostream, "ARG  %9.7f  # Scale \n", get_scale());
 	fprintf(ostream, "ARG  %d  # Test X \n", testx);
 	fprintf(ostream, "ARG  %d  # Test Y \n", testy);
 	fprintf(ostream, "ARG  %d  # Stride \n", stride);

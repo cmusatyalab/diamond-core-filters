@@ -688,7 +688,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
     int             done = 0;
     int             pass;
     double          scale;
-    double          scale_factor = HISTO_SCALE;
+    double          scale_factor = hconfig->scale;
     const dim_t     width = img->width;
     const dim_t     height = img->height;
     int             inspected = 0;

@@ -249,7 +249,18 @@ example_search::remove_patch(example_patch_t *patch)
 	}
 	free(patch);
 
+	num_patches--;
+
 	update_display();
+}
+
+static void
+cb_import(GtkWidget *item, gpointer data)
+{
+	example_patch_t		*cur_patch;
+	example_search *	es;
+
+	printf("XXX import \n");
 }
 
 
@@ -258,15 +269,38 @@ example_search::example_display()
 {
 	GtkWidget *			window;
 	GtkWidget *			table;
+	GtkWidget *			hbox;
+	GtkWidget *			import_button;
+	GtkWidget *			label;
+	GtkWidget *			sep;
 
 	window = gtk_scrolled_window_new(NULL, NULL);
 
-	patch_holder = gtk_hbox_new(FALSE, 10);
+	patch_holder = gtk_vbox_new(FALSE, 10);
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(window), patch_holder);
 
 
+	hbox = gtk_hbox_new(FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(patch_holder), hbox, FALSE,
+			TRUE, 10);
+
+	label = gtk_label_new("Example Patches: ");
+	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 10);
+
+
+	import_button = gtk_button_new_with_label("Import");
+	g_signal_connect(G_OBJECT(import_button), "clicked",
+			G_CALLBACK(cb_import), this);
+
+	gtk_box_pack_start(GTK_BOX(hbox), import_button, FALSE,
+			TRUE, 10);
+	
+	
+	sep = gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(patch_holder), sep, FALSE, TRUE, 10);
+	
+
 	table = build_patch_table();
-		
 	gtk_box_pack_start(GTK_BOX(patch_holder), table, FALSE,
 			TRUE, 10);
 

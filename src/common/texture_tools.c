@@ -19,15 +19,13 @@ texture_test_entire_image(IplImage * img, texture_args_t *targs, bbox_list_t *bl
 
     double          variance[NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS];
     double          mean [NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS];
+    double          ave_sample_mean_diff[NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS];
 
-    double          ave_sample_mean_diff[NUM_LAP_PYR_LEVELS *
-                                         TEXTURE_MAX_CHANNELS];
-    double          mean_sample_diff[NUM_LAP_PYR_LEVELS * TEXTURE_MAX_CHANNELS];
     double          distance;
     double          min_distance;   // min distance for one window from all samples
-    double          min_min_distance = -1.0;    // min distance for all
     int             passed = 0;
     int             i, s, x, y; 
+	int				test_x, test_y;
     bbox_t*         bbox;
     int		    quit_on_pass = 1; //quits as soon as its known that the image passes
     int             extra_pixels_w = img->width % (1 << NUM_LAP_PYR_LEVELS);
@@ -102,63 +100,45 @@ texture_test_entire_image(IplImage * img, texture_args_t *targs, bbox_list_t *bl
     /*
      * test each subwindow 
      */
-    for (x = 0; x + targs->box_width < img->width; x += targs->step) {
-        for (y = 0; y + targs->box_height < img->height; y += targs->step) {
-            texture_get_lap_pyr_features_from_subimage(img, targs->num_channels, x,
-                                                       y, targs->box_width,
-                                                       targs->box_height,
-                                                       feature_val);
-            distance = 0.0;
-            min_distance = -1.0;
-	    for (i = 0; i < NUM_LAP_PYR_LEVELS * targs->num_channels; i++) {
-	      // mahalanobis distance metric
-	      distance += ((feature_val[i] - mean[i])*(feature_val[i]-mean[i]) /
-			   variance[i]);
-	    }
-	    min_distance = distance;
+	for (test_x = targs->box_width, test_y = targs->box_height; 
+		((test_x < img->width) && (test_y < img->height)); 
+	     test_x = (int)((float)test_x * targs->scale),
+		 test_y = (int)((float)test_y * targs->scale)) {
 
-	    min_distance = min_distance / targs->num_channels;
-	    // old code
-/*             for (s = 0; s < targs->num_samples; s++) { */
-/*                 distance = 0.0; */
-/*                 for (i = 0; i < NUM_LAP_PYR_LEVELS * targs->num_channels; i++) { */
-/*                     distance += (feature_val[i] - targs->sample_values[s][i]) * */
-/*                         (feature_val[i] - targs->sample_values[s][i]) / */
-/*                         (ave_sample_mean_diff[i] * ave_sample_mean_diff[i]); */
-/*                 } */
-/* 	    distance = sqrt(distance) / targs->num_channels; */
-/* 	    if ((distance < min_distance) || (min_distance == -1.0)) { */
-/* 	      min_distance = distance; */
-/* 	    } */
-/* 	} */
-
-#ifdef	XXX
-            if ((min_distance < min_min_distance)
-                || (min_min_distance == -1.0)) {
-                *min_x = x;
-                *min_y = y;
-                min_min_distance = min_distance;
-            }
-#endif
+    	for (x = 0; (x + test_x) < img->width; x += targs->step) {
+        	for (y = 0; (y + test_y) < img->height; y += targs->step) {
+            	texture_get_lap_pyr_features_from_subimage(img, 
+						targs->num_channels, x, y, test_x, test_y, feature_val);
+            	distance = 0.0;
+            	min_distance = -1.0;
+	    		for (i = 0; i < NUM_LAP_PYR_LEVELS * targs->num_channels; i++) {
+	      			// mahalanobis distance metric
+	      			distance += 
+					    ((feature_val[i]-mean[i])*(feature_val[i]-mean[i]) /
+			   			variance[i]);
+	    		}
+	    		min_distance = distance;
+	    		min_distance = min_distance / targs->num_channels;
 
 
-            if (min_distance <= targs->max_distance) {
-                passed++;
-		bbox = (bbox_t *)malloc(sizeof(*bbox));
-		assert(bbox != NULL);
-		bbox->min_x = x;
-		bbox->min_y = y;
-		bbox->max_x = x + targs->box_width;	/* XXX scale */
-		bbox->max_y = y + targs->box_height; /* XXX scale */
-		 bbox->distance = min_distance;
-		TAILQ_INSERT_TAIL(blist, bbox, link);
-
-                if (quit_on_pass && (passed >= targs->min_matches)) {
-                    goto done;
-                }
-            }
+            	if (min_distance <= targs->max_distance) {
+                	passed++;
+					bbox = (bbox_t *)malloc(sizeof(*bbox));
+					assert(bbox != NULL);
+					bbox->min_x = x;
+					bbox->min_y = y;
+					bbox->max_x = x + test_x;	/* XXX scale */
+					bbox->max_y = y + test_y;
+		 			bbox->distance = min_distance;
+					TAILQ_INSERT_TAIL(blist, bbox, link);
+		
+                	if (quit_on_pass && (passed >= targs->min_matches)) {
+                    	goto done;
+                	}
+            	}
+			}
         }
-    }
+	}
 
 done:
 
@@ -181,6 +161,7 @@ texture_get_lap_pyr_features_from_subimage(IplImage * img,
     IplImage       *gaussianIm[NUM_LAP_PYR_LEVELS + 1];
     IplImage       *laplacianIm_tmp[NUM_LAP_PYR_LEVELS + 1];
     IplImage       *laplacianIm[NUM_LAP_PYR_LEVELS + 1];
+    int				xsize[NUM_LAP_PYR_LEVELS + 1], ysize[NUM_LAP_PYR_LEVELS + 1];
     CvRect          roi;
     CvRect          old_roi;
     CvScalar        response;
@@ -202,6 +183,9 @@ texture_get_lap_pyr_features_from_subimage(IplImage * img,
      * form gaussian pyramid 
      */
     gaussianIm[NUM_LAP_PYR_LEVELS] = img;
+	roi = cvGetImageROI(img);
+	xsize[NUM_LAP_PYR_LEVELS] = roi.width;
+	ysize[NUM_LAP_PYR_LEVELS] = roi.height;
 
     for (i = 1; i <= NUM_LAP_PYR_LEVELS; i++) {
         gindex = NUM_LAP_PYR_LEVELS - i;
@@ -209,6 +193,8 @@ texture_get_lap_pyr_features_from_subimage(IplImage * img,
         gaussianIm[NUM_LAP_PYR_LEVELS - i] =
             cvCreateImage(cvSize(roi.width / 2, roi.height / 2), IPL_DEPTH_8U,
                           num_channels);
+		xsize[NUM_LAP_PYR_LEVELS - i] = roi.width/2;
+		ysize[NUM_LAP_PYR_LEVELS - i] = roi.height/2;
         cvPyrDown(gaussianIm[gindex + 1], gaussianIm[gindex],
                   CV_GAUSSIAN_5x5);
     }
@@ -221,10 +207,10 @@ texture_get_lap_pyr_features_from_subimage(IplImage * img,
     for (i = 1; i <= NUM_LAP_PYR_LEVELS; i++) {
         roi = cvGetImageROI(laplacianIm[i - 1]);
         laplacianIm_tmp[i] =
-            cvCreateImage(cvSize(roi.width * 2, roi.height * 2), IPL_DEPTH_8U,
+            cvCreateImage(cvSize(xsize[i], ysize[i]), IPL_DEPTH_8U,
                           num_channels);
         laplacianIm[i] =
-            cvCreateImage(cvSize(roi.width * 2, roi.height * 2), IPL_DEPTH_8U,
+            cvCreateImage(cvSize(xsize[i], ysize[i]), IPL_DEPTH_8U,
                           num_channels);
         cvResize(laplacianIm[i - 1], laplacianIm_tmp[i], CV_INTER_NN);
         cvAbsDiff(gaussianIm[i], laplacianIm_tmp[i], laplacianIm[i]);
@@ -258,5 +244,4 @@ texture_get_lap_pyr_features_from_subimage(IplImage * img,
             cvReleaseImage(&laplacianIm_tmp[i]);
         }
     }
-
 }

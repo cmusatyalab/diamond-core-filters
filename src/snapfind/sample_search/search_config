@@ -88,6 +88,7 @@ SCALE 1.500000
 MATCHES 1 
 PATCHFILE sand.ex0.ppm 0 0 32 32 
 
+
 SEARCH rgb_histogram black_and_white
 METRIC 0.800000 
 TESTX 32 
@@ -95,7 +96,7 @@ TESTY 32
 STRIDE 4 
 SCALE 1.500000 
 MATCHES 1 
-PATCHFILE bw32.ppm 0 0 32 32 
+PATCHFILE black_and_white.ex0.ppm 0 0 32 32 
 
 
 SEARCH texture waves
@@ -116,6 +117,21 @@ PATCHFILE waves.ex6.ppm 0 0 32 32
 PATCHFILE waves.ex7.ppm 0 0 32 32 
 
 
+SEARCH texture grass
+METRIC 0.650000 
+CHANNEL 3 
+TESTX 32 
+TESTY 32 
+STRIDE 32 
+SCALE 1.250000 
+MATCHES 1 
+PATCHFILE grass.ex0.ppm 0 0 32 32 
+PATCHFILE grass.ex1.ppm 0 0 32 32 
+PATCHFILE grass.ex2.ppm 0 0 32 32 
+PATCHFILE grass.ex3.ppm 0 0 32 32 
+PATCHFILE grass.ex4.ppm 0 0 32 32 
+
+
 SEARCH vj_face_search faces
 NUMFACE 1 
 START 0 
@@ -127,5 +143,3 @@ TESTY 24
 STRIDE 8 
 SCALE 1.250000 
 MATCHES 1 
-
-
