@@ -124,7 +124,7 @@ create_rgb_image(const char *filename)
 
     fp = fopen(filename, "r");
     if (!fp) {
-        perror(filename);
+        perror("create_rgb_imag:  failed to read buffer:: ");
         return NULL;
     }
 
