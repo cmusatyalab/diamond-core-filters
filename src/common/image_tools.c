@@ -132,8 +132,8 @@ create_rgb_image(const char *filename)
      */
     {
         pnm_state_t    *state;
-        state = pnm_state_new(img);
         char           *bufp = &buf[headerlen]; /* skip header */
+        state = pnm_state_new(img);
         buflen -= headerlen;
         do {
             err = ppm_add_data(state, bufp, buflen);
