@@ -85,6 +85,10 @@ public:
 	void 		clear_selections();
 	void 		clear_highlight();
 
+	int 		num_selections();
+	void  		get_selection(int num, bbox_t *bbox);
+	RGBImage   *	get_image();
+
 
 
 private:

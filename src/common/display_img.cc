@@ -261,6 +261,24 @@ display_img::event_realize()
 	
 }
 
+int
+display_img::num_selections()
+{
+    return(di_nselections);
+}
+
+void
+display_img::get_selection(int i, bbox_t *bbox)
+{
+	*bbox = di_selections[i];
+	return;
+}
+
+RGBImage *
+display_img::get_image()
+{
+    return(di_cur_img);
+}
 
 
 static void
@@ -282,7 +300,6 @@ display_img::clear_selections()
 	rgbimg_clear(img);
 	gtk_widget_queue_draw_area(di_drawingarea, 0, 0, img->width,
 				   img->height);
-	GUI_CALLBACK_LEAVE();
 
 	di_nselections = 0;
 }
