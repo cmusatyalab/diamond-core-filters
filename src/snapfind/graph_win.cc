@@ -554,19 +554,30 @@ graph_win::init_window()
 		gw_width - (X_END_OFFSET + X_END_TEXT_OFFSET),
 		 gw_height - (Y_ZERO_OFFSET - Y_TEXT_GAP), playout);
 
-
 	/* y min label */
 	sprintf(buf, "%5.2f", gw_ymin);
 	playout = gtk_widget_create_pango_layout(gw_drawingarea, buf);
 	gdk_draw_layout(gw_pixmap, gc, Y_LABEL_GAP, 
 		gw_height - (Y_ZERO_OFFSET + Y_ZERO_TEXT_OFFSET),playout);
 
-
 	/* y max label */
 	sprintf(buf, "%5.2f", gw_ymax);
 	playout = gtk_widget_create_pango_layout(gw_drawingarea, buf);
 	gdk_draw_layout(gw_pixmap, gc, Y_LABEL_GAP, 
 		Y_END_OFFSET, playout);
+
+	/* x axis label */
+	sprintf(buf, "%s", "Time (secs)");
+	playout = gtk_widget_create_pango_layout(gw_drawingarea, buf);
+	gdk_draw_layout(gw_pixmap, gc, (gw_width/2 - 20),
+		 gw_height - (Y_ZERO_OFFSET - Y_TEXT_GAP), playout);
+
+	/* y axis label */
+	sprintf(buf, "%s", "  Objs \nSearched");
+	playout = gtk_widget_create_pango_layout(gw_drawingarea, buf);
+	gdk_draw_layout(gw_pixmap, gc, Y_LABEL_GAP, ((gw_height/2) - 10),
+		 playout);
+
 
 
 	/* draw x - axis line */
@@ -609,8 +620,6 @@ remove_func(GtkWidget *widget, void *container)
   	GUI_THREAD_CHECK(); 
   	gtk_container_remove(GTK_CONTAINER(container), widget);
 }
-
-
 
 
 void
