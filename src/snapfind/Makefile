@@ -41,7 +41,7 @@ LIBDIR += -L../../lib/libsearchlet -L../../lib/libfilter -L../../lib/libfilterex
 # Other objects to cleanup
 CLEAN_OTHERS += read_config.cc
 
-SHARED_HEADERS = snap_search.h  rgb.h image_tools.h common_consts.h
+SHARED_HEADERS = rgb.h image_tools.h common_consts.h
 
 SHARED_SEARCHLET_SRCS = image_tools.c
 
@@ -109,7 +109,7 @@ OBJS = $(SNAPFIND_OBJS) $(SEARCHLET_OBJS) $(DEBUG_OBJS)
 # Compilation Targets
 #
 
-TARGETS = snapfind snap_searchlet.so
+TARGETS = $(SHARED_HEADERS) snapfind snap_searchlet.so
 
 include ${DIAMOND_ROOT}/Makefile.template
 
