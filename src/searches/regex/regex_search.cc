@@ -108,7 +108,7 @@ regex_search::edit_search()
  
 	string_entry = gtk_entry_new();
     gtk_box_pack_start(GTK_BOX(container), string_entry, FALSE, TRUE, 0);
-
+	gtk_entry_set_text(GTK_ENTRY(string_entry), search_string);
 	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 0);
 
 	gtk_container_add(GTK_CONTAINER(edit_window), box); 
