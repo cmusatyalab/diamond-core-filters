@@ -210,3 +210,23 @@
 # bhuston @ 4/23/04 - ppm
 00:00:00:00:00:08:00:1C diamond05 diamond04 diamond03 diamond02 diamond01  
 
+
+# bandit larry-babu cam1
+00:00:00:00:01:00:00:01 diamond01 diamond02 diamond03 diamond04 
+# bandit larry-babu cam2
+00:00:00:00:01:00:00:02 diamond01 diamond02 diamond03 diamond04 
+# bandit larry-babu cam3
+00:00:00:00:01:00:00:03 diamond01 diamond02 diamond03 diamond04 
+# bandit larry-babu cam4
+00:00:00:00:01:00:00:04 diamond01 diamond02 diamond03 diamond04 
+
+
+# bandit rahul-babu cam1
+00:00:00:00:01:00:00:11 diamond01 diamond02 diamond03 diamond04 
+# bandit rahul-babu cam2
+00:00:00:00:01:00:00:12 diamond01 diamond02 diamond03 diamond04 
+# bandit rahul-babu cam3
+00:00:00:00:01:00:00:13 diamond01 diamond02 diamond03 diamond04 
+# bandit rahul-babu cam4
+00:00:00:00:01:00:00:14 diamond01 diamond02 diamond03 diamond04 
+
