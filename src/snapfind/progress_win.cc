@@ -539,7 +539,7 @@ stats_main(void *data)
 		}
 		last_id = id;
 
-		if (time > 2.5)  {
+		if (time > 1.1)  {
 			// XXX printf("done %f \n", done);
 			gwin->add_point((double)time, done, id);
 		}
@@ -581,7 +581,7 @@ open_progress_win()
         progress_box = gtk_hbox_new(FALSE, 0);
         gtk_container_add(GTK_CONTAINER(progress_window), progress_box);
 
-	gwin = new graph_win(0.0, 10.0, 0.0, 100.0);
+	gwin = new graph_win(0.0, 30.0, 0.0, 5000.0);
 	
 	gwidget = gwin->get_graph_display(PROGRESS_X_SIZE, PROGRESS_Y_SIZE);
 	gtk_box_pack_start(GTK_BOX(progress_box), gwidget, FALSE, TRUE, 0);
