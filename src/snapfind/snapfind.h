@@ -25,5 +25,7 @@ typedef TAILQ_HEAD(thumblist_t, thumbnail_t) thumblist_t;
 extern thumblist_t thumbnails;
 extern thumbnail_t *cur_thumbnail;
 
+/* XXX add c++ wrapper */
+void ss_add_dep(snap_search *dep);
 
 #endif	/* ! _SNAP_FIND_H_ */

@@ -1,9 +1,5 @@
 Add search dependency support
 
-Add samples to existing searches
-
-Create new search using samples
-
 Create new searches
 
 Use google for sample images
@@ -40,3 +36,7 @@ Scale for textures
 
 Talk to Rahul about different patch sizes for added texture
 patches.  Currently crashes if they are not regular.
+
+Check for name conflicts in the searches
+
+Check for spaces when creating new search from the popup window

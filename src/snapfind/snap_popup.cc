@@ -593,6 +593,9 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 				 popup_window.selections[i]);
   	}
 
+	/* popup the edit window */ 
+	ssearch->edit_search();
+
   guint id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
 					  "selection");
   gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
@@ -619,7 +622,6 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	GtkWidget *		item;
   	GUI_CALLBACK_ENTER();
 
-
 	active_item = gtk_menu_get_active(GTK_MENU(popup_window.search_type));
 
 	/* XXX can't directly get the cast to work ??? */ 
@@ -627,19 +629,18 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	stype = (search_types_t )idx;
    
 	sname =  gtk_entry_get_text(GTK_ENTRY(popup_window.search_name));
-    	if(strlen(sname) < 1) {
-      		sprintf(buf, "ERROR bad name!");
-      		exit(1);
+    if(strlen(sname) < 1) {
+     	sprintf(buf, "ERROR bad name!");
+    	exit(1);
 		/* XXXX popup window, and exit */
 		/* XXX make sure the name already exists */
-    	}
+    }
 
 	/* create the new search and put it in the global list */
 	ssearch = create_search(stype, sname);
 	assert(ssearch != NULL);
 	snap_searches[num_searches] = ssearch;
 	num_searches++;
-
 
 	/*
 	 * Put this in the list of searches in the selection pane.
@@ -659,7 +660,10 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 		ssearch->add_patch(popup_window.hooks->img, 
 				 popup_window.selections[i]);
   	}
-  
+ 
+	/* popup the edit window */ 
+	ssearch->edit_search();
+
 	GUI_CALLBACK_LEAVE();
 	return TRUE;
 }

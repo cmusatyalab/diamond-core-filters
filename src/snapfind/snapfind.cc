@@ -114,6 +114,11 @@ static struct {
 snap_search * snap_searches[MAX_SEARCHES];
 int num_searches = 0;
 
+/* XXXX fix this */
+#define	MAX_SEARCHES	64
+snap_search * snap_deps[MAX_SEARCHES];
+int num_deps = 0;
+
 
 static lf_fhandle_t fhandle = 0;	/* XXX */
 
@@ -389,6 +394,39 @@ build_search_from_gui(topo_region_t *main_region)
 	}
 }
 
+void
+ss_clear_deps()
+{
+	int	i;
+	for (i=0; i < num_deps; i++) {
+		delete snap_deps[i];
+	}
+	num_deps = 0;
+}
+
+void
+ss_add_dep(snap_search *dep)
+{
+
+	int 	i;
+
+	/* for now we use the name to detect the same dependancy has been added*/
+	/* XXX TODO:  look for better method */
+	for (i=0; i < num_deps; i++) {
+		if (strcmp(dep->get_name(), snap_deps[i]->get_name()) == 0) {
+			fprintf(stdout, "dup dependency %s \n", dep->get_name());
+			delete dep;
+			return;
+		}
+	}
+
+	assert(num_deps < MAX_SEARCHES);
+
+	snap_deps[num_deps] = dep;
+	num_deps++;
+	return;
+}
+
 /*
  * Build the filters specification into the temp file name
  * "tmp_file".  We walk through all the activated regions and
@@ -404,6 +442,7 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 	int             fd;
 	snap_search *		snapobj;
 	int					i;
+	snap_search *		rgb;
 
 	tmp_storage = (char *)malloc(L_tmpnam);	/* where is the free for this? XXX */
 	if (tmp_storage == NULL) {
@@ -421,9 +460,7 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 		
 	if(fd < 0) { 
 		perror(tmp_file);
-		free(tmp_storage);
-		return NULL;
-	}
+		free(tmp_storage); return NULL; }
 	fspec = fdopen(fd, "w+");
 	if (fspec == NULL) {
 		perror(tmp_file);
@@ -431,7 +468,13 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 		return(NULL);
 	}
 
-	/* XXX empty dependency list */
+	/* clear the dependancies */
+	ss_clear_deps();
+
+	/* we always do rgb, XXX should we ??*/
+	rgb = new rgb_img("RGB image", "RGB image");
+    ss_add_dep(rgb);
+
 
 	for (i = 0; i < num_searches ; i++) {
 		snapobj = snap_searches[i];
@@ -441,7 +484,14 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 		}
 	}
 
-	/* XXX write the dependy list */
+	/* write the dependancy lists */
+	for (i = 0; i < num_deps ; i++) {
+			snapobj = snap_deps[i];
+			snapobj->write_fspec(fspec);
+	}
+
+	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
+	fprintf(fspec, "REQUIRES  RGB  # dependancies \n");
 
 	err = fclose(fspec);	/* closes fd as well */
 	if (err != 0) {
@@ -449,6 +499,7 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 		free(tmp_storage);
 		return(NULL);
 	}
+
 	return(tmp_file);
 }
 
