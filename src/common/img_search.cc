@@ -33,7 +33,6 @@ img_search::img_search(const char *name, char *descr)
 	name_entry = NULL;
 	search_label = NULL;
 	adjust_label = NULL;
-
 	parent_set = NULL;
 }
 
