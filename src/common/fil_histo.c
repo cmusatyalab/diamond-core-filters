@@ -417,8 +417,9 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 		&blist);
 
 	i = nhisto;
-	TAILQ_FOREACH(cur_box, &blist, link) {
+	while (!(TAILQ_EMPTY(&blist))) {
 		search_param_t param;
+		cur_box = TAILQ_FIRST(&blist);
 		param.type = PARAM_HISTO;
 		param.bbox.xmin = cur_box->min_x;
 		param.bbox.ymin = cur_box->min_y;

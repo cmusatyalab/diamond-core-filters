@@ -195,7 +195,8 @@ f_eval_detect(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
 		pass = face_scan_image(ii, ii2, fconfig, &blist, height, width);	
 
 		i = 0;
-		TAILQ_FOREACH(cur_box, &blist, link) {
+		while (!(TAILQ_EMPTY(&blist))) {
+			cur_box = TAILQ_FIRST(&blist);
         	param.type = PARAM_FACE;
 	  		param.bbox.xmin = cur_box->min_x;
         	param.bbox.ymin = cur_box->min_y;

@@ -178,7 +178,8 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
 
 
 	i = num_histo;
-	TAILQ_FOREACH(cur_box, &blist, link) {
+	while (!(TAILQ_EMPTY(&blist))) {
+		cur_box = TAILQ_FIRST(&blist);
     	param.type = PARAM_HISTO;  //temporary hack
         param.bbox.xmin = cur_box->min_x;
         param.bbox.ymin = cur_box->min_y;
