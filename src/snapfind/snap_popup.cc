@@ -306,11 +306,28 @@ draw_face_func(GtkWidget *widget, void *ptr) {
 
 }
 
+static void
+highlight_box_f(RGBImage *img, bbox_t * bbox) 
+{
+	image_fill_bbox_scale(img, bbox, 1, hilitMask, hilit);
+
+	GUI_THREAD_ENTER();
+	gtk_widget_queue_draw_area(popup_window.drawing_area,
+				   bbox->min_x, bbox->min_y,
+				   bbox->max_x, bbox->max_y);
+	GUI_THREAD_LEAVE();
+}
+
+
 void *
-histo_scan_main(void *ptr) 
+image_highlight_main(void *ptr) 
 {
 	int insp=0, pass=0;
+		bbox_t bbox;
+	bbox_t *		cur_bb;
+	bbox_list_t		bblist;
 	int err;
+	int	i;
 
 	err = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	assert(!err);
@@ -320,6 +337,38 @@ histo_scan_main(void *ptr)
 	ih_get_ref(popup_window.hooks);
 	guint id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
 						"histo");
+
+	/* 
+	 * go through each of the searches, if highlight is selected,
+	 * then eval the regions according to the values.
+	 */
+	for (i=0; i < num_searches; i++) {
+		/* if highligh isn't selected, then go to next object */
+		if (snap_searches[i]->is_hl_selected() == 0) {
+			continue;
+		}
+
+		TAILQ_INIT(&bblist);
+
+		snap_searches[i]->region_match(popup_window.hooks->img, &bblist);
+
+		TAILQ_FOREACH(cur_bb, &bblist, link) {
+	  		highlight_box_f(popup_window.layers[HIGHLIGHT_LAYER], cur_bb);
+			/* XXXXXXXX free bbox */
+		}
+
+#ifdef	XXX
+		/* new objects, let's highlight   */
+
+	  	bbox.min_x = 0;
+	  	bbox.min_y = 0;
+	  	bbox.max_x = 100;
+	  	bbox.max_y = 100;
+	  	highlight_box_f(popup_window.layers[HIGHLIGHT_LAYER], bbox);
+#endif
+
+	}
+
 #ifdef	XXX_NOW
 	for(int i=0; i<nscapes; i++) {
 	  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(scapes[i].cb))) {
@@ -359,7 +408,7 @@ histo_scan_main(void *ptr)
 		    TAILQ_FOREACH(texture_patch, &fsp.texture_features_list, link) {
 		      samples[s] = new double[NUM_LAP_PYR_LEVELS*TEXTURE_NUM_CHANNELS];
 		      for (int i=0; i<NUM_LAP_PYR_LEVELS*TEXTURE_NUM_CHANNELS; i++) {
-			samples[s][i] = texture_patch->feature_values[i];
+				samples[s][i] = texture_patch->feature_values[i];
 		      }
 		      s++;
 		    }
@@ -567,7 +616,8 @@ cb_run_highlight()
 	GUI_CALLBACK_ENTER();
 
 	kill_highlight_thread(1);
-	int err = pthread_create(&highlight_info.thread, PATTR_DEFAULT, histo_scan_main, NULL);
+	int err = pthread_create(&highlight_info.thread, PATTR_DEFAULT, 
+		image_highlight_main, NULL);
 	assert(!err);
 
 	GUI_CALLBACK_LEAVE();
