@@ -56,8 +56,6 @@
 
 /* XXXX fix this */
 #define MAX_SEARCHES    64
-extern img_search * snap_searches[MAX_SEARCHES];
-extern int num_searches;
 
 
 
@@ -98,11 +96,11 @@ create_search(search_types_t type, const char *name)
 
 
 int
-search_exists(const char *name)
+search_exists(const char *name, img_search **search_list, int slist_size)
 {
 	int		i;
-	for (i=0; i < num_searches; i++) {
-		if (strcmp(snap_searches[i]->get_name(), name) == 0) {
+	for (i=0; i < slist_size; i++) {
+		if (strcmp(search_list[i]->get_name(), name) == 0) {
 			return (1);
 		}
 	}
@@ -152,24 +150,18 @@ unregister_update_function(void (*update_fn)(img_search *searches,
 }
 
 void
-search_add_list(img_search *new_search)
+search_add_list(img_search *new_search, img_search **search_list, int
+	*search_list_size)
 {
 	int	i;
 
 	/* XXX do some error checks */
-	snap_searches[num_searches] = new_search;
-	num_searches++;
+	search_list[*search_list_size] = new_search;
+	*search_list_size++;
 
 	for (i=0; i < NUM_FNS; i++) {
 		if (cb_fns[i] != NULL) {
-			(*cb_fns[i])(new_search, num_searches);
+			(*cb_fns[i])(new_search, *search_list_size);
 		}
-	}	
-	///* update the entry in the main panel */
-	//update_search_entry(new_search, num_searches);
-
-	/* add the entry to the search popup list */
-	//search_popup_add(new_search, num_searches);
-
-	//import_update_searches();
+	}
 }

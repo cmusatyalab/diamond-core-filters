@@ -14,8 +14,9 @@ extern "C" {
 /* external declaration to create new search  of specified type */
 img_search * create_search(search_types_t type, const char *name);
 
-int search_exists(const char *name);
-void search_add_list(img_search *new_search);
+int search_exists(const char *name, img_search **search_list, int slist_size);
+void search_add_list(img_search *new_search, img_search **search_list,
+	int *search_list_size);
 
 
 	

@@ -128,7 +128,6 @@ snapfind: $(SNAPFIND_OBJS)
 search:	search.c
 	$(CC) $(CFLAGS) $(DYNAMIC) -o $@ $< $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
 
-
 profile: profile.o $(SEARCHLET_OBJS)
 	$(CC) $(CFLAGS) -o profile profile.o $(SEARCHLET_OBJS) $(LIBS) $(LIBDIR) -lfilterexec -ltools -lodisk
 

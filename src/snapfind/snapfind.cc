@@ -374,7 +374,6 @@ ss_clear_deps()
 void
 ss_add_dep(img_search *dep)
 {
-
 	int 	i;
 
 	/* for now we use the name to detect the same dependancy has been added*/
@@ -1737,7 +1736,7 @@ redo:
 		}
 
 		/* check for name conflicts */
-		if (search_exists(new_name)) {
+		if (search_exists(new_name, snap_searches, num_searches)) {
 			gtk_label_set_text(GTK_LABEL(helplabel),
 					"Name exists: Please change");
 			goto redo;
@@ -1747,7 +1746,7 @@ redo:
 		assert(ssearch != NULL);	
 
 		/* add to the list of searches */
-		search_add_list(ssearch);
+		search_add_list(ssearch, snap_searches, &num_searches);
 
 		/* popup the new search edit box */	
 		ssearch->edit_search();

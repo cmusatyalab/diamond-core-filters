@@ -611,7 +611,7 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 
 
 	/* put this in the list of searches */
-	search_add_list(ssearch);
+	search_add_list(ssearch, snap_searches, &num_searches);
 
 	/* put the patches into the newly created search */
 	for(int i=0; i<popup_window.nselections; i++) {
