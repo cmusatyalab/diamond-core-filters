@@ -52,6 +52,7 @@
 #include "search_support.h"
 #include "snapfind.h"
 #include "import_sample.h"
+#include "gtk_image_tools.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -1103,13 +1104,14 @@ cb_import_search_from_dir(GtkWidget *widget, gpointer user_data)
 	olddir = getcwd(NULL, 0);
 
 	err = chdir(dirname);
-	assert(err == 0);
+	if (err) {
+		show_popup_error("Load search", "Invalid search directory", gui.main_window);
+		goto done;
+	}
 
 	/* XXXX cleanup all the old searches first */
 
-	printf("Reading scapes: %s ...\n", buf);
 	read_search_config(buf, snap_searches, &num_searches);
-	printf("Done reading scapes...\n");
 	
 	err = chdir(olddir);
 	assert(err == 0);
@@ -1121,6 +1123,7 @@ cb_import_search_from_dir(GtkWidget *widget, gpointer user_data)
     gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
 		FALSE, FALSE, 10);
 
+done:
 	GUI_CALLBACK_LEAVE();
 }
 
@@ -1141,14 +1144,15 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 	olddir = getcwd(NULL, 0);
 
 	err = chdir(dirname);
-	assert(err == 0);
+	if (err) {
+		show_popup_error("Load search", "Invalid search directory", gui.main_window);
+		goto done;
+	}
 
 	/* XXXX cleanup all the old searches first */
 
 	num_searches = 0;
-	printf("Reading scapes: %s ...\n", buf);
 	read_search_config(buf, snap_searches, &num_searches);
-	printf("Done reading scapes...\n");
 	
 	err = chdir(olddir);
 	assert(err == 0);
@@ -1160,7 +1164,9 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
     gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
 		FALSE, FALSE, 10);
 
+done:
 	GUI_CALLBACK_LEAVE();
+
 }
 
 static void
