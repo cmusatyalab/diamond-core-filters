@@ -24,29 +24,27 @@
 #include "queue.h"
 #include "ring.h"
 #include "rtimer.h"
-//#include "sf_consts.h"
 
-//#include "face_search.h"
 #include "face_image.h" 
 #include "rgb.h"
 #include "face.h"
 #include "fil_tools.h"
 #include "image_tools.h"
-//#include "face_widgets.h"
 #include "texture_tools.h"
 #include "img_search.h"
-//#include "sfind_search.h"
 #include "search_support.h"
 #include "gtk_image_tools.h"
-//#include "sfind_tools.h"
+
 /* XXX horible hack */
 #define	MAX_SELECT	32	
 #include "import_sample.h"
 //#include "snapfind.h"
 
 /* XXX fix this */
-extern img_search *snap_searches[];
-extern int num_searches;
+static img_search **search_list;
+static int	 	   search_list_size;
+
+
 void update_search_entry(img_search *cur_search, int row);
 
 #define	MIN_DIMENSION	6
@@ -100,37 +98,6 @@ pb_from_img(RGBImage *img)
 	return pbuf;
 }
 
-
-#ifdef	XXX
-/* 
- * draw a bounding box into image at scale. bbox is read from object(!)
- */
-static region_t
-draw_bounding_box(RGBImage *img, int scale, 
-		  lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
-		  RGBPixel color, RGBPixel mask, char *fmt, int i) 
-{
-	search_param_t 	param;	
-	int 		err;
-	bbox_t		bbox;
-
-	err = read_param(fhandle, ohandle, fmt, &param, i);
-				
-	bbox.min_x = param.bbox.xmin;
-	bbox.min_y = param.bbox.ymin;
-	bbox.max_x = param.bbox.xmin + param.bbox.xsiz - 1;
-	bbox.max_y = param.bbox.ymin + param.bbox.ysiz - 1;
-
-	if (err) {
-		//printf("XXXX failed to get bbox %d\n", i);
-	} else {
-		image_draw_bbox_scale(img, &bbox, scale, mask, color);
-		//image_fill_bbox_scale(img, &bbox, scale, mask, color);
-	}
-	
-	return param.bbox;
-}
-#endif
 
 static gboolean
 expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data) 
@@ -213,9 +180,6 @@ describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
 	err = read_param(fhandle, ohandle, HISTO_BBOX_FMT, &param, i);
 	if (err) {
 		printf("XXX failed to read parameter <%s> \n", HISTO_BBOX_FMT);
-/* 		label = gtk_label_new("ERR"); */
-/* 		gtk_box_pack_start(GTK_BOX(container), label, TRUE, TRUE, 0); */
-/* 		gtk_widget_show(label); */
 	} else {
 		char buf[BUFSIZ];
 		
@@ -251,65 +215,6 @@ realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	
 	return TRUE;
 }
-
-
-#ifdef	XXXX
-
-static void
-draw_hbbox_func(GtkWidget *widget, void *ptr) 
-{
-	int i = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget)));
-	region_t region;
-	RGBPixel mask = colorMask;
-	RGBPixel color = green;
-
-	GUI_THREAD_CHECK(); 
-
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-		/* don't draw, but still need to refresh */
-		mask = clearMask;
-		
-		/* can't draw clear, lest we wipe out overlapping box */
-		//color = clearColor;
-	}
-
-	region = draw_bounding_box(import_window.layers[IMP_RES_LAYER], 1, fhandle,
-				   import_window.hooks->ohandle,
-				   color, mask, HISTO_BBOX_FMT, i);
-	
-	/* refresh */
-	gtk_widget_queue_draw_area(import_window.drawing_area,
-				   region.xmin, region.ymin,
-				   region.xsiz, region.ysiz);
-}
-
-static void
-draw_face_func(GtkWidget *widget, void *ptr) 
-{
-	region_t region;
-	RGBPixel mask = colorMask;
-	RGBPixel color = red;
-	int num_faces = import_window.nfaces;
-
-	/* draw faces, if on */
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-		/* don't draw, but still need to refresh */
-		mask = clearMask;
-	}
-
-	for(int i=0; i<num_faces; i++) {
-		region = draw_bounding_box(import_window.layers[IMP_RES_LAYER], 1, fhandle,
-					   import_window.hooks->ohandle,
-					   color, mask, FACE_BBOX_FMT, i);
-		/* refresh */
-		gtk_widget_queue_draw_area(import_window.drawing_area,
-					   region.xmin, region.ymin,
-					   region.xsiz, region.ysiz);
-
-	}
-
-}
-#endif
 
 static void *
 image_highlight_main(void *ptr) 
@@ -352,23 +257,23 @@ image_highlight_main(void *ptr)
 	GUI_THREAD_LEAVE();
 
 	import_window.nselections = 0;
-	for (i=0; i < num_searches; i++) {
+	for (i=0; i < search_list_size; i++) {
 		/* if highlight isn't selected, then go to next object */
-		if (snap_searches[i]->is_hl_selected() == 0) {
+		if (search_list[i]->is_hl_selected() == 0) {
 			continue;
 		}
 
 		TAILQ_INIT(&bblist);
 
-  		snprintf(buf, BUFSIZ, "scanning %s ...", snap_searches[i]->get_name());
+  		snprintf(buf, BUFSIZ, "scanning %s ...", search_list[i]->get_name());
 		buf[BUFSIZ - 1] = '\0';
 		GUI_THREAD_ENTER();
 		gtk_statusbar_push(GTK_STATUSBAR(import_window.statusbar), id, buf);
 		GUI_THREAD_LEAVE();
 
-		snap_searches[i]->region_match(import_window.img, &bblist);
+		search_list[i]->region_match(import_window.img, &bblist);
 
-  		snprintf(buf, BUFSIZ, "highlighting %s", snap_searches[i]->get_name());
+  		snprintf(buf, BUFSIZ, "highlighting %s", search_list[i]->get_name());
 		buf[BUFSIZ - 1] = '\0';
 		GUI_THREAD_ENTER();
 		gtk_statusbar_push(GTK_STATUSBAR(import_window.statusbar), id, buf);
@@ -392,7 +297,7 @@ image_highlight_main(void *ptr)
 			hl_img->width, hl_img->height);
 		GUI_THREAD_LEAVE();
 
-  		snprintf(buf, BUFSIZ, "done %s", snap_searches[i]->get_name());
+  		snprintf(buf, BUFSIZ, "done %s", search_list[i]->get_name());
 		buf[BUFSIZ - 1] = '\0';
 		GUI_THREAD_ENTER();
 		gtk_statusbar_push(GTK_STATUSBAR(import_window.statusbar), id, buf);
@@ -505,7 +410,8 @@ cb_new_image(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
 	 * clicks a button. Use swapper here to get the right argument 
 	 * to destroy (YUCK).
      	 */
-        g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
+        g_signal_connect_swapped(
+			GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
                             "clicked",
                             G_CALLBACK(gtk_widget_destroy),
                             (gpointer)file_selector);
@@ -538,7 +444,8 @@ cb_clear_select(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
 }
 
 static void
-cb_clear_highlight_layer(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
+cb_clear_highlight_layer(GtkWidget *widget, GdkEventButton *event, 
+	gpointer ptr)
 {
 	RGBImage *img;
 
@@ -556,6 +463,7 @@ cb_clear_highlight_layer(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
 
 	GUI_CALLBACK_LEAVE();
 }
+
 
 static void
 cb_run_highlight()
@@ -586,9 +494,9 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	idx = (int)g_object_get_data(G_OBJECT(active_item), "user data");
 
 	assert(idx >= 0);
-	assert(idx < num_searches);
+	assert(idx < search_list_size);
 
-	ssearch = snap_searches[idx];
+	ssearch = search_list[idx];
 
 	for(int i=0; i<import_window.nselections; i++) {
 		ssearch->add_patch(import_window.img, 
@@ -638,12 +546,9 @@ static gboolean
 cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data) 
 {
 	GtkWidget *	active_item;
-	GtkWidget *	dialog;
-	GtkWidget *	label;
 	img_search *ssearch;
 	search_types_t	stype;
 	int		idx;
-	gint	result;
 	const char *	sname;
   	GUI_CALLBACK_ENTER();
 
@@ -852,8 +757,8 @@ get_example_menu(void)
                                                                                 
 	menu = gtk_menu_new();
                          
-	for (i=0;i<num_searches; i++) {
-		cur_search = snap_searches[i];
+	for (i=0;i<search_list_size; i++) {
+		cur_search = search_list[i];
 		if (cur_search->is_example() == 0) {
 			continue;
 		}
@@ -1040,13 +945,13 @@ make_highlight_table()
     widget = gtk_label_new("Edit");
     gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1); 
-	for (i=0; i < num_searches; i++) {
+	for (i=0; i < search_list_size; i++) {
 		row = i + 1;
-		widget = snap_searches[i]->get_highlight_widget();
+		widget = search_list[i]->get_highlight_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
-		widget = snap_searches[i]->get_config_widget();
+		widget = search_list[i]->get_config_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
-		widget = snap_searches[i]->get_edit_widget();
+		widget = search_list[i]->get_edit_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
 	}
     gtk_widget_show_all(table);
@@ -1202,13 +1107,15 @@ load_import_file(const char *file)
 }
 
 void
-open_import_window() 
+open_import_window(img_search ** search_array, int num_searches) 
 {
 	GtkWidget *frame;
 	GtkWidget *button;
 	GtkWidget *widget;
 	GtkWidget *hbox;
 
+	search_list = search_array;
+	search_list_size = num_searches;
 	if (import_window.window == NULL) {
 		import_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title(GTK_WINDOW(import_window.window), "Image");

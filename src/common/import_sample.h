@@ -53,7 +53,9 @@ typedef	struct import_win {
   RGBImage *	img;
 } import_win_t;
 
-void open_import_window();
+void open_import_window(img_search **search_list, int num_searches);
 void import_update_searches();
+void update_search_entry(img_search *cur_search, int row);
+                                                                              
 
 #endif	/* ! _IMPORT_SAMPLE_H_ */

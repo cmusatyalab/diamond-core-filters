@@ -259,7 +259,7 @@ example_search::remove_patch(example_patch_t *patch)
 static void
 cb_import(GtkWidget *item, gpointer data)
 {
-	open_import_window();
+	//open_import_window();
 }
 
 
@@ -357,7 +357,6 @@ example_search::write_config(FILE *ostream, const char *dirname)
 			cur_patch->ysize);
 		i++;
 	}
-
 	return;
 }
 

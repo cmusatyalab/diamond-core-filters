@@ -29,7 +29,6 @@ extern "C" {
 #endif
 
 void ss_add_dep(img_search *dep);
-void update_search_entry(img_search *cur_search, int row);
 
                                                                                  
 #ifdef __cplusplus

@@ -26,35 +26,41 @@
 #include <gnugetopt/getopt.h>
 #endif
 
-#include "filter_api.h"
-#include "searchlet_api.h"
+#include "lib_searchlet.h"
 #include "gui_thread.h"
+
+#include "lib_filter.h"
+#include "lib_log.h"
 
 #include "queue.h"
 #include "ring.h"
 #include "rtimer.h"
-#include "sf_consts.h"
+//#include "sf_consts.h"
 
-#include "face_search.h"
+//#include "face_search.h"
 #include "face_image.h"
 #include "rgb.h"
 #include "face.h"
 #include "fil_tools.h"
 #include "image_tools.h"
-#include "face_widgets.h"
+//#include "face_widgets.h"
 #include "texture_tools.h"
 #include "img_search.h"
-#include "sfind_search.h"
+//#include "sfind_search.h"
 #include "search_support.h"
-#include "sfind_tools.h"
-#include "snap_popup.h"
-#include "snapfind.h"
+//#include "sfind_tools.h"
+//#include "snap_popup.h"
+//#include "snapfind.h"
+#define MAX_SELECT	64
 #include "import_sample.h"
 
 /* XXXX fix this */
 #define MAX_SEARCHES    64
 extern img_search * snap_searches[MAX_SEARCHES];
 extern int num_searches;
+
+
+
 
 
 img_search *
@@ -104,20 +110,66 @@ search_exists(const char *name)
 }
 
 
+#define	NUM_FNS	32
+typedef	void (*update_fn_t)(img_search *searches, int num_searches);
+
+
+update_fn_t	cb_fns[NUM_FNS] = {NULL, };
+
+
+
+
+void
+register_update_function(void (*update_fn)(img_search *searches, 
+	int num_searches))
+{
+	int		i;
+	for (i=0; i < NUM_FNS; i++) {
+		if (cb_fns[i] == NULL) {
+			cb_fns[i] = update_fn;
+			return;
+		}
+	}
+	/* XXX if we get here we failed */
+	fprintf(stderr, "Too many update fns \n");
+	assert(0);
+}
+
+void
+unregister_update_function(void (*update_fn)(img_search *searches, 
+	int num_searches))
+{
+	int		i;
+	for (i=0; i < NUM_FNS; i++) {
+		if (cb_fns[i] == update_fn) {
+			cb_fns[i] = NULL;
+			return;
+		}
+	}
+	/* XXX if we get here we failed to find it */
+	fprintf(stderr, "Too many update fns \n");
+	assert(0);
+}
+
 void
 search_add_list(img_search *new_search)
 {
+	int	i;
 
 	/* XXX do some error checks */
 	snap_searches[num_searches] = new_search;
 	num_searches++;
 
-	/* update the entry in the main panel */
-	update_search_entry(new_search, num_searches);
+	for (i=0; i < NUM_FNS; i++) {
+		if (cb_fns[i] != NULL) {
+			(*cb_fns[i])(new_search, num_searches);
+		}
+	}	
+	///* update the entry in the main panel */
+	//update_search_entry(new_search, num_searches);
 
 	/* add the entry to the search popup list */
-	search_popup_add(new_search, num_searches);
+	//search_popup_add(new_search, num_searches);
 
-	import_update_searches();
-
+	//import_update_searches();
 }

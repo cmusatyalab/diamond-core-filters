@@ -1,4 +1,3 @@
-
 #
 # Compiler Flags. Warning: -O causes problems w/ pthreads
 #
@@ -41,57 +40,13 @@ LIBDIR += -L../../lib/liblog -L../../lib/libodisk
 LIBDIR += -L../../transport/socket/hoststub -L../../lib/libdctl 
 LIBDIR += -L../../lib/libdconfig
 
-
-SHARED_HEADERS = rgb.h image_tools.h common_consts.h img_search.h
-SHARED_HEADERS += image_common.h texture_tools.h fil_tools.h 
-SHARED_HEADERS += face_tools.h fil_data2ii.h facedet.h filter_api.h
-SHARED_HEADERS += face.h fil_histo.h histo.h gtk_image_tools.h
-SHARED_HEADERS += fil_texture.h face_data.h fil_file.h fil_assert.h
-SHARED_HEADERS += fil_image_tools.h fil_face.h merge_faces.h
-SHARED_HEADERS += import_sample.h face_consts.h gui_thread.h face_image.h
-SHARED_HEADERS += search_support.h
-
-SHARED_COMMON_SRCS = image_tools.c histo.c face_tools.c texture_tools.c
-SHARED_COMMON_SRCS += facedet.c  fil_data2ii.c fil_tools.c fil_file.c
-SHARED_COMMON_SRCS += merge_faces.c 
-
-SHARED_COMMON_OBJS = image_tools.o histo.o face_tools.o texture_tools.o
-SHARED_COMMON_OBJS += facedet.o  fil_data2ii.o fil_tools.o fil_file.o
-SHARED_COMMON_OBJS += merge_faces.o 
-
-SHARED_SEARCHLET_SRCS = fil_histo.c fil_texture.cc fil_face.c
-SHARED_SEARCHLET_SRCS += fil_image_tools.c
-
-SHARED_SEARCHLET_OBJS = fil_histo.o fil_texture.o fil_face.o
-SHARED_SEARCHLET_OBJS += fil_image_tools.o
-
-      
-SHARED_APP_SRCS = rgb.c img_search.cc
-SHARED_APP_SRCS += texture_search.cc vj_face_search.cc
-SHARED_APP_SRCS += window_search.cc example_search.cc
-SHARED_APP_SRCS += rgb_histo_search.cc rgb_img.cc
-SHARED_APP_SRCS += regex_search.cc ii_img.cc face_image.c
-SHARED_APP_SRCS += gtk_image_tools.c histo_ii.cc search_support.cc
-SHARED_APP_SRCS += import_sample.cc ocv_face_search.cc gui_thread.c
-                            
-SHARED_APP_OBJS = rgb.o img_search.o
-SHARED_APP_OBJS += texture_search.o vj_face_search.o
-SHARED_APP_OBJS += window_search.o example_search.o
-SHARED_APP_OBJS += rgb_histo_search.o rgb_img.o
-SHARED_APP_OBJS += regex_search.o ii_img.o face_image.o
-SHARED_APP_OBJS += gtk_image_tools.o  histo_ii.o search_support.o
-SHARED_APP_OBJS += import_sample.o ocv_face_search.o
- 
-SHARED_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_APP_SRCS) $(SHARED_HEADERS)
-SHARED_SRCS += $(SHARED_COMMON_SRCS)                            
-
+include ../common_searches/Makefile.template
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_COMMON_SRCS)
 SEARCHLET_SRCS += fil_regex.c
 SEARCHLET_SRCS += fil_data2cv.c 
 SEARCHLET_SRCS += fil_synth.c 
-
 
 SEARCHLET_OBJS = $(SHARED_SEARCHLET_OBJS) $(SHARED_COMMON_OBJS)
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
@@ -103,17 +58,14 @@ SEARCHLET_OBJS += fil_synth.o
 SNAPFIND_SRCS = $(SHARED_APP_SRCS) $(SHARED_COMMON_SRCS)
 SNAPFIND_SRCS += snapfind.cc sfind_search.c 
 SNAPFIND_SRCS +=  read_config.cc 
-SNAPFIND_SRCS += stats_win.c rgb.c gui_thread.c  
+SNAPFIND_SRCS += stats_win.c rgb.c   
 SNAPFIND_SRCS += snap_popup.cc 
 SNAPFIND_SRCS += sfind_tools.c 
 
 SNAPFIND_OBJS = $(SHARED_APP_OBJS) $(SHARED_COMMON_OBJS)
-SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o \
-		 stats_win.o gui_thread.o  \
-	 	fil_image_tools.o snap_popup.o \
-		sfind_tools.o  fil_histo.o
-
-
+SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
+SNAPFIND_OBJS += stats_win.o fil_image_tools.o snap_popup.o 
+SNAPFIND_OBJS += sfind_tools.o  fil_histo.o
 
 DEBUG_SRCS = face.c
 DEBUG_OBJS = face.o

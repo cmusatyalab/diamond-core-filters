@@ -94,21 +94,17 @@ typedef struct export_threshold_t {
 
 TAILQ_HEAD(export_list_t, export_threshold_t) export_list = TAILQ_HEAD_INITIALIZER(export_list);
 
+
 static struct {
   GtkWidget *main_window;
-  
   GtkWidget *min_faces;
   GtkWidget *face_levels;
-
   GtkWidget *start_button;
   GtkWidget *stop_button;
   GtkWidget *search_box;
   GtkWidget *search_widget;
   GtkWidget *attribute_cb, *attribute_entry;
-/* GtkWidget *andorbuttons[2]; */
-  
   GtkWidget *scapes_tables[2];
-
 } gui;
 
 
@@ -1669,7 +1665,7 @@ cb_quit() {
 static void
 cb_import(GtkWidget *widget, gpointer user_data) 
 {
-	open_import_window();
+	open_import_window(snap_searches, num_searches);
 }
 
 
