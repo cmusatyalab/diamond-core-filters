@@ -1,6 +1,7 @@
 #ifndef	_IMG_SEARCH_H_
 #define	_IMG_SEARCH_H_	1
 
+#include <gtk/gtk.h>
 #include "image_common.h"
 
 

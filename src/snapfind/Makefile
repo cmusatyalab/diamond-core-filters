@@ -50,9 +50,11 @@ SHARED_HEADERS += fil_image_tools.h fil_face.h merge_faces.h
 
 SHARED_COMMON_SRCS = image_tools.c histo.c face_tools.c texture_tools.c
 SHARED_COMMON_SRCS += facedet.c  fil_data2ii.c fil_tools.c fil_file.c
+SHARED_COMMON_SRCS += merge_faces.c
 
 SHARED_COMMON_OBJS = image_tools.o histo.o face_tools.o texture_tools.o
 SHARED_COMMON_OBJS += facedet.o  fil_data2ii.o fil_tools.o fil_file.o
+SHARED_COMMON_OBJS += merge_faces.o
 
 SHARED_SEARCHLET_SRCS = fil_histo.c fil_texture.cc fil_face.c
 SHARED_SEARCHLET_SRCS += fil_image_tools.c
