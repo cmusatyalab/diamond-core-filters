@@ -41,15 +41,23 @@ LIBDIR += -L../../lib/libsearchlet -L../../lib/libfilter -L../../lib/libfilterex
 # Other objects to cleanup
 CLEAN_OTHERS += read_config.cc
 
-SHARED_HEADERS = rgb.h image_tools.h common_consts.h
+SHARED_HEADERS = rgb.h image_tools.h common_consts.h img_search.h
 
-SHARED_SEARCHLET_SRCS = image_tools.c
+SHARED_SEARCHLET_SRCS = image_tools.c 
 
 SHARED_SEARCHLET_OBJS = image_tools.o
       
-SHARED_APP_SRCS = rgb.c 
+SHARED_APP_SRCS = rgb.c  img_search.cc
+SHARED_APP_SRCS += texture_search.cc vj_face_search.cc
+SHARED_APP_SRCS += window_search.cc example_search.cc
+SHARED_APP_SRCS += rgb_histo_search.cc rgb_img.cc
+SHARED_APP_SRCS += regex_search.cc ii_img.cc
                             
-SHARED_APP_OBJS = image_tools.o rgb.o
+SHARED_APP_OBJS = image_tools.o rgb.o img_search.o
+SHARED_APP_OBJS += texture_search.o vj_face_search.o
+SHARED_APP_OBJS += window_search.o example_search.o
+SHARED_APP_OBJS += rgb_histo_search.o rgb_img.o
+SHARED_APP_OBJS += regex_search.o ii_img.o
  
 SHARED_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_APP_SRCS) $(SHARED_HEADERS)
                             
@@ -80,19 +88,16 @@ SNAPFIND_SRCS += snapfind.cc face_tools.c face_image.c sfind_search.c
 SNAPFIND_SRCS +=  read_config.cc histo.c 
 SNAPFIND_SRCS += fil_tools.c stats_win.c rgb.c gui_thread.c  
 SNAPFIND_SRCS += texture_tools.c gtk_image_tools.c 
-SNAPFIND_SRCS += snap_search.cc window_search.cc example_search.cc
-SNAPFIND_SRCS += texture_search.cc vj_face_search.cc search_support.cc
-SNAPFIND_SRCS += snap_popup.cc rgb_img.cc ii_img.cc regex_search.cc
+SNAPFIND_SRCS += search_support.cc snap_popup.cc 
 SNAPFIND_SRCS += facedet.c sfind_tools.c fil_data2ii.c fil_file.c
 
 SNAPFIND_OBJS = $(SHARED_APP_OBJS)
 SNAPFIND_OBJS += snapfind.o face_tools.o face_image.o sfind_search.o read_config.o \
 	histo.o fil_tools.o stats_win.o gui_thread.o \
-	texture_tools.o rgb_histo_search.o \
-	texture_search.o \
-	snap_search.o window_search.o example_search.o gtk_image_tools.o \
-	vj_face_search.o search_support.o snap_popup.o rgb_img.o ii_img.o \
-	regex_search.o facedet.o sfind_tools.o fil_data2ii.o fil_file.o
+	texture_tools.o  \
+	gtk_image_tools.o \
+	search_support.o snap_popup.o \
+	facedet.o sfind_tools.o fil_data2ii.o fil_file.o
 
 
 

@@ -16,7 +16,7 @@
 #include <ctype.h>
 #include <assert.h>
 
-#include "snap_search.h"
+#include "img_search.h"
 int
 main(int argc, char **argv)
 {

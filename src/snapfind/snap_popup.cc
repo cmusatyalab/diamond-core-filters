@@ -32,16 +32,16 @@
 #include "image_tools.h"
 #include "face_widgets.h"
 #include "texture_tools.h"
-#include "snap_search.h"
+#include "img_search.h"
 #include "sfind_search.h"
 #include "search_support.h"
 #include "snap_popup.h"
 #include "snapfind.h"
 
 /* XXX fix this */
-extern snap_search *snap_searches[];
+extern img_search *snap_searches[];
 extern int num_searches;
-void update_search_entry(snap_search *cur_search, int row);
+void update_search_entry(img_search *cur_search, int row);
 
 
 /* XXX fix this */
@@ -546,7 +546,7 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
 	char buf[BUFSIZ] = "created new scene";
 	GtkWidget *	active_item;
-	snap_search *ssearch;
+	img_search *ssearch;
 	int	   	idx;
 	guint	id;
   	GUI_CALLBACK_ENTER();
@@ -577,7 +577,7 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 }
 
 void
-search_popup_add(snap_search *ssearch, int nsearch)
+search_popup_add(img_search *ssearch, int nsearch)
 {
 	GtkWidget *		item;
 
@@ -608,7 +608,7 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	GtkWidget *	active_item;
 	GtkWidget *	dialog;
 	GtkWidget *	label;
-	snap_search *ssearch;
+	img_search *ssearch;
 	search_types_t	stype;
 	int		idx;
 	gint	result;
@@ -816,7 +816,7 @@ get_example_menu(void)
 {
 	GtkWidget *     menu;
 	GtkWidget *     item;
-	snap_search *	cur_search;
+	img_search *	cur_search;
 	int		i;
                                                                                 
 	menu = gtk_menu_new();

@@ -44,7 +44,7 @@
 #include "image_tools.h"
 #include "face_widgets.h"
 #include "texture_tools.h"
-#include "snap_search.h"
+#include "img_search.h"
 #include "sfind_search.h"
 #include "snap_popup.h"
 #include "search_support.h"
@@ -112,12 +112,12 @@ static struct {
  */
 /* XXXX fix this */
 #define	MAX_SEARCHES	64
-snap_search * snap_searches[MAX_SEARCHES];
+img_search * snap_searches[MAX_SEARCHES];
 int num_searches = 0;
 
 /* XXXX fix this */
 #define	MAX_SEARCHES	64
-snap_search * snap_deps[MAX_SEARCHES];
+img_search * snap_deps[MAX_SEARCHES];
 int num_deps = 0;
 
 
@@ -213,7 +213,7 @@ extern region_t draw_bounding_box(RGBImage *img, int scale,
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
 
 /* from read_config.l */
-extern int read_search_config(char *fname, snap_search **list, int *num);
+extern int read_search_config(char *fname, img_search **list, int *num);
 
 /* from face_search.c */
 extern void drain_ring(ring_data_t *ring);
@@ -401,7 +401,7 @@ ss_clear_deps()
 }
 
 void
-ss_add_dep(snap_search *dep)
+ss_add_dep(img_search *dep)
 {
 
 	int 	i;
@@ -436,9 +436,9 @@ build_filter_spec(char *tmp_file)
 	FILE *		fspec;	
 	int			err;
 	int         fd;
-	snap_search *		snapobj;
+	img_search *		snapobj;
 	int					i;
-	snap_search *		rgb;
+	img_search *		rgb;
 
 	tmp_storage = (char *)malloc(L_tmpnam);	/* where is the free for this? XXX */
 	if (tmp_storage == NULL) {
@@ -989,7 +989,7 @@ cb_save_spec_to_filename(GtkWidget *widget, gpointer user_data)
 
 
 static void
-write_search_config(const char *dirname, snap_search **searches, int nsearches)
+write_search_config(const char *dirname, img_search **searches, int nsearches)
 {
 	struct stat	buf;
 	int			err;
@@ -1030,7 +1030,7 @@ write_search_config(const char *dirname, snap_search **searches, int nsearches)
 }
 
 void
-update_search_entry(snap_search *cur_search, int row)
+update_search_entry(img_search *cur_search, int row)
 {
 	GtkWidget *widget;
 	widget = cur_search->get_search_widget();
@@ -1716,7 +1716,7 @@ cb_create(GtkWidget *widget, gpointer user_data)
 	unsigned int	i;
 	const char *		new_name;
 	search_types_t	stype;
-	snap_search *	ssearch;
+	img_search *	ssearch;
 	x = (int) user_data;
 
 	stype = (search_types_t)x;

@@ -27,8 +27,8 @@ extern thumbnail_t *cur_thumbnail;
 extern "C" {
 #endif
 
-void ss_add_dep(snap_search *dep);
-void update_search_entry(snap_search *cur_search, int row);
+void ss_add_dep(img_search *dep);
+void update_search_entry(img_search *cur_search, int row);
 
                                                                                  
 #ifdef __cplusplus

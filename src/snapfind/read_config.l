@@ -6,7 +6,7 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "fil_histo.h"
-#include "snap_search.h"
+#include "img_search.h"
 #include "search_support.h"
 
 static char *eat_token(char *tok);
@@ -15,9 +15,9 @@ static void error();
 
 /* #define VERBOSE 1 */
 
-static snap_search *cur_search = NULL;
+static img_search *cur_search = NULL;
 
-static snap_search **sslist;
+static img_search **sslist;
 static int		     num_ss = 0;
 static int		     max_ss = 64;	/* XXX fix this, should be MAX_SEARCHES */
 
@@ -129,7 +129,7 @@ new_search(char *str)
  */
 
 int
-read_search_config(char *fname, snap_search **list, int *num)
+read_search_config(char *fname, img_search **list, int *num)
 {
 	int err;
 
