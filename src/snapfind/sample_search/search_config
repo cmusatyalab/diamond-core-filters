@@ -1,28 +1,92 @@
 
 
 SEARCH rgb_histogram pure_black
+METRIC 0.600000 
+TESTX 32 
+TESTY 32 
+STRIDE 32 
+SCALE 1.500000 
+MATCHES 1 
+PATCHFILE pure_black.ex0.ppm 0 0 32 32 
+
+
+SEARCH rgb_histogram pure_white
+METRIC 0.800000 
+TESTX 16 
+TESTY 16 
+STRIDE 16 
+SCALE 1.500000 
+MATCHES 1 
+PATCHFILE pure_white.ex0.ppm 0 0 16 16 
+
+
+SEARCH rgb_histogram pure_green
+METRIC 0.800000 
+TESTX 16 
+TESTY 16 
+STRIDE 16 
+SCALE 1.500000 
+MATCHES 1 
+PATCHFILE pure_green.ex0.ppm 0 0 16 16 
+
+
+SEARCH rgb_histogram bright_red
+METRIC 0.900000 
+TESTX 32 
+TESTY 32 
+STRIDE 16 
+SCALE 1.500000 
+MATCHES 1 
+PATCHFILE bright_red.ex0.ppm 0 0 32 32 
+PATCHFILE bright_red.ex1.ppm 0 0 32 32 
+
+
+SEARCH rgb_histogram bright_yellow
+METRIC 0.600000 
+TESTX 32 
+TESTY 32 
+STRIDE 4 
+SCALE 1.500000 
+MATCHES 1 
+PATCHFILE bright_yellow.ex0.ppm 0 0 32 32 
+PATCHFILE bright_yellow.ex1.ppm 0 0 32 32 
+
+
+SEARCH rgb_histogram blue_and_white
+METRIC 0.500000 
+TESTX 32 
+TESTY 32 
+STRIDE 16 
+SCALE 1.500000 
+MATCHES 1 
+PATCHFILE blue_and_white.ex0.ppm 0 0 32 32 
+
+
+SEARCH rgb_histogram bluegray_water
 METRIC 0.800000 
 TESTX 32 
 TESTY 32 
-STRIDE 32 
+STRIDE 16 
 SCALE 1.500000 
 MATCHES 1 
-PATCHFILE pure_black.ex0.ppm 0 0 128 128 
-PATCHFILE pure_black.ex1.ppm 0 0 32 32 
-PATCHFILE pure_black.ex2.ppm 0 0 32 32 
-PATCHFILE pure_black.ex3.ppm 0 0 32 32 
-PATCHFILE pure_black.ex4.ppm 0 0 32 32 
-PATCHFILE pure_black.ex5.ppm 0 0 64 64 
+PATCHFILE bluegray_water.ex0.ppm 0 0 32 32 
+PATCHFILE bluegray_water.ex1.ppm 0 0 32 32 
+PATCHFILE bluegray_water.ex2.ppm 0 0 32 32 
+PATCHFILE bluegray_water.ex3.ppm 0 0 32 32 
+PATCHFILE bluegray_water.ex4.ppm 0 0 32 32 
+PATCHFILE bluegray_water.ex5.ppm 0 0 32 32 
+PATCHFILE bluegray_water.ex6.ppm 0 0 32 32 
+PATCHFILE bluegray_water.ex7.ppm 0 0 32 32 
 
 
-SEARCH rgb_histogram pure_black1
-METRIC 0.400000 
+SEARCH rgb_histogram sand
+METRIC 0.800000 
 TESTX 32 
 TESTY 32 
-STRIDE 32 
+STRIDE 16 
 SCALE 1.500000 
 MATCHES 1 
-PATCHFILE pure_black1.ex0.ppm 0 0 32 32 
+PATCHFILE sand.ex0.ppm 0 0 32 32 
 
 
 SEARCH texture waves
@@ -32,7 +96,7 @@ TESTX 32
 TESTY 32 
 STRIDE 32 
 SCALE 1.000000 
-MATCHES 2 
+MATCHES 1 
 PATCHFILE waves.ex0.ppm 0 0 32 32 
 PATCHFILE waves.ex1.ppm 0 0 32 32 
 PATCHFILE waves.ex2.ppm 0 0 32 32 
@@ -47,6 +111,8 @@ SEARCH vj_face_search faces
 NUMFACE 1 
 START 0 
 END 37 
+MERGE 1 
+OVERLAP 0.750000 
 TESTX 24 
 TESTY 24 
 STRIDE 8 
