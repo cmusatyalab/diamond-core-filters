@@ -83,14 +83,12 @@ SHARED_SRCS += $(SHARED_COMMON_SRCS)
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_COMMON_SRCS)
-SEARCHLET_SRCS += merge_faces.c  
 SEARCHLET_SRCS += fil_regex.c
 SEARCHLET_SRCS += fil_data2cv.c 
 SEARCHLET_SRCS += fil_synth.c 
 
 
 SEARCHLET_OBJS = $(SHARED_SEARCHLET_OBJS) $(SHARED_COMMON_OBJS)
-SEARCHLET_OBJS += merge_faces.o 
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
 SEARCHLET_OBJS += fil_synth.o  
 
