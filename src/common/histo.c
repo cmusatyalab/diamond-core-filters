@@ -35,7 +35,18 @@ void            histo_simple_insert(Histo * h, int r, int g, int b);
 // 
 void            histo_interpolated_insert(Histo * h, int r, int g, int b);
 
+typedef	struct histo_lkup {
+	int		index_low;
+	int		index_high;
+	float	high;
+	float	low;
+} histo_lkup_t;
 
+static histo_lkup_t	red_lkup[256];
+static histo_lkup_t	green_lkup[256];
+static histo_lkup_t	blue_lkup[256];
+
+static int	done_init = 0;
 
 /*
  ********************************************************************** */
@@ -243,6 +254,47 @@ histo_interpolated_insert(Histo * h, int r, int g, int b)
 
 }
 
+
+void
+build_lkuptables(histo_lkup_t * rlkup, histo_lkup_t *glkup, histo_lkup_t *blkup)
+{
+
+	float	low_frac;
+	float	high_frac;
+	int		i;
+	int		idx;
+
+	if (done_init) {
+		return;
+	}
+
+	printf("build lkup !!!!!!!!!!! \n");
+	for (i=0; i < 256; i++) {
+    	idx = i >> HII_SHIFT;
+     	high_frac = (i & HII_MASK) * HII_SCALE;
+    	low_frac = 1.0 - high_frac;
+
+		rlkup[i].high = high_frac;
+		rlkup[i].low = low_frac;
+		blkup[i].high = high_frac;
+		blkup[i].low = low_frac;
+		glkup[i].high = high_frac;
+		glkup[i].low = low_frac;
+		
+
+		printf("XXXXXXXXXX  build: %d %f %f \n", i, high_frac, low_frac);
+		rlkup[i].index_low = idx * HBINS * HBINS;
+		rlkup[i].index_high = (idx + 1) * HBINS * HBINS;
+
+		glkup[i].index_low = idx * HBINS;
+		glkup[i].index_high = (idx + 1) * HBINS;
+
+		blkup[i].index_low = idx;
+		blkup[i].index_high = (idx + 1);
+	}
+	done_init = 1;
+}
+
 void
 lh_histo_interpolated_insert(Histo * h, int r, int g, int b)
 {
@@ -253,100 +305,66 @@ lh_histo_interpolated_insert(Histo * h, int r, int g, int b)
                     gihigh,
                     bilow,
                     bihigh;
-    float          rfraclow,
-                    gfraclow,
-                    bfraclow;
+    float          rfraclow, rfrac,
+                    gfraclow, gfrac,
+                    bfraclow, bfrac;
     float          val;
-    assert(r >= 0 && r < 256);
-    assert(g >= 0 && g < 256);
-    assert(b >= 0 && b < 256);
-
-
-    int             ri = r >> HII_SHIFT;
-    int             gi = g >> HII_SHIFT;
-    int             bi = b >> HII_SHIFT;
-    assert((ri >= 0) && (ri < HBINS));
-    assert((gi >= 0) && (gi < HBINS));
-    assert((bi >= 0) && (bi < HBINS));
 
     // The fractional value is given by the low-order bits
-    float          rfrac = (r & HII_MASK) * HII_SCALE;
-    float          gfrac = (g & HII_MASK) * HII_SCALE;
-    float          bfrac = (b & HII_MASK) * HII_SCALE;
-    assert((rfrac >= 0.0) && (rfrac < 1.0));
-    assert((gfrac >= 0.0) && (gfrac < 1.0));
-    assert((bfrac >= 0.0) && (bfrac < 1.0));
+	rfrac = red_lkup[r].high;
+    rfraclow = red_lkup[r].low;
+    bfrac = blue_lkup[b].high;
+    bfraclow = blue_lkup[b].low;
+    gfrac = green_lkup[g].high;
+    gfraclow = green_lkup[g].low;
 
+    rilow = red_lkup[r].index_low;
+    rihigh = red_lkup[r].index_high;
 
-    for (red = red_lkup[r].low; red < red_lkup[r].high; red++) {
-    	for (green = green_lkup[g].low; green < green_lkup[g].high; green++) {
-    		for (blue = blue_lkup[b].low; blue < blue_lkup[b].high; green++) {
+    gilow = green_lkup[g].index_low;
+    gihigh = green_lkup[g].index_high;
 
+    bilow = blue_lkup[b].index_low;
+    bihigh = blue_lkup[b].index_high;
 
-    }
-
-
-    rilow = ri * HBINS * HBINS;
-    rihigh = (ri + 1) * HBINS * HBINS;
-    assert(is_within_bounds(rilow));
-    assert(is_within_bounds(rihigh));
-
-    gilow = gi * HBINS;
-    gihigh = (gi + 1) * HBINS;
-    assert(is_within_bounds(gilow));
-    assert(is_within_bounds(gihigh));
-
-    bilow = bi;
-    bihigh = (bi + 1);
-    assert(is_within_bounds(bilow));
-    assert(is_within_bounds(bihigh));
-
-
-    rfraclow = 1.0 - rfrac;
-    gfraclow = 1.0 - gfrac;
-    bfraclow = 1.0 - bfrac;
 
     val = rfraclow * gfraclow * bfraclow;
     assert(is_within_bounds(rilow + gilow + bilow));
     h->data[rilow + gilow + bilow] += val;
-    h->weight += val;
 
     val = rfraclow * gfraclow * bfrac;
     assert(is_within_bounds(rilow + gilow + bihigh));
     h->data[rilow + gilow + bihigh] += val;
-    h->weight += val;
 
     val = rfraclow * gfrac * bfraclow;
     assert(is_within_bounds(rilow + gihigh + bilow));
     h->data[rilow + gihigh + bilow] += val;
-    h->weight += val;
 
     val = rfraclow * gfrac * bfrac;
     assert(is_within_bounds(rilow + gihigh + bihigh));
     h->data[rilow + gihigh + bihigh] += val;
-    h->weight += val;
 
     val = rfrac * gfraclow * bfraclow;
     assert(is_within_bounds(rihigh + gilow + bilow));
     h->data[rihigh + gilow + bilow] += val;
-    h->weight += val;
 
     val = rfrac * gfraclow * bfrac;
     assert(is_within_bounds(rihigh + gilow + bihigh));
     h->data[rihigh + gilow + bihigh] += val;
-    h->weight += val;
 
     val = rfrac * gfrac * bfraclow;
     assert(is_within_bounds(rihigh + gihigh + bilow));
     h->data[rihigh + gihigh + bilow] += val;
-    h->weight += val;
 
     val = rfrac * gfrac * bfrac;
     assert(is_within_bounds(rihigh + gihigh + bihigh));
     h->data[rihigh + gihigh + bihigh] += val;
-    h->weight += val;
+
+
+    h->weight++;
 
 }
+
 void
 histo_interpolated_remove(Histo * h, int r, int g, int b)
 {
@@ -435,11 +453,73 @@ histo_interpolated_remove(Histo * h, int r, int g, int b)
 
 }
 
+void
+lh_histo_interpolated_remove(Histo * h, int r, int g, int b)
+{
+    assert(h);
+    int             rilow,
+                    rihigh,
+                    gilow,
+                    gihigh,
+                    bilow,
+                    bihigh;
+    float          rfraclow, rfrac,
+                    gfraclow, gfrac,
+                    bfraclow, bfrac;
+    float          val;
+
+    // The fractional value is given by the low-order bits
+	rfrac = red_lkup[r].high;
+    rfraclow = red_lkup[r].low;
+    bfrac = blue_lkup[b].high;
+    bfraclow = blue_lkup[b].low;
+    gfrac = green_lkup[g].high;
+    gfraclow = green_lkup[g].low;
+
+    rilow = red_lkup[r].index_low;
+    rihigh = red_lkup[r].index_high;
+
+    gilow = green_lkup[g].index_low;
+    gihigh = green_lkup[g].index_high;
+
+    bilow = blue_lkup[b].index_low;
+    bihigh = blue_lkup[b].index_high;
+
+
+    val = rfraclow * gfraclow * bfraclow;
+    h->data[rilow + gilow + bilow] -= val;
+
+    val = rfraclow * gfraclow * bfrac;
+    h->data[rilow + gilow + bihigh] -= val;
+
+    val = rfraclow * gfrac * bfraclow;
+    h->data[rilow + gihigh + bilow] -= val;
+
+    val = rfraclow * gfrac * bfrac;
+    h->data[rilow + gihigh + bihigh] -= val;
+
+    val = rfrac * gfraclow * bfraclow;
+    h->data[rihigh + gilow + bilow] -= val;
+
+    val = rfrac * gfraclow * bfrac;
+    h->data[rihigh + gilow + bihigh] -= val;
+
+    val = rfrac * gfrac * bfraclow;
+    h->data[rihigh + gihigh + bilow] -= val;
+
+    val = rfrac * gfrac * bfrac;
+    h->data[rihigh + gihigh + bihigh] -= val;
+
+
+    h->weight--;
+
+}
+
 inline void
 histo_remove_pixel(Histo * h, const RGBPixel * p, histo_type_t type)
 {
 	if (type == HISTO_INTERPOLATED) {
-    		histo_interpolated_remove(h, p->r, p->g, p->b);
+    		lh_histo_interpolated_remove(h, p->r, p->g, p->b);
 	} else if (type == HISTO_SIMPLE) {
     		histo_simple_remove(h, p->r, p->g, p->b);
 	} else {
@@ -451,7 +531,7 @@ inline void
 histo_insert_pixel(Histo * h, const RGBPixel * p, histo_type_t type)
 {
 	if (type == HISTO_INTERPOLATED) {
-    		histo_interpolated_insert(h, p->r, p->g, p->b);
+    		lh_histo_interpolated_insert(h, p->r, p->g, p->b);
 	} else if (type == HISTO_SIMPLE) {
     		histo_simple_insert(h, p->r, p->g, p->b);
 	} else {
@@ -466,6 +546,10 @@ histo_fill_from_subimage(Histo * h, const RGBImage * img, int xstart,
 {
     int             i,
                     j;
+
+	if (!done_init) {
+		build_lkuptables(red_lkup, green_lkup, blue_lkup);
+	}
     histo_clear(h);
     for (j = 0; j < ysize; j++) {
         const RGBPixel *p = img->data + (ystart + j) * img->width + xstart;
@@ -726,6 +810,8 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
     Histo           h2;         /* histogram for each region tested */
     int             old_x = 0, old_y = 0;
 
+
+	XXX
     pass = 0;
     for (scale = 1.0; (scale * ysiz) < height; scale *= scale_factor) {
         xsiz = (dim_t) scale *hconfig->xsize;
@@ -806,6 +892,11 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
     int             inspected = 0;
     Histo           h2;         /* histogram for each region tested */
     int             old_x = 0, old_y = 0;
+
+
+	/* build the lookup tables */
+	/* XXX move this to init code later */
+	build_lkuptables(red_lkup, green_lkup, blue_lkup);
 
 	best_box.distance = 500;
     pass = 0;
