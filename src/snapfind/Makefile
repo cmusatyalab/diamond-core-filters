@@ -86,8 +86,9 @@ SEARCHLET_OBJS = $(SHARED_SEARCHLET_OBJS) $(SHARED_COMMON_OBJS)
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
 SEARCHLET_OBJS += fil_synth.o 
 
-SEARCHLET_LIBS += -lm -lcvaux -lopencv
+SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv
 
+SEARCHLET_LIBDIR += 
 
 # objects needed to build the main
 SNAPFIND_SRCS = $(SHARED_APP_SRCS) $(SHARED_COMMON_SRCS)
@@ -148,7 +149,7 @@ clean-targets:	clean-experiments
 default: $(TARGETS)
 
 snap_searchlet.so: $(SEARCHLET_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS) $(SEARCHLET_LIBS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR)
 
 libssearch.a: $(SEARCHLET_OBJS)
 	$(AR) r $@ $(SEARCHLET_OBJS)
