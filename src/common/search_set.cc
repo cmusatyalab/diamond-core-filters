@@ -14,12 +14,9 @@
 #include "img_search.h"
 #include "search_set.h"
 
-extern void update_search_entry();
-
 search_set::search_set()
 {
 	ss_dep_list.erase(ss_dep_list.begin(), ss_dep_list.end());
-	printf("search set: %p \n", this);
 	return;
 	
 }
@@ -36,7 +33,8 @@ search_set::add_search(img_search *new_search)
 	new_search->set_parent(this);
 	ss_search_list.push_back(new_search);
 
-	update_search_entry();
+	/* invoke the update cb to tell everyone the set has changed */
+	notify_update();
 }
 
 
@@ -44,6 +42,7 @@ void
 search_set::remove_search(img_search *old_search)
 {
 	/* XXX */
+	notify_update();
 }
 
 void
@@ -127,6 +126,46 @@ search_set::get_search_count()
 	return(ss_search_list.size());
 }
 
+/*
+ * Add a new callback function to the list of callbacks.
+ */
+void
+search_set::register_update_fn(sset_notify_fn cb_fn)
+{
+	ss_cb_vector.push_back(cb_fn);
+}
+
+/*
+ * go through the list of callback functions and remove the entry
+ * that has the same value (if it exists).
+ */
+void
+search_set::un_register_update_fn(sset_notify_fn cb_fn)
+{
+	cb_iter_t	cur;
+
+	for (cur = ss_cb_vector.begin(); cur != ss_cb_vector.end(); cur++) {
+		if (*cur == cb_fn) {
+			ss_cb_vector.erase(cur);
+			return;
+		}
+	}
+}
+
+/*
+ * go through the list of callback functions and let everyone know
+ * that the set has been updated.
+ */
+void
+search_set::notify_update()
+{
+	cb_iter_t	cur;
+
+	for (cur = ss_cb_vector.begin(); cur != ss_cb_vector.end(); cur++) {
+		(**cur)(this);
+	}
+
+}
 
 /*
  * Build the filters specification into the temp file name
@@ -192,7 +231,6 @@ search_set::build_filter_spec(char *tmp_file)
 	while ((srch = get_next_dep(&iter)) != NULL) {
 		srch->write_fspec(fspec);
 	}
-
 
 	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
 	fprintf(fspec, "REQUIRES  RGB  # dependancies \n");

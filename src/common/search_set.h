@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <list>
+#include <vector>
 //#include <iterator>
 #include "rgb.h"
 #include "lib_searchlet.h"
@@ -13,7 +14,14 @@ using namespace	std;
 using namespace	__gnu_cxx;
 
 
+/* forward declaration */
+class search_set;
+
 typedef  list<img_search *>::iterator	search_iter_t;
+
+/* function proto type for a callback when the set changes */
+typedef  void (*sset_notify_fn)(search_set *set);
+typedef  vector<sset_notify_fn>::iterator	cb_iter_t;
 
 class search_set {
 public:
@@ -24,15 +32,29 @@ public:
 	void		remove_search(img_search *old_search);
 
 	void		reset_search_iter(search_iter_t *iter);
-	img_search * 	get_next_search(search_iter_t *iter);
+	img_search *get_next_search(search_iter_t *iter);
 
+
+	/* calls to add new dependency or reset the list */
 	void		add_dep(img_search *dep_search);
 	void		clear_deps();
 
-	void 		reset_dep_iter(search_iter_t *iter);
-	img_search * 	get_next_dep(search_iter_t *iter);
 
-	int		get_search_count();
+	/* get pointers to the current iteration */
+	/* XXX this can probably be done better.  */
+	void 		reset_dep_iter(search_iter_t *iter);
+	img_search *get_next_dep(search_iter_t *iter);
+
+	/* get the number of searches in the set */
+	int			get_search_count();
+
+
+	/* calls to register/unregister callback function */
+	void		register_update_fn(sset_notify_fn cb_fn);
+	void		un_register_update_fn(sset_notify_fn cb_fn);
+
+	/* method that tells all the callbacks when set is modified */
+	void		notify_update();
 
 	char * 	build_filter_spec(char *tmp_file);
 
@@ -42,6 +64,7 @@ public:
 private:
 	list<img_search *>		ss_search_list;
 	list<img_search *>		ss_dep_list;
+	vector<sset_notify_fn>	ss_cb_vector;
 };
 
 

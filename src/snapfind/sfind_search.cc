@@ -130,7 +130,6 @@ do_search(gid_list_t * main_region, char *fspec)
         printf("Failed to start search on err %d \n", err);
         exit(1);
     }
-
 }
 
 /*
@@ -205,13 +204,9 @@ update_stats()
 {
     int             num_dev;
     ls_dev_handle_t dev_list[MAX_DEVICES];
-    int             i,
-                    err,
-                    len;
+    int             i, err, len;
     dev_stats_t    *dstats;
-    int             tobj = 0,
-        sobj = 0,
-        dobj = 0;
+    int             tobj = 0, sobj = 0, dobj = 0;
 
     dstats = (dev_stats_t *) malloc(DEV_STATS_SIZE(MAX_FILT));
     assert(dstats);
@@ -266,22 +261,16 @@ sfind_search_main(void *foo)
      */
 
     while (1) {
-
         message = (message_t *) ring_deq(to_search_thread);
         if (message != NULL) {
             handle_message(message);
             free(message);
         }
         if ((active) && (ring_count(from_search_thread) < 7)) {
-            // fprintf(stderr, "face_search: calling ls_next_object\n");
             err = ls_next_object(shandle, &cur_obj, LSEARCH_NO_BLOCK);
-            // fprintf(stderr, "face_search: done ls_next_object\n");
             if (err == EWOULDBLOCK) {
                 /*
-                 * XXX no items 
-                 */
-                /*
-                 * sleep for a small amount of time. 
+                 * no data is available, sleep for a small amount of time. 
                  */
                 timeout.tv_sec = 0;
                 timeout.tv_nsec = 10000000; /* XXX 10ms ?? */

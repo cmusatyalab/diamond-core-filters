@@ -733,6 +733,7 @@ cb_start_search(GtkButton* item, gpointer data)
 
 	/* another global, ack!! this should be on the heap XXX */
 	static gid_list_t gid_list;
+  	gid_list.ngids = 0;
 	get_gid_list(&gid_list);
 
 	pthread_mutex_lock(&display_mutex);
@@ -883,13 +884,14 @@ write_search_config(const char *dirname, search_set *set)
 
 static GtkWidget *search_frame;
 
-void
-update_search_entry()
+static void
+update_search_entry(search_set *cur_set)
 {
 	gtk_container_remove(GTK_CONTAINER(search_frame), config_table);
-	config_table = snap_searchset->build_edit_table();
+	config_table = cur_set->build_edit_table();
 	gtk_container_add(GTK_CONTAINER(search_frame), config_table);
     gtk_widget_show_all(search_frame);
+	
 }
 
 
@@ -936,6 +938,9 @@ create_search_window()
     separator = gtk_hseparator_new ();
     gtk_box_pack_end (GTK_BOX (box1), separator, FALSE, FALSE, 0);
     gtk_widget_show (separator);
+
+	/* register callback function to get notified when search set changes */
+	snap_searchset->register_update_fn(update_search_entry);
 
 	return(box1);
 }
@@ -1285,8 +1290,7 @@ create_image_control(GtkWidget *container_box,
 		     image_info_t *img_info,
 		     image_control_t *img_cntrl)
 {
-	//GtkWidget *label;
-    	GtkObject *adj;
+	GtkObject *adj;
 
 	GUI_THREAD_CHECK(); 
 
@@ -1297,63 +1301,49 @@ create_image_control(GtkWidget *container_box,
 
 	img_cntrl->parent_box = container_box;
 	img_cntrl->control_box = gtk_hbox_new (FALSE, 10);
-    	gtk_container_set_border_width(GTK_CONTAINER(img_cntrl->control_box), 0);
-    	gtk_box_pack_start(GTK_BOX(img_cntrl->parent_box), 
+	gtk_container_set_border_width(GTK_CONTAINER(img_cntrl->control_box), 0);
+	gtk_box_pack_start(GTK_BOX(img_cntrl->parent_box), 
 			img_cntrl->control_box, FALSE, FALSE, 0);
-    	gtk_widget_show(img_cntrl->control_box);
+	gtk_widget_show(img_cntrl->control_box);
 
 	img_cntrl->next_button = gtk_button_new_with_label ("Next");
-    	g_signal_connect_swapped(G_OBJECT(img_cntrl->next_button), 
+	g_signal_connect_swapped(G_OBJECT(img_cntrl->next_button), 
 			"clicked", G_CALLBACK(cb_next_image), NULL);
-    	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box), 
+	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box), 
 			img_cntrl->next_button, FALSE, FALSE, 0);
-    	GTK_WIDGET_SET_FLAGS (img_cntrl->next_button, GTK_CAN_DEFAULT);
-    	//gtk_widget_grab_default(img_cntrl->next_button);
-    	gtk_widget_show(img_cntrl->next_button);
-
-/* 	label = gtk_label_new ("more images"); */
-/*     	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box), label, FALSE, FALSE, 0); */
-/*     	gtk_widget_show(label); */
-
+	GTK_WIDGET_SET_FLAGS (img_cntrl->next_button, GTK_CAN_DEFAULT);
+	gtk_widget_show(img_cntrl->next_button);
 
 	img_info->qsize_label = gtk_label_new ("");
-    	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box), 
+	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box), 
 			img_info->qsize_label, FALSE, FALSE, 0);
-    	gtk_widget_show(img_info->qsize_label);
+	gtk_widget_show(img_info->qsize_label);
 	gtk_timeout_add(500 /* ms */, timeout_write_qsize, img_info->qsize_label);
 
 	img_info->tobjs_label = gtk_label_new ("");
-    	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
+	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
 			img_info->tobjs_label, FALSE, FALSE, 0);
-    	gtk_widget_show(img_info->tobjs_label);
+	gtk_widget_show(img_info->tobjs_label);
 	gtk_timeout_add(500 /* ms */, timeout_write_tobjs, img_info->tobjs_label);
 
 	img_info->sobjs_label = gtk_label_new ("");
-    	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
+	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
 			img_info->sobjs_label, FALSE, FALSE, 0);
-    	gtk_widget_show(img_info->sobjs_label);
+	gtk_widget_show(img_info->sobjs_label);
 	gtk_timeout_add(500 /* ms */, timeout_write_sobjs, img_info->sobjs_label);
 
 	img_info->dobjs_label = gtk_label_new ("");
-    	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
+	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
 			img_info->dobjs_label, FALSE, FALSE, 0);
-    	gtk_widget_show(img_info->dobjs_label);
+	gtk_widget_show(img_info->dobjs_label);
 	gtk_timeout_add(500 /* ms */, timeout_write_dobjs, img_info->dobjs_label);
 
-	
-	
-/* 	label = gtk_label_new ("Zoom"); */
-/*     	gtk_box_pack_start (GTK_BOX(img_cntrl->control_box),  */
-/* 			label, FALSE, FALSE, 0); */
-    	//gtk_widget_show(label);
-
-
-    	adj = gtk_adjustment_new(2.0, 1.0, 10.0, 1.0, 1.0, 1.0);
-		img_cntrl->zlevel = 2;
-    	img_cntrl->zbutton = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 0);
-    	gtk_box_pack_start (GTK_BOX(img_cntrl->control_box),img_cntrl->zbutton, 
+	adj = gtk_adjustment_new(2.0, 1.0, 10.0, 1.0, 1.0, 1.0);
+	img_cntrl->zlevel = 2;
+	img_cntrl->zbutton = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 0);
+	gtk_box_pack_start (GTK_BOX(img_cntrl->control_box),img_cntrl->zbutton, 
 			FALSE, FALSE, 0);
-    	//gtk_widget_show(img_cntrl->zbutton);
+	//gtk_widget_show(img_cntrl->zbutton);
 
 
 	img_cntrl->cur_op = CNTRL_ELEV;
@@ -1380,14 +1370,6 @@ create_display_region(GtkWidget *main_box)
     	gtk_container_set_border_width(GTK_CONTAINER(x), 10);
     	gtk_box_pack_start(GTK_BOX(main_box), x, TRUE, TRUE, 0);
     	gtk_widget_show(x);
-
-/*     	separator = gtk_vseparator_new(); */
-/*     	gtk_box_pack_start(GTK_BOX(x), separator, FALSE, FALSE, 0); */
-/*     	gtk_widget_show (separator); */
-
-/*     	separator = gtk_vseparator_new(); */
-/*     	gtk_box_pack_end(GTK_BOX(x), separator, FALSE, FALSE, 0); */
-/*     	gtk_widget_show (separator); */
 
 	GtkWidget *result_box;
     	result_box = gtk_vbox_new(FALSE, 10);
@@ -1481,26 +1463,12 @@ create_display_region(GtkWidget *main_box)
 	disable_image_control(&image_controls);
 }
 
-/* set check button when activated */
-/* static void */
-/* cb_enable_check_button(GtkWidget *widget) { */
-/*   GUI_CALLBACK_ENTER(); */
-
-/*   GtkWidget *button  */
-/*     = (GtkWidget *)gtk_object_get_user_data(GTK_OBJECT(widget)); */
-/*   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE); */
-
-/*   GUI_CALLBACK_LEAVE(); */
-/* } */
-
-
-
 
 static void
 cb_quit() {
-  printf("MARKED: %d of %d seen\n", user_measurement.total_marked, 
-	 user_measurement.total_seen);
-  gtk_main_quit();
+	printf("MARKED: %d of %d seen\n", user_measurement.total_marked, 
+		 user_measurement.total_seen);
+	gtk_main_quit();
 }
 
 

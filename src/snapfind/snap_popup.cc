@@ -42,9 +42,6 @@
 /* XXX fix this */
 static search_set *sset;
 
-void update_search_entry(img_search *cur_search, int row);
-
-
 /* XXX fix this */
 static lf_fhandle_t 	fhandle = 0;
 
@@ -412,19 +409,6 @@ image_highlight_main(void *ptr)
 
 
 
-static void
-cb_popup_window_close(GtkWidget *window) 
-{
-	GUI_CALLBACK_ENTER();
-
-	kill_highlight_thread(0);
-	popup_window.window = NULL;
-	ih_drop_ref(popup_window.hooks, fhandle);
-	popup_window.hooks = NULL;
-
-	GUI_CALLBACK_LEAVE();
-}
-
 
 
 
@@ -520,19 +504,17 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	char buf[BUFSIZ] = "created new scene";
 	GtkWidget *	active_item;
 	img_search *ssearch;
-	int	   	idx;
 	guint	id;
   	GUI_CALLBACK_ENTER();
 
 	active_item = gtk_menu_get_active(GTK_MENU(popup_window.example_list));
+	if (active_item == NULL) {
+		goto done;
+	}
 
-	idx = (int)g_object_get_data(G_OBJECT(active_item), "user data");
+	ssearch = (img_search *)g_object_get_data(G_OBJECT(active_item),
+		"user data");
 
-	return(TRUE); /* XXX fix */
-	// XXXX
-	//assert(idx >= 0);
-	//assert(idx < num_searches);
-	//ssearch = snap_searches[idx];
 
 	for(int i=0; i<popup_window.nselections; i++) {
 		ssearch->add_patch(popup_window.hooks->img, 
@@ -541,11 +523,11 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 
 	/* popup the edit window */ 
 	ssearch->edit_search();
-
   	id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
 					  "selection");
   	gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
-  
+ 
+done: 
   	GUI_CALLBACK_LEAVE();
   	return TRUE;
 }
@@ -791,7 +773,6 @@ get_example_menu(void)
 	GtkWidget *     menu;
 	GtkWidget *     item;
 	img_search *	cur_search;
-	int		i;
 	search_iter_t	iter;
                                                                                 
 	menu = gtk_menu_new();
@@ -803,7 +784,7 @@ get_example_menu(void)
 		}
 		item = gtk_menu_item_new_with_label(cur_search->get_name());
 		gtk_widget_show(item);
-		g_object_set_data(G_OBJECT(item), "user data", (void *)i);
+		g_object_set_data(G_OBJECT(item), "user data", (void *)cur_search);
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 	}
                                        
@@ -912,8 +893,7 @@ existing_search_panel(void)
 
 	/*
 	 * Create a hbox that has the controls for
-	 * adding a new search with examples to the existing
-	 * searches.
+	 * adding a examples to the existing searches.
 	 */ 
 
 	GtkWidget *button = gtk_button_new_with_label ("Add");
@@ -928,68 +908,74 @@ existing_search_panel(void)
 	widget = gtk_label_new("Search");
 	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
+	/* get the menu of the existing searches */
 	popup_window.example_list =  get_example_menu();
-	widget = gtk_option_menu_new();
-	gtk_option_menu_set_menu(GTK_OPTION_MENU(widget), 
-		popup_window.example_list);
-	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
+	popup_window.existing_menu = gtk_option_menu_new();
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(popup_window.existing_menu), 
+			popup_window.example_list);
+	gtk_box_pack_start(GTK_BOX(hbox), popup_window.existing_menu,
+		TRUE, FALSE, 0);
 
 	gtk_widget_show_all(GTK_WIDGET(frame));
 	return(frame);
 }
 
-#define	MAX_SEARCHES	64	/* XXX horible */
+
 static GtkWidget *
-highlight_select()
+make_highlight_table()
 {
-    GtkWidget *box1;
-    GtkWidget *table;
-    GtkWidget *frame, *widget;
+    GtkWidget *widget;
     int row = 0;        /* current table row */
 	img_search *	csearch;
     search_iter_t	iter;
 
     GUI_THREAD_CHECK(); 
 
-    box1 = gtk_vbox_new (FALSE, 0);
-    gtk_widget_show (box1);
-
-    frame = gtk_frame_new("Searches");
-    table = gtk_table_new(sset->get_search_count()+2, 3, FALSE);
-    gtk_table_set_row_spacings(GTK_TABLE(table), 2);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 4);
-    gtk_container_set_border_width(GTK_CONTAINER(table), 10);
+    popup_window.hl_table = gtk_table_new(sset->get_search_count()+2, 3, FALSE);
+    gtk_table_set_row_spacings(GTK_TABLE(popup_window.hl_table), 2);
+    gtk_table_set_col_spacings(GTK_TABLE(popup_window.hl_table), 4);
+    gtk_container_set_border_width(GTK_CONTAINER(popup_window.hl_table), 10);
 
     widget = gtk_label_new("Predicate");
     gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
-	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
+	gtk_table_attach_defaults(GTK_TABLE(popup_window.hl_table), widget, 0, 1, row, row+1);
 
     widget = gtk_label_new("Description");
     gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
-	gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
+	gtk_table_attach_defaults(GTK_TABLE(popup_window.hl_table), widget, 1, 2, row, row+1);
 
     widget = gtk_label_new("Edit");
     gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
-	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+	gtk_table_attach_defaults(GTK_TABLE(popup_window.hl_table), widget, 2, 3, row, row+1);
 
 	
 	sset->reset_search_iter(&iter);
 	while ((csearch = sset->get_next_search(&iter)) != NULL) {
 		row++;
 		widget = csearch->get_highlight_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
+		gtk_table_attach_defaults(GTK_TABLE(popup_window.hl_table), widget, 0, 1, row, row+1);
 		widget = csearch->get_config_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
+		gtk_table_attach_defaults(GTK_TABLE(popup_window.hl_table), widget, 1, 2, row, row+1);
 		widget = csearch->get_edit_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+		gtk_table_attach_defaults(GTK_TABLE(popup_window.hl_table), widget, 2, 3, row, row+1);
 	}
-	gtk_container_add(GTK_CONTAINER(frame), table);
-    gtk_box_pack_start(GTK_BOX(box1), frame, FALSE, FALSE, 10);
-    gtk_widget_show(frame);
-    gtk_widget_show(table);
+
+	return(popup_window.hl_table);
+}
+
+
+static GtkWidget *
+highlight_select()
+{
+    GtkWidget *box1;
+
+    GUI_THREAD_CHECK(); 
+
+    box1 = gtk_vbox_new (FALSE, 0);
+	popup_window.hl_frame = gtk_frame_new("Searches");
+    popup_window.hl_table = make_highlight_table();
+	gtk_container_add(GTK_CONTAINER(popup_window.hl_frame), popup_window.hl_table);
+    gtk_box_pack_start(GTK_BOX(box1), popup_window.hl_frame, FALSE, FALSE, 10);
     gtk_widget_show_all(box1);
 
 	return(box1);
@@ -1003,13 +989,11 @@ highlight_panel(void)
 	GtkWidget	*box;
 
   	frame = gtk_frame_new("Highlighting");
-  	gtk_widget_show(frame);
 
   	/* start button area */
   	GtkWidget *box2 = gtk_vbox_new (FALSE, 10);
   	gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
   	gtk_container_add(GTK_CONTAINER(frame), box2);
-  	gtk_widget_show (box2);
 
   	GtkWidget *label = gtk_label_new("Highlight regions matching seaches");
   	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
@@ -1050,6 +1034,55 @@ highlight_panel(void)
 	return(frame);
 }
 
+/*
+ * callback function that gets called when the list of searches
+ * is updated.  This will redraw some of the windows and their
+ * associated that depend on the list of exsiting searches.
+ */
+                                                                               
+void
+popup_update_searches(search_set *set)
+{
+	if(popup_window.window == NULL) {
+		return;
+	}
+
+	/* update the list of existing searches */
+	gtk_option_menu_remove_menu(GTK_OPTION_MENU(popup_window.existing_menu));
+	popup_window.example_list =  get_example_menu();
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(popup_window.existing_menu), 
+			popup_window.example_list);
+	gtk_widget_show_all(popup_window.existing_menu);
+
+	/* update the list of searches for high lighting */
+
+    /* update the list of searches for high lighting */
+    gtk_container_remove(GTK_CONTAINER(popup_window.hl_frame),
+        popup_window.hl_table);
+    popup_window.hl_table = make_highlight_table();
+    gtk_container_add(GTK_CONTAINER(popup_window.hl_frame),
+        popup_window.hl_table);
+    gtk_widget_show_all(popup_window.hl_frame);
+
+
+
+}
+
+static void
+cb_popup_window_close(GtkWidget *window) 
+{
+	GUI_CALLBACK_ENTER();
+
+	kill_highlight_thread(0);
+	sset->un_register_update_fn(popup_update_searches);
+	popup_window.window = NULL;
+	ih_drop_ref(popup_window.hooks, fhandle);
+	popup_window.hooks = NULL;
+
+	GUI_CALLBACK_LEAVE();
+}
+
+
 
 void
 do_img_popup(GtkWidget *widget, search_set *set) 
@@ -1061,7 +1094,6 @@ do_img_popup(GtkWidget *widget, search_set *set)
 	GtkWidget *button;
 
 	sset = set;
-
 	thumb = (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
 
 	/* the data gpointer passed in seems to not be the data
@@ -1076,92 +1108,79 @@ do_img_popup(GtkWidget *widget, search_set *set)
 		popup_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title(GTK_WINDOW(popup_window.window), "Image");
 		gtk_window_set_default_size(GTK_WINDOW(popup_window.window), 850, 350);
-		g_signal_connect (G_OBJECT (popup_window.window), "destroy",
-				  G_CALLBACK (cb_popup_window_close), NULL);
+		g_signal_connect(G_OBJECT(popup_window.window), "destroy",
+				  G_CALLBACK(cb_popup_window_close), NULL);
 
 		GtkWidget *box1 = gtk_vbox_new(FALSE, 0);
 
 		popup_window.statusbar = gtk_statusbar_new();
 		gtk_box_pack_end(GTK_BOX(box1), popup_window.statusbar, FALSE, FALSE, 0);
-		gtk_widget_show(popup_window.statusbar);
-
 		GtkWidget *pane = gtk_hpaned_new();
 		gtk_box_pack_start(GTK_BOX(box1), pane, TRUE, TRUE, 0);
-		gtk_widget_show(pane);
-
 		gtk_container_add(GTK_CONTAINER(popup_window.window), box1);
-		gtk_widget_show(box1);
 
 		/* box to hold controls */
 		box1 = gtk_vbox_new(FALSE, 10);
 		gtk_container_set_border_width(GTK_CONTAINER(box1), 4);
-		gtk_widget_show(box1);
 		gtk_paned_pack1(GTK_PANED(pane), box1, FALSE, TRUE);
 
 		frame = gtk_frame_new("Search Results");
 		gtk_box_pack_start(GTK_BOX(box1), frame, FALSE, FALSE, 0);
-		gtk_widget_show(frame);
 		GtkWidget *box3 = gtk_vbox_new(FALSE, 0);
 		gtk_container_add(GTK_CONTAINER(frame), box3);
-		gtk_widget_show(box3);
 
 		popup_window.face_cb_area = gtk_vbox_new(FALSE, 0);
 		popup_window.histo_cb_area = gtk_vbox_new(FALSE, 0);
-		gtk_box_pack_start(GTK_BOX (box3), popup_window.face_cb_area, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX (box3), popup_window.histo_cb_area, FALSE, FALSE, 0);
-		gtk_widget_show(popup_window.face_cb_area);
-		gtk_widget_show(popup_window.histo_cb_area);
+		gtk_box_pack_start(GTK_BOX (box3),
+			popup_window.face_cb_area, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX (box3),
+			popup_window.histo_cb_area, FALSE, FALSE, 0);
 
 		/* 
 		 * Refinement
 		 */			
 		{
 		  frame = gtk_frame_new("Search Update");
-		  gtk_box_pack_end(GTK_BOX (box1), frame, FALSE, FALSE, 0);
-		  gtk_widget_show(frame);
+		  gtk_box_pack_end(GTK_BOX(box1), frame, FALSE, FALSE, 0);
 		  
 		  GtkWidget *box2 = gtk_vbox_new (FALSE, 10);
-		  gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
+		  gtk_container_set_border_width(GTK_CONTAINER(box2), 10);
 		  gtk_container_add(GTK_CONTAINER(frame), box2);
-		  gtk_widget_show (box2);
 		  
 		  /* hbox */
 		  GtkWidget *hbox = gtk_hbox_new(FALSE, 10);
 		  gtk_box_pack_start (GTK_BOX(box2), hbox, TRUE, FALSE, 0);
-		  gtk_widget_show(hbox);
 
 		  /* couple of buttons */
 		
 		  GtkWidget *buttonbox = gtk_vbox_new(FALSE, 10);
 		  gtk_box_pack_start(GTK_BOX(box2), buttonbox, TRUE, FALSE,0);
-		  gtk_widget_show(buttonbox);
 		
 		  /*
  		   * Create a hbox that has the controls for
- 		   * adding a new search with examples to the existing
-		   * searches.
+ 		   * adding examples to new or existing searches.
 		   */ 
 
 		  hbox = gtk_hbox_new(FALSE, 10);
-		  gtk_box_pack_start (GTK_BOX(buttonbox), hbox, TRUE, FALSE, 0);
-		  gtk_widget_show(hbox);
+		  gtk_box_pack_start(GTK_BOX(buttonbox), hbox, TRUE, FALSE, 0);
 
+		  /* control for creating a new search */
 		  widget = new_search_panel();
 		  gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
+
+		  /* control for adding to an existing search */
 		  widget = existing_search_panel();
 		  gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
 		  /* control button to clear selected regions */
 		  hbox = gtk_hbox_new(FALSE, 10);
 		  gtk_box_pack_start (GTK_BOX(buttonbox), hbox, TRUE, FALSE, 0);
-		  gtk_widget_show(hbox);
-
 		  button = gtk_button_new_with_label ("Clear");
 		  g_signal_connect_after(GTK_OBJECT(button), "clicked",
 				 GTK_SIGNAL_FUNC(cb_clear_select), NULL);
 		  gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, FALSE, 0);
-		  gtk_widget_show (button);
+
 		}
 
 		/* Get highlighting state */
@@ -1169,8 +1188,11 @@ do_img_popup(GtkWidget *widget, search_set *set)
   		gtk_box_pack_end (GTK_BOX (box1), frame, FALSE, FALSE, 0);
 
 		popup_window.image_area = gtk_viewport_new(NULL, NULL);
-		gtk_widget_show(popup_window.image_area);
 		gtk_paned_pack2(GTK_PANED(pane), popup_window.image_area, TRUE, TRUE);
+
+		gtk_widget_show_all(popup_window.window);
+
+		set->register_update_fn(popup_update_searches);
 
 	} else {
 		kill_highlight_thread(0);
@@ -1193,8 +1215,6 @@ do_img_popup(GtkWidget *widget, search_set *set)
 	char buf[MAX_NAME];
 	sprintf(buf, "Image: %s", thumb->name);
 	gtk_window_set_title(GTK_WINDOW(popup_window.window), buf);
-
-	rgb_write_image(popup_window.hooks->img, "dummy.ppm", ".");
 
 	image = popup_window.drawing_area = gtk_drawing_area_new();
 	GTK_WIDGET_UNSET_FLAGS (image, GTK_CAN_DEFAULT);

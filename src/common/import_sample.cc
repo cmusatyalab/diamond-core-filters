@@ -325,14 +325,6 @@ image_highlight_main(void *ptr)
 
 
 
-static void
-cb_import_window(GtkWidget *window) 
-{
-	GUI_CALLBACK_ENTER();
-	kill_highlight_thread(0);
-	import_window.window = NULL;
-	GUI_CALLBACK_LEAVE();
-}
 
 
 
@@ -370,6 +362,7 @@ kill_highlight_thread(int run)
 
 /* XXX move to more appropriate place */
 static void load_import_file(const char *file);
+
 
 static void
 cb_have_sample_name(GtkWidget *widget, gpointer user_data)
@@ -489,22 +482,16 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	char buf[BUFSIZ] = "created new scene";
 	GtkWidget *	active_item;
 	img_search *ssearch;
-	int	   	idx;
 	guint	id;
   	GUI_CALLBACK_ENTER();
 
-	/* XXXX fix */
-	return(TRUE);
-
 	active_item = gtk_menu_get_active(GTK_MENU(import_window.example_list));
+	if (active_item == NULL) {
+		goto done;
+	}
 
-	idx = (int)g_object_get_data(G_OBJECT(active_item), "user data");
-#ifdef	XXX
-	assert(idx >= 0);
-	assert(idx < search_list_size);
-
-	ssearch = search_list[idx];
-#endif
+	ssearch = (img_search *)g_object_get_data(G_OBJECT(active_item),
+        "user data");
 
 	for(int i=0; i<import_window.nselections; i++) {
 		ssearch->add_patch(import_window.img, 
@@ -513,37 +500,16 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 
 	/* popup the edit window */ 
 	ssearch->edit_search();
-
   	id = gtk_statusbar_get_context_id(GTK_STATUSBAR(import_window.statusbar),
 					  "selection");
   	gtk_statusbar_push(GTK_STATUSBAR(import_window.statusbar), id, buf);
-  
+ 
+done: 
   	GUI_CALLBACK_LEAVE();
   	return TRUE;
 }
 
 static GtkWidget * make_highlight_table();
-
-static void
-search_popup_add(img_search *ssearch, int nsearch)
-{
-	GtkWidget *		item;
-
-	/* see if the popup window exists, if not, then just return */
-	if (import_window.window == NULL) {
-		return;
-	}
-	/* Put the list of searches in the ones we can select in the popup menu */
-	item = gtk_menu_item_new_with_label(ssearch->get_name());
-	gtk_widget_show(item);
-	/* XXX change to obj pointer */
-	g_object_set_data(G_OBJECT(item), "user data", (void *)(nsearch - 1));
-	gtk_menu_shell_append(GTK_MENU_SHELL(import_window.example_list), item);
-
-
-}
-
-
 
 /*
  * The callback function that takes user selected regions and creates
@@ -761,8 +727,7 @@ get_example_menu(void)
 	GtkWidget *     item;
 	img_search *	cur_search;
 	search_iter_t	iter;
-	int				i;
-                                                                                
+	
 	menu = gtk_menu_new();
                         
 	sset->reset_search_iter(&iter);
@@ -907,29 +872,52 @@ existing_search_panel(void)
 	return(frame);
 }
 
-void
-import_update_searches()
+
+
+/*
+ * callback function that gets called when the list of searches
+ * is updated.  This will redraw some of the windows and their
+ * associated that depend on the list of exsiting searches.
+ */
+
+static void
+import_update_searches(search_set *set)
 {
+
 	if (import_window.window == NULL) {
 		return;
 	}
 
-	/* add this to the option menu */
+	/* update the option menu of existing searches */
 	gtk_option_menu_remove_menu(GTK_OPTION_MENU(import_window.opt_menu));
-	/* XXX free old one ?? */
 	import_window.example_list =  get_example_menu();
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(import_window.opt_menu), 
 		import_window.example_list);
 	gtk_widget_show_all(GTK_WIDGET(import_window.opt_menu));
 
+
+	/* update the list of searches for high lighting */
 	gtk_container_remove(GTK_CONTAINER(import_window.hl_frame), 
 		import_window.hl_table);
 	import_window.hl_table = make_highlight_table();
-	gtk_container_add(GTK_CONTAINER(import_window.hl_frame), import_window.hl_table);
+	gtk_container_add(GTK_CONTAINER(import_window.hl_frame), 
+		import_window.hl_table);
     gtk_widget_show_all(import_window.hl_frame);
 }
 
-#define	MAX_SEARCHES	64	/* XXX horible */
+
+static void
+cb_import_window_kill(GtkWidget *window) 
+{
+	GUI_CALLBACK_ENTER();
+
+	printf("un registering update fn \n");
+	sset->un_register_update_fn(import_update_searches);
+	kill_highlight_thread(0);
+	import_window.window = NULL;
+	GUI_CALLBACK_LEAVE();
+}
+
 static GtkWidget *
 make_highlight_table()
 {
@@ -939,7 +927,7 @@ make_highlight_table()
     img_search *csearch;
     search_iter_t iter;
 
-    table = gtk_table_new(MAX_SEARCHES+1, 3, FALSE);
+    table = gtk_table_new(sset->get_search_count()+1, 3, FALSE);
     gtk_table_set_row_spacings(GTK_TABLE(table), 2);
     gtk_table_set_col_spacings(GTK_TABLE(table), 4);
     gtk_container_set_border_width(GTK_CONTAINER(table), 10);
@@ -1132,7 +1120,7 @@ open_import_window(search_set *set)
 		gtk_window_set_title(GTK_WINDOW(import_window.window), "Image");
 		gtk_window_set_default_size(GTK_WINDOW(import_window.window), 850, 350);
 		g_signal_connect(G_OBJECT(import_window.window), "destroy",
-				  G_CALLBACK(cb_import_window), NULL);
+				  G_CALLBACK(cb_import_window_kill), NULL);
 
 		GtkWidget *box1 = gtk_vbox_new(FALSE, 0);
 
@@ -1214,6 +1202,7 @@ open_import_window(search_set *set)
 				 GTK_SIGNAL_FUNC(cb_clear_select), NULL);
 		  gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, FALSE, 0);
 		  gtk_widget_show (button);
+
 		}
 
 		/* Get highlighting state */
@@ -1226,11 +1215,12 @@ open_import_window(search_set *set)
 
 		load_import_file("diamond1.ppm");
 
+		set->register_update_fn(import_update_searches);
+		
 	} else {
 		kill_highlight_thread(0);
 		//gtk_container_remove(GTK_CONTAINER(import_window.image_area), 
 				     //import_window.scroll);
 		gdk_window_raise(GTK_WIDGET(import_window.window)->window);
 	}
-
 }
