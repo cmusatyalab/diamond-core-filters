@@ -128,6 +128,7 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 	CvSeq* 		faces;
 
 
+	/* XXX we should find some way to reuse IPL */
 	gray = get_gray_ipl_image(rgb);
 
 
@@ -148,8 +149,9 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 		bb->distance = 0.0;
 		TAILQ_INSERT_TAIL(blist, bb, link);
 	}
-		
-        return(faces->total);
+
+	cvReleaseImage(&gray);		
+	return(faces->total);
 }
 
 

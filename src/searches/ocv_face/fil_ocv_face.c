@@ -128,16 +128,16 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
 
     i = 0;
     while (!(TAILQ_EMPTY(&blist))) {
-	cur_box = TAILQ_FIRST(&blist);
-	param.type = PARAM_FACE;
-	param.bbox.xmin = cur_box->min_x;
-	param.bbox.ymin = cur_box->min_y;
-	param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
-	param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
-	write_param(fhandle, ohandle, FACE_BBOX_FMT, &param, i);
-	TAILQ_REMOVE(&blist, cur_box, link);
-	free(cur_box);
-	i++;
+		cur_box = TAILQ_FIRST(&blist);
+		param.type = PARAM_FACE;
+		param.bbox.xmin = cur_box->min_x;
+		param.bbox.ymin = cur_box->min_y;
+		param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
+		param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
+		write_param(fhandle, ohandle, FACE_BBOX_FMT, &param, i);
+		TAILQ_REMOVE(&blist, cur_box, link);
+		free(cur_box);
+		i++;
     }
 
     /*
