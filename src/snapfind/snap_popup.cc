@@ -591,7 +591,7 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	stype = (search_types_t )idx;
    
 	sname =  gtk_entry_get_text(GTK_ENTRY(popup_window.search_name));
-    if (strlen(sname) < 1) {
+    	if (strlen(sname) < 1) {
 		dialog = gtk_dialog_new_with_buttons("Filter Name", 
 				GTK_WINDOW(popup_window.window), GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_STOCK_OK, GTK_RESPONSE_NONE, NULL);
