@@ -8,11 +8,8 @@
 #include <opencv/cv.h>
 #include <gtk/gtk.h>
 
-#include "face.h"
-#include "histo.h"
-#include "fil_histo.h"
 #include "image_tools.h"
-#include "sf_consts.h"
+#include "common_consts.h"
 
 /*
  * note: should make these functions localized 
@@ -172,14 +169,14 @@ rgb_write_image(RGBImage * img, const char *filename, const char *dir)
     int             err;
     FILE           *fp;
     int             i;
-    char            path[SNAP_MAX_PATH];
+    char            path[COMMON_MAX_PATH];
 
 
     /*
      * get the full path name 
      */
-    err = snprintf(path, SNAP_MAX_PATH, "%s/%s", dir, filename);
-    if (err >= SNAP_MAX_PATH) {
+    err = snprintf(path, COMMON_MAX_PATH, "%s/%s", dir, filename);
+    if (err >= COMMON_MAX_PATH) {
         fprintf(stderr, "MAX path exeeded, need at least %d bytes \n", err);
         assert(0);
     }

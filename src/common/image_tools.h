@@ -1,9 +1,8 @@
 
 
 #include <stdint.h>
-#include "face.h"
+#include <errno.h>
 #include "rgb.h"
-#include "fil_histo.h"
 #include <opencv/cv.h>
 
 #ifdef __cplusplus
@@ -43,12 +42,6 @@ int pnm_parse_header(char *fdata, size_t nb,
 		     image_type_t *magic, int *headerlen);
 int ppm_add_data(pnm_state_t *, char *fdata, size_t nb);
 
-
-
-typedef void (*notify_t)(void *context, search_param_t *param);
-typedef void (*callback_t)(void *context, int val, int total);
-
-	
 #ifdef __cplusplus
 }
 #endif
