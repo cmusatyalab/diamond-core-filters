@@ -306,6 +306,7 @@ get_attr_rgb_img(lf_obj_handle_t ohandle, char *attr_name)
 
     rgb = convert_ipl_to_rgb(image);
     cvReleaseImage(&image);
+	lf_free_buffer(fhandle, image_buf);
 
     return (rgb);
 }
