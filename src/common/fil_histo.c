@@ -325,6 +325,8 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	int             rv = 0;     /* return value */
 	bbox_t *		cur_box;
 	int				i;
+	int				ii_alloc = 0;
+	off_t			len;
 
 
 	lf_log(fhandle, LOGL_TRACE, "f_histo_detect: enter");
@@ -332,6 +334,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * get the img 
 	 */
+#ifdef	OLD
 	img = (RGBImage *) ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
 	ASSERT(img);
 	ASSERT(img->type == IMAGE_PPM);
@@ -344,7 +347,20 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 		ii = histo_get_ii(hconfig, img);
 	}
 	ASSERT(ii);
+#else
+	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
+	assert(err == 0);
+	ASSERT(img->type == IMAGE_PPM);
 
+	err = lf_ref_attr(fhandle, ohandle, HISTO_II, &len, (char **)&ii);
+	if (err != 0) {
+		printf("ii ref failed \n");
+		ii_alloc = 1;
+		ii = histo_get_ii(hconfig, img);
+	}
+
+
+#endif
 	/*
 	 * get nhisto 
 	 */
@@ -407,10 +423,9 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	}
 
 done:
-	if (img)
-		ft_free(fhandle, (char *) img);
-	if (ii)
+	if (ii_alloc) {
 		ft_free(fhandle, (char *) ii);
+	}
 
 	return rv;
 }
