@@ -120,46 +120,6 @@ histo_simple_insert(Histo * h, int r, int g, int b)
     histo_add(h, r >> SHIFT, g >> SHIFT, b >> SHIFT, 1.0);
 }
 
-void
-histo_interpolated_insert(Histo * h, int r, int g, int b)
-{
-    assert(r >= 0 && r < 256);
-    assert(g >= 0 && g < 256);
-    assert(b >= 0 && b < 256);
-    const int       SHIFT = 8 - HBIT;
-    double          rfrac;
-    double          gfrac;
-    double          bfrac;
-    int             i,
-                    j,
-                    k;
-
-    int             ri = r >> SHIFT;
-    int             gi = g >> SHIFT;
-    int             bi = b >> SHIFT;
-
-    // The fractional value is given by the low-order bits
-    const int       MASK = (1 << SHIFT) - 1;
-    rfrac = (r & MASK) / (double) (1 << SHIFT);
-    gfrac = (g & MASK) / (double) (1 << SHIFT);
-    bfrac = (b & MASK) / (double) (1 << SHIFT);
-
-
-    // double sum = 0.0; // @@@@@
-    for (i = 0; i <= 1; i++) {
-        for (j = 0; j <= 1; j++) {
-            for (k = 0; k <= 1; k++) {
-                double          frac =
-                    (i ? rfrac : 1.0 - rfrac) *
-                    (j ? gfrac : 1.0 - gfrac) * (k ? bfrac : 1.0 - bfrac);
-                // sum += frac; // @@@@@
-                histo_add(h, ri + i, gi + j, bi + k, frac);
-                // printf(" frac(%d,%d,%d) = %f\n", i, j, k, frac); // @@@@@
-            }
-        }
-    }
-    // printf(" sum = %f\n", sum); // @@@@@
-}
 
 
 /*
@@ -174,7 +134,7 @@ histo_interpolated_insert(Histo * h, int r, int g, int b)
 #define	HII_SCALE	((double)1.0/(double)(1<<HII_SHIFT))
 
 void
-lh_histo_interpolated_insert(Histo * h, int r, int g, int b)
+histo_interpolated_insert(Histo * h, int r, int g, int b)
 {
     assert(h);
     int             rilow,
@@ -208,41 +168,17 @@ lh_histo_interpolated_insert(Histo * h, int r, int g, int b)
 
 
     rilow = ri * HBINS * HBINS;
-#ifdef FUNKY_HIST
     rihigh = (ri + 1) * HBINS * HBINS;
-#else
-    if (ri >= (HBINS - 1)) {
-        rihigh = rilow;
-    } else {
-        rihigh = (ri + 1) * HBINS * HBINS;
-    }
-#endif                          // FUNKY_HIST
     assert(is_within_bounds(rilow));
     assert(is_within_bounds(rihigh));
 
     gilow = gi * HBINS;
-#ifdef FUNKY_HIST
     gihigh = (gi + 1) * HBINS;
-#else
-    if (gi >= (HBINS - 1)) {
-        gihigh = gilow;
-    } else {
-        gihigh = (gi + 1) * HBINS;
-    }
-#endif                          // FUNKY_HIST
     assert(is_within_bounds(gilow));
     assert(is_within_bounds(gihigh));
 
     bilow = bi;
-#ifdef FUNKY_HIST
     bihigh = (bi + 1);
-#else
-    if (bi >= (HBINS - 1)) {
-        bihigh = bilow;
-    } else {
-        bihigh = (bi + 1);
-    }
-#endif                          // FUNKY_HIST
     assert(is_within_bounds(bilow));
     assert(is_within_bounds(bihigh));
 
@@ -294,7 +230,7 @@ lh_histo_interpolated_insert(Histo * h, int r, int g, int b)
 }
 
 void
-lh_histo_interpolated_remove(Histo * h, int r, int g, int b)
+histo_interpolated_remove(Histo * h, int r, int g, int b)
 {
     assert(h);
     int             rilow,
@@ -328,38 +264,12 @@ lh_histo_interpolated_remove(Histo * h, int r, int g, int b)
 
 
     rilow = ri * HBINS * HBINS;
-#ifdef FUNKY_HIST
     rihigh = (ri + 1) * HBINS * HBINS;
-#else
-    if (ri >= (HBINS - 1)) {
-        rihigh = rilow;
-    } else {
-        rihigh = (ri + 1) * HBINS * HBINS;
-    }
-#endif                          // FUNKY_HIST
-
     gilow = gi * HBINS;
-#ifdef FUNKY_HIST
     gihigh = (gi + 1) * HBINS;
-#else
-    if (gi >= (HBINS - 1)) {
-        gihigh = gilow;
-    } else {
-        gihigh = (gi + 1) * HBINS;
-    }
-#endif                          // FUNKY_HIST
 
     bilow = bi;
-#ifdef FUNKY_HIST
     bihigh = (bi + 1);
-#else
-    if (bi >= (HBINS - 1)) {
-        bihigh = bilow;
-    } else {
-        bihigh = (bi + 1);
-    }
-#endif                          // FUNKY_HIST
-
 
     rfraclow = 1.0 - rfrac;
     gfraclow = 1.0 - gfrac;
@@ -408,21 +318,17 @@ lh_histo_interpolated_remove(Histo * h, int r, int g, int b)
 }
 
 inline void
-lh_histo_interpolated_remove_pixel(Histo * h, const RGBPixel * p)
+histo_interpolated_remove_pixel(Histo * h, const RGBPixel * p)
 {
-    lh_histo_interpolated_remove(h, p->r, p->g, p->b);
+    histo_interpolated_remove(h, p->r, p->g, p->b);
 }
 
-inline void
-lh_histo_interpolated_insert_pixel(Histo * h, const RGBPixel * p)
-{
-    lh_histo_interpolated_insert(h, p->r, p->g, p->b);
-}
 inline void
 histo_interpolated_insert_pixel(Histo * h, const RGBPixel * p)
 {
     histo_interpolated_insert(h, p->r, p->g, p->b);
 }
+
 
 void
 histo_fill_from_subimage(Histo * h, const RGBImage * img,
@@ -434,7 +340,7 @@ histo_fill_from_subimage(Histo * h, const RGBImage * img,
     for (j = 0; j < ysize; j++) {
         const RGBPixel *p = img->data + (ystart + j) * img->width + xstart;
         for (i = 0; i < xsize; i++) {
-            lh_histo_interpolated_insert_pixel(h, p++);
+            histo_interpolated_insert_pixel(h, p++);
         }
     }
 }
@@ -467,7 +373,7 @@ histo_update_subimage(Histo * h, const RGBImage * img,
         const RGBPixel *p =
             img->data + (new_ystart + j) * img->width + old_xstart;
         for (i = 0; i < xdiff; i++) {
-            lh_histo_interpolated_remove_pixel(h, p++);
+            histo_interpolated_remove_pixel(h, p++);
         }
     }
 
@@ -478,7 +384,7 @@ histo_update_subimage(Histo * h, const RGBImage * img,
         const RGBPixel *p = img->data + (new_ystart + j) * img->width +
             old_xstart + xsize;
         for (i = 0; i < xdiff; i++) {
-            lh_histo_interpolated_insert_pixel(h, p++);
+            histo_interpolated_insert_pixel(h, p++);
         }
     }
 }

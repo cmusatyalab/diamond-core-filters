@@ -9,29 +9,15 @@
 // Code to support basic color histograms
 // Rahul Sukthankar 2003.02.20
 
-// FUNKY_HIST is an idea for interpolated histograms that Larry
-// devised and discussed with Rahul 2003.03.24.  It is based on
-// the observation that the highest bin in each dimension never
-// interpolates its weight with any other bin.  Essentially, this
-// is an artifact caused by using the high-order bits of a
-// pixel's intensity to determine which bin it should fall in.
-// FUNKY_HIST just adds a bin to the very end, guaranteeing that
-// all histogram inserts will get interpolated.
-//
-#define FUNKY_HIST
 
 #define HISTO_SCALE  	1.5
 
 
 #define HBIT  1		// # bits to describe each dimension
 // #define HBIT 1
-#ifdef FUNKY_HIST
 #define HBINS ((1<<HBIT)+1)	// # bins in each dimension is 2^HBIT + 1
 /* static const int HBINS = ((1<<HBIT)+1); */
-#else
-#define HBINS (1<<HBIT)	// # bins in each dimension is 2^HBIT
-/* static const int HBINS = (1<<HBIT); */
-#endif // FUNKY_HIST
+
 typedef struct {
   double data[HBINS*HBINS*HBINS];	// 3-D array in a flat format
   double weight;			// number of points in histogram
