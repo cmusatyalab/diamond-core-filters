@@ -701,16 +701,19 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	/* figure out bboxes to highlight */
 	bsize = sizeof(num_histo);
 	err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
-	if (err) { num_histo = 0; }
+	if (err) {
+		 num_histo = 0; 
+	}
 	bsize = sizeof(num_face);
 	err = lf_read_attr(fhandle, ohandle, NUM_FACE, &bsize, (char *)&num_face);
-	if (err) { num_face = 0; }
+	if (err) {
+		 num_face = 0; 
+	}
 
 
 	int scale = (int)ceil(compute_scale(rgbimg, THUMBSIZE_X, THUMBSIZE_Y));
 	scaledimg = image_gen_image_scale(rgbimg, scale);
 	assert(scaledimg);
-
 
 	for(int i=0; i<num_histo; i++) {
 		draw_bounding_box(scaledimg, scale, fhandle, ohandle, 
