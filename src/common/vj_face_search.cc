@@ -156,12 +156,6 @@ vj_face_search::handle_config(config_types_t conf_type, char *data)
 
 
 
-static void 
-cb_update_menu_select(GtkWidget* item, GtkUpdateType  policy)
-{
-		/* XXX */
-} 
-
 
 static GtkWidget *
 create_slider_entry(char *name, float min, float max, int dec, float initial,
@@ -206,20 +200,6 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 	gtk_widget_show(button);
 									
 	return(container);
-}
-
-/* XXX redunant, with rgb */
-
-static GtkWidget *
-make_menu_item (gchar* name, GCallback callback, gpointer  data) 
-{
-	GtkWidget *item; 
-                                                                               
-	item = gtk_menu_item_new_with_label (name); 
-	g_signal_connect (G_OBJECT (item), "activate", callback, (gpointer) data); 
-	gtk_widget_show(item); 
-                                                                               
-	return item; 
 }
 
 static void

@@ -242,8 +242,7 @@ public:
 	void 		set_channels(char *data);
 	void 		set_channels(int num);
 
-	int handle_config(config_types_t conf_type, char *data);
-	void rgb_write_state(void);
+	virtual	int	handle_config(config_types_t conf_type, char *data);
 
 	void		set_matches(char *matches);
 	void		set_matches(int matches);

@@ -221,8 +221,6 @@ extern int read_search_config(char *fname, img_search **list, int *num);
 /* from face_search.c */
 extern void drain_ring(ring_data_t *ring);
 
-static void highlight_progress_f(void *widget, int val, int total);
-
 
 /* ********************************************************************** */
 
@@ -233,12 +231,6 @@ struct collection_t {
 };
 
 struct collection_t collections[MAX_ALBUMS+1] = {
-/*   {"Local",   1, 0}, */
-/*   {"All remote",   2, 1}, */
-/*   {"diamond01 only", 3, 0}, */
-/*   {"diamond02 only",  4, 0}, */
-/*   {"diamond03 only",  5, 0}, */
-/*   {"diamond04 only",  6, 0}, */
   {NULL}
 };
 
@@ -248,28 +240,6 @@ struct collection_t collections[MAX_ALBUMS+1] = {
 /* ********************************************************************** */
 /* utility functions */
 /* ********************************************************************** */
-
-
-/*
- * make pixbuf from img
- */
-static GdkPixbuf*
-pb_from_img(RGBImage *img) {
-	GdkPixbuf *pbuf;
-
-	/* NB pixbuf refers to data */
-	pbuf = gdk_pixbuf_new_from_data((const guchar *)&img->data[0], 
-					GDK_COLORSPACE_RGB, 1, 8, 
-					img->columns, img->rows, 
-					(img->columns*sizeof(RGBPixel)),
-					NULL,
-					NULL);
-	if (pbuf == NULL) {
-		printf("failed to allocate pbuf\n");
-		exit(1);
-	}
-	return pbuf;
-}
 
 
 /* 
@@ -608,54 +578,6 @@ timeout_write_dobjs(gpointer label)
 
 
 /* ********************************************************************** */
-/* ********************************************************************** */
-
-static void
-highlight_box_f(void *cont, search_param_t *param) 
-{
-	RGBImage *img = (RGBImage *)cont;
-	bbox_t bbox;
-
-	bbox.min_x = param->bbox.xmin;
-	bbox.min_y = param->bbox.ymin;
-	bbox.max_x = param->bbox.xmin + param->bbox.xsiz - 1;
-	bbox.max_y = param->bbox.ymin + param->bbox.ysiz - 1;
-
-	image_fill_bbox_scale(img, &bbox, 1, hilitMask, hilit);
-
-	GUI_THREAD_ENTER();
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-				   param->bbox.xmin, param->bbox.ymin,
-				   param->bbox.xsiz, param->bbox.ysiz);
-	GUI_THREAD_LEAVE();
-}
-
-static void
-highlight_box_f(RGBImage *img, bbox_t bbox) 
-{
-	image_fill_bbox_scale(img, &bbox, 1, hilitMask, hilit);
-
-	GUI_THREAD_ENTER();
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-				   bbox.min_x, bbox.min_y,
-				   bbox.max_x, bbox.max_y);
-	GUI_THREAD_LEAVE();
-}
-
-/* horribly expensive, but... */
-static void
-highlight_progress_f(void *widget, int val, int total) 
-{
-	double fraction;
-
-	fraction = (double)val / total;
-
-	GUI_THREAD_ENTER(); 
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(widget), fraction);
-	GUI_THREAD_LEAVE();
-}
-
-
 
 static void
 display_thumbnail(ls_obj_handle_t ohandle)
@@ -969,28 +891,61 @@ cb_start_search(GtkButton* item, gpointer data)
 }
 
 
-/* The file selection widget and the string to store the chosen filename */
 
 static void
-cb_save_spec_to_filename(GtkWidget *widget, gpointer user_data) 
+cb_write_fspec_to_file(GtkWidget *widget, gpointer user_data) 
 {
-  GtkWidget *file_selector = (GtkWidget *)user_data;
-  gid_list_t 	gid_list;
-  const gchar *selected_filename;
-  char buf[BUFSIZ];
+	GtkWidget *file_selector = (GtkWidget *)user_data;
+  	const gchar *selected_filename;
+  	char buf[BUFSIZ];
+	int	len;
 
-  GUI_CALLBACK_ENTER();
+  	GUI_CALLBACK_ENTER();
 
-  selected_filename = gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_selector));
+  	selected_filename = 
+		gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_selector));
  
-  get_gid_list(&gid_list);
-  printf("saving spec to: %s\n", selected_filename);
-  sprintf(buf, "%s", selected_filename);
-  build_filter_spec(buf);
+  	len = snprintf(buf, BUFSIZ, "%s", selected_filename);
+	assert(len < BUFSIZ);
+  	build_filter_spec(buf);
 
-  GUI_CALLBACK_LEAVE();
+  	GUI_CALLBACK_LEAVE();
 }
 
+
+static void
+cb_save_spec_to_filename() 
+{
+	GtkWidget *file_selector;
+
+  	GUI_CALLBACK_ENTER();
+
+	/* Create the selector */
+  	file_selector = gtk_file_selection_new("Filter spec name");
+  	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
+
+  	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
+	    "clicked", G_CALLBACK(cb_write_fspec_to_file),
+	    (gpointer)file_selector);
+   			   
+  	/* 
+     * Ensure that the dialog box is destroyed when the user clicks a button. 
+	 * Use swapper here to get the right argument to destroy (YUCK).
+     */
+  	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
+			    "clicked",
+			    G_CALLBACK(gtk_widget_destroy), 
+			    (gpointer)file_selector); 
+
+	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->cancel_button),
+			    "clicked",
+			    G_CALLBACK (gtk_widget_destroy),
+			    (gpointer) file_selector); 
+
+	/* Display that dialog */
+	gtk_widget_show(file_selector);
+	GUI_CALLBACK_LEAVE();
+}
 
 static void
 write_search_config(const char *dirname, img_search **searches, int nsearches)
@@ -1318,7 +1273,7 @@ cb_save_search_as()
   	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
 		    "clicked", G_CALLBACK(cb_save_search_dir),
 		    (gpointer) file_selector);
-   			   
+
   	/* 
      * Ensure that the dialog box is destroyed when the user clicks a button. 
 	 * Use swapper here to get the right argument to destroy (YUCK).
@@ -1339,14 +1294,6 @@ cb_save_search_as()
 }
 
 
-
-static void 
-cb_show_stats(GtkButton* item, gpointer data)
-{
-    GUI_CALLBACK_ENTER();
-    create_stats_win(shandle, expert_mode);
-    GUI_CALLBACK_LEAVE();
-}
 
 /* For the check button */
 static void
@@ -1804,11 +1751,13 @@ static GtkItemFactoryEntry menu_items[] = { /* XXX */
   { "/_File", NULL,  NULL,           0, "<Branch>" },
   { "/File/Load Search", NULL, G_CALLBACK(cb_load_search), 0, "<Item>" },
   { "/File/Import Search", NULL, G_CALLBACK(cb_import_search), 0, "<Item>" },
-  { "/File/Save As", NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
+  { "/File/Save Search as", NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
+  { "/File/Save filterspec", NULL,  G_CALLBACK(cb_save_spec_to_filename),
+		  0, "<Item>" },
   { "/File/sep1",     NULL,         NULL,           0, "<Separator>" },
   { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 0, "<StockItem>", GTK_STOCK_QUIT },
 
-  { "/_Searches", NULL, NULL, 0, "<Branch>" },
+  { "/_Searches", NULL, NULL, 0, "<Branch>"},
   {"/Searches/New", NULL, NULL, 0, "<Branch>"},
   {"/Searches/New/RGB Histogram", NULL, G_CALLBACK(cb_create), RGB_HISTO_SEARCH, "<Item>" },
   {"/Searches/New/Face Detect", NULL, G_CALLBACK(cb_create), FACE_SEARCH, "<Item>" },

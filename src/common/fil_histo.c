@@ -76,7 +76,7 @@ int
 f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
                lf_obj_handle_t * ohandles, void *user_data)
 {
-    RGBImage       *img = NULL;
+    RGBImage       *img;
     int             err = 0,
         pass = 1;
     lf_fhandle_t    fhandle = 0;
@@ -330,7 +330,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     int             pass = 0;
     int             err;
     RGBImage       *img = NULL;
-	unsigned long long old, new;
     off_t           bsize;
 	bbox_list_t		blist;
     lf_fhandle_t    fhandle = 0;    /* XXX */
@@ -369,7 +368,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
      */
     ii = (HistoII *) ft_read_alloc_attr(fhandle, ohandle, HISTO_II);
 
-	//old = read_cycle();
     if (ii == NULL) {
 	int             width, height;
     	int             scalebits;
@@ -400,8 +398,9 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
      */
     bsize = sizeof(int);
     err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *) &nhisto);
-    if (err)
+    if (err) {
         nhisto = 0;             /* XXX */
+	}
 
     /*
      * scan the image
@@ -413,10 +412,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	TAILQ_INIT(&blist);
 	pass = 	histo_scan_image(hconfig->name, img, ii, hconfig, hconfig->req_matches,
 		&blist);
-	//new = read_cycle();
-	//new -= old;
-	//printf("cycles %08lld \n", new);
-
 
 	i = nhisto;
 	TAILQ_FOREACH(cur_box, &blist, link) {

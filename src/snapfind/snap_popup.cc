@@ -303,19 +303,6 @@ draw_face_func(GtkWidget *widget, void *ptr)
 
 }
 
-static void
-highlight_box_f(RGBImage *img, bbox_t * bbox) 
-{
-	image_fill_bbox_scale(img, bbox, 1, hilitMask, hilit);
-
-	GUI_THREAD_ENTER();
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-				   bbox->min_x, bbox->min_y,
-				   bbox->max_x, bbox->max_y);
-	GUI_THREAD_LEAVE();
-}
-
-
 void *
 image_highlight_main(void *ptr) 
 {
@@ -444,24 +431,6 @@ remove_func(GtkWidget *widget, void *container)
   	gtk_container_remove(GTK_CONTAINER(container), widget);
 }
 
-
-static gboolean
-cb_test_region(GtkWidget *widget, GdkEventButton *event, gpointer ptr) 
-{
-	guint	id;
-	char buf[BUFSIZ];
-
-	GUI_CALLBACK_ENTER();
-
-	sprintf(buf, "mouse click at %.2f, %.2f", event->x, event->y);
-	id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
-						"test region");
-	gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
-
-
-	GUI_CALLBACK_LEAVE();
-	return TRUE;
-}
 
 
 static void
@@ -1256,9 +1225,10 @@ do_img_popup(GtkWidget *widget)
 	/* 
 	 * add widgets to show search results 
 	 */
-	gtk_container_foreach(GTK_CONTAINER(popup_window.face_cb_area), remove_func, 
-			      popup_window.face_cb_area);
-	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area), remove_func, 
+	gtk_container_foreach(GTK_CONTAINER(popup_window.face_cb_area), 
+			remove_func, popup_window.face_cb_area);
+	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area), 
+		remove_func, 
 			      popup_window.histo_cb_area);
 
 	{
