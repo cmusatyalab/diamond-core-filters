@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include "queue.h"
+#include "common_consts.h"
 #include "rgb.h"
 #include "image_tools.h"
 #include "gtk_image_tools.h"
-#include "sf_consts.h"
 #include "img_search.h"
 
 
@@ -303,7 +303,7 @@ example_search::write_config(FILE *ostream, const char *dirname)
 	example_patch_t *		cur_patch;
 	int						i;
 	int						err;
-	char					fname[SNAP_MAX_PATH];
+	char					fname[COMMON_MAX_PATH];
 
 
 	window_search::write_config(ostream, dirname);
@@ -312,8 +312,8 @@ example_search::write_config(FILE *ostream, const char *dirname)
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		err = sprintf(fname, "%s.ex%d.ppm", get_name(), i);
-		if (err >= SNAP_MAX_PATH) {
-			fprintf(stderr, "SNAP_MAX_PATH too short increase to %d \n", err);
+		if (err >= COMMON_MAX_PATH) {
+			fprintf(stderr, "COMMON_MAX_PATH too short increase to %d \n", err);
 			assert(0);
 		}
 

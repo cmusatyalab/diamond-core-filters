@@ -8,7 +8,6 @@
 #include "queue.h"
 #include "rgb.h"
 #include "img_search.h"
-#include "gui_thread.h"
 
 #define	MAX_DISPLAY_NAME	64
 

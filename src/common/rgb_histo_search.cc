@@ -11,7 +11,6 @@
 #include "histo.h"
 #include "image_common.h"
 #include "img_search.h"
-#include "snapfind.h"
 #include "fil_histo.h"
 
 #define	MAX_DISPLAY_NAME	64
