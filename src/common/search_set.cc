@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pthread.h> 
+#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -55,7 +55,7 @@ search_set::search_set()
 {
 	ss_dep_list.erase(ss_dep_list.begin(), ss_dep_list.end());
 	return;
-	
+
 }
 
 search_set::~search_set()
@@ -87,7 +87,7 @@ search_set::add_dep(img_search *dep_search)
 {
 	img_search *check;
 	search_iter_t iter;
-	
+
 	reset_dep_iter(&iter);
 	while((check = get_next_dep(&iter)) != NULL) {
 		if (*dep_search == *check) {
@@ -114,7 +114,7 @@ search_set::clear_deps()
 }
 
 
-                                                                                
+
 void
 search_set::reset_search_iter(search_iter_t *iter)
 {
@@ -154,7 +154,7 @@ search_set::get_next_dep(search_iter_t *iter)
 	}
 	dsearch = **iter;
 	(*iter)++;
-	return(dsearch);	
+	return(dsearch);
 }
 
 int
@@ -214,7 +214,7 @@ char *
 search_set::build_filter_spec(char *tmp_file)
 {
 	char * 		tmp_storage = NULL;
-	FILE *		fspec;	
+	FILE *		fspec;
 	int			err;
 	int         fd;
 	img_search *		srch;
@@ -235,11 +235,11 @@ search_set::build_filter_spec(char *tmp_file)
 	} else {
 		fd = open(tmp_file, O_RDWR|O_CREAT|O_TRUNC, 0666);
 	}
-		
-	if(fd < 0) { 
+
+	if(fd < 0) {
 		perror(tmp_file);
 		free(tmp_storage);
-		return NULL; 
+		return NULL;
 	}
 	fspec = fdopen(fd, "w+");
 	if (fspec == NULL) {
@@ -254,7 +254,7 @@ search_set::build_filter_spec(char *tmp_file)
 	/* we always do rgb, XXX should we ??*/
 	rgb = new rgb_img("RGB image", "RGB image");
 	add_dep(rgb);
-	
+
 	reset_search_iter(&iter);
 	while ((srch = get_next_search(&iter)) != NULL) {
 		if (srch->is_selected()) {
@@ -293,24 +293,24 @@ search_set::build_edit_table()
 	img_search *srch;
 	search_iter_t	iter;
 
-    table = gtk_table_new(get_search_count()+1, 3, FALSE);
+	table = gtk_table_new(get_search_count()+1, 3, FALSE);
 
-    gtk_table_set_row_spacings(GTK_TABLE(table), 2);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 4);
-    gtk_container_set_border_width(GTK_CONTAINER(table), 10);
+	gtk_table_set_row_spacings(GTK_TABLE(table), 2);
+	gtk_table_set_col_spacings(GTK_TABLE(table), 4);
+	gtk_container_set_border_width(GTK_CONTAINER(table), 10);
 
-    widget = gtk_label_new("Predicate");
-    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	widget = gtk_label_new("Predicate");
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
 	gtk_widget_show(widget);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
 
-    widget = gtk_label_new("Description");
-    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	widget = gtk_label_new("Description");
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
 	gtk_widget_show(widget);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
 
-    widget = gtk_label_new("Edit");
-    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	widget = gtk_label_new("Edit");
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
 	gtk_widget_show(widget);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
 
@@ -325,6 +325,6 @@ search_set::build_edit_table()
 		widget = srch->get_edit_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
 	}
-    gtk_widget_show(table);
+	gtk_widget_show(table);
 	return(table);
 }

@@ -60,7 +60,7 @@
 #define	MAX_DISPLAY_NAME	64
 
 vj_face_search::vj_face_search(const char *name, char *descr)
-	: window_search(name, descr)
+		: window_search(name, descr)
 {
 	face_count = 1;
 	start_stage = 0;
@@ -152,7 +152,8 @@ vj_face_search::set_end_level(int new_level)
 		new_level = VJ_FACE_MIN_STAGE;
 	}
 
-	if (new_level > VJ_FACE_MAX_STAGE) { new_level = VJ_FACE_MAX_STAGE;
+	if (new_level > VJ_FACE_MAX_STAGE) {
+		new_level = VJ_FACE_MAX_STAGE;
 	}
 
 	/* XXX deal with case where end start overlap ??? */
@@ -164,8 +165,8 @@ vj_face_search::set_end_level(int new_level)
 int
 vj_face_search::handle_config(config_types_t conf_type, char *data)
 {
-	int	err;	
-	
+	int	err;
+
 	switch (conf_type) {
 		case NUMF_TOK:
 			set_face_count(data);
@@ -204,7 +205,7 @@ vj_face_search::handle_config(config_types_t conf_type, char *data)
 
 static GtkWidget *
 create_slider_entry(char *name, float min, float max, int dec, float initial,
-		float step, GtkObject **adjp)
+                    float step, GtkObject **adjp)
 {
 	GtkWidget *container;
 	GtkWidget *scale;
@@ -228,22 +229,22 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 		*adjp = gtk_adjustment_new(min, min, max, step, 10.0, 10.0);
 	}
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(*adjp), initial);
-	
-	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
-    gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
-    gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
-    gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
-    gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
-    gtk_widget_set_size_request(scale, 120, 0);
 
-  	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
-    gtk_box_pack_start(GTK_BOX(container), button, FALSE, FALSE, 0);
-					
+	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
+	gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
+	gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
+	gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
+	gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
+	gtk_widget_set_size_request(scale, 120, 0);
+
+	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
+	gtk_box_pack_start(GTK_BOX(container), button, FALSE, FALSE, 0);
+
 	gtk_widget_show(container);
 	gtk_widget_show(label);
 	gtk_widget_show(scale);
 	gtk_widget_show(button);
-									
+
 	return(container);
 }
 
@@ -264,7 +265,7 @@ vj_face_search::close_edit_win()
 	/* save any changes from the edit windows */
 	save_edits();
 
-	/* call the parent class to give them change to cleanup */	
+	/* call the parent class to give them change to cleanup */
 	window_search::close_edit_win();
 
 	edit_window = NULL;
@@ -274,8 +275,8 @@ vj_face_search::close_edit_win()
 static void
 edit_search_done_cb(GtkButton *item, gpointer data)
 {
-		GtkWidget * widget = (GtkWidget *)data;
-		gtk_widget_destroy(widget);
+	GtkWidget * widget = (GtkWidget *)data;
+	gtk_widget_destroy(widget);
 }
 
 static void
@@ -320,70 +321,70 @@ vj_face_search::edit_search()
 	gtk_window_set_title(GTK_WINDOW(edit_window), name);
 	//gtk_window_set_default_size(GTK_WINDOW(edit_window), 750, 350);
 	g_signal_connect(G_OBJECT(edit_window), "destroy",
-		  	G_CALLBACK(cb_close_edit_window), this);
+	                 G_CALLBACK(cb_close_edit_window), this);
 	box = gtk_vbox_new(FALSE, 10);
 
-	
+
 	hbox = gtk_hbox_new(FALSE, 10);
-    gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
 
 	widget = gtk_button_new_with_label("Close");
-        g_signal_connect(G_OBJECT(widget), "clicked",
-                     G_CALLBACK(edit_search_done_cb), edit_window);
-        GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
-        gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
+	g_signal_connect(G_OBJECT(widget), "clicked",
+	                 G_CALLBACK(edit_search_done_cb), edit_window);
+	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
+	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
 
 
 	/*
- 	 * Get the controls from the img_search.
+		 * Get the controls from the img_search.
 	 */
 	widget = img_search_display();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
 	/*
-  	 * Create the texture parameters.
+	 	 * Create the texture parameters.
 	 */
 
-    frame = gtk_frame_new("VJ Face Search");
-    container = gtk_vbox_new(FALSE, 10);
-    gtk_container_add(GTK_CONTAINER(frame), container);
-                                                                                
-    widget = create_slider_entry("Number of Faces", 0.0, 20.0, 0,
-        face_count, 1.0, &count_widget);
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	frame = gtk_frame_new("VJ Face Search");
+	container = gtk_vbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(frame), container);
 
-    widget = create_slider_entry("Start Stage", 0.0, 38.0, 0,
-        start_stage, 1.0, &start_widget);
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	widget = create_slider_entry("Number of Faces", 0.0, 20.0, 0,
+	                             face_count, 1.0, &count_widget);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
-    widget = create_slider_entry("End Stage", 0.0, 38.0, 0,
-        end_stage, 1.0, &end_widget);
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	widget = create_slider_entry("Start Stage", 0.0, 38.0, 0,
+	                             start_stage, 1.0, &start_widget);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+	widget = create_slider_entry("End Stage", 0.0, 38.0, 0,
+	                             end_stage, 1.0, &end_widget);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 	face_merge = gtk_check_button_new_with_label("Merge Faces");
 	gtk_box_pack_start(GTK_BOX(container), face_merge, FALSE, TRUE, 0);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(face_merge), do_merge);
- 
-    overlap_widget = create_slider_entry("Overlap Value", 0.0, 1.0, 2,
-        overlap_val, 0.1, &merge_overlap);
-    gtk_box_pack_start(GTK_BOX(container), overlap_widget, FALSE, FALSE, 0);
+
+	overlap_widget = create_slider_entry("Overlap Value", 0.0, 1.0, 2,
+	                                     overlap_val, 0.1, &merge_overlap);
+	gtk_box_pack_start(GTK_BOX(container), overlap_widget, FALSE, FALSE, 0);
 	update_toggle();
 	g_signal_connect(G_OBJECT(face_merge), "toggled", G_CALLBACK(cb_merge_face),
-		(void *)this);
+	                 (void *)this);
 
 
 	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
 
-    gtk_widget_show(container);
+	gtk_widget_show(container);
 
 	/*
 	 * Get the controls from the window search class.
- 	 */ 
+		 */
 	widget = get_window_cntrl();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
 
-	gtk_container_add(GTK_CONTAINER(edit_window), box); 
+	gtk_container_add(GTK_CONTAINER(edit_window), box);
 
 	//gtk_window_set_default_size(GTK_WINDOW(edit_window), 400, 500);
 	gtk_widget_show_all(edit_window);
@@ -419,7 +420,7 @@ vj_face_search::save_edits()
 
 
 
-	/* call the parent class */	
+	/* call the parent class */
 	window_search::save_edits();
 }
 
@@ -434,9 +435,9 @@ vj_face_search::write_fspec(FILE *ostream)
 	img_search *	ss;
 	save_edits();
 	/*
- 	 * First we write the header section that corrspons
- 	 * to the filter, the filter name, the assocaited functions.
- 	 */
+		 * First we write the header section that corrspons
+		 * to the filter, the filter name, the assocaited functions.
+		 */
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
@@ -446,7 +447,7 @@ vj_face_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "INIT_FUNCTION  f_init_vj_detect \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_vj_detect \n");
 	fprintf(ostream, "ARG  %s  # name \n", get_name());
-	
+
 	/*
 	 * Next we write call the parent to write out the releated args,
 	 * not that since the args are passed as a vector of strings
@@ -474,15 +475,15 @@ vj_face_search::write_fspec(FILE *ostream)
 	(this->get_parent())->add_dep(ss);
 
 	if (do_merge) {
-	 	fprintf(ostream, "\n");
-	 	fprintf(ostream, "FILTER  MERGE  # name \n");
-	 	fprintf(ostream, "THRESHOLD  1  # threshold \n");
-	 	fprintf(ostream, "EVAL_FUNCTION f_eval_bbox_merge # eval fn\n");
-	 	fprintf(ostream, "INIT_FUNCTION f_init_bbox_merge # init fn\n");
-	 	fprintf(ostream, "FINI_FUNCTION f_fini_bbox_merge # fini fn\n");
-	 	fprintf(ostream, "REQUIRES  %s  # dependencies \n",get_name() );
-	 	fprintf(ostream, "MERIT  8  # merit value \n");
-	 	fprintf(ostream, "ARG  %f  # overlap val   \n", overlap_val);
+		fprintf(ostream, "\n");
+		fprintf(ostream, "FILTER  MERGE  # name \n");
+		fprintf(ostream, "THRESHOLD  1  # threshold \n");
+		fprintf(ostream, "EVAL_FUNCTION f_eval_bbox_merge # eval fn\n");
+		fprintf(ostream, "INIT_FUNCTION f_init_bbox_merge # init fn\n");
+		fprintf(ostream, "FINI_FUNCTION f_fini_bbox_merge # fini fn\n");
+		fprintf(ostream, "REQUIRES  %s  # dependencies \n",get_name() );
+		fprintf(ostream, "MERIT  8  # merit value \n");
+		fprintf(ostream, "ARG  %f  # overlap val   \n", overlap_val);
 	}
 
 	ss = new rgb_img("RGB image", "RGB image");
@@ -526,7 +527,7 @@ vj_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 
 	/* XXX */
 	init_classifier();
-	
+
 	fconfig.name = strdup(get_name());
 	assert(fconfig.name != NULL);
 
@@ -540,28 +541,28 @@ vj_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 	width = img->width;
 	height = img->height;
 
-	size = sizeof(ii_image_t) + sizeof(uint32_t) * (width + 1) * 
-		(height + 1);
+	size = sizeof(ii_image_t) + sizeof(uint32_t) * (width + 1) *
+	       (height + 1);
 	ii = (ii_image_t *) malloc(size);
 	assert(ii != NULL);
 	ii->nbytes = size;
 	ii->width = width + 1;
 	ii->height = height + 1;
-	
-	size = sizeof(ii2_image_t) + sizeof(float) * (width + 1) * 
-		(height + 1);
+
+	size = sizeof(ii2_image_t) + sizeof(float) * (width + 1) *
+	       (height + 1);
 	ii2 = (ii2_image_t *) malloc(size);
 	assert(ii2 != NULL);
 	ii2->nbytes = size;
 	ii2->width = width + 1;
 	ii2->height = height + 1;
-	
+
 	/* build the integral image */
 	rgb_integrate(img, ii->data, ii2->data, width + 1, height + 1);
-	
+
 	/* scan the image using the set parameters */
 	pass = face_scan_image(ii, ii2, &fconfig, blist, height, width);
-	
+
 	/* free any allocated state */
 	free(ii);
 	free(ii2);

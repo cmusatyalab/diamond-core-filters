@@ -45,7 +45,7 @@
 #include "img_search.h"
 
 window_search::window_search(const char *name, char *descr)
-	: img_search(name, descr)
+		: img_search(name, descr)
 {
 	scale = 1.0;
 	testx = 32;
@@ -199,7 +199,7 @@ window_search::handle_config(config_types_t conf_type, char *data)
 			set_testy(data);
 			err = 0;
 			break;
-	
+
 		case STRIDE_TOK:
 			set_stride(data);
 			err = 0;
@@ -225,17 +225,17 @@ window_search::handle_config(config_types_t conf_type, char *data)
 
 static GtkWidget *
 create_slider_entry(char *name, float min, float max, int dec, float initial,
-		float step, GtkObject **adjp)
+                    float step, GtkObject **adjp)
 {
 	GtkWidget *container;
 	GtkWidget *scale;
 	GtkWidget *button;
 	GtkWidget *label;
-	
 
-	
+
+
 	container = gtk_hbox_new(FALSE, 10);
-	
+
 	label = gtk_label_new(name);
 	gtk_box_pack_start(GTK_BOX(container), label, FALSE, FALSE, 0);
 
@@ -247,22 +247,22 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 		*adjp = gtk_adjustment_new(min, min, max, step, 10.0, 10.0);
 	}
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(*adjp), initial);
-	
-	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
-    gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
-    gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
-    gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
-    gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
-    gtk_widget_set_size_request(scale, 120, 0);
 
-  	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
-    gtk_box_pack_start (GTK_BOX(container), button, FALSE, FALSE, 0);
-					
+	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
+	gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
+	gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
+	gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
+	gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
+	gtk_widget_set_size_request(scale, 120, 0);
+
+	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
+	gtk_box_pack_start (GTK_BOX(container), button, FALSE, FALSE, 0);
+
 	gtk_widget_show(container);
 	gtk_widget_show(label);
 	gtk_widget_show(scale);
 	gtk_widget_show(button);
-									
+
 	return(container);
 }
 
@@ -272,7 +272,7 @@ window_search::close_edit_win()
 
 	/* call parent */
 	img_search::close_edit_win();
-	
+
 }
 
 GtkWidget *
@@ -285,63 +285,63 @@ window_search::get_window_cntrl()
 	//box = gtk_vbox_new(FALSE, 10);
 	frame = gtk_frame_new("Window Search");
 	//gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 10);
-	
+
 	container = gtk_vbox_new(FALSE, 10);
 	gtk_container_add(GTK_CONTAINER(frame), container);
 
-	widget = create_slider_entry("scale", 1.0, 200.0, 2, 
-		scale, 0.25, &scale_adj);
-    	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
-	
+	widget = create_slider_entry("scale", 1.0, 200.0, 2,
+	                             scale, 0.25, &scale_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+
 	widget = create_slider_entry("testx", 1.0, 100.0, 0,
-		testx, 1.0, &testx_adj);
-    	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+	                             testx, 1.0, &testx_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 
 	widget = create_slider_entry("testy", 1.0, 100.0, 0,
-		testy, 1.0, &testy_adj);
-    	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+	                             testy, 1.0, &testy_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 
-	widget = create_slider_entry("stride", 1.0, 100.0, 0, 
-		stride, 1.0, &stride_adj);
-    	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+	widget = create_slider_entry("stride", 1.0, 100.0, 0,
+	                             stride, 1.0, &stride_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 
-	widget = create_slider_entry("Matches", 1.0, 100.0, 0, 
-		num_matches, 1.0, &match_adj);
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+	widget = create_slider_entry("Matches", 1.0, 100.0, 0,
+	                             num_matches, 1.0, &match_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 
 
 	gtk_widget_show(container);
 	gtk_widget_show(frame);
 	//gtk_widget_show(box);
-	
+
 	return (frame);
 }
 
 void
 window_search::save_edits()
 {
-    int     ival;
-    double  dval;
+	int     ival;
+	double  dval;
 
-    /* get the scale value */
-    dval = gtk_adjustment_get_value(GTK_ADJUSTMENT(scale_adj));
-    set_scale(dval);
+	/* get the scale value */
+	dval = gtk_adjustment_get_value(GTK_ADJUSTMENT(scale_adj));
+	set_scale(dval);
 
-    ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(testx_adj));
-    set_testx(ival);
-                                                                                 
-    ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(testy_adj));
-    set_testy(ival);
+	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(testx_adj));
+	set_testx(ival);
 
-    ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(stride_adj));
-    set_stride(ival);
+	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(testy_adj));
+	set_testy(ival);
 
-    ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(match_adj));
-    set_matches(ival);
+	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(stride_adj));
+	set_stride(ival);
 
-    /* XXX look at cleanup issues  */
-                                                                                 
-    /* call the parent class */
+	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(match_adj));
+	set_matches(ival);
+
+	/* XXX look at cleanup issues  */
+
+	/* call the parent class */
 	img_search::save_edits();
 }
 
@@ -372,7 +372,7 @@ window_search::write_config(FILE *ostream, const char *dirname)
 	fprintf(ostream, "STRIDE %d \n", stride);
 	fprintf(ostream, "SCALE %f \n", scale);
 	fprintf(ostream, "MATCHES %d \n", num_matches);
-	
+
 
 }
 

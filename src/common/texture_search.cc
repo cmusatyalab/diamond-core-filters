@@ -52,12 +52,12 @@
 #define	MAX_DISPLAY_NAME	64
 
 texture_search::texture_search(const char *name, char *descr)
-	: example_search(name, descr)
+		: example_search(name, descr)
 {
 	edit_window = NULL;
 	simularity = 0.93;
 	channels = 3;
-	distance_metric = TEXTURE_DIST_PAIRWISE; 
+	distance_metric = TEXTURE_DIST_PAIRWISE;
 }
 
 texture_search::~texture_search()
@@ -109,8 +109,8 @@ texture_search::set_channels(char *data)
 int
 texture_search::handle_config(config_types_t conf_type, char *data)
 {
-	int	err;	
-	
+	int	err;
+
 	switch (conf_type) {
 		case METRIC_TOK:
 			set_simularity(data);
@@ -131,26 +131,26 @@ texture_search::handle_config(config_types_t conf_type, char *data)
 
 
 
-static void 
+static void
 cb_update_menu_select(GtkWidget* item, GtkUpdateType  policy)
 {
-		/* XXXX do something ?? */
-} 
+	/* XXXX do something ?? */
+}
 
 
 static GtkWidget *
 create_slider_entry(char *name, float min, float max, int dec, float initial,
-		float step, GtkObject **adjp)
+                    float step, GtkObject **adjp)
 {
 	GtkWidget *container;
 	GtkWidget *scale;
 	GtkWidget *button;
 	GtkWidget *label;
-	
 
-	
+
+
 	container = gtk_hbox_new(FALSE, 10);
-	
+
 	label = gtk_label_new(name);
 	gtk_box_pack_start(GTK_BOX(container), label, FALSE, FALSE, 0);
 
@@ -165,37 +165,37 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 		*adjp = gtk_adjustment_new(min, min, max, step, 10.0, 10.0);
 	}
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(*adjp), initial);
-	
-	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
-    gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
-    gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
-    gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
-    gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
-    gtk_widget_set_size_request(scale, 120, 0);
 
-  	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
-    gtk_box_pack_start(GTK_BOX(container), button, FALSE, FALSE, 0);
-					
+	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
+	gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
+	gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
+	gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
+	gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
+	gtk_widget_set_size_request(scale, 120, 0);
+
+	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
+	gtk_box_pack_start(GTK_BOX(container), button, FALSE, FALSE, 0);
+
 	gtk_widget_show(container);
 	gtk_widget_show(label);
 	gtk_widget_show(scale);
 	gtk_widget_show(button);
-									
+
 	return(container);
 }
 
 /* XXX redunant, with rgb */
 
 static GtkWidget *
-make_menu_item (gchar* name, GCallback callback, gpointer  data) 
+make_menu_item (gchar* name, GCallback callback, gpointer  data)
 {
-	GtkWidget *item; 
-                                                                               
-	item = gtk_menu_item_new_with_label(name); 
-	g_signal_connect (G_OBJECT (item), "activate", callback, (gpointer) data); 
-	gtk_widget_show(item); 
-                                                                               
-	return item; 
+	GtkWidget *item;
+
+	item = gtk_menu_item_new_with_label(name);
+	g_signal_connect (G_OBJECT (item), "activate", callback, (gpointer) data);
+	gtk_widget_show(item);
+
+	return item;
 }
 
 static void
@@ -215,7 +215,7 @@ texture_search::close_edit_win()
 	/* save any changes from the edit windows */
 	save_edits();
 
-	/* call the parent class to give them change to cleanup */	
+	/* call the parent class to give them change to cleanup */
 	example_search::close_edit_win();
 
 	edit_window = NULL;
@@ -255,46 +255,46 @@ texture_search::edit_search()
 	name[MAX_DISPLAY_NAME -1] = '\0';
 	gtk_window_set_title(GTK_WINDOW(edit_window), name);
 	g_signal_connect(G_OBJECT(edit_window), "destroy",
-		 G_CALLBACK(cb_close_edit_window), this);
+	                 G_CALLBACK(cb_close_edit_window), this);
 	box = gtk_vbox_new(FALSE, 10);
 
-	
+
 	hbox = gtk_hbox_new(FALSE, 10);
-        gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
 
 	widget = gtk_button_new_with_label("Close");
-        g_signal_connect(G_OBJECT(widget), "clicked",
-                     G_CALLBACK(edit_search_done_cb), edit_window);
-        GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
-        gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
+	g_signal_connect(G_OBJECT(widget), "clicked",
+	                 G_CALLBACK(edit_search_done_cb), edit_window);
+	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
+	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
 
 
 	/*
- 	 * Get the controls from the img_search.
+		 * Get the controls from the img_search.
 	 */
 	widget = img_search_display();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
 	/*
-  	 * Create the texture parameters.
+	 	 * Create the texture parameters.
 	 */
 
-    frame = gtk_frame_new("Texture Params");
-    container = gtk_vbox_new(FALSE, 10);
-    gtk_container_add(GTK_CONTAINER(frame), container);
-                                                                                
-    widget = create_slider_entry("Min Simularity", 0.0, 1.0, 2,
-        simularity, 0.05, &sim_adj);
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	frame = gtk_frame_new("Texture Params");
+	container = gtk_vbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(frame), container);
+
+	widget = create_slider_entry("Min Simularity", 0.0, 1.0, 2,
+	                             simularity, 0.05, &sim_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 	hbox = gtk_hbox_new(FALSE, 10);
-    gtk_box_pack_start(GTK_BOX(container), hbox, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(container), hbox, FALSE, TRUE, 0);
 
 	gray_widget = gtk_radio_button_new_with_label(NULL, "Grayscale");
-    gtk_box_pack_start(GTK_BOX(hbox), gray_widget, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), gray_widget, FALSE, TRUE, 0);
 	rgb_widget = gtk_radio_button_new_with_label_from_widget(
-		GTK_RADIO_BUTTON(gray_widget), "Color");
-    gtk_box_pack_start(GTK_BOX(hbox), rgb_widget, FALSE, TRUE, 0);
+	                 GTK_RADIO_BUTTON(gray_widget), "Color");
+	gtk_box_pack_start(GTK_BOX(hbox), rgb_widget, FALSE, TRUE, 0);
 
 	if (channels == 3) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rgb_widget), TRUE);
@@ -308,11 +308,11 @@ texture_search::edit_search()
 
 	/* these must be declared as the order of the enum  */
 	item = gtk_menu_item_new_with_label("Maholonibis");
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item); 
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 	item = gtk_menu_item_new_with_label("Variance");
-	gtk_menu_shell_append(GTK_MENU_SHELL (menu), item); 
+	gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
 	item = gtk_menu_item_new_with_label("Pairwise");
-	gtk_menu_shell_append (GTK_MENU_SHELL(menu), item); 
+	gtk_menu_shell_append (GTK_MENU_SHELL(menu), item);
 
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(distance_menu), menu);
 	gtk_box_pack_start(GTK_BOX(container), distance_menu, FALSE, TRUE, 0);
@@ -324,10 +324,10 @@ texture_search::edit_search()
 
 	opt = gtk_option_menu_new();
 	menu = gtk_menu_new();
- 
+
 	item = make_menu_item("Difference of Gaussians",
-		G_CALLBACK(cb_update_menu_select), GINT_TO_POINTER(0));
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item); 
+	                      G_CALLBACK(cb_update_menu_select), GINT_TO_POINTER(0));
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
 	gtk_option_menu_set_menu(GTK_OPTION_MENU (opt), menu);
 	gtk_box_pack_start(GTK_BOX(container), opt, FALSE, TRUE, 0);
@@ -336,17 +336,17 @@ texture_search::edit_search()
 
 	/*
 	 * Get the controls from the window search class.
- 	 */ 
+		 */
 	widget = get_window_cntrl();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
 	/*
- 	 * Get the controls from the example search class.
+		 * Get the controls from the example search class.
 	 */
 	widget = example_display();
 	gtk_box_pack_start(GTK_BOX(box), widget, TRUE, TRUE, 0);
 
-	gtk_container_add(GTK_CONTAINER(edit_window), box); 
+	gtk_container_add(GTK_CONTAINER(edit_window), box);
 	gtk_widget_show_all(edit_window);
 
 }
@@ -378,10 +378,10 @@ texture_search::save_edits()
 		set_channels(1);
 	}
 
-	distance_metric =  
-		(texture_dist_t)gtk_option_menu_get_history(GTK_OPTION_MENU(distance_menu));
+	distance_metric =
+	    (texture_dist_t)gtk_option_menu_get_history(GTK_OPTION_MENU(distance_menu));
 
-	/* call the parent class */	
+	/* call the parent class */
 	example_search::save_edits();
 }
 
@@ -403,9 +403,9 @@ texture_search::write_fspec(FILE *ostream)
 
 	save_edits();
 	/*
- 	 * First we write the header section that corrspons
- 	 * to the filter, the filter name, the assocaited functions.
- 	 */
+		 * First we write the header section that corrspons
+		 * to the filter, the filter name, the assocaited functions.
+		 */
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
@@ -414,7 +414,7 @@ texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "INIT_FUNCTION  f_init_texture_detect \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_texture_detect \n");
 	fprintf(ostream, "ARG  %s  # name \n", get_name());
-	
+
 	/*
 	 * Next we write call the parent to write out the releated args,
 	 * not that since the args are passed as a vector of strings
@@ -429,16 +429,16 @@ texture_search::write_fspec(FILE *ostream)
 	 * as well as the linearized histograms.
 	 */
 
-	 fprintf(ostream, "ARG  %f  # simularity \n", 0.0);
-	 fprintf(ostream, "ARG  %d  # channels \n", channels);
-	 fprintf(ostream, "ARG  %d  # distance type \n", distance_metric);
-	 fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
+	fprintf(ostream, "ARG  %f  # simularity \n", 0.0);
+	fprintf(ostream, "ARG  %d  # channels \n", channels);
+	fprintf(ostream, "ARG  %d  # distance type \n", distance_metric);
+	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
 
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int j;
 		int neww, newh;
-		if ((cur_patch->patch_image->width < 32) || 
-			(cur_patch->patch_image->height < 32)) {
+		if ((cur_patch->patch_image->width < 32) ||
+		    (cur_patch->patch_image->height < 32)) {
 			continue;
 		}
 
@@ -453,7 +453,7 @@ texture_search::write_fspec(FILE *ostream)
 
 		}
 		rimg = create_rgb_subimage(cur_patch->patch_image,
-			0, 0, neww, newh);
+		                           0, 0, neww, newh);
 
 		if (channels == 1) {
 			img = get_gray_ipl_image(rimg);
@@ -463,23 +463,25 @@ texture_search::write_fspec(FILE *ostream)
 		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U, channels);
 		cvResize(img, scale_img, CV_INTER_LINEAR);
 #ifdef	XXX
-	  	texture_get_lap_pyr_features_from_subimage(img, channels, 0, 0,
-				cur_patch->xsize, cur_patch->ysize, feature_vals);
+
+		texture_get_lap_pyr_features_from_subimage(img, channels, 0, 0,
+		        cur_patch->xsize, cur_patch->ysize, feature_vals);
 #else
-	  	texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
-				32, 32, feature_vals);
+
+		texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
+		        32, 32, feature_vals);
 #endif
 
 		for (j=0; j < (NUM_LAP_PYR_LEVELS*channels); j++) {
-	 		fprintf(ostream, "ARG  %f  # sample %d val %d \n", 
-				feature_vals[j], i, j);
+			fprintf(ostream, "ARG  %f  # sample %d val %d \n",
+			        feature_vals[j], i, j);
 		}
 		i++;	/* count thenumber of samples for debugging */
 	}
-	 fprintf(ostream, "REQUIRES  RGB # dependencies \n");
-	 fprintf(ostream, "MERIT  100 # some relative cost \n");
+	fprintf(ostream, "REQUIRES  RGB # dependencies \n");
+	fprintf(ostream, "MERIT  100 # some relative cost \n");
 
-    	rgb = new rgb_img("RGB image", "RGB image");
+	rgb = new rgb_img("RGB image", "RGB image");
 	(this->get_parent())->add_dep(rgb);
 }
 
@@ -522,7 +524,7 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 
 	targs.box_width = get_testx();
 	targs.box_height = get_testy();
-	targs.step = get_stride(); 
+	targs.step = get_stride();
 	targs.scale = get_scale();
 	targs.min_matches = INT_MAX; 	/* get all bounding boxes */
 	targs.max_distance = (1.0 - simularity);
@@ -540,13 +542,13 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int j;
-		if ((cur_patch->patch_image->width < 32) || 
-			(cur_patch->patch_image->height < 32)) {
+		if ((cur_patch->patch_image->width < 32) ||
+		    (cur_patch->patch_image->height < 32)) {
 			continue;
 		}
-						
+
 		tmp_img = create_rgb_subimage(cur_patch->patch_image,
-			0, 0, 32, 32);
+		                              0, 0, 32, 32);
 		if (channels == 1) {
 			iimg = get_gray_ipl_image(tmp_img);
 		} else {
@@ -556,13 +558,15 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 		cvResize(iimg, scale_img, CV_INTER_LINEAR);
 
 #ifdef	XXX
-	  	texture_get_lap_pyr_features_from_subimage(iimg, channels, 0, 0,
-				cur_patch->xsize, cur_patch->ysize, 
-		   		feature_vals);
+
+		texture_get_lap_pyr_features_from_subimage(iimg, channels, 0, 0,
+		        cur_patch->xsize, cur_patch->ysize,
+		        feature_vals);
 #else
-	  	texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
-				cur_patch->xsize, cur_patch->ysize, 
-		   		feature_vals);
+
+		texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
+		        cur_patch->xsize, cur_patch->ysize,
+		        feature_vals);
 #endif
 
 		/* XXX free iimg */
@@ -589,7 +593,7 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	} else if (distance_metric == TEXTURE_DIST_PAIRWISE)  {
 		pass = texture_test_entire_image_pairwise(iimg, &targs, blist);
 	}
-    
+
 	/* XXX cleanup */
 	return;
 }

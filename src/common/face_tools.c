@@ -79,20 +79,20 @@ double
 image_variance(ii_image_t * iimage, ii2_image_t * iimage_sq,
                dim_t x, dim_t y, dim_t xsiz, dim_t ysiz, double scale)
 {
-    double          m;
-    dim_t           n = (xsiz) * (ysiz);
-    double          mean,
-                    var2,
-                    variance;
+	double          m;
+	dim_t           n = (xsiz) * (ysiz);
+	double          mean,
+	var2,
+	variance;
 
-    assert(xsiz > 0 && ysiz > 0);
-    assert(n > 0);
-    mean = (double) compute_sum(iimage, x, y, xsiz, ysiz) / n;
-    var2 = (double) compute_sum(iimage_sq, x, y, xsiz, ysiz) / n;
-    variance = var2 - mean * mean;
-    m = sqrt(4000.0 / (variance + 10.0));
-    m /= (scale * scale);
-    return m;
+	assert(xsiz > 0 && ysiz > 0);
+	assert(n > 0);
+	mean = (double) compute_sum(iimage, x, y, xsiz, ysiz) / n;
+	var2 = (double) compute_sum(iimage_sq, x, y, xsiz, ysiz) / n;
+	variance = var2 - mean * mean;
+	m = sqrt(4000.0 / (variance + 10.0));
+	m /= (scale * scale);
+	return m;
 }
 
 /*
@@ -102,8 +102,8 @@ image_variance(ii_image_t * iimage, ii2_image_t * iimage_sq,
 
 
 int
-face_scan_image(ii_image_t *ii, ii2_image_t * ii2, fconfig_fdetect_t *fconfig, 
-	bbox_list_t *blist, int height, int width)
+face_scan_image(ii_image_t *ii, ii2_image_t * ii2, fconfig_fdetect_t *fconfig,
+                bbox_list_t *blist, int height, int width)
 {
 
 	/* generate all the possible windows and test them */
@@ -116,23 +116,23 @@ face_scan_image(ii_image_t *ii, ii2_image_t * ii2, fconfig_fdetect_t *fconfig,
 	bbox_t	 *		bbox;
 
 	/*
- 	 * for all scales 
- 	 */
+		 * for all scales 
+		 */
 	xsiz = fconfig->xsize;
 	ysiz = fconfig->ysize;
 
 	for (scale = 1; got_work; scale *= fconfig->scale_mult) {
 		/*
-	 	 * each time we change the scale, readjust the feature table 
-	 	 */
+			 * each time we change the scale, readjust the feature table 
+			 */
 		scale_feature_table(scale);
 		for (x = 1; x + xsiz <= width; x += fconfig->stride) {
 			for (y = 1; y + ysiz <= height; y += fconfig->stride) {
 				img_var = image_variance(ii, ii2, (dim_t) x, (dim_t) y,
-									 (dim_t) xsiz, (dim_t) ysiz, scale);
+				                         (dim_t) xsiz, (dim_t) ysiz, scale);
 
 				if (test_region(ii, fconfig->lev1, fconfig->lev2,
-						(int) x, (int)y, scale, img_var)) { 
+				                (int) x, (int)y, scale, img_var)) {
 
 					bbox = (bbox_t *)malloc(sizeof(*bbox));
 					assert(bbox != NULL);
@@ -158,10 +158,10 @@ int
 opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 {
 	int 		i;
-	CvAvgComp	r1;	
+	CvAvgComp	r1;
 	bbox_t	*	bb;
 	CvMemStorage *	storage = cvCreateMemStorage(0);
-	IplImage *	gray;	
+	IplImage *	gray;
 	CvSeq* 		faces;
 	int			total;
 
@@ -170,9 +170,9 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 	gray = get_gray_ipl_image(rgb);
 
 
-	/* XXX fix args */	
-	faces = cvHaarDetectObjects(gray, fconfig->haar_cascade, storage, 
-		fconfig->scale_mult, fconfig->support, CV_HAAR_DO_CANNY_PRUNING);
+	/* XXX fix args */
+	faces = cvHaarDetectObjects(gray, fconfig->haar_cascade, storage,
+	                            fconfig->scale_mult, fconfig->support, CV_HAAR_DO_CANNY_PRUNING);
 
 
 	/* XXX who cleans up the faces */
@@ -192,7 +192,7 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 
 	total = faces->total;
 	cvReleaseMemStorage(&storage);
-	cvReleaseImage(&gray);		
+	cvReleaseImage(&gray);
 	return(total);
 }
 

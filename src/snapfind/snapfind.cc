@@ -120,31 +120,35 @@ char *read_spec_filename = NULL;
 int do_display = 1;
 
 
-/* XXXX fix this */ 
+/* XXXX fix this */
 GtkWidget *config_table;
 
-typedef struct export_threshold_t {
-  char *name;
-  double distance;
-  int index;			/* index into scapes[] */
-  TAILQ_ENTRY(export_threshold_t) link;
-} export_threshold_t;
+typedef struct export_threshold_t
+{
+	char *name;
+	double distance;
+	int index;			/* index into scapes[] */
+	TAILQ_ENTRY(export_threshold_t) link;
+}
+export_threshold_t;
 
 
 TAILQ_HEAD(export_list_t, export_threshold_t) export_list = TAILQ_HEAD_INITIALIZER(export_list);
 
 
-static struct {
-  GtkWidget *main_window;
-  GtkWidget *min_faces;
-  GtkWidget *face_levels;
-  GtkWidget *start_button;
-  GtkWidget *stop_button;
-  GtkWidget *search_box;
-  GtkWidget *search_widget;
-  GtkWidget *attribute_cb, *attribute_entry;
-  GtkWidget *scapes_tables[2];
-} gui;
+static struct
+{
+	GtkWidget *main_window;
+	GtkWidget *min_faces;
+	GtkWidget *face_levels;
+	GtkWidget *start_button;
+	GtkWidget *stop_button;
+	GtkWidget *search_box;
+	GtkWidget *search_widget;
+	GtkWidget *attribute_cb, *attribute_entry;
+	GtkWidget *scapes_tables[2];
+}
+gui;
 
 
 
@@ -169,27 +173,32 @@ pop_win_t	 popup_window = {NULL, NULL, NULL};
 
 /* some stats for user study */
 
-struct {
-  int total_seen, total_marked;
-} user_measurement = { 0, 0 };
+struct
+{
+	int total_seen, total_marked;
+}
+user_measurement = { 0, 0 };
 
 
 typedef enum {
-	CNTRL_ELEV,
-	CNTRL_WAIT,
-	CNTRL_NEXT,
+    CNTRL_ELEV,
+    CNTRL_WAIT,
+    CNTRL_NEXT,
 } control_ops_t;
 
-typedef	 struct {
+typedef	 struct
+{
 	GtkWidget *	parent_box;
 	GtkWidget *	control_box;
 	GtkWidget *	next_button;
 	GtkWidget *	zbutton;
 	control_ops_t 	cur_op;
 	int	 	zlevel;
-} image_control_t;
+}
+image_control_t;
 
-typedef struct {
+typedef struct
+{
 	GtkWidget *	parent_box;
 	GtkWidget *	info_box1;
 	GtkWidget *	info_box2;
@@ -199,10 +208,11 @@ typedef struct {
 	GtkWidget *	count_label;
 
 	GtkWidget *     qsize_label; /* no real need to save this */
-	GtkWidget *     tobjs_label; /* Total objs being searche */ 
+	GtkWidget *     tobjs_label; /* Total objs being searche */
 	GtkWidget *     sobjs_label; /* Total objects searched */
 	GtkWidget *     dobjs_label; /* Total objects dropped */
-} image_info_t;
+}
+image_info_t;
 
 
 /* XXX */
@@ -233,17 +243,18 @@ static pthread_mutex_t	thumb_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 
-/* 
+/*
  * some prototypes 
  */
 
-extern region_t draw_bounding_box(RGBImage *img, int scale, 
-				  lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
-				  RGBPixel color, RGBPixel mask, char *fmt, int i);
+extern region_t draw_bounding_box(RGBImage *img, int scale,
+	                                  lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
+	                                  RGBPixel color, RGBPixel mask, char *fmt, int i);
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
 
 /* from read_config.l */
-extern int read_search_config(char *fname, search_set *set);
+extern int read_search_config(char *fname, search_set *set
+	                             );
 
 /* from face_search.c */
 extern void drain_ring(ring_data_t *ring);
@@ -251,15 +262,19 @@ extern void drain_ring(ring_data_t *ring);
 
 /* ********************************************************************** */
 
-struct collection_t {
-  char *name;
-  //int id;
-  int active;
+struct collection_t
+{
+	char *name;
+	//int id;
+	int active;
 };
 
-struct collection_t collections[MAX_ALBUMS+1] = {
-  {NULL}
-};
+struct collection_t collections[MAX_ALBUMS+1] =
+    {
+	    {
+		    NULL
+	    }
+    };
 
 
 
@@ -269,23 +284,24 @@ struct collection_t collections[MAX_ALBUMS+1] = {
 /* ********************************************************************** */
 
 
-/* 
+/*
  * make a gtk image from an img
  */
 static GtkWidget *
-make_gimage(RGBImage *img, int dest_width, int dest_height) {
-  GdkPixbuf *pbuf; // *scaled_pbuf;
+make_gimage(RGBImage *img, int dest_width, int dest_height)
+{
+	GdkPixbuf *pbuf; // *scaled_pbuf;
 
 	//fprintf(stderr, "gimage called\n");
 
-	GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 
-	pbuf = gdk_pixbuf_new_from_data((const guchar *)&img->data[0], 
-					GDK_COLORSPACE_RGB, 1, 8, 
-					img->columns, img->rows, 
-					(img->columns*sizeof(RGBPixel)),
-					NULL,
-					NULL);
+	pbuf = gdk_pixbuf_new_from_data((const guchar *)&img->data[0],
+	                                GDK_COLORSPACE_RGB, 1, 8,
+	                                img->columns, img->rows,
+	                                (img->columns*sizeof(RGBPixel)),
+	                                NULL,
+	                                NULL);
 	if (pbuf == NULL) {
 		printf("failed to allocate pbuf\n");
 		exit(1);
@@ -307,7 +323,7 @@ clear_image_info(image_info_t *img_info)
 {
 	char	data[BUFSIZ];
 
-	GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 
 	sprintf(data, "%-60s", " ");
 	gtk_label_set_text(GTK_LABEL(img_info->name_label), data);
@@ -325,7 +341,7 @@ write_image_info(image_info_t *img_info, char *name, int count)
 {
 	char	txt[BUFSIZ];
 
-	GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 
 	sprintf(txt, "%-60s", name);
 	gtk_label_set_text(GTK_LABEL(img_info->name_label), txt);
@@ -344,11 +360,11 @@ void
 disable_image_control(image_control_t *img_cntrl)
 {
 
-	GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 	gtk_widget_set_sensitive(img_cntrl->next_button, FALSE);
 }
 
-	
+
 /*
  * This enables all the buttons in the image control section
  * of the display.  This will be called when there is a new image to 
@@ -358,7 +374,7 @@ static void
 enable_image_control(image_control_t *img_cntrl)
 {
 
-	GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 	gtk_widget_set_sensitive(img_cntrl->next_button, TRUE);
 	gtk_widget_grab_default(img_cntrl->next_button);
 
@@ -367,67 +383,67 @@ enable_image_control(image_control_t *img_cntrl)
 
 
 static void
-get_gid_list(gid_list_t *main_region) 
+get_gid_list(gid_list_t *main_region)
 {
 	int	i;
 	int j;
-	/* 
+	/*
 	 * figure out the args and build message
 	 */
 	for(i=0; i<MAX_ALBUMS && collections[i].name; i++) {
-	  /* if collection active, figure out the gids and add to out list
-	   * allows duplicates XXX */
-	  if(collections[i].active) {
-	    int err;
-	    int num_gids = MAX_ALBUMS;
-	    groupid_t gids[MAX_ALBUMS];
-	    err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
-	    assert(!err);
-		for (j=0; j < num_gids; j++) {
-	      main_region->gids[main_region->ngids++] = gids[j];
+		/* if collection active, figure out the gids and add to out list
+		 * allows duplicates XXX */
+		if(collections[i].active) {
+			int err;
+			int num_gids = MAX_ALBUMS;
+			groupid_t gids[MAX_ALBUMS];
+			err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
+			assert(!err);
+			for (j=0; j < num_gids; j++) {
+				main_region->gids[main_region->ngids++] = gids[j];
+			}
 		}
-	  }
 	}
 }
 
 
 static void
-do_img_mark(GtkWidget *widget) 
+do_img_mark(GtkWidget *widget)
 {
-  thumbnail_t *thumb;
+	thumbnail_t *thumb;
 
-  thumb= (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
+	thumb= (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
 
-  thumb->marked ^= 1;
+	thumb->marked ^= 1;
 
-  /* adjust count */
-  user_measurement.total_marked += (thumb->marked ? 1 : -1);
+	/* adjust count */
+	user_measurement.total_marked += (thumb->marked ? 1 : -1);
 
-  printf("marked count = %d/%d\n", user_measurement.total_marked, 
-	 user_measurement.total_seen);
-  
-  gtk_frame_set_label(GTK_FRAME(thumb->frame),
-		      (thumb->marked) ? "marked" : "");
+	printf("marked count = %d/%d\n", user_measurement.total_marked,
+	       user_measurement.total_seen);
+
+	gtk_frame_set_label(GTK_FRAME(thumb->frame),
+	                    (thumb->marked) ? "marked" : "");
 }
 
 static void
-cb_img_popup(GtkWidget *widget, GdkEventButton *event, gpointer data) 
+cb_img_popup(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
 
-  GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 
-  /* dispatch based on the button pressed */
-  switch(event->button) {
-  case 1:
-    do_img_popup(widget, snap_searchset);
-    break;
-  case 3:
-    do_img_mark(widget);
-  default:
-    break;
-  }
-  
-  GUI_CALLBACK_LEAVE();
+	/* dispatch based on the button pressed */
+	switch(event->button) {
+		case 1:
+			do_img_popup(widget, snap_searchset);
+			break;
+		case 3:
+			do_img_mark(widget);
+		default:
+			break;
+	}
+
+	GUI_CALLBACK_LEAVE();
 }
 
 
@@ -441,7 +457,7 @@ timeout_write_qsize(gpointer label)
 	qsize = pend_obj_cnt;
 	sprintf(txt, "Pending images = %-6d", qsize);
 
-	GUI_THREAD_ENTER(); 
+	GUI_THREAD_ENTER();
 	gtk_label_set_text(GTK_LABEL(label), txt);
 	GUI_THREAD_LEAVE();
 
@@ -457,7 +473,7 @@ timeout_write_tobjs(gpointer label)
 	tobjs = tobj_cnt;
 	sprintf(txt, "Total Objs = %-6d ", tobjs);
 
-	GUI_THREAD_ENTER(); 
+	GUI_THREAD_ENTER();
 	gtk_label_set_text(GTK_LABEL(label), txt);
 	GUI_THREAD_LEAVE();
 	return TRUE;
@@ -472,7 +488,7 @@ timeout_write_sobjs(gpointer label)
 	sobjs = sobj_cnt;
 	sprintf(txt, "Searched Objs = %-6d ", sobjs);
 
-	GUI_THREAD_ENTER(); 
+	GUI_THREAD_ENTER();
 	gtk_label_set_text(GTK_LABEL(label), txt);
 	GUI_THREAD_LEAVE();
 	return TRUE;
@@ -487,7 +503,7 @@ timeout_write_dobjs(gpointer label)
 	dobjs = dobj_cnt;
 	sprintf(txt, "Dropped Objs = %-6d ", dobjs);
 
-	GUI_THREAD_ENTER(); 
+	GUI_THREAD_ENTER();
 	gtk_label_set_text(GTK_LABEL(label), txt);
 	GUI_THREAD_LEAVE();
 	return TRUE;
@@ -524,7 +540,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	bsize = MAX_NAME;
 	err = lf_read_attr(fhandle, ohandle, DISPLAY_NAME, &bsize, name);
 	if(err) {
-	  err = lf_read_attr(fhandle, ohandle, OBJ_PATH, &bsize, name);
+		err = lf_read_attr(fhandle, ohandle, OBJ_PATH, &bsize, name);
 	}
 	if (err) {
 		sprintf(name, "%s", "uknown");
@@ -539,7 +555,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	if (rgbimg == NULL) {
 		//rgbimg = get_attr_rgb_img(ohandle, "DATA0");
 		rgbimg = get_rgb_img(ohandle);
-	}	
+	}
 	assert(rgbimg);
 	assert(rgbimg->width);
 
@@ -547,12 +563,12 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	bsize = sizeof(num_histo);
 	err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
 	if (err) {
-		 num_histo = 0; 
+		num_histo = 0;
 	}
 	bsize = sizeof(num_face);
 	err = lf_read_attr(fhandle, ohandle, NUM_FACE, &bsize, (char *)&num_face);
 	if (err) {
-		 num_face = 0; 
+		num_face = 0;
 	}
 
 
@@ -561,12 +577,12 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	assert(scaledimg);
 
 	for(int i=0; i<num_histo; i++) {
-		draw_bounding_box(scaledimg, scale, fhandle, ohandle, 
-				  green, colorMask, HISTO_BBOX_FMT, i);
+		draw_bounding_box(scaledimg, scale, fhandle, ohandle,
+		                  green, colorMask, HISTO_BBOX_FMT, i);
 	}
 	for(int i=0; i<num_face; i++) {
-		draw_bounding_box(scaledimg, scale, fhandle, ohandle, 
-				  red, colorMask, FACE_BBOX_FMT, i);
+		draw_bounding_box(scaledimg, scale, fhandle, ohandle,
+		                  red, colorMask, FACE_BBOX_FMT, i);
 	}
 
 	user_measurement.total_seen++;
@@ -579,7 +595,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	GtkWidget *image = make_gimage(scaledimg, THUMBSIZE_X, THUMBSIZE_Y);
 	assert(image);
 
-	/* 
+	/*
 	 * update the display
 	 */
 
@@ -589,12 +605,12 @@ display_thumbnail(ls_obj_handle_t ohandle)
 		cur_thumbnail = TAILQ_FIRST(&thumbnails);
 	}
 	if (cur_thumbnail->img) { /* cleanup */
-		gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport), 
-				     cur_thumbnail->gimage);
+		gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport),
+		                     cur_thumbnail->gimage);
 		lf_free_buffer(fhandle, (char *)cur_thumbnail->img); /* XXX */
 		//lf_free_buffer(fhandle, (char *)cur_thumbnail->fullimage); /* XXX */
 		ih_drop_ref(cur_thumbnail->hooks, fhandle);
-		//ls_release_object(fhandle, cur_thumbnail->ohandle);		
+		//ls_release_object(fhandle, cur_thumbnail->ohandle);
 	}
 	gtk_frame_set_label(GTK_FRAME(cur_thumbnail->frame), "");
 	cur_thumbnail->marked = 0;
@@ -635,24 +651,24 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	}
 
 
-}	
+}
 
 
 static void
-clear_thumbnails() 
+clear_thumbnails()
 {
 	clear_image_info(&image_information);
 
 	pthread_mutex_lock(&thumb_mutex);
 	TAILQ_FOREACH(cur_thumbnail, &thumbnails, link) {
 		if (cur_thumbnail->img) { /* cleanup */
-			gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport), 
-					     cur_thumbnail->gimage);
+			gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport),
+			                     cur_thumbnail->gimage);
 			free(cur_thumbnail->img); /* XXX */
 			ih_drop_ref(cur_thumbnail->hooks, fhandle);
 			cur_thumbnail->img = NULL;
 		}
-		
+
 	}
 	cur_thumbnail = NULL;
 	pthread_mutex_unlock(&thumb_mutex);
@@ -669,34 +685,34 @@ display_thread(void *data)
 	while (1) {
 
 		if (do_display) {
-        	pthread_mutex_lock(&ring_mutex);
+			pthread_mutex_lock(&ring_mutex);
 			message = (message_t *)ring_deq(from_search_thread);
 			pthread_mutex_unlock(&ring_mutex);
 
 			if (message != NULL) {
 				switch (message->type) {
-				case NEXT_OBJECT:
-					display_thumbnail((ls_obj_handle_t)message->data);
-					break;
+					case NEXT_OBJECT:
+						display_thumbnail((ls_obj_handle_t)message->data);
+						break;
 
-				case DONE_OBJECTS:
-					/*
-				 	* We are done recieving objects.
-				 	* We need to disable the thread
-				 	* image controls and enable start
-				 	* search button.
-				 	*/
-	
-					free(message);
-					gtk_widget_set_sensitive(gui.start_button, TRUE);
-					gtk_widget_set_sensitive(gui.stop_button, FALSE);
-					display_thread_running = 0;
-					pthread_exit(0);
-					break;
-					
-				default:
-					break;
-	
+					case DONE_OBJECTS:
+						/*
+							* We are done recieving objects.
+							* We need to disable the thread
+							* image controls and enable start
+							* search button.
+							*/
+
+						free(message);
+						gtk_widget_set_sensitive(gui.start_button, TRUE);
+						gtk_widget_set_sensitive(gui.stop_button, FALSE);
+						display_thread_running = 0;
+						pthread_exit(0);
+						break;
+
+					default:
+						break;
+
 				}
 				free(message);
 			}
@@ -743,7 +759,7 @@ stop_search()
 	}
 }
 
-static void 
+static void
 cb_stop_search(GtkButton* item, gpointer data)
 {
 	GUI_CALLBACK_ENTER();
@@ -752,7 +768,7 @@ cb_stop_search(GtkButton* item, gpointer data)
 }
 
 
-static void 
+static void
 cb_start_search(GtkButton* item, gpointer data)
 {
 	message_t *		message;
@@ -770,7 +786,7 @@ cb_start_search(GtkButton* item, gpointer data)
 
 	/* another global, ack!! this should be on the heap XXX */
 	static gid_list_t gid_list;
-  	gid_list.ngids = 0;
+	gid_list.ngids = 0;
 	get_gid_list(&gid_list);
 
 	pthread_mutex_lock(&display_mutex);
@@ -818,55 +834,55 @@ cb_start_search(GtkButton* item, gpointer data)
 
 
 static void
-cb_write_fspec_to_file(GtkWidget *widget, gpointer user_data) 
+cb_write_fspec_to_file(GtkWidget *widget, gpointer user_data)
 {
 	GtkWidget *file_selector = (GtkWidget *)user_data;
-  	const gchar *selected_filename;
-  	char buf[BUFSIZ];
+	const gchar *selected_filename;
+	char buf[BUFSIZ];
 	int	len;
 
-  	GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 
-  	selected_filename = 
-		gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_selector));
- 
-  	len = snprintf(buf, BUFSIZ, "%s", selected_filename);
+	selected_filename =
+	    gtk_file_selection_get_filename(GTK_FILE_SELECTION(file_selector));
+
+	len = snprintf(buf, BUFSIZ, "%s", selected_filename);
 	assert(len < BUFSIZ);
-  	snap_searchset->build_filter_spec(buf);
+	snap_searchset->build_filter_spec(buf);
 
-  	GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_LEAVE();
 }
 
 
 static void
-cb_save_spec_to_filename() 
+cb_save_spec_to_filename()
 {
 	GtkWidget *file_selector;
 
-  	GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 
 	/* Create the selector */
-  	file_selector = gtk_file_selection_new("Filter spec name");
-  	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
+	file_selector = gtk_file_selection_new("Filter spec name");
+	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
 
 
-  	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
-	    "clicked", G_CALLBACK(cb_write_fspec_to_file),
-	    (gpointer)file_selector);
-   			   
-  	/* 
-     * Ensure that the dialog box is destroyed when the user clicks a button. 
-	 * Use swapper here to get the right argument to destroy (YUCK).
-     */
-  	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
-			    "clicked",
-			    G_CALLBACK(gtk_widget_destroy), 
-			    (gpointer)file_selector); 
+	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
+	                 "clicked", G_CALLBACK(cb_write_fspec_to_file),
+	                 (gpointer)file_selector);
+
+	/*
+	  * Ensure that the dialog box is destroyed when the user clicks a button. 
+	* Use swapper here to get the right argument to destroy (YUCK).
+	  */
+	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
+	                         "clicked",
+	                         G_CALLBACK(gtk_widget_destroy),
+	                         (gpointer)file_selector);
 
 	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->cancel_button),
-			    "clicked",
-			    G_CALLBACK (gtk_widget_destroy),
-			    (gpointer) file_selector); 
+	                         "clicked",
+	                         G_CALLBACK (gtk_widget_destroy),
+	                         (gpointer) file_selector);
 
 	/* Display that dialog */
 	gtk_widget_show(file_selector);
@@ -874,7 +890,8 @@ cb_save_spec_to_filename()
 }
 
 static void
-write_search_config(const char *dirname, search_set *set)
+write_search_config(const char *dirname, search_set *set
+                   )
 {
 	struct stat	buf;
 	int			err;
@@ -901,7 +918,7 @@ write_search_config(const char *dirname, search_set *set)
 	} else {
 		/* make sure it is a dir */
 		if (!S_ISDIR(buf.st_mode)) {
-			fprintf(stderr, "%s is not a directory \n", dirname);	
+			fprintf(stderr, "%s is not a directory \n", dirname);
 			assert(0);
 		}
 	}
@@ -927,54 +944,54 @@ update_search_entry(search_set *cur_set)
 	gtk_container_remove(GTK_CONTAINER(search_frame), config_table);
 	config_table = cur_set->build_edit_table();
 	gtk_container_add(GTK_CONTAINER(search_frame), config_table);
-    gtk_widget_show_all(search_frame);
-	
+	gtk_widget_show_all(search_frame);
+
 }
 
 
 static GtkWidget *
 create_search_window()
 {
-    GtkWidget *box2, *box1;
-    GtkWidget *separator;
+	GtkWidget *box2, *box1;
+	GtkWidget *separator;
 
-    GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 
-    box1 = gtk_vbox_new (FALSE, 0);
-    gtk_widget_show (box1);
+	box1 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (box1);
 
-    search_frame = gtk_frame_new("Searches");
+	search_frame = gtk_frame_new("Searches");
 	config_table = snap_searchset->build_edit_table();
 
 	gtk_container_add(GTK_CONTAINER(search_frame), config_table);
-    gtk_box_pack_start(GTK_BOX(box1), search_frame, FALSE, FALSE, 10);
-    gtk_widget_show_all(search_frame);
+	gtk_box_pack_start(GTK_BOX(box1), search_frame, FALSE, FALSE, 10);
+	gtk_widget_show_all(search_frame);
 
-    /* Add the start and stop buttons */
+	/* Add the start and stop buttons */
 
-    box2 = gtk_hbox_new (FALSE, 10);
-    gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
-    gtk_box_pack_end (GTK_BOX (box1), box2, FALSE, FALSE, 0);
-    gtk_widget_show (box2);
+	box2 = gtk_hbox_new (FALSE, 10);
+	gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
+	gtk_box_pack_end (GTK_BOX (box1), box2, FALSE, FALSE, 0);
+	gtk_widget_show (box2);
 
-    gui.start_button = gtk_button_new_with_label ("Start");
-    g_signal_connect_swapped (G_OBJECT (gui.start_button), "clicked",
-		    	     G_CALLBACK(cb_start_search), NULL);
-    gtk_box_pack_start (GTK_BOX (box2), gui.start_button, TRUE, TRUE, 0);
-    GTK_WIDGET_SET_FLAGS (gui.start_button, GTK_CAN_DEFAULT);
-    gtk_widget_show (gui.start_button);
+	gui.start_button = gtk_button_new_with_label ("Start");
+	g_signal_connect_swapped (G_OBJECT (gui.start_button), "clicked",
+	                          G_CALLBACK(cb_start_search), NULL);
+	gtk_box_pack_start (GTK_BOX (box2), gui.start_button, TRUE, TRUE, 0);
+	GTK_WIDGET_SET_FLAGS (gui.start_button, GTK_CAN_DEFAULT);
+	gtk_widget_show (gui.start_button);
 
-    gui.stop_button = gtk_button_new_with_label ("Stop");
-    g_signal_connect_swapped (G_OBJECT (gui.stop_button), "clicked",
-		    	     G_CALLBACK(cb_stop_search), NULL);
-    gtk_box_pack_start (GTK_BOX (box2), gui.stop_button, TRUE, TRUE, 0);
-    GTK_WIDGET_SET_FLAGS (gui.stop_button, GTK_CAN_DEFAULT);
-    gtk_widget_set_sensitive(gui.stop_button, FALSE);
-    gtk_widget_show (gui.stop_button);
+	gui.stop_button = gtk_button_new_with_label ("Stop");
+	g_signal_connect_swapped (G_OBJECT (gui.stop_button), "clicked",
+	                          G_CALLBACK(cb_stop_search), NULL);
+	gtk_box_pack_start (GTK_BOX (box2), gui.stop_button, TRUE, TRUE, 0);
+	GTK_WIDGET_SET_FLAGS (gui.stop_button, GTK_CAN_DEFAULT);
+	gtk_widget_set_sensitive(gui.stop_button, FALSE);
+	gtk_widget_show (gui.stop_button);
 
-    separator = gtk_hseparator_new ();
-    gtk_box_pack_end (GTK_BOX (box1), separator, FALSE, FALSE, 0);
-    gtk_widget_show (separator);
+	separator = gtk_hseparator_new ();
+	gtk_box_pack_end (GTK_BOX (box1), separator, FALSE, FALSE, 0);
+	gtk_widget_show (separator);
 
 	/* register callback function to get notified when search set changes */
 	snap_searchset->register_update_fn(update_search_entry);
@@ -984,7 +1001,7 @@ create_search_window()
 
 
 static void
-cb_import_search_from_dir(GtkWidget *widget, gpointer user_data) 
+cb_import_search_from_dir(GtkWidget *widget, gpointer user_data)
 {
 	GtkWidget *file_selector = (GtkWidget *)user_data;
 	const gchar *dirname;
@@ -1008,23 +1025,23 @@ cb_import_search_from_dir(GtkWidget *widget, gpointer user_data)
 	/* XXXX cleanup all the old searches first */
 
 	read_search_config(buf, snap_searchset);
-	
+
 	err = chdir(olddir);
 	assert(err == 0);
 	free(olddir);
 
 	stop_search();
 	gtk_widget_destroy(gui.search_widget);
-    gui.search_widget = create_search_window();
-    gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
-		FALSE, FALSE, 10);
+	gui.search_widget = create_search_window();
+	gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget,
+	                    FALSE, FALSE, 10);
 
 done:
 	GUI_CALLBACK_LEAVE();
 }
 
 static void
-cb_load_search_from_dir(GtkWidget *widget, gpointer user_data) 
+cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 {
 	GtkWidget *file_selector = (GtkWidget *)user_data;
 	const gchar *dirname;
@@ -1047,16 +1064,16 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 
 	/* XXXX cleanup all the old searches first */
 	read_search_config(buf, snap_searchset);
-	
+
 	err = chdir(olddir);
 	assert(err == 0);
 	free(olddir);
 
 	stop_search();
 	gtk_widget_destroy(gui.search_widget);
-    gui.search_widget = create_search_window();
-    gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
-		FALSE, FALSE, 10);
+	gui.search_widget = create_search_window();
+	gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget,
+	                    FALSE, FALSE, 10);
 
 done:
 	GUI_CALLBACK_LEAVE();
@@ -1064,7 +1081,7 @@ done:
 }
 
 static void
-cb_save_search_dir(GtkWidget *widget, gpointer user_data) 
+cb_save_search_dir(GtkWidget *widget, gpointer user_data)
 {
 	GtkWidget *file_selector = (GtkWidget *)user_data;
 	const gchar *dirname;
@@ -1080,42 +1097,42 @@ cb_save_search_dir(GtkWidget *widget, gpointer user_data)
 	write_search_config(dirname, snap_searchset);
 
 	gtk_widget_destroy(gui.search_widget);
-    gui.search_widget = create_search_window();
-    gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
-		FALSE, FALSE, 10);
+	gui.search_widget = create_search_window();
+	gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget,
+	                    FALSE, FALSE, 10);
 
 	GUI_CALLBACK_LEAVE();
 }
 
 
 static void
-cb_load_search() 
+cb_load_search()
 {
 	GtkWidget *file_selector;
 
-  	GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 
 	/* Create the selector */
-  	file_selector = gtk_file_selection_new("Dir name for search");
-  	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
+	file_selector = gtk_file_selection_new("Dir name for search");
+	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
 
-  	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
-	    "clicked", G_CALLBACK(cb_load_search_from_dir),
-	    (gpointer) file_selector);
-   			   
-  	/* 
-     * Ensure that the dialog box is destroyed when the user clicks a button. 
-	 * Use swapper here to get the right argument to destroy (YUCK).
-     */
-  	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
-			    "clicked",
-			    G_CALLBACK(gtk_widget_destroy), 
-			    (gpointer) file_selector); 
+	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
+	                 "clicked", G_CALLBACK(cb_load_search_from_dir),
+	                 (gpointer) file_selector);
+
+	/*
+	  * Ensure that the dialog box is destroyed when the user clicks a button. 
+	* Use swapper here to get the right argument to destroy (YUCK).
+	  */
+	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
+	                         "clicked",
+	                         G_CALLBACK(gtk_widget_destroy),
+	                         (gpointer) file_selector);
 
 	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->cancel_button),
-			    "clicked",
-			    G_CALLBACK (gtk_widget_destroy),
-			    (gpointer) file_selector); 
+	                         "clicked",
+	                         G_CALLBACK (gtk_widget_destroy),
+	                         (gpointer) file_selector);
 
 	/* Display that dialog */
 	gtk_widget_show (file_selector);
@@ -1124,33 +1141,33 @@ cb_load_search()
 }
 
 static void
-cb_import_search() 
+cb_import_search()
 {
 	GtkWidget *file_selector;
 
-  	GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 
 	/* Create the selector */
-  	file_selector = gtk_file_selection_new("Dir name for search");
-  	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
+	file_selector = gtk_file_selection_new("Dir name for search");
+	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
 
-  	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
-	    "clicked", G_CALLBACK(cb_import_search_from_dir),
-	    (gpointer)file_selector);
-   			   
-  	/* 
-     * Ensure that the dialog box is destroyed when the user clicks a button. 
-	 * Use swapper here to get the right argument to destroy (YUCK).
-     */
-  	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
-			    "clicked",
-			    G_CALLBACK(gtk_widget_destroy), 
-			    (gpointer)file_selector); 
+	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
+	                 "clicked", G_CALLBACK(cb_import_search_from_dir),
+	                 (gpointer)file_selector);
+
+	/*
+	  * Ensure that the dialog box is destroyed when the user clicks a button. 
+	* Use swapper here to get the right argument to destroy (YUCK).
+	  */
+	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
+	                         "clicked",
+	                         G_CALLBACK(gtk_widget_destroy),
+	                         (gpointer)file_selector);
 
 	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->cancel_button),
-			    "clicked",
-			    G_CALLBACK (gtk_widget_destroy),
-			    (gpointer) file_selector); 
+	                         "clicked",
+	                         G_CALLBACK (gtk_widget_destroy),
+	                         (gpointer) file_selector);
 
 	/* Display that dialog */
 	gtk_widget_show(file_selector);
@@ -1158,34 +1175,34 @@ cb_import_search()
 }
 
 static void
-cb_save_search_as() 
+cb_save_search_as()
 {
 	GtkWidget *file_selector;
 
-  	GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 	printf("Save search \n");
 
 	/* Create the selector */
-  	file_selector = gtk_file_selection_new("Save Directory:");
-  	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
+	file_selector = gtk_file_selection_new("Save Directory:");
+	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
 
-  	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
-		    "clicked", G_CALLBACK(cb_save_search_dir),
-		    (gpointer) file_selector);
+	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
+	                 "clicked", G_CALLBACK(cb_save_search_dir),
+	                 (gpointer) file_selector);
 
-  	/* 
-     * Ensure that the dialog box is destroyed when the user clicks a button. 
-	 * Use swapper here to get the right argument to destroy (YUCK).
-     */
-  	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
-			    "clicked",
-			    G_CALLBACK(gtk_widget_destroy), 
-			    (gpointer) file_selector); 
+	/*
+	  * Ensure that the dialog box is destroyed when the user clicks a button. 
+	* Use swapper here to get the right argument to destroy (YUCK).
+	  */
+	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
+	                         "clicked",
+	                         G_CALLBACK(gtk_widget_destroy),
+	                         (gpointer) file_selector);
 
 	g_signal_connect_swapped(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->cancel_button),
-			    "clicked",
-			    G_CALLBACK (gtk_widget_destroy),
-			    (gpointer) file_selector); 
+	                         "clicked",
+	                         G_CALLBACK (gtk_widget_destroy),
+	                         (gpointer) file_selector);
 
 	/* Display that dialog */
 	gtk_widget_show (file_selector);
@@ -1197,34 +1214,34 @@ cb_save_search_as()
 /* For the check button */
 static void
 cb_toggle_stats( gpointer   callback_data,
-		 guint      callback_action,
-		 GtkWidget *menu_item )
+                 guint      callback_action,
+                 GtkWidget *menu_item )
 {
-    GUI_CALLBACK_ENTER();
-    toggle_stats_win(shandle, expert_mode);
-    GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_ENTER();
+	toggle_stats_win(shandle, expert_mode);
+	GUI_CALLBACK_LEAVE();
 }
 
 /* For the check button */
 static void
 cb_toggle_progress(gpointer   callback_data,
-		 guint      callback_action,
-		 GtkWidget *menu_item )
+                   guint      callback_action,
+                   GtkWidget *menu_item )
 {
-    GUI_CALLBACK_ENTER();
-    toggle_progress_win(shandle, expert_mode);
-    GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_ENTER();
+	toggle_progress_win(shandle, expert_mode);
+	GUI_CALLBACK_LEAVE();
 }
 
 
 static void
 cb_toggle_ccontrol(gpointer   callback_data,
-		 guint      callback_action,
-		 GtkWidget *menu_item )
+                   guint      callback_action,
+                   GtkWidget *menu_item )
 {
-    GUI_CALLBACK_ENTER();
-    toggle_ccontrol_win(shandle, expert_mode);
-    GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_ENTER();
+	toggle_ccontrol_win(shandle, expert_mode);
+	GUI_CALLBACK_LEAVE();
 }
 
 
@@ -1232,12 +1249,12 @@ cb_toggle_ccontrol(gpointer   callback_data,
 /* For the check button */
 static void
 cb_toggle_dump_attributes( gpointer   callback_data,
-			   guint      callback_action,
-			   GtkWidget *menu_item )
+                           guint      callback_action,
+                           GtkWidget *menu_item )
 {
-    GUI_CALLBACK_ENTER();
-    dump_attributes = GTK_CHECK_MENU_ITEM (menu_item)->active;
-    GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_ENTER();
+	dump_attributes = GTK_CHECK_MENU_ITEM (menu_item)->active;
+	GUI_CALLBACK_LEAVE();
 }
 
 
@@ -1252,7 +1269,7 @@ create_image_info(GtkWidget *container_box, image_info_t *img_info)
 
 	char		data[BUFSIZ];
 
-	GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 
 	/*
 	 * Now create another region that has the controls
@@ -1261,32 +1278,32 @@ create_image_info(GtkWidget *container_box, image_info_t *img_info)
 
 	img_info->parent_box = container_box;
 	img_info->info_box1 = gtk_hbox_new (FALSE, 0);
-    	gtk_container_set_border_width(GTK_CONTAINER(img_info->info_box1), 10);
+	gtk_container_set_border_width(GTK_CONTAINER(img_info->info_box1), 10);
 
 	GtkWidget *frame;
 	frame = gtk_frame_new("Image Info");
 	gtk_container_add(GTK_CONTAINER(frame), img_info->info_box1);
-    	gtk_widget_show(frame);
+	gtk_widget_show(frame);
 
-    	gtk_box_pack_start(GTK_BOX(img_info->parent_box), 
-			frame, TRUE, TRUE, 0);
-    	gtk_widget_show(img_info->info_box1);
+	gtk_box_pack_start(GTK_BOX(img_info->parent_box),
+	                   frame, TRUE, TRUE, 0);
+	gtk_widget_show(img_info->info_box1);
 
 
-	/* 
+	/*
 	 * image name
 	 */
 	img_info->name_tag = gtk_label_new("Name:");
-    	gtk_box_pack_start (GTK_BOX(img_info->info_box1), 
-			img_info->name_tag, FALSE, FALSE, 0);
-    	gtk_widget_show(img_info->name_tag);
+	gtk_box_pack_start (GTK_BOX(img_info->info_box1),
+	                    img_info->name_tag, FALSE, FALSE, 0);
+	gtk_widget_show(img_info->name_tag);
 
 
 	sprintf(data, "%-60s:", " ");
 	img_info->name_label = gtk_label_new(data);
-    	gtk_box_pack_start (GTK_BOX(img_info->info_box1), 
-			img_info->name_label, TRUE, TRUE, 0);
-    	gtk_widget_show(img_info->name_label);
+	gtk_box_pack_start (GTK_BOX(img_info->info_box1),
+	                    img_info->name_label, TRUE, TRUE, 0);
+	gtk_widget_show(img_info->name_label);
 
 	/*
 	 * Place holder and blank spot for the number of bounding
@@ -1294,27 +1311,27 @@ create_image_info(GtkWidget *container_box, image_info_t *img_info)
 	 */
 	sprintf(data, "%-3s", " ");
 	img_info->count_label = gtk_label_new(data);
-    	gtk_box_pack_end (GTK_BOX(img_info->info_box1), 
-			img_info->count_label, FALSE, FALSE, 0);
-    	gtk_widget_show(img_info->count_label);
+	gtk_box_pack_end (GTK_BOX(img_info->info_box1),
+	                  img_info->count_label, FALSE, FALSE, 0);
+	gtk_widget_show(img_info->count_label);
 
 	img_info->count_tag = gtk_label_new("Num Scenes:");
-    	gtk_box_pack_end(GTK_BOX(img_info->info_box1), 
-			img_info->count_tag, FALSE, FALSE, 0);
-    	gtk_widget_show(img_info->count_tag);
+	gtk_box_pack_end(GTK_BOX(img_info->info_box1),
+	                 img_info->count_tag, FALSE, FALSE, 0);
+	gtk_widget_show(img_info->count_tag);
 }
 
 
-static void 
+static void
 cb_next_image(GtkButton* item, gpointer data)
 {
 	GUI_CALLBACK_ENTER();
 	image_controls.zlevel = gtk_spin_button_get_value_as_int(
-			GTK_SPIN_BUTTON(image_controls.zbutton));
+	                            GTK_SPIN_BUTTON(image_controls.zbutton));
 	clear_thumbnails();
 	GUI_CALLBACK_LEAVE(); /* need to put this here instead of at
-				 end because signal wakes up another
-				 thread immediately... */
+										 end because signal wakes up another
+										 thread immediately... */
 
 	pthread_mutex_lock(&display_mutex);
 	image_controls.cur_op = CNTRL_NEXT;
@@ -1325,7 +1342,7 @@ cb_next_image(GtkButton* item, gpointer data)
 
 
 static void
-cb_img_info(GtkWidget *widget, gpointer data) 
+cb_img_info(GtkWidget *widget, gpointer data)
 {
 	thumbnail_t *thumb;
 
@@ -1347,12 +1364,12 @@ cb_img_info(GtkWidget *widget, gpointer data)
 
 static void
 create_image_control(GtkWidget *container_box,
-		     image_info_t *img_info,
-		     image_control_t *img_cntrl)
+                     image_info_t *img_info,
+                     image_control_t *img_cntrl)
 {
 	GtkObject *adj;
 
-	GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 
 	/*
 	 * Now create another region that has the controls
@@ -1362,47 +1379,47 @@ create_image_control(GtkWidget *container_box,
 	img_cntrl->parent_box = container_box;
 	img_cntrl->control_box = gtk_hbox_new (FALSE, 10);
 	gtk_container_set_border_width(GTK_CONTAINER(img_cntrl->control_box), 0);
-	gtk_box_pack_start(GTK_BOX(img_cntrl->parent_box), 
-			img_cntrl->control_box, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(img_cntrl->parent_box),
+	                   img_cntrl->control_box, FALSE, FALSE, 0);
 	gtk_widget_show(img_cntrl->control_box);
 
 	img_cntrl->next_button = gtk_button_new_with_label ("Next");
-	g_signal_connect_swapped(G_OBJECT(img_cntrl->next_button), 
-			"clicked", G_CALLBACK(cb_next_image), NULL);
-	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box), 
-			img_cntrl->next_button, FALSE, FALSE, 0);
+	g_signal_connect_swapped(G_OBJECT(img_cntrl->next_button),
+	                         "clicked", G_CALLBACK(cb_next_image), NULL);
+	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box),
+	                 img_cntrl->next_button, FALSE, FALSE, 0);
 	GTK_WIDGET_SET_FLAGS (img_cntrl->next_button, GTK_CAN_DEFAULT);
 	gtk_widget_show(img_cntrl->next_button);
 
 	img_info->qsize_label = gtk_label_new ("");
-	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box), 
-			img_info->qsize_label, FALSE, FALSE, 0);
+	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box),
+	                 img_info->qsize_label, FALSE, FALSE, 0);
 	gtk_widget_show(img_info->qsize_label);
 	gtk_timeout_add(500 /* ms */, timeout_write_qsize, img_info->qsize_label);
 
 	img_info->tobjs_label = gtk_label_new ("");
-	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
-			img_info->tobjs_label, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box),
+	                   img_info->tobjs_label, FALSE, FALSE, 0);
 	gtk_widget_show(img_info->tobjs_label);
 	gtk_timeout_add(500 /* ms */, timeout_write_tobjs, img_info->tobjs_label);
 
 	img_info->sobjs_label = gtk_label_new ("");
-	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
-			img_info->sobjs_label, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box),
+	                   img_info->sobjs_label, FALSE, FALSE, 0);
 	gtk_widget_show(img_info->sobjs_label);
 	gtk_timeout_add(500 /* ms */, timeout_write_sobjs, img_info->sobjs_label);
 
 	img_info->dobjs_label = gtk_label_new ("");
-	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box), 
-			img_info->dobjs_label, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box),
+	                   img_info->dobjs_label, FALSE, FALSE, 0);
 	gtk_widget_show(img_info->dobjs_label);
 	gtk_timeout_add(500 /* ms */, timeout_write_dobjs, img_info->dobjs_label);
 
 	adj = gtk_adjustment_new(2.0, 1.0, 10.0, 1.0, 1.0, 1.0);
 	img_cntrl->zlevel = 2;
 	img_cntrl->zbutton = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 0);
-	gtk_box_pack_start (GTK_BOX(img_cntrl->control_box),img_cntrl->zbutton, 
-			FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX(img_cntrl->control_box),img_cntrl->zbutton,
+	                    FALSE, FALSE, 0);
 	//gtk_widget_show(img_cntrl->zbutton);
 
 
@@ -1418,49 +1435,49 @@ create_display_region(GtkWidget *main_box)
 {
 
 	GtkWidget *	box2;
- 	GtkWidget *	separator;
+	GtkWidget *	separator;
 	GtkWidget *	x;
 
-	GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 
 	/*
 	 * Create a box that holds the following sub-regions.
 	 */
-    	x = gtk_hbox_new(FALSE, 0);
-    	gtk_container_set_border_width(GTK_CONTAINER(x), 10);
-    	gtk_box_pack_start(GTK_BOX(main_box), x, TRUE, TRUE, 0);
-    	gtk_widget_show(x);
+	x = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(x), 10);
+	gtk_box_pack_start(GTK_BOX(main_box), x, TRUE, TRUE, 0);
+	gtk_widget_show(x);
 
 	GtkWidget *result_box;
-    	result_box = gtk_vbox_new(FALSE, 10);
-    	gtk_container_set_border_width(GTK_CONTAINER(result_box), 0);
-    	gtk_box_pack_start(GTK_BOX(x), result_box, TRUE, TRUE, 0);
-    	gtk_widget_show(result_box);
+	result_box = gtk_vbox_new(FALSE, 10);
+	gtk_container_set_border_width(GTK_CONTAINER(result_box), 0);
+	gtk_box_pack_start(GTK_BOX(x), result_box, TRUE, TRUE, 0);
+	gtk_widget_show(result_box);
 
 	/* create the image information area */
 	create_image_info(result_box, &image_information);
 
-    	separator = gtk_hseparator_new ();
-    	gtk_box_pack_start (GTK_BOX(result_box), separator, FALSE, FALSE, 0);
-    	gtk_widget_show (separator);
+	separator = gtk_hseparator_new ();
+	gtk_box_pack_start (GTK_BOX(result_box), separator, FALSE, FALSE, 0);
+	gtk_widget_show (separator);
 
 	/*
 	 * Create the region that will hold the current results
 	 * being displayed.
 	 */
-    	box2 = gtk_vbox_new(FALSE, 10);
-    	gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
-    	gtk_box_pack_start (GTK_BOX (result_box), box2, TRUE, TRUE, 0);
-    	gtk_widget_show(box2);
+	box2 = gtk_vbox_new(FALSE, 10);
+	gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
+	gtk_box_pack_start (GTK_BOX (result_box), box2, TRUE, TRUE, 0);
+	gtk_widget_show(box2);
 
 
-/* 	image_window = gtk_scrolled_window_new(NULL, NULL); */
-/*     	gtk_box_pack_start(GTK_BOX (box2), image_window, TRUE, TRUE, 0); */
-/*     	gtk_widget_show(image_window); */
+	/* 	image_window = gtk_scrolled_window_new(NULL, NULL); */
+	/*     	gtk_box_pack_start(GTK_BOX (box2), image_window, TRUE, TRUE, 0); */
+	/*     	gtk_widget_show(image_window); */
 
-/* 	image_view = gtk_viewport_new(NULL, NULL); */
-/* 	gtk_container_add(GTK_CONTAINER(image_window), image_view); */
-/*     	gtk_widget_show(image_view); */
+	/* 	image_view = gtk_viewport_new(NULL, NULL); */
+	/* 	gtk_container_add(GTK_CONTAINER(image_window), image_view); */
+	/*     	gtk_widget_show(image_view); */
 
 	GtkWidget *thumbnail_view;
 	thumbnail_view = gtk_table_new(TABLE_ROWS, TABLE_COLS, TRUE);
@@ -1471,7 +1488,7 @@ create_display_region(GtkWidget *main_box)
 			GtkWidget *frame;
 
 			eb = gtk_event_box_new();
-			
+
 			frame = gtk_frame_new(NULL);
 			gtk_frame_set_label(GTK_FRAME(frame), "");
 			gtk_container_add(GTK_CONTAINER(eb), frame);
@@ -1481,7 +1498,7 @@ create_display_region(GtkWidget *main_box)
 			gtk_widget_set_size_request(widget, THUMBSIZE_X, THUMBSIZE_Y);
 			gtk_container_add(GTK_CONTAINER(frame), widget);
 			gtk_table_attach_defaults(GTK_TABLE(thumbnail_view), eb,
-						  j, j+1, i, i+1);
+			                          j, j+1, i, i+1);
 			gtk_widget_show(widget);
 			gtk_widget_show(eb);
 
@@ -1503,16 +1520,16 @@ create_display_region(GtkWidget *main_box)
 			 * instead */
 			gtk_object_set_user_data(GTK_OBJECT(eb), thumb);
 			gtk_signal_connect(GTK_OBJECT(eb),
-					   "enter-notify-event",
-					   GTK_SIGNAL_FUNC(cb_img_info),
-					   (gpointer)thumb);
+			                   "enter-notify-event",
+			                   GTK_SIGNAL_FUNC(cb_img_info),
+			                   (gpointer)thumb);
 			gtk_signal_connect(GTK_OBJECT(eb),
-					   "button-press-event",
-					   GTK_SIGNAL_FUNC(cb_img_popup),
-					   (gpointer)thumb);
+			                   "button-press-event",
+			                   GTK_SIGNAL_FUNC(cb_img_popup),
+			                   (gpointer)thumb);
 		}
 	}
-    gtk_widget_show(thumbnail_view);
+	gtk_widget_show(thumbnail_view);
 
 
 	/* create the image control area */
@@ -1525,22 +1542,23 @@ create_display_region(GtkWidget *main_box)
 
 
 static void
-cb_quit() {
-	printf("MARKED: %d of %d seen\n", user_measurement.total_marked, 
-		 user_measurement.total_seen);
+cb_quit()
+{
+	printf("MARKED: %d of %d seen\n", user_measurement.total_marked,
+	       user_measurement.total_seen);
 	gtk_main_quit();
 }
 
 
 static void
-cb_import(GtkWidget *widget, gpointer user_data) 
+cb_import(GtkWidget *widget, gpointer user_data)
 {
 	open_import_window(snap_searchset);
 }
 
 
 static void
-cb_create(GtkWidget *widget, gpointer user_data) 
+cb_create(GtkWidget *widget, gpointer user_data)
 {
 	GtkWidget 	*hbox;
 	GtkWidget 	*vbox;
@@ -1559,25 +1577,25 @@ cb_create(GtkWidget *widget, gpointer user_data)
 
 	/* get the search name from the user */
 	dialog = gtk_dialog_new_with_buttons("Search Name",
-                                GTK_WINDOW(popup_window.window),
-				GTK_DIALOG_DESTROY_WITH_PARENT,
-                                GTK_STOCK_OK, GTK_RESPONSE_OK, 
-				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
+	                                     GTK_WINDOW(popup_window.window),
+	                                     GTK_DIALOG_DESTROY_WITH_PARENT,
+	                                     GTK_STOCK_OK, GTK_RESPONSE_OK,
+	                                     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
 
 	vbox = gtk_vbox_new(FALSE, 10);
 	helplabel = gtk_label_new("Please enter name of search");
 	gtk_box_pack_start(GTK_BOX(vbox), helplabel, TRUE, FALSE, 0);
-	
-	
+
+
 	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, FALSE, 0);
 
 	label = gtk_label_new("Search Name");
 	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, FALSE, 0);
-	
+
 	entry = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, FALSE, 0);
-	
+
 	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), vbox);
 
 redo:
@@ -1590,18 +1608,18 @@ redo:
 	} else {
 		/* get the name from the box and do some error checking on it */
 		new_name = gtk_entry_get_text(GTK_ENTRY(entry));
-	
+
 		/* if name is null, then redo */
 		if (strlen(new_name) == 0) {
 			gtk_label_set_text(GTK_LABEL(helplabel),
-				"No name: please enter search name");
-			goto redo;		
+			                   "No name: please enter search name");
+			goto redo;
 		}
 		/* Make sure there are not spaces */
 		for (i=0; i < strlen(new_name); i++) {
 			if (new_name[i] == ' ') {
 				gtk_label_set_text(GTK_LABEL(helplabel),
-					"Name has spaces: please changes");
+				                   "Name has spaces: please changes");
 				goto redo;
 			}
 		}
@@ -1609,17 +1627,17 @@ redo:
 		/* check for name conflicts */
 		if (search_exists(new_name, snap_searchset)) {
 			gtk_label_set_text(GTK_LABEL(helplabel),
-					"Name exists: Please change");
+			                   "Name exists: Please change");
 			goto redo;
 		}
 
 		ssearch = create_search(stype, new_name);
-		assert(ssearch != NULL);	
+		assert(ssearch != NULL);
 
 		/* add to the list of searches */
 		snap_searchset->add_search(ssearch);
 
-		/* popup the new search edit box */	
+		/* popup the new search edit box */
 		ssearch->edit_search();
 	}
 	gtk_widget_destroy(dialog);
@@ -1631,49 +1649,49 @@ redo:
 /* Our menu, an array of GtkItemFactoryEntry structures that defines each menu item */
 static GtkItemFactoryEntry menu_items[] = { /* XXX */
 
-  { "/_File", NULL,  NULL,           0, "<Branch>" },
-  { "/File/Load Search", NULL, G_CALLBACK(cb_load_search), 0, "<Item>" },
-  { "/File/Import Search", NULL, G_CALLBACK(cb_import_search), 0, "<Item>" },
-  { "/File/Save Search as", NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
-  { "/File/Save filterspec", NULL,  G_CALLBACK(cb_save_spec_to_filename),
-		  0, "<Item>" },
-  { "/File/sep1",     NULL,         NULL,           0, "<Separator>" },
-  { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 0, "<StockItem>", GTK_STOCK_QUIT },
+            { "/_File", NULL,  NULL,           0, "<Branch>" },
+            { "/File/Load Search", NULL, G_CALLBACK(cb_load_search), 0, "<Item>" },
+            { "/File/Import Search", NULL, G_CALLBACK(cb_import_search), 0, "<Item>" },
+            { "/File/Save Search as", NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
+            { "/File/Save filterspec", NULL,  G_CALLBACK(cb_save_spec_to_filename),
+              0, "<Item>" },
+            { "/File/sep1",     NULL,         NULL,           0, "<Separator>" },
+            { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 0, "<StockItem>", GTK_STOCK_QUIT },
 
-  { "/_Searches", NULL, NULL, 0, "<Branch>"},
-  {"/Searches/New", NULL, NULL, 0, "<Branch>"},
-  {"/Searches/New/RGB Histogram", NULL, G_CALLBACK(cb_create), RGB_HISTO_SEARCH, "<Item>" },
-  {"/Searches/New/VJ Face Detect", NULL, G_CALLBACK(cb_create), VJ_FACE_SEARCH, "<Item>" },
-  {"/Searches/New/OCV Face Detect", NULL, G_CALLBACK(cb_create), OCV_FACE_SEARCH, "<Item>" },
-  {"/Searches/New/Texture", NULL, G_CALLBACK(cb_create), TEXTURE_SEARCH, "<Item>" },
-  {"/Searches/New/Regex", NULL, G_CALLBACK(cb_create), REGEX_SEARCH, "<Item>" },
-  {"/Searches/Import Example", NULL, G_CALLBACK(cb_import), 0, "<Item>" },
+            { "/_Searches", NULL, NULL, 0, "<Branch>"},
+            {"/Searches/New", NULL, NULL, 0, "<Branch>"},
+            {"/Searches/New/RGB Histogram", NULL, G_CALLBACK(cb_create), RGB_HISTO_SEARCH, "<Item>" },
+            {"/Searches/New/VJ Face Detect", NULL, G_CALLBACK(cb_create), VJ_FACE_SEARCH, "<Item>" },
+            {"/Searches/New/OCV Face Detect", NULL, G_CALLBACK(cb_create), OCV_FACE_SEARCH, "<Item>" },
+            {"/Searches/New/Texture", NULL, G_CALLBACK(cb_create), TEXTURE_SEARCH, "<Item>" },
+            {"/Searches/New/Regex", NULL, G_CALLBACK(cb_create), REGEX_SEARCH, "<Item>" },
+            {"/Searches/Import Example", NULL, G_CALLBACK(cb_import), 0, "<Item>" },
 
-  { "/_View", NULL,  NULL, 0, "<Branch>" },
-  { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats), 0,"<Item>" },
-  { "/_View/Progress Window", "<CTRL>P",  G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
-  { "/_View/Cache Control", "<CTRL>C",  G_CALLBACK(cb_toggle_ccontrol), 0,"<Item>" },
+            { "/_View", NULL,  NULL, 0, "<Branch>" },
+            { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats), 0,"<Item>" },
+            { "/_View/Progress Window", "<CTRL>P",  G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
+            { "/_View/Cache Control", "<CTRL>C",  G_CALLBACK(cb_toggle_ccontrol), 0,"<Item>" },
 
-  { "/Options",             NULL, NULL, 0, "<Branch>" },
-  { "/Options/sep1",            NULL, NULL, 0, "<Separator>" },
-  { "/Options/Dump Attributes", NULL, G_CALLBACK(cb_toggle_dump_attributes), 0, "<CheckItem>" },
-  { "/Albums",                  NULL, NULL, 0, "<Branch>" },
-  { "/Albums/tear",             NULL, NULL, 0, "<Tearoff>" },
-  { NULL, NULL, NULL }
-};
+            { "/Options",             NULL, NULL, 0, "<Branch>" },
+            { "/Options/sep1",            NULL, NULL, 0, "<Separator>" },
+            { "/Options/Dump Attributes", NULL, G_CALLBACK(cb_toggle_dump_attributes), 0, "<CheckItem>" },
+            { "/Albums",                  NULL, NULL, 0, "<Branch>" },
+            { "/Albums/tear",             NULL, NULL, 0, "<Tearoff>" },
+            { NULL, NULL, NULL }
+        };
 
-static void 
-cb_collection(gpointer callback_data, guint callback_action, 
-	GtkWidget  *menu_item ) 
+static void
+cb_collection(gpointer callback_data, guint callback_action,
+              GtkWidget  *menu_item )
 {
 
-  /* printf("cb_collection: #%d\n", callback_action); */
+	/* printf("cb_collection: #%d\n", callback_action); */
 
-  if(GTK_CHECK_MENU_ITEM(menu_item)->active) {
-    collections[callback_action].active = 1;
-  } else {
-    collections[callback_action].active = 0;
-  }
+	if(GTK_CHECK_MENU_ITEM(menu_item)->active) {
+		collections[callback_action].active = 1;
+	} else {
+		collections[callback_action].active = 0;
+	}
 }
 
 
@@ -1681,121 +1699,121 @@ cb_collection(gpointer callback_data, guint callback_action,
 static GtkWidget *
 get_menubar_menu( GtkWidget  *window )
 {
-  GtkItemFactory *item_factory;
-  GtkAccelGroup *accel_group;
-  gint nmenu_items;
+	GtkItemFactory *item_factory;
+	GtkAccelGroup *accel_group;
+	gint nmenu_items;
 
-  /* Make an accelerator group (shortcut keys) */
-  accel_group = gtk_accel_group_new ();
+	/* Make an accelerator group (shortcut keys) */
+	accel_group = gtk_accel_group_new ();
 
-  /* Make an ItemFactory (that makes a menubar) */
-  item_factory = gtk_item_factory_new (GTK_TYPE_MENU_BAR, "<main>",
-                                       accel_group);
+	/* Make an ItemFactory (that makes a menubar) */
+	item_factory = gtk_item_factory_new (GTK_TYPE_MENU_BAR, "<main>",
+	                                     accel_group);
 
-  GtkItemFactoryEntry *tmp_menu;
-  
-  for(tmp_menu = menu_items, nmenu_items = 0;
-      (tmp_menu->path);
-      tmp_menu++) {
-    nmenu_items++;
-  }
+	GtkItemFactoryEntry *tmp_menu;
 
-  /* This function generates the menu items. Pass the item factory,
-     the number of items in the array, the array itself, and any
-     callback data for the the menu items. */
-  gtk_item_factory_create_items (item_factory, nmenu_items, menu_items, NULL);
+	for(tmp_menu = menu_items, nmenu_items = 0;
+	    (tmp_menu->path);
+	    tmp_menu++) {
+		nmenu_items++;
+	}
 
-  /* create more menu items */
-  struct collection_t *tmp_coll;
-  for(tmp_coll = collections; tmp_coll->name; tmp_coll++) {
-    GtkItemFactoryEntry entry;
-    char buf[BUFSIZ];
+	/* This function generates the menu items. Pass the item factory,
+	   the number of items in the array, the array itself, and any
+	   callback data for the the menu items. */
+	gtk_item_factory_create_items (item_factory, nmenu_items, menu_items, NULL);
 
-    sprintf(buf, "/Albums/%s", tmp_coll->name);
-    for(char *s=buf; *s; s++) {
-      if(*s == '_') {
-	*s = ' ';
-      }
-    }
-    entry.path = strdup(buf);
-    entry.accelerator = NULL;
-    entry.callback = G_CALLBACK(cb_collection);
-    entry.callback_action = tmp_coll - collections;
-    entry.item_type = "<CheckItem>";
-    gtk_item_factory_create_item(item_factory,
-				 &entry,
-				 NULL,
-				 1); /* XXX guess, no doc */
+	/* create more menu items */
+	struct collection_t *tmp_coll;
+	for(tmp_coll = collections; tmp_coll->name; tmp_coll++) {
+		GtkItemFactoryEntry entry;
+		char buf[BUFSIZ];
 
-    GtkWidget *widget = gtk_item_factory_get_widget(item_factory, buf);
-    //gtk_widget_set_sensitive(widget, FALSE);
-    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget), tmp_coll->active);
+		sprintf(buf, "/Albums/%s", tmp_coll->name);
+		for(char *s=buf; *s; s++) {
+			if(*s == '_') {
+				*s = ' ';
+			}
+		}
+		entry.path = strdup(buf);
+		entry.accelerator = NULL;
+		entry.callback = G_CALLBACK(cb_collection);
+		entry.callback_action = tmp_coll - collections;
+		entry.item_type = "<CheckItem>";
+		gtk_item_factory_create_item(item_factory,
+		                             &entry,
+		                             NULL,
+		                             1); /* XXX guess, no doc */
 
-    //tmp_menu++;
-    //nmenu_items++;
-  }
+		GtkWidget *widget = gtk_item_factory_get_widget(item_factory, buf);
+		//gtk_widget_set_sensitive(widget, FALSE);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget), tmp_coll->active);
 
-  /* Attach the new accelerator group to the window. */
-  gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);
+		//tmp_menu++;
+		//nmenu_items++;
+	}
 
-  /* Finally, return the actual *menu* bar created by the item factory. */
-  return gtk_item_factory_get_widget (item_factory, "<main>");
+	/* Attach the new accelerator group to the window. */
+	gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);
+
+	/* Finally, return the actual *menu* bar created by the item factory. */
+	return gtk_item_factory_get_widget (item_factory, "<main>");
 }
 
 
 
-/* 
+/*
  * makes the main window 
  */
 
-static void 
+static void
 create_main_window(void)
 {
 	GtkWidget * separator;
-    GtkWidget *main_vbox;
-    GtkWidget *menubar;
-    GtkWidget *main_box;
+	GtkWidget *main_vbox;
+	GtkWidget *menubar;
+	GtkWidget *main_box;
 
-    GUI_THREAD_CHECK(); 
+	GUI_THREAD_CHECK();
 
-    /*
-     * Create the the main window.
-     */
-    gui.main_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-    g_signal_connect (G_OBJECT (gui.main_window), "destroy",
-		      G_CALLBACK (cb_quit), NULL);
+	/*
+	 * Create the the main window.
+	 */
+	gui.main_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	g_signal_connect (G_OBJECT (gui.main_window), "destroy",
+	                  G_CALLBACK (cb_quit), NULL);
 
-    gtk_window_set_title(GTK_WINDOW (gui.main_window), "Diamond SnapFind");
+	gtk_window_set_title(GTK_WINDOW (gui.main_window), "Diamond SnapFind");
 
-    main_vbox = gtk_vbox_new (FALSE, 1);
-    gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 1);
-    gtk_container_add (GTK_CONTAINER (gui.main_window), main_vbox);
-    gtk_widget_show(main_vbox);
+	main_vbox = gtk_vbox_new (FALSE, 1);
+	gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 1);
+	gtk_container_add (GTK_CONTAINER (gui.main_window), main_vbox);
+	gtk_widget_show(main_vbox);
 
-    menubar = get_menubar_menu (gui.main_window);
-    gtk_box_pack_start (GTK_BOX (main_vbox), menubar, FALSE, TRUE, 0);
-    gtk_widget_show(menubar);
+	menubar = get_menubar_menu (gui.main_window);
+	gtk_box_pack_start (GTK_BOX (main_vbox), menubar, FALSE, TRUE, 0);
+	gtk_widget_show(menubar);
 
-    main_box = gtk_hbox_new (FALSE, 0);
-    //gtk_container_add (GTK_CONTAINER (main_vbox), main_box);
-    gtk_box_pack_end (GTK_BOX (main_vbox), main_box, FALSE, TRUE, 0);
-    gtk_widget_show (main_box);
+	main_box = gtk_hbox_new (FALSE, 0);
+	//gtk_container_add (GTK_CONTAINER (main_vbox), main_box);
+	gtk_box_pack_end (GTK_BOX (main_vbox), main_box, FALSE, TRUE, 0);
+	gtk_widget_show (main_box);
 
-    gui.search_box = gtk_vbox_new (FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(main_box), gui.search_box, FALSE, FALSE, 10);
-    gtk_widget_show (gui.search_box);
+	gui.search_box = gtk_vbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX(main_box), gui.search_box, FALSE, FALSE, 10);
+	gtk_widget_show (gui.search_box);
 
-    gui.search_widget = create_search_window();
-    gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget, 
-		FALSE, FALSE, 10);
+	gui.search_widget = create_search_window();
+	gtk_box_pack_start (GTK_BOX(gui.search_box), gui.search_widget,
+	                    FALSE, FALSE, 10);
 
-    separator = gtk_vseparator_new();
-    gtk_box_pack_start(GTK_BOX(main_box), separator, FALSE, FALSE, 0);
-    gtk_widget_show (separator);
+	separator = gtk_vseparator_new();
+	gtk_box_pack_start(GTK_BOX(main_box), separator, FALSE, FALSE, 0);
+	gtk_widget_show (separator);
 
-    create_display_region(main_box);
+	create_display_region(main_box);
 
-    gtk_widget_show(gui.main_window);
+	gtk_widget_show(gui.main_window);
 }
 
 
@@ -1803,50 +1821,53 @@ create_main_window(void)
 
 
 static void
-usage(char **argv) 
+usage(char **argv)
 {
-  fprintf(stderr, "usage: %s [options]\n", basename(argv[0]));
-  fprintf(stderr, "  -h        - help\n");
-  fprintf(stderr, "  -e        - expert mode\n");
-  fprintf(stderr, "  -s<file>  - histo index file\n");
-  fprintf(stderr, "  --similarity <filter>=<val>  - set default threshold (repeatable)\n");
-  fprintf(stderr, "  --min-faces=<num>       - set min number of faces \n");
-  fprintf(stderr, "  --face-levels=<num>     - set face detector levels \n");
-  fprintf(stderr, "  --dump-spec=<file>      - dump spec file and exit \n");
-  fprintf(stderr, "  --dump-objects          - start search and dump objects\n");
-  fprintf(stderr, "  --read-spec=<file>      - use spec file. requires dump-objects\n");
+	fprintf(stderr, "usage: %s [options]\n", basename(argv[0]));
+	fprintf(stderr, "  -h        - help\n");
+	fprintf(stderr, "  -e        - expert mode\n");
+	fprintf(stderr, "  -s<file>  - histo index file\n");
+	fprintf(stderr, "  --similarity <filter>=<val>  - set default threshold (repeatable)\n");
+	fprintf(stderr, "  --min-faces=<num>       - set min number of faces \n");
+	fprintf(stderr, "  --face-levels=<num>     - set face detector levels \n");
+	fprintf(stderr, "  --dump-spec=<file>      - dump spec file and exit \n");
+	fprintf(stderr, "  --dump-objects          - start search and dump objects\n");
+	fprintf(stderr, "  --read-spec=<file>      - use spec file. requires dump-objects\n");
 }
 
 
 
 static int
-set_export_threshold(char *arg) {
-  char *s = arg;
+set_export_threshold(char *arg)
+{
+	char *s = arg;
 
-  while(*s && *s != '=') {
-    s++;
-  }
-  if(!*s) return -1;		/* error */
-  *s++ = '\0';
+	while(*s && *s != '=') {
+		s++;
+	}
+	if(!*s)
+		return -1;		/* error */
+	*s++ = '\0';
 
-  export_threshold_t *et = (export_threshold_t *)malloc(sizeof(export_threshold_t));
-  assert(et);
-  et->name = arg;
-  double d = atof(s);
-  if(d > 1) d /= 100.0;
-  if(d > 1 || d < 0) {
-    fprintf(stderr, "bad distance: %s\n", s);
-    return -1;
-  }
-  et->distance = 1.0 - d;	/* similarity */
-  et->index = -1;
+	export_threshold_t *et = (export_threshold_t *)malloc(sizeof(export_threshold_t));
+	assert(et);
+	et->name = arg;
+	double d = atof(s);
+	if(d > 1)
+		d /= 100.0;
+	if(d > 1 || d < 0) {
+		fprintf(stderr, "bad distance: %s\n", s);
+		return -1;
+	}
+	et->distance = 1.0 - d;	/* similarity */
+	et->index = -1;
 
-  TAILQ_INSERT_TAIL(&export_list, et, link);
+	TAILQ_INSERT_TAIL(&export_list, et, link);
 
-  return 0;
+	return 0;
 }
 
-int 
+int
 main(int argc, char *argv[])
 {
 
@@ -1855,15 +1876,16 @@ main(int argc, char *argv[])
 	char *scapeconf = "histo/search_config";
 	int c;
 	static const char *optstring = "hes:f:";
-	struct option long_options[] = {
-	  {"dump-spec", required_argument, NULL, 0},
-	  {"dump-objects", no_argument, NULL, 0},
-	  {"read-spec", required_argument, NULL, 0},
-	  {"similarity", required_argument, NULL, 'f'},
-	  {"min-faces", required_argument, NULL, 0},
-	  {"face-levels", required_argument, NULL, 0},
-	  {0, 0, 0, 0}
-	};
+	struct option long_opt[] = {
+		                           {"dump-spec", required_argument, NULL, 0
+		                           },
+		                           {"dump-objects", no_argument, NULL, 0},
+		                           {"read-spec", required_argument, NULL, 0},
+		                           {"similarity", required_argument, NULL, 'f'},
+		                           {"min-faces", required_argument, NULL, 0},
+		                           {"face-levels", required_argument, NULL, 0},
+		                           {0, 0, 0, 0}
+	                           };
 	int option_index = 0;
 
 	/*
@@ -1871,49 +1893,49 @@ main(int argc, char *argv[])
 	 */
 
 	GUI_THREAD_INIT();
-    	gtk_init(&argc, &argv);
+	gtk_init(&argc, &argv);
 	gtk_rc_parse("gtkrc");
 	gdk_rgb_init();
 	printf("Starting main\n");
 
-	while((c = getopt_long(argc, argv, optstring, long_options, &option_index)) != -1) {
+	while((c = getopt_long(argc, argv, optstring, long_opt, &option_index)) != -1) {
 		switch(c) {
-		case 0:
-		  if(strcmp(long_options[option_index].name, "dump-spec") == 0) {
-		    dump_spec_file = optarg;
-		  } else if(strcmp(long_options[option_index].name, "dump-objects") == 0) {
-		    dump_objects = 1;
-		  } else if(strcmp(long_options[option_index].name, "read-spec") == 0) {
-		    read_spec_filename = optarg;
-		  } else if(strcmp(long_options[option_index].name, "min-faces") == 0) {
-		    default_min_faces = atoi(optarg);
-		  } else if(strcmp(long_options[option_index].name, "face-levels") == 0) {
-		    default_face_levels = atoi(optarg);
-		  }
-		  break;
-		case 'e':
-		  fprintf(stderr, "expert mode must now be turned on with the menu option\n");
-		  //expert_mode = 1;
-		  break;
-		case 's':
-		  scapeconf = optarg;
-		  break;
-		case 'f':
-		  if(set_export_threshold(optarg) < 0) {
-		    usage(argv);
-		    exit(1);
-		  }
-		  break;
-		case ':':
-		  fprintf(stderr, "missing parameter\n");
-		  exit(1);
-		case 'h':
-		case '?':
-		default:
-		  usage(argv);
-		  exit(1);
-		  break;
-		}		
+			case 0:
+				if(strcmp(long_opt[option_index].name, "dump-spec") == 0) {
+					dump_spec_file = optarg;
+				} else if(strcmp(long_opt[option_index].name, "dump-objects") == 0) {
+					dump_objects = 1;
+				} else if(strcmp(long_opt[option_index].name, "read-spec") == 0) {
+					read_spec_filename = optarg;
+				} else if(strcmp(long_opt[option_index].name, "min-faces") == 0) {
+					default_min_faces = atoi(optarg);
+				} else if(strcmp(long_opt[option_index].name, "face-levels") == 0) {
+					default_face_levels = atoi(optarg);
+				}
+				break;
+			case 'e':
+				fprintf(stderr, "expert mode must now be turned on with the menu option\n");
+				//expert_mode = 1;
+				break;
+			case 's':
+				scapeconf = optarg;
+				break;
+			case 'f':
+				if(set_export_threshold(optarg) < 0) {
+					usage(argv);
+					exit(1);
+				}
+				break;
+			case ':':
+				fprintf(stderr, "missing parameter\n");
+				exit(1);
+			case 'h':
+			case '?':
+			default:
+				usage(argv);
+				exit(1);
+				break;
+		}
 	}
 
 	printf("Initializing communciation rings...\n");
@@ -1932,25 +1954,26 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	
+
 	snap_searchset = new search_set();
 
-	/* 
+	/*
 	 * read the list of collections
 	 */
 	{
-	  void *cookie;
-	  char *name;
-	  int err;
-	  int pos = 0;
-	  err = nlkup_first_entry(&name, &cookie);
-	  while(!err && pos < MAX_ALBUMS) {
-	    collections[pos].name = name;
-	    collections[pos].active = pos ? 0 : 1; /* first one active */
-	    pos++;
-	    err = nlkup_next_entry(&name, &cookie);
-	  }
-	  collections[pos].name = NULL;
+		void *cookie;
+		char *name;
+		int err;
+		int pos = 0;
+		err = nlkup_first_entry(&name, &cookie);
+		while(!err && pos < MAX_ALBUMS)
+		{
+			collections[pos].name = name;
+			collections[pos].active = pos ? 0 : 1; /* first one active */
+			pos++;
+			err = nlkup_next_entry(&name, &cookie);
+		}
+		collections[pos].name = NULL;
 	}
 
 
@@ -1965,12 +1988,12 @@ main(int argc, char *argv[])
 	create_main_window();
 	GUI_THREAD_LEAVE();
 
-	/* 
+	/*
 	 * initialize and start the background thread 
 	 */
 	init_search();
 	err = pthread_create(&search_thread, PATTR_DEFAULT, sfind_search_main,
-		snap_searchset);
+	                     snap_searchset);
 	if (err) {
 		perror("failed to create search thread");
 		exit(1);
@@ -1982,9 +2005,9 @@ main(int argc, char *argv[])
 	 * Start the main loop processing for the GUI.
 	 */
 
-	MAIN_THREADS_ENTER(); 
+	MAIN_THREADS_ENTER();
 	gtk_main();
- 	MAIN_THREADS_LEAVE();  
+	MAIN_THREADS_LEAVE();
 
 	return(0);
 }

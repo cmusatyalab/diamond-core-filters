@@ -49,7 +49,7 @@
 
 #define	MAX_DISPLAY_NAME	64
 regex_search::regex_search(const char *name, char *descr)
-	: img_search(name, descr)
+		: img_search(name, descr)
 {
 	search_string = NULL;
 	edit_window = NULL;
@@ -71,88 +71,88 @@ regex_search::handle_config(config_types_t conf_type, char *data)
 {
 	/* should never be called for this class */
 	assert(0);
-	return(ENOENT);	
+	return(ENOENT);
 }
 
 
-                                                                                 
+
 static void
 cb_edit_done(GtkButton *item, gpointer data)
 {
-        GtkWidget * widget = (GtkWidget *)data;
-        gtk_widget_destroy(widget);
+	GtkWidget * widget = (GtkWidget *)data;
+	gtk_widget_destroy(widget);
 }
-                                                                                 
+
 
 static void
 cb_close_edit_window(GtkWidget* item, gpointer data)
 {
-    regex_search *    search;
-    search = (regex_search *)data;
-    search->close_edit_win();
+	regex_search *    search;
+	search = (regex_search *)data;
+	search->close_edit_win();
 }
 
 
 void
 regex_search::edit_search()
 {
-    GtkWidget *     widget;
-    GtkWidget *     box;
-    GtkWidget *     frame;
-    GtkWidget *     hbox;
-    GtkWidget *     container;
-    char        name[MAX_DISPLAY_NAME];
-                                                                                 
-    /* see if it already exists */
-    if (edit_window != NULL) {
-        /* raise to top ??? */
-        gdk_window_raise(GTK_WIDGET(edit_window)->window);
-        return;
-    }
-                                                                                 
-    edit_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    snprintf(name, MAX_DISPLAY_NAME - 1, "Edit %s", get_name());
-    name[MAX_DISPLAY_NAME -1] = '\0';
-    gtk_window_set_title(GTK_WINDOW(edit_window), name);
-    g_signal_connect(G_OBJECT(edit_window), "destroy",
-            G_CALLBACK(cb_close_edit_window), this);
-    box = gtk_vbox_new(FALSE, 10);
-                                                                                 
-    hbox = gtk_hbox_new(FALSE, 10);
+	GtkWidget *     widget;
+	GtkWidget *     box;
+	GtkWidget *     frame;
+	GtkWidget *     hbox;
+	GtkWidget *     container;
+	char        name[MAX_DISPLAY_NAME];
+
+	/* see if it already exists */
+	if (edit_window != NULL) {
+		/* raise to top ??? */
+		gdk_window_raise(GTK_WIDGET(edit_window)->window);
+		return;
+	}
+
+	edit_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	snprintf(name, MAX_DISPLAY_NAME - 1, "Edit %s", get_name());
+	name[MAX_DISPLAY_NAME -1] = '\0';
+	gtk_window_set_title(GTK_WINDOW(edit_window), name);
+	g_signal_connect(G_OBJECT(edit_window), "destroy",
+	                 G_CALLBACK(cb_close_edit_window), this);
+	box = gtk_vbox_new(FALSE, 10);
+
+	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
-                                                                                 
-    widget = gtk_button_new_with_label("Close");
+
+	widget = gtk_button_new_with_label("Close");
 	g_signal_connect(G_OBJECT(widget), "clicked",
-                     G_CALLBACK(cb_edit_done), edit_window);
+	                 G_CALLBACK(cb_edit_done), edit_window);
 	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
 	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
-                                                                                 
-    /*
-     * Get the controls from the img_search.
-     */
-    widget = img_search_display();
-    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
-                                                                                 
-    /*
-     * Create the texture parameters.
-     */
-    frame = gtk_frame_new("Regex Search");
-    container = gtk_hbox_new(FALSE, 10);
-    gtk_container_add(GTK_CONTAINER(frame), container);
 
-	widget = gtk_label_new("Regex String"); 
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
- 
+	/*
+	 * Get the controls from the img_search.
+	 */
+	widget = img_search_display();
+	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+
+	/*
+	 * Create the texture parameters.
+	 */
+	frame = gtk_frame_new("Regex Search");
+	container = gtk_hbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(frame), container);
+
+	widget = gtk_label_new("Regex String");
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
 	string_entry = gtk_entry_new();
-    gtk_box_pack_start(GTK_BOX(container), string_entry, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(container), string_entry, FALSE, TRUE, 0);
 	gtk_entry_set_text(GTK_ENTRY(string_entry), search_string);
 	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 0);
 
-	gtk_container_add(GTK_CONTAINER(edit_window), box); 
-    //gtk_window_set_default_size(GTK_WINDOW(edit_window), 400, 500);
-    gtk_widget_show_all(edit_window);
+	gtk_container_add(GTK_CONTAINER(edit_window), box);
+	//gtk_window_set_default_size(GTK_WINDOW(edit_window), 400, 500);
+	gtk_widget_show_all(edit_window);
 
-	return;	
+	return;
 }
 
 
@@ -213,7 +213,7 @@ regex_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  Keywords  # search keywords  \n");
 	fprintf(ostream, "ARG  Display-Name  # search Display-Name \n");
 	// XXX fprintf(ostream, "ARG  Display-Name  # search Display-Name \n");
-	// XXX allow user to select attributes 
+	// XXX allow user to select attributes
 	/* XXX use more than 1 regex?? */
 	fprintf(ostream, "ARG  %s  # Search string \n", search_string);
 	fprintf(ostream, "\n");
@@ -235,7 +235,7 @@ regex_search::write_config(FILE *ostream, const char *dirname)
 void
 regex_search::region_match(RGBImage *img, bbox_list_t *blist)
 {
-    /* XXX do something useful -:) */
-    return;
+	/* XXX do something useful -:) */
+	return;
 }
 

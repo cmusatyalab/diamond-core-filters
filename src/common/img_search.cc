@@ -55,7 +55,7 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
-#include "img_search.h" 
+#include "img_search.h"
 
 img_search::img_search(const char *name, char *descr)
 {
@@ -119,7 +119,7 @@ img_search::set_name(const char *new_name)
 {
 	char *	newp;
 	int	modified = 0;
-	if (strcmp(new_name, display_name) != 0) {	
+	if (strcmp(new_name, display_name) != 0) {
 		newp = strdup(new_name);
 		modified = cleanup_name(newp);
 		if (modified) {
@@ -210,19 +210,19 @@ img_search::get_search_widget()
 	/* create the check box */
 	cb = gtk_check_button_new();
 	g_signal_connect(G_OBJECT(cb), "toggled",
-                     G_CALLBACK(toggle_callback), this);
+	                 G_CALLBACK(toggle_callback), this);
 
 	if (is_selected()) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cb), 1);
 	} else {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cb), 0);
 	}
-	
-    gtk_box_pack_start(GTK_BOX(hbox), cb, FALSE, FALSE, 0);
+
+	gtk_box_pack_start(GTK_BOX(hbox), cb, FALSE, FALSE, 0);
 
 
 	search_label = gtk_label_new(display_name);
-    gtk_box_pack_start(GTK_BOX(hbox), search_label, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), search_label, FALSE, FALSE, 0);
 
 	gtk_widget_show_all(hbox);
 	return(hbox);
@@ -250,7 +250,7 @@ img_search::get_highlight_widget()
 	/* create the check box */
 	cb = gtk_check_button_new();
 	g_signal_connect(G_OBJECT(cb), "toggled",
-                     G_CALLBACK(hl_toggle_callback), this);
+	                 G_CALLBACK(hl_toggle_callback), this);
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cb), hl_selected);
 	gtk_box_pack_start(GTK_BOX(hbox), cb, FALSE, FALSE, 0);
@@ -267,12 +267,12 @@ GtkWidget *
 img_search::get_config_widget()
 {
 	GtkWidget * label;
-	
+
 	/* create label */
 	label = gtk_label_new(descript);
 	gtk_widget_show(label);
 
-	return(label);	
+	return(label);
 }
 
 static void
@@ -301,7 +301,7 @@ img_search::img_search_display()
 	//box = gtk_vbox_new(FALSE, 10);
 	frame = gtk_frame_new("Search");
 	//gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 10);
-	
+
 	container = gtk_vbox_new(FALSE, 10);
 	gtk_container_add(GTK_CONTAINER(frame), container);
 
@@ -316,16 +316,16 @@ img_search::img_search_display()
 
 	/* add the text entry box */
 	name_entry = gtk_entry_new();
-	gtk_entry_set_text(GTK_ENTRY(name_entry), get_name()); 
+	gtk_entry_set_text(GTK_ENTRY(name_entry), get_name());
 	gtk_box_pack_start(GTK_BOX(box), name_entry, FALSE, FALSE, 0);
 
 	/* put callback to update changes to the name box */
 	g_signal_connect(G_OBJECT(name_entry), "changed",
-                   G_CALLBACK(name_changed_cb), this);
+	                 G_CALLBACK(name_changed_cb), this);
 
 	gtk_widget_show_all(frame);
 
-	/* XXX done button */	
+	/* XXX done button */
 
 	return (frame);
 }
@@ -348,9 +348,9 @@ img_search::get_edit_widget()
 	/* create the display label */
 	ebutton = gtk_button_new_with_label("Edit");
 	g_signal_connect(G_OBJECT(ebutton), "clicked",
-                     G_CALLBACK(edit_search_cb), this);
-   	GTK_WIDGET_SET_FLAGS(ebutton, GTK_CAN_DEFAULT);
-   	gtk_widget_show (ebutton);
+	                 G_CALLBACK(edit_search_cb), this);
+	GTK_WIDGET_SET_FLAGS(ebutton, GTK_CAN_DEFAULT);
+	gtk_widget_show (ebutton);
 	return(ebutton);
 }
 
@@ -369,7 +369,7 @@ img_search::save_edits()
 	ret = set_name(name);
 	if (ret) {
 		gtk_entry_set_text(GTK_ENTRY(name_entry), get_name());
-	}	
+	}
 	return;
 }
 
@@ -388,18 +388,18 @@ img_search::get_parent()
 img_search &
 img_search::operator = (const img_search &rhs)
 {
-    assert(0);
-    return *this;
+	assert(0);
+	return *this;
 }
-                                                                                
-                                                                                
+
+
 int
 img_search::operator < (const img_search &rhs) const
 {
 	/* XXX */
 	return(0);
 }
-                                                                                
+
 int
 img_search::operator == (const img_search &rhs) const
 {
@@ -407,9 +407,9 @@ img_search::operator == (const img_search &rhs) const
 	const char * t2;
 
 	t1 = get_name();
-	t2 = rhs.get_name();	
+	t2 = rhs.get_name();
 
 	return(!strcmp(t1, t2));
 }
-                                                                                
+
 

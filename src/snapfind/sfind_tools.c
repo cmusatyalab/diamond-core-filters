@@ -78,57 +78,57 @@ static pthread_mutex_t ih_mutex = PTHREAD_MUTEX_INITIALIZER;
 image_hooks_t  *
 ih_new_ref(RGBImage * img, HistoII * histo_ii, ls_obj_handle_t ohandle)
 {
-    image_hooks_t  *ptr = (image_hooks_t *) calloc(1, sizeof(image_hooks_t));
-    assert(ptr);
-    ptr->refcount = 1;
+	image_hooks_t  *ptr = (image_hooks_t *) calloc(1, sizeof(image_hooks_t));
+	assert(ptr);
+	ptr->refcount = 1;
 
-    ptr->img = img;
-    ptr->histo_ii = histo_ii;
-    ptr->ohandle = ohandle;
+	ptr->img = img;
+	ptr->histo_ii = histo_ii;
+	ptr->ohandle = ohandle;
 
-    return ptr;
+	return ptr;
 }
 
 void
 ih_get_ref(image_hooks_t * ptr)
 {
-    pthread_mutex_lock(&ih_mutex);
-    ptr->refcount++;
-    pthread_mutex_unlock(&ih_mutex);
+	pthread_mutex_lock(&ih_mutex);
+	ptr->refcount++;
+	pthread_mutex_unlock(&ih_mutex);
 }
 
 void
 ih_drop_ref(image_hooks_t * ptr, lf_fhandle_t fhandle)
 {
 
-    pthread_mutex_lock(&ih_mutex);
-    assert(ptr->refcount > 0);
-    ptr->refcount--;
-    if (ptr->refcount == 0) {
-        ft_free(fhandle, (char *) ptr->img);
-        if (ptr->histo_ii) {
-            ft_free(fhandle, (char *) ptr->histo_ii);
-        }
-        ls_release_object(fhandle, ptr->ohandle);
-        free(ptr);
-    }
-    pthread_mutex_unlock(&ih_mutex);
+	pthread_mutex_lock(&ih_mutex);
+	assert(ptr->refcount > 0);
+	ptr->refcount--;
+	if (ptr->refcount == 0) {
+		ft_free(fhandle, (char *) ptr->img);
+		if (ptr->histo_ii) {
+			ft_free(fhandle, (char *) ptr->histo_ii);
+		}
+		ls_release_object(fhandle, ptr->ohandle);
+		free(ptr);
+	}
+	pthread_mutex_unlock(&ih_mutex);
 }
 
 static inline double
 max(double a, double b)
 {
-    return a > b ? a : b;
+	return a > b ? a : b;
 }
 
 double
 compute_scale(RGBImage * img, int xdim, int ydim)
 {
-    double          scale = 1.0;
+	double          scale = 1.0;
 
-    scale = max(scale, (double) img->width / xdim);
-    scale = max(scale, (double) img->height / ydim);
+	scale = max(scale, (double) img->width / xdim);
+	scale = max(scale, (double) img->height / ydim);
 
-    return scale;
+	return scale;
 }
 

@@ -53,7 +53,7 @@
 
 
 example_search::example_search(const char *name, char * descr)
-	: window_search(name, descr)
+		: window_search(name, descr)
 {
 	TAILQ_INIT(&ex_plist);
 	num_patches = 0;
@@ -70,15 +70,15 @@ example_search::~example_search()
 static char *
 eat_token(char *str)
 {
-    char * cur = str;
-                                                                                 
-    while (!isspace(*cur)) {
-        cur++;
-    }
-    while (isspace(*cur)) {
-        cur++;
-    }
-    return(cur);
+	char * cur = str;
+
+	while (!isspace(*cur)) {
+		cur++;
+	}
+	while (isspace(*cur)) {
+		cur++;
+	}
+	return(cur);
 }
 
 static void
@@ -104,22 +104,22 @@ example_search::build_patch_table(void)
 	patch_table = gtk_table_new(num_patches + 1, 3, FALSE);
 
 	gtk_table_set_row_spacings(GTK_TABLE(patch_table), 2);
-    gtk_table_set_col_spacings(GTK_TABLE(patch_table), 10);
-    gtk_container_set_border_width(GTK_CONTAINER(patch_table), 10);
+	gtk_table_set_col_spacings(GTK_TABLE(patch_table), 10);
+	gtk_container_set_border_width(GTK_CONTAINER(patch_table), 10);
 
-	i = 0;	
+	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		image = rgbimage_to_gtkimage(cur_patch->patch_image);
 
 		gtk_table_attach(GTK_TABLE(patch_table), image, i, i + 1, 0, 1,
-			(GtkAttachOptions)0,(GtkAttachOptions) 0, 0, 0);
+		                 (GtkAttachOptions)0,(GtkAttachOptions) 0, 0, 0);
 
 		del_button = gtk_button_new_with_label("Remove");
 		g_signal_connect(G_OBJECT(del_button), "clicked",
-			G_CALLBACK(cb_remove_patch), cur_patch);
+		                 G_CALLBACK(cb_remove_patch), cur_patch);
 
-		gtk_table_attach(GTK_TABLE(patch_table), del_button, i, i + 1, 1, 2, 
-			(GtkAttachOptions)0,(GtkAttachOptions) 0, 0, 0);
+		gtk_table_attach(GTK_TABLE(patch_table), del_button, i, i + 1, 1, 2,
+		                 (GtkAttachOptions)0,(GtkAttachOptions) 0, 0, 0);
 
 		i++;
 	}
@@ -129,7 +129,7 @@ example_search::build_patch_table(void)
 	return(patch_table);
 
 }
- 
+
 int
 example_search::add_patch(RGBImage *img, bbox_t bbox)
 {
@@ -147,12 +147,12 @@ example_search::add_patch(RGBImage *img, bbox_t bbox)
 	cur_patch->xsize = bbox.max_x - bbox.min_x;
 	cur_patch->ysize = bbox.max_y - bbox.min_y;
 
-	/* point to the base class */	
+	/* point to the base class */
 	cur_patch->parent = this;
 
 	/* Create the patch from base image*/
 	cur_patch->patch_image = create_rgb_subimage(img, cur_patch->xoff,
-		cur_patch->yoff, cur_patch->xsize, cur_patch->ysize);
+	                         cur_patch->yoff, cur_patch->xsize, cur_patch->ysize);
 
 	/* put it on the list */
 	TAILQ_INSERT_TAIL(&ex_plist, cur_patch, link);
@@ -180,16 +180,16 @@ example_search::add_patch(char *str)
 	cur_patch = (example_patch_t *)malloc(sizeof(*cur_patch));
 	assert(cur_patch != NULL);
 
-    maxlen = strlen(str) + 1;
-    for (i=0; i < maxlen; i++) {
-        if (isspace(str[i]) || (str[i] == '\0')) {
-            break;
-        }
-    }
-    if (i > maxlen) {
-        fprintf(stderr, "no end of string \n");
-        assert(0);
-    }
+	maxlen = strlen(str) + 1;
+	for (i=0; i < maxlen; i++) {
+		if (isspace(str[i]) || (str[i] == '\0')) {
+			break;
+		}
+	}
+	if (i > maxlen) {
+		fprintf(stderr, "no end of string \n");
+		assert(0);
+	}
 
 	/* XXX patch name */
 
@@ -211,31 +211,31 @@ example_search::add_patch(char *str)
 	tmp = eat_token(tmp);
 	cur_patch->ysize = atoi(tmp);
 
-	/* point to the base class */	
+	/* point to the base class */
 	cur_patch->parent = this;
 
 	/*
 	 * We assume that the current working directory has been
-     * changed, so we can use the relative path.
- 	 */
+	    * changed, so we can use the relative path.
+		 */
 	img = create_rgb_image(cur_patch->file_name);
 	/* XXX do popup and terminate ??? */
 	if (img == NULL) {
-		fprintf(stderr, "Failed to read patch file %s \n", 
-			cur_patch->file_name);
+		fprintf(stderr, "Failed to read patch file %s \n",
+		        cur_patch->file_name);
 		free(cur_patch);
 		return(0);
-	}	
-		
+	}
+
 	cur_patch->patch_image = create_rgb_subimage(img, cur_patch->xoff,
-		cur_patch->yoff, cur_patch->xsize, cur_patch->ysize);
+	                         cur_patch->yoff, cur_patch->xsize, cur_patch->ysize);
 	/* XXX failure cases ??*/
 
 	release_rgb_image(img);
 
 	/* put it on the list */
 	TAILQ_INSERT_TAIL(&ex_plist, cur_patch, link);
-	
+
 	return(0);
 }
 
@@ -250,7 +250,7 @@ example_search::handle_config(config_types_t conf_type, char *data)
 			add_patch(data);
 			err = 0;
 			break;
-		
+
 		default:
 			err = window_search::handle_config(conf_type, data);
 			assert(err == 0);
@@ -280,7 +280,7 @@ example_search::remove_patch(example_patch_t *patch)
 {
 
 	/* remove this from the list of patches */
-	TAILQ_REMOVE(&ex_plist, patch, link);	
+	TAILQ_REMOVE(&ex_plist, patch, link);
 
 	/* clean up the memory */
 	if (patch->file_name != NULL) {
@@ -318,7 +318,7 @@ example_search::example_display()
 
 	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(patch_holder), hbox, FALSE,
-			TRUE, 10);
+	                   TRUE, 10);
 
 	label = gtk_label_new("Example Patches: ");
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 10);
@@ -326,19 +326,19 @@ example_search::example_display()
 
 	import_button = gtk_button_new_with_label("Import");
 	g_signal_connect(G_OBJECT(import_button), "clicked",
-			G_CALLBACK(cb_import), this);
+	                 G_CALLBACK(cb_import), this);
 
 	gtk_box_pack_start(GTK_BOX(hbox), import_button, FALSE,
-			TRUE, 10);
-	
-	
+	                   TRUE, 10);
+
+
 	sep = gtk_hseparator_new();
 	gtk_box_pack_start(GTK_BOX(patch_holder), sep, FALSE, TRUE, 10);
-	
+
 
 	table = build_patch_table();
 	gtk_box_pack_start(GTK_BOX(patch_holder), table, FALSE,
-			TRUE, 10);
+	                   TRUE, 10);
 
 	gtk_widget_show_all(window);
 	return(window);
@@ -391,7 +391,7 @@ example_search::write_config(FILE *ostream, const char *dirname)
 		/* XXX write out the file */
 
 		fprintf(ostream, "PATCHFILE %s 0 0 %d %d \n", fname, cur_patch->xsize,
-			cur_patch->ysize);
+		        cur_patch->ysize);
 		i++;
 	}
 	return;

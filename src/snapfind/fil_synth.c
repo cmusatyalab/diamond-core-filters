@@ -59,12 +59,12 @@
 void
 compute_val(int data, int loop)
 {
-    int             i;
-    double          foo = (double) data;
+	int             i;
+	double          foo = (double) data;
 
-    for (i = 0; i < loop; i++) {
-        foo = foo / i;
-    }
+	for (i = 0; i < loop; i++) {
+		foo = foo / i;
+	}
 
 
 }
@@ -73,44 +73,45 @@ int
 f_synth(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
         int numarg, char **args, int blob_len, void *blob_data)
 {
-    int             err = 0;
-    lf_fhandle_t    fhandle = 0;
-    off_t           blen;
-    double          thresh;;
-    int             loop;
-    int             limit;
-    char           *data;
-    int             ran;
-    int             i;
+	int             err = 0;
+	lf_fhandle_t    fhandle = 0;
+	off_t           blen;
+	double          thresh;
+	;
+	int             loop;
+	int             limit;
+	char           *data;
+	int             ran;
+	int             i;
 
-    lf_log(fhandle, LOGL_TRACE, "\nf_synth: enter\n");
+	lf_log(fhandle, LOGL_TRACE, "\nf_synth: enter\n");
 
-    if (numarg != 2) {
-        exit(1);
-    }
-    thresh = atof(args[0]);
-    loop = atoi(args[1]);
-
-
-    err = lf_next_block(fhandle, ohandle, 1, &blen, &data);
-    while (err == 0) {
-        for (i = 0; i < blen; i++) {
-            compute_val(data[i], loop);
-        }
-        err = lf_free_buffer(fhandle, data);
-        assert(err == 0);
-
-        err = lf_next_block(fhandle, ohandle, 1, &blen, &data);
-    }
+	if (numarg != 2) {
+		exit(1);
+	}
+	thresh = atof(args[0]);
+	loop = atoi(args[1]);
 
 
-    limit = (int) ((double) RAND_MAX * thresh);
-    ran = random();
+	err = lf_next_block(fhandle, ohandle, 1, &blen, &data);
+	while (err == 0) {
+		for (i = 0; i < blen; i++) {
+			compute_val(data[i], loop);
+		}
+		err = lf_free_buffer(fhandle, data);
+		assert(err == 0);
 
-    if (ran > limit) {
-        return (0);
-    } else {
-        return (1);
-    }
+		err = lf_next_block(fhandle, ohandle, 1, &blen, &data);
+	}
+
+
+	limit = (int) ((double) RAND_MAX * thresh);
+	ran = random();
+
+	if (ran > limit) {
+		return (0);
+	} else {
+		return (1);
+	}
 
 }

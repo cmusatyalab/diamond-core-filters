@@ -49,7 +49,7 @@
 #define	MAX_DISPLAY_NAME	64
 
 rgb_img::rgb_img(const char *name, char *descr)
-	: img_search(name, descr)
+		: img_search(name, descr)
 {
 	return;
 }
@@ -65,7 +65,7 @@ rgb_img::handle_config(config_types_t conf_type, char *data)
 {
 	/* should never be called for this class */
 	assert(0);
-	return(ENOENT);	
+	return(ENOENT);
 }
 
 
@@ -75,7 +75,7 @@ rgb_img::edit_search()
 
 	/* should never be called for this class */
 	assert(0);
-	return;	
+	return;
 }
 
 
@@ -109,10 +109,12 @@ rgb_img::write_fspec(FILE *ostream)
 	fprintf(ostream, "THRESHOLD  1  # this will always pass \n");
 	fprintf(ostream, "MERIT  500  # run this early hint \n");
 #ifndef	DATA_IN_ATTRS
+
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_pnm2rgb  # eval function \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_pnm2rgb  # init function \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_pnm2rgb  # fini function \n");
 #else
+
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_attr2rgb  # eval function \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_attr2rgb  # init function \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_attr2rgb  # fini function \n");
@@ -134,7 +136,7 @@ rgb_img::write_config(FILE *ostream, const char *dirname)
 void
 rgb_img::region_match(RGBImage *img, bbox_list_t *blist)
 {
-    /* XXX do something useful -:) */
-    return;
+	/* XXX do something useful -:) */
+	return;
 }
 

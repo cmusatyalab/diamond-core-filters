@@ -51,7 +51,7 @@
 #define	MAX_DISPLAY_NAME	64
 
 ii_img::ii_img(const char *name, char *descr)
-	: img_search(name, descr)
+		: img_search(name, descr)
 {
 	return;
 }
@@ -67,7 +67,7 @@ ii_img::handle_config(config_types_t conf_type, char *data)
 {
 	/* should never be called for this class */
 	assert(0);
-	return(ENOENT);	
+	return(ENOENT);
 }
 
 
@@ -77,7 +77,7 @@ ii_img::edit_search()
 
 	/* should never be called for this class */
 	assert(0);
-	return;	
+	return;
 }
 
 
@@ -136,8 +136,8 @@ ii_img::write_config(FILE *ostream, const char *dirname)
 void
 ii_img::region_match(RGBImage *img, bbox_list_t *blist)
 {
-    /* XXX do something useful -:) */
-    return;
+	/* XXX do something useful -:) */
+	return;
 }
 
 

@@ -51,7 +51,7 @@
 #define	MAX_DISPLAY_NAME	64
 
 histo_ii::histo_ii(const char *name, char *descr)
-	: img_search(name, descr)
+		: img_search(name, descr)
 {
 	return;
 }
@@ -67,7 +67,7 @@ histo_ii::handle_config(config_types_t conf_type, char *data)
 {
 	/* should never be called for this class */
 	assert(0);
-	return(ENOENT);	
+	return(ENOENT);
 }
 
 
@@ -77,7 +77,7 @@ histo_ii::edit_search()
 
 	/* should never be called for this class */
 	assert(0);
-	return;	
+	return;
 }
 
 
@@ -119,7 +119,7 @@ histo_ii::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  4  # dependancies \n");
 	fprintf(ostream, "ARG  %d  # dependancies \n", HISTO_INTERPOLATED);
 
-    	rgb = new rgb_img("RGB image", "RGB image");
+	rgb = new rgb_img("RGB image", "RGB image");
 	(this->get_parent())->add_dep(rgb);
 }
 
@@ -138,8 +138,8 @@ histo_ii::write_config(FILE *ostream, const char *dirname)
 void
 histo_ii::region_match(RGBImage *img, bbox_list_t *blist)
 {
-    /* XXX do something useful -:) */
-    return;
+	/* XXX do something useful -:) */
+	return;
 }
 
 

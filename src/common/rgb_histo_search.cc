@@ -54,7 +54,7 @@
 #define	MAX_DISPLAY_NAME	64
 
 rgb_histo_search::rgb_histo_search(const char *name, char *descr)
-	: example_search(name, descr)
+		: example_search(name, descr)
 {
 	metric = 0;
 	simularity = 0.93;
@@ -105,8 +105,8 @@ rgb_histo_search::set_simularity(double sim)
 int
 rgb_histo_search::handle_config(config_types_t conf_type, char *data)
 {
-	int	err;	
-	
+	int	err;
+
 	switch (conf_type) {
 		case METRIC_TOK:
 			set_simularity(data);
@@ -120,26 +120,26 @@ rgb_histo_search::handle_config(config_types_t conf_type, char *data)
 	return(err);
 }
 
-static void 
+static void
 cb_update_menu_select(GtkWidget* item, GtkUpdateType  policy)
 {
-    printf("policy %d \n", policy); 
-} 
+	printf("policy %d \n", policy);
+}
 
 
 static GtkWidget *
 create_slider_entry(char *name, float min, float max, int dec, float initial,
-		float step, GtkObject **adjp)
+                    float step, GtkObject **adjp)
 {
 	GtkWidget *container;
 	GtkWidget *scale;
 	GtkWidget *button;
 	GtkWidget *label;
-	
 
-	
+
+
 	container = gtk_hbox_new(FALSE, 10);
-	
+
 	label = gtk_label_new(name);
 	gtk_box_pack_start(GTK_BOX(container), label, FALSE, FALSE, 0);
 
@@ -154,35 +154,35 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 		*adjp = gtk_adjustment_new(min, min, max, step, 10.0, 10.0);
 	}
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(*adjp), initial);
-	
-	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
-    gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
-    gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
-    gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
-    gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
-    gtk_widget_set_size_request(scale, 120, 0);
 
-  	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
-    gtk_box_pack_start(GTK_BOX(container), button, FALSE, FALSE, 0);
-					
+	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
+	gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
+	gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
+	gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
+	gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
+	gtk_widget_set_size_request(scale, 120, 0);
+
+	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
+	gtk_box_pack_start(GTK_BOX(container), button, FALSE, FALSE, 0);
+
 	gtk_widget_show(container);
 	gtk_widget_show(label);
 	gtk_widget_show(scale);
 	gtk_widget_show(button);
-									
+
 	return(container);
 }
 
 GtkWidget *
-make_menu_item (gchar* name, GCallback callback, gpointer  data) 
+make_menu_item (gchar* name, GCallback callback, gpointer  data)
 {
-	GtkWidget *item; 
+	GtkWidget *item;
 
-	item = gtk_menu_item_new_with_label(name); 
+	item = gtk_menu_item_new_with_label(name);
 	g_signal_connect(G_OBJECT(item), "activate", callback, (gpointer) data);
-	gtk_widget_show(item); 
+	gtk_widget_show(item);
 
-	return item; 
+	return item;
 }
 
 static void
@@ -202,7 +202,7 @@ rgb_histo_search::close_edit_win()
 	/* save any changes from the edit windows */
 	save_edits();
 
-	/* call the parent class to give them change to cleanup */	
+	/* call the parent class to give them change to cleanup */
 	example_search::close_edit_win();
 
 	edit_window = NULL;
@@ -213,10 +213,10 @@ rgb_histo_search::close_edit_win()
 static void
 edit_search_done_cb(GtkButton *item, gpointer data)
 {
-    GtkWidget * widget = (GtkWidget *)data;
-    gtk_widget_destroy(widget);
+	GtkWidget * widget = (GtkWidget *)data;
+	gtk_widget_destroy(widget);
 }
-                                                                                 
+
 
 
 void
@@ -245,41 +245,41 @@ rgb_histo_search::edit_search()
 	name[MAX_DISPLAY_NAME -1] = '\0';
 	gtk_window_set_title(GTK_WINDOW(edit_window), name);
 	g_signal_connect(G_OBJECT(edit_window), "destroy",
-		  	G_CALLBACK(cb_close_edit_window), this);
+	                 G_CALLBACK(cb_close_edit_window), this);
 	box = gtk_vbox_new(FALSE, 10);
 
 	/* create button to close the edit window */
-    hbox = gtk_hbox_new(FALSE, 10);
+	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
-   
-    widget = gtk_button_new_with_label("Close");
+
+	widget = gtk_button_new_with_label("Close");
 	g_signal_connect(G_OBJECT(widget), "clicked",
-			 	G_CALLBACK(edit_search_done_cb), edit_window);
+	                 G_CALLBACK(edit_search_done_cb), edit_window);
 	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
 	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
 
-    /*
-     * Get the controls from the img_search.
-     */
-    widget = img_search_display();
-    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+	/*
+	 * Get the controls from the img_search.
+	 */
+	widget = img_search_display();
+	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
 
 	/*
-  	 * Create the histo parameters.
+	 	 * Create the histo parameters.
 	 */
 
-    frame = gtk_frame_new("RGB Histo Params");
-    container = gtk_vbox_new(FALSE, 10);
-    gtk_container_add(GTK_CONTAINER(frame), container);
-                                                                                
-    widget = create_slider_entry("Min Simularity", 0.0, 1.0, 2,
-        simularity, 0.05, &sim_adj);
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	frame = gtk_frame_new("RGB Histo Params");
+	container = gtk_vbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(frame), container);
 
-    widget = create_slider_entry("Bins", 1, 20, 0,
-        bins, 1, &bin_adj);
-    gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	widget = create_slider_entry("Min Simularity", 0.0, 1.0, 2,
+	                             simularity, 0.05, &sim_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+	widget = create_slider_entry("Bins", 1, 20, 0,
+	                             bins, 1, &bin_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 
 	interpolated_box = gtk_check_button_new_with_label("Interpolated Histogram");
@@ -288,23 +288,23 @@ rgb_histo_search::edit_search()
 	} else {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(interpolated_box), FALSE);
 	}
-	
-    	gtk_box_pack_start(GTK_BOX(container), interpolated_box, FALSE, TRUE, 0);
+
+	gtk_box_pack_start(GTK_BOX(container), interpolated_box, FALSE, TRUE, 0);
 
 	opt = gtk_option_menu_new();
 	menu = gtk_menu_new();
- 
+
 	item = make_menu_item("L1 Distance", G_CALLBACK(cb_update_menu_select),
-			GINT_TO_POINTER(0));
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item); 
+	                      GINT_TO_POINTER(0));
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
 	item = make_menu_item ("L2 Distance", G_CALLBACK (cb_update_menu_select),
-			GINT_TO_POINTER(1));
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item); 
+	                       GINT_TO_POINTER(1));
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
 	item = make_menu_item ("Earth Movers", G_CALLBACK(cb_update_menu_select),
-			GINT_TO_POINTER(2));
-	gtk_menu_shell_append (GTK_MENU_SHELL(menu), item); 
+	                       GINT_TO_POINTER(2));
+	gtk_menu_shell_append (GTK_MENU_SHELL(menu), item);
 
 	gtk_option_menu_set_menu(GTK_OPTION_MENU (opt), menu);
 	gtk_box_pack_start(GTK_BOX(container), opt, FALSE, TRUE, 0);
@@ -314,7 +314,7 @@ rgb_histo_search::edit_search()
 
 	/*
 	 * Get the controls from the window search class.
- 	 */ 
+		 */
 	widget = get_window_cntrl();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
@@ -322,7 +322,7 @@ rgb_histo_search::edit_search()
 	gtk_box_pack_start(GTK_BOX(box), widget, TRUE, TRUE, 0);
 
 
-	gtk_container_add(GTK_CONTAINER(edit_window), box); 
+	gtk_container_add(GTK_CONTAINER(edit_window), box);
 
 	//gtk_window_set_default_size(GTK_WINDOW(edit_window), 400, 500);
 	gtk_widget_show_all(edit_window);
@@ -360,7 +360,7 @@ rgb_histo_search::save_edits()
 	} else {
 		htype = HISTO_SIMPLE;
 	}
-	/* call the parent class */	
+	/* call the parent class */
 	example_search::save_edits();
 }
 
@@ -380,9 +380,9 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	save_edits();
 
 	/*
- 	 * First we write the header section that corrspons
- 	 * to the filter, the filter name, the assocaited functions.
- 	 */
+		 * First we write the header section that corrspons
+		 * to the filter, the filter name, the assocaited functions.
+		 */
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
@@ -391,7 +391,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "INIT_FUNCTION  f_init_histo_detect \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_histo_detect \n");
 	fprintf(ostream, "ARG  %s  # name \n", get_name());
-	
+
 	/*
 	 * Next we write call the parent to write out the releated args,
 	 * note that since the args are passed as a vector of strings
@@ -415,12 +415,12 @@ rgb_histo_search::write_fspec(FILE *ostream)
 
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int	bins;
-		histo_fill_from_subimage(&hgram, cur_patch->patch_image, 
-			0, 0, cur_patch->xsize, cur_patch->ysize, htype);
+		histo_fill_from_subimage(&hgram, cur_patch->patch_image,
+		                         0, 0, cur_patch->xsize, cur_patch->ysize, htype);
 		normalize_histo(&hgram);
 		for (bins=0; bins < (HBINS * HBINS * HBINS); bins++) {
-	 		fprintf(ostream, "ARG  %f  # sample %d val %d \n", 
-				hgram.data[bins], i, bins);
+			fprintf(ostream, "ARG  %f  # sample %d val %d \n",
+			        hgram.data[bins], i, bins);
 		}
 		i++;
 	}
@@ -429,10 +429,10 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 
 	rgb = new histo_ii("Histo II", "Histo II");
-  	(this->get_parent())->add_dep(rgb);
+	(this->get_parent())->add_dep(rgb);
 
 	rgb = new rgb_img("RGB image", "RGB image");
-  	(this->get_parent())->add_dep(rgb);
+	(this->get_parent())->add_dep(rgb);
 }
 
 
@@ -473,7 +473,7 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 	hconfig.xsize = get_testx();
 	hconfig.ysize = get_testy();
 	hconfig.stride = get_stride();
-	hconfig.bins = HBINS;	/* XXX */ 
+	hconfig.bins = HBINS;	/* XXX */
 	hconfig.simularity = simularity;
 	hconfig.distance_type = metric;
 	hconfig.type = htype;
@@ -485,9 +485,9 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 		hpatch = (patch_t *) malloc(sizeof(*hpatch));
 		histo_clear(&hpatch->histo);
 		assert(hpatch != NULL);
-			
-		histo_fill_from_subimage(&hpatch->histo, epatch->patch_image, 
-			0, 0,  epatch->xsize, epatch->ysize, htype);
+
+		histo_fill_from_subimage(&hpatch->histo, epatch->patch_image,
+		                         0, 0,  epatch->xsize, epatch->ysize, htype);
 		normalize_histo(&hpatch->histo);
 		hpatch->histo.weight = 1.0;
 
@@ -497,9 +497,9 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 	hconfig.num_patches = i;
 
 	ii = histo_get_ii(&hconfig, img);
-	pass =  histo_scan_image(hconfig.name, img, ii, &hconfig, 
-		INT_MAX /* XXX */, blist);
-    
+	pass =  histo_scan_image(hconfig.name, img, ii, &hconfig,
+	                         INT_MAX /* XXX */, blist);
+
 	/* XXX cleanup */
 
 	return;
