@@ -377,7 +377,8 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	pass = 	histo_scan_image(hconfig->name, img, ii, hconfig, hconfig->req_matches,
 		&blist);
 
-	i = 0;
+
+	i = nhisto;
 	TAILQ_FOREACH(cur_box, &blist, link) {
 		search_param_t param;
 		param.type = PARAM_HISTO;
@@ -398,8 +399,9 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     /*
      * save some stats 
      */
+	nhisto += pass;
     err = lf_write_attr(fhandle, ohandle, NUM_HISTO, sizeof(int),
-                      (char *) &pass);
+                      (char *) &nhisto);
     ASSERT(!err);
 
     /*

@@ -144,20 +144,15 @@ texture_test_entire_image(IplImage * img, texture_args_t *targs, bbox_list_t *bl
 
             if (min_distance <= targs->max_distance) {
                 passed++;
-		bbox = (bbox_t *)malloc(sizeof(*bbox));
-		assert(bbox != NULL);
-		bbox->min_x = x;
-		bbox->min_y = y;
-		bbox->max_x = x + targs->box_width;	/* XXX scale */
-		bbox->max_y = y + targs->box_height; /* XXX scale */
-		bbox->distance = min_distance;
-		TAILQ_INSERT_TAIL(blist, bbox, link);
+				bbox = (bbox_t *)malloc(sizeof(*bbox));
+				assert(bbox != NULL);
+				bbox->min_x = x;
+				bbox->min_y = y;
+				bbox->max_x = x + targs->box_width;	/* XXX scale */
+				bbox->max_y = y + targs->box_height; /* XXX scale */
+				bbox->distance = min_distance;
+				TAILQ_INSERT_TAIL(blist, bbox, link);
 
-		/* XXX put on list of items */
-                /* 		
-			dst_img->imageData[dst_img->widthStep * y + x] =
-			(char) (min_distance / threshold * 100);
-		*/
                 if (quit_on_pass && (passed >= targs->min_matches)) {
                     goto done;
                 }
