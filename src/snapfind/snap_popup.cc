@@ -105,7 +105,8 @@ pb_from_img(RGBImage *img) {
 region_t
 draw_bounding_box(RGBImage *img, int scale, 
 		  lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
-		  RGBPixel color, RGBPixel mask, char *fmt, int i) {
+		  RGBPixel color, RGBPixel mask, char *fmt, int i) 
+{
 	search_param_t 	param;	
 	int 		err;
 	bbox_t		bbox;
@@ -126,6 +127,7 @@ draw_bounding_box(RGBImage *img, int scale,
 	
 	return param.bbox;
 }
+
 static gboolean
 expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data) 
 {
@@ -172,7 +174,8 @@ expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 
 /* draw all the bounding boxes */
 static void
-cb_draw_res_layer(GtkWidget *widget, gpointer ptr) {
+cb_draw_res_layer(GtkWidget *widget, gpointer ptr) 
+{
 
         GUI_CALLBACK_ENTER();
 	
@@ -199,7 +202,8 @@ cb_draw_res_layer(GtkWidget *widget, gpointer ptr) {
 
 static GtkWidget *
 describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
-		      GtkWidget **button) {
+		      GtkWidget **button) 
+{
 	search_param_t 	param;	
 	int 		err;
 
@@ -597,6 +601,12 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
   return TRUE;
 }
 
+
+/*
+ * The callback function that takes user selected regions and creates
+ * a new search with the list.
+ */
+
 static gboolean
 cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data) 
 {
@@ -606,12 +616,14 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	search_types_t	stype;
 	int		idx;
 	const char *	sname;
+	GtkWidget *		item;
   	GUI_CALLBACK_ENTER();
 
 
 	active_item = gtk_menu_get_active(GTK_MENU(popup_window.search_type));
 
-	/* XXX can't directly get the cast to work ??? */ idx = (int) g_object_get_data(G_OBJECT(active_item), "user data");
+	/* XXX can't directly get the cast to work ??? */ 
+	idx = (int) g_object_get_data(G_OBJECT(active_item), "user data");
 	stype = (search_types_t )idx;
    
 	sname =  gtk_entry_get_text(GTK_ENTRY(popup_window.search_name));
@@ -622,26 +634,37 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 		/* XXX make sure the name already exists */
     	}
 
+	/* create the new search and put it in the global list */
 	ssearch = create_search(stype, sname);
 	assert(ssearch != NULL);
-
 	snap_searches[num_searches] = ssearch;
 	num_searches++;
 
+
+	/*
+	 * Put this in the list of searches in the selection pane.
+	 */
 	update_search_entry(ssearch, num_searches);
 
-	/* XXX get the new search in list of searches */
+
+	/* Put the list of searches in the ones we can select in the popup menu */
+	item = gtk_menu_item_new_with_label(ssearch->get_name());
+	gtk_widget_show(item);
+	g_object_set_data(G_OBJECT(item), "user data", (void *)(num_searches - 1));
+	gtk_menu_shell_append(GTK_MENU_SHELL(popup_window.example_list), item);
+
 
 	/* put the patches into the newly created search */
 	for(int i=0; i<popup_window.nselections; i++) {
 		ssearch->add_patch(popup_window.hooks->img, 
 				 popup_window.selections[i]);
   	}
-
   
 	GUI_CALLBACK_LEAVE();
 	return TRUE;
 }
+
+
 
 static void
 clear_selection( GtkWidget *widget ) 

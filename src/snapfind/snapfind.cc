@@ -991,7 +991,7 @@ write_search_config(const char *dirname, snap_search **searches, int nsearches)
 void
 update_search_entry(snap_search *cur_search, int row)
 {
-    	GtkWidget *widget;
+	GtkWidget *widget;
 	widget = cur_search->get_search_widget();
 	gtk_table_attach_defaults(GTK_TABLE(config_table), widget, 0, 1, 
 		row+1, row+2);
