@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <sys/types.h>
+#include "lib_filter.h"
 
 
 typedef struct {
@@ -64,6 +65,9 @@ RGBImage *rgbimg_dup(RGBImage *srcimg);
 
 /* wipe image clean */
 void rgbimg_clear(RGBImage *img);
+
+                                                                               
+RGBImage * get_rgb_img(lf_obj_handle_t ohandle);
 
 
 #ifdef __cplusplus

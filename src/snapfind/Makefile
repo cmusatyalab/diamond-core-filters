@@ -109,7 +109,7 @@ SNAPFIND_OBJS = $(SHARED_APP_OBJS) $(SHARED_COMMON_OBJS)
 SNAPFIND_OBJS += snapfind.o face_image.o sfind_search.o read_config.o \
 		 stats_win.o gui_thread.o search_support.o \
 	 	fil_image_tools.o snap_popup.o \
-		sfind_tools.o  
+		sfind_tools.o  fil_histo.o
 
 
 

@@ -618,6 +618,10 @@ display_thumbnail(ls_obj_handle_t ohandle)
 
 	/* get the img */
 	rgbimg = (RGBImage*)ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
+
+	if (rgbimg == NULL) {
+		rgbimg = get_rgb_img(ohandle);
+	}	
 	assert(rgbimg);
 	assert(rgbimg->width);
 

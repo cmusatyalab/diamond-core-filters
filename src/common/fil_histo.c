@@ -68,13 +68,9 @@ f_fini_pnm2rgb(void *data)
 {
     return (0);
 }
-/*
- * filter eval function to create an RGB_IMAGE attribute
- */
 
-int
-f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
-               lf_obj_handle_t * ohandles, void *user_data)
+RGBImage *
+get_rgb_img(lf_obj_handle_t ohandle)
 {
     RGBImage       *img;
     int             err = 0,
@@ -87,19 +83,6 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
     image_type_t    magic;
     ffile_t         file;
 
-    lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: enter");
-#ifdef VERBOSE
-    /*
-     * XXX 
-     */
-    {
-        char            buf[BUFSIZ];
-        off_t           bsize = BUFSIZ;
-        err = lf_read_attr(fhandle, ohandle, OBJ_PATH, &bsize, buf);
-        if (!err)
-            lf_log(fhandle, LOGL_TRACE, "processing %s...", buf);
-    }
-#endif
 
     /*
      * read the header and figure out the dimensions 
@@ -107,8 +90,6 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
     ff_open(fhandle, ohandle, &file);
     err = pnm_file_read_header(&file, &width, &height, &magic, &headerlen);
     ASSERT(!err);
-    lf_log(fhandle, LOGL_TRACE, "got image: width=%d, height=%d", width,
-           height);
 
     /*
      * create image to hold the data 
@@ -121,14 +102,6 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
     img->height = height;
     img->width = width;
     img->type = magic;
-
-    /*
-     * save some attribs 
-     */
-    lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int),
-                  (char *) &headerlen);
-    lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &height);
-    lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &width);
 
     /*
      * read the data into img 
@@ -153,8 +126,58 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
          * should close file as well XXX 
          */
     }
+    return(img);
 
-    ff_close(&file);
+done:
+    return(NULL);
+   
+}
+/*
+ * filter eval function to create an RGB_IMAGE attribute
+ */
+
+int
+f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
+               lf_obj_handle_t * ohandles, void *user_data)
+{
+    RGBImage       *img;
+    int             err = 0, pass = 1;
+    lf_fhandle_t    fhandle = 0;
+    int             width,
+                    height,
+                    headerlen;
+    off_t           bytes;
+    image_type_t    magic;
+    ffile_t         file;
+
+    lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: enter");
+#ifdef VERBOSE
+    /*
+     * XXX 
+     */
+    {
+        char            buf[BUFSIZ];
+        off_t           bsize = BUFSIZ;
+        err = lf_read_attr(fhandle, ohandle, OBJ_PATH, &bsize, buf);
+        if (!err)
+            lf_log(fhandle, LOGL_TRACE, "processing %s...", buf);
+    }
+#endif
+
+    img = get_rgb_img(ohandle);
+    if (img == NULL) {
+	return(0);
+    }
+
+    /*
+     * save some attribs 
+     */
+#ifdef	XXX
+    lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int),
+                  (char *) &headerlen);
+#endif
+    lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &img->height);
+    lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &img->width);
 
     /*
      * save img as an attribute 
@@ -162,7 +185,7 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
     err =
         lf_write_attr(fhandle, ohandle, RGB_IMAGE, img->nbytes, (char *) img);
     ASSERT(!err);
-  done:
+done:
     if (img)
         lf_free_buffer(fhandle, (char *) img);
     lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: done");
