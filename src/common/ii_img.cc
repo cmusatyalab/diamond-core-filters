@@ -4,12 +4,11 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <assert.h>
+#include <errno.h>
 #include "queue.h"
 #include "rgb.h"
-#include "histo.h"
+//#include "histo.h"
 #include "img_search.h"
-#include "gui_thread.h"
-#include "snapfind.h"
 
 #define	MAX_DISPLAY_NAME	64
 

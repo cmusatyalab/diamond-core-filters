@@ -1,8 +1,9 @@
 #ifndef	_IMG_SEARCH_H_
 #define	_IMG_SEARCH_H_	1
 
-//#include "face_tools.h"	/* XXX get rid of this (at least common structs ) */
 #include "image_common.h"
+
+
 /* 
  * This file defines all the search classes that
  * are used to keep track of the various search parameters.
@@ -358,5 +359,16 @@ private:
 	GtkWidget	*edit_window;
 };
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* this needs to be provide by someone calling this library */
+void ss_add_dep(img_search *dep);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* !_IMG_SEARCH_H_ */

@@ -6,11 +6,11 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "queue.h"
+#include "common_consts.h"
 #include "rgb.h"
 #include "histo.h"
 #include "image_common.h"
 #include "img_search.h"
-#include "gui_thread.h"
 #include "snapfind.h"
 #include "fil_histo.h"
 
@@ -179,9 +179,7 @@ static void
 edit_search_done_cb(GtkButton *item, gpointer data)
 {
     GtkWidget * widget = (GtkWidget *)data;
-	GUI_CALLBACK_ENTER();
     gtk_widget_destroy(widget);
-	GUI_CALLBACK_LEAVE();
 }
                                                                                  
 

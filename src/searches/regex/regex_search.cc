@@ -5,12 +5,10 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include <string.h>
+#include <errno.h>
 #include "queue.h"
 #include "rgb.h"
-#include "histo.h"
 #include "img_search.h"
-#include "gui_thread.h"
-#include "snapfind.h"
 
 #define	MAX_DISPLAY_NAME	64
 regex_search::regex_search(const char *name, char *descr)
@@ -45,9 +43,7 @@ static void
 cb_edit_done(GtkButton *item, gpointer data)
 {
         GtkWidget * widget = (GtkWidget *)data;
-        GUI_CALLBACK_ENTER();
         gtk_widget_destroy(widget);
-        GUI_CALLBACK_LEAVE();
 }
                                                                                  
 

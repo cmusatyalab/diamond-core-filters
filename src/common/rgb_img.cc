@@ -7,7 +7,6 @@
 #include <errno.h>
 #include "queue.h"
 #include "rgb.h"
-#include "histo.h"
 #include "img_search.h"
 #include "gui_thread.h"
 
