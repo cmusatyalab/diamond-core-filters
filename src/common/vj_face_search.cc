@@ -24,7 +24,7 @@ vj_face_search::vj_face_search(const char *name, char *descr)
 {
 	face_count = 1;
 	start_stage = 0;
-	end_stage = 0;
+	end_stage = 37;
 	do_merge = 1;
 	overlap_val = 0.75;
 

@@ -72,6 +72,10 @@ f_init_detect(int numarg, char **args, int blob_len, void *blob_data,
     fconfig->lev1 = atoi(args[7]);
     fconfig->lev2 = atoi(args[8]);
 
+    if (fconfig->lev2 > 37) {
+	    fconfig->lev2 = 37;
+    }
+
     if (fconfig->scale_mult <= 1) {
         lf_log(fhandle, LOGL_TRACE,
                "scale multiplier must be > 1; got %f\n", fconfig->scale_mult);
