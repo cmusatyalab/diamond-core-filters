@@ -276,20 +276,23 @@ graph_win::add_point(const float x, const float y)
 	GdkGC *		gc;
 
 	/* XXX deal withoffset for margins, etc. */
-	pixelx = (int)(((x - gw_xmin) /gw_xspan) * (float)gw_width);
-	pixely = (int)(((gw_ymax - y)/gw_yspan) * (float)gw_height);
+	pixelx = (int)(((x - gw_xmin) /gw_xspan) * (float)gw_xdisp) +
+		X_ZERO_OFFSET ;
 
-	if (pixelx > gw_width) {
-		pixelx = gw_width;
-	} else if (pixelx < 0) {
-		pixelx = 0;
+	pixely = (int)(((gw_ymax - y)/gw_yspan) * (float)gw_ydisp) +
+		Y_END_OFFSET;
+
+	if (pixelx > (gw_width - X_END_OFFSET)) {
+		pixelx = gw_width - X_END_OFFSET;
+	} else if (pixelx < X_ZERO_OFFSET) {
+		pixelx = X_ZERO_OFFSET;
 	}
 
 	
-	if (pixely > gw_height) {
-		pixely = gw_height;
-	} else if (pixely < 0) {
-		pixely = 0;
+	if (pixely > (gw_height - Y_ZERO_OFFSET)) {
+		pixely = gw_height - Y_ZERO_OFFSET;
+	} else if (pixely < Y_END_OFFSET) {
+		pixely = Y_END_OFFSET;
 	}
 
 	printf("x %d  y %d \n", pixelx, pixely);
@@ -320,12 +323,88 @@ graph_win::add_point(const float x, const float y)
 	gtk_widget_queue_draw_area(gw_drawingarea, 0, 0, gw_width, gw_height);
 }
 
+
 void
-graph_win::event_realize()
+graph_win::init_window()
 {
 	GdkColor	color;
 	GdkGC *		gc;
 	GdkColormap	*cmap;
+	PangoLayout *	playout;
+	char		buf[20];
+
+	/* Get the graphics context and color maps for later */
+	gc = gdk_gc_new(gw_pixmap);
+	cmap = gdk_gc_get_colormap(gc);
+
+	/* create a white color */
+	color.pixel = 0;
+	color.red = 65535;
+	color.green = 65535;
+	color.blue = 65535;
+	gdk_colormap_alloc_color(cmap, &color, TRUE, TRUE);
+
+
+	/* set the colors in the graphics context */
+	gdk_gc_set_foreground(gc, &color);
+	gdk_gc_set_background(gc, &color);
+
+	/* draw a rectangle to cover the image (to clear it) */
+	gdk_draw_rectangle(gw_pixmap, gc, 1, 0, 0, gw_width, gw_height);
+
+
+	/* create a black color */
+	color.pixel = 0;
+	color.red = 0;
+	color.green = 0;
+	color.blue = 0;
+	gdk_colormap_alloc_color(cmap, &color, TRUE, TRUE);
+	/* set the colors in the graphics context */
+	gdk_gc_set_foreground(gc, &color);
+
+	/* x zero label */
+	sprintf(buf, "%5.2f", gw_xmin);
+	playout = gtk_widget_create_pango_layout(gw_drawingarea, buf);
+	gdk_draw_layout(gw_pixmap, gc, (X_ZERO_OFFSET - X_FIRST_TEXT_OFFSET),
+		 gw_height - (Y_ZERO_OFFSET - Y_TEXT_GAP), playout);
+	
+	/* x max label */
+	sprintf(buf, "%5.2f", gw_xmax);
+	playout = gtk_widget_create_pango_layout(gw_drawingarea, buf);
+	gdk_draw_layout(gw_pixmap, gc, 
+		gw_width - (X_END_OFFSET + X_END_TEXT_OFFSET),
+		 gw_height - (Y_ZERO_OFFSET - Y_TEXT_GAP), playout);
+
+
+	/* y min label */
+	sprintf(buf, "%5.2f", gw_ymin);
+	playout = gtk_widget_create_pango_layout(gw_drawingarea, buf);
+	gdk_draw_layout(gw_pixmap, gc, Y_LABEL_GAP, 
+		gw_height - (Y_ZERO_OFFSET + Y_ZERO_TEXT_OFFSET),playout);
+
+
+	/* y max label */
+	sprintf(buf, "%5.2f", gw_ymax);
+	playout = gtk_widget_create_pango_layout(gw_drawingarea, buf);
+	gdk_draw_layout(gw_pixmap, gc, Y_LABEL_GAP, 
+		Y_END_OFFSET, playout);
+
+
+	/* draw x - axis line */
+ 	gdk_draw_line(GDK_DRAWABLE(gw_pixmap), gc, X_ZERO_OFFSET, 
+		gw_height - Y_ZERO_OFFSET, gw_width - X_END_OFFSET,
+		gw_height - Y_ZERO_OFFSET);
+
+	/* draw y - axis line */
+ 	gdk_draw_line(GDK_DRAWABLE(gw_pixmap), gc, X_ZERO_OFFSET, 
+		gw_height - Y_ZERO_OFFSET, X_ZERO_OFFSET, Y_END_OFFSET);
+}
+
+
+
+void
+graph_win::event_realize()
+{
 	
 
     // XXX pthread_mutex_lock(&di_mutex);
@@ -336,19 +415,7 @@ graph_win::event_realize()
 
 	gw_pixmap = gdk_pixmap_new(gw_drawingarea->window, gw_width, gw_height, -1);
 
-	gc = gdk_gc_new(gw_pixmap);
-	cmap = gdk_gc_get_colormap(gc);
-
-	color.pixel = 0;
-	color.red = 65535;
-	color.green = 65535;
-	color.blue = 65535;
-
-	gdk_colormap_alloc_color(cmap, &color, TRUE, TRUE);
-	gdk_gc_set_foreground(gc, &color);
-	gdk_gc_set_background(gc, &color);
-
-	gdk_draw_rectangle(gw_pixmap, gc, 1, 0, 0, gw_width, gw_height);
+	init_window();
 
     // XXpthread_mutex_unlock(&di_mutex);
 	
@@ -388,13 +455,16 @@ graph_win::get_graph_display(int width, int height)
 
 	gw_height = height;
 	gw_width = width;
+	gw_xdisp = width - (X_ZERO_OFFSET + X_END_OFFSET);
+	gw_ydisp = height - (Y_ZERO_OFFSET + Y_END_OFFSET);
 
+	printf("xdisp %d ydisp %d \n", gw_xdisp, gw_ydisp);
 
 	gw_image_area = gtk_viewport_new(NULL, NULL);
 	gw_cur_img = rgbimg_blank_image(gw_width, gw_height);
 
-	gw_lastx = 0;
-	gw_lasty = gw_height;	/* XXX deal with bar */
+	gw_lastx = 0 + X_ZERO_OFFSET;
+	gw_lasty = gw_height - Y_ZERO_OFFSET;	/* XXX deal with bar */
 
     // XXX pthread_mutex_lock(&di_mutex);
 	gw_layers[GW_IMG_LAYER] = gw_cur_img;

@@ -402,105 +402,6 @@ get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
 }
 
 
-void
-new_dev_status(ls_search_handle_t shandle, int dev,
-               ls_dev_handle_t dev_handle)
-{
-
-    char            data[60];
-    device_progress_t *dstatus;
-    char           *name;
-    int             i;
-
-    GUI_THREAD_CHECK();
-
-    dstatus = &devinfo[dev];
-
-    dstatus->name_frame = gtk_frame_new(NULL);
-    dstatus->name_box = gtk_hbox_new(FALSE, 10);
-
-    gtk_container_set_border_width(GTK_CONTAINER(dstatus->name_box), 4);
-    gtk_widget_show(dstatus->name_box);
-    gtk_container_add(GTK_CONTAINER(dstatus->name_frame), dstatus->name_box);
-    gtk_widget_show(dstatus->name_frame);
-
-    name = get_dev_name(shandle, dev_handle);
-    dstatus->name_label = gtk_label_new(name);
-    gtk_widget_set_name(dstatus->name_label, "diskname");
-    gtk_box_pack_start(GTK_BOX(dstatus->name_box), dstatus->name_label,
-                       FALSE, TRUE, 0);
-    gtk_widget_show(dstatus->name_label);
-
-    dstatus->prog_frame = gtk_frame_new(NULL);
-    dstatus->prog_box = gtk_hbox_new(FALSE, 10);
-    gtk_container_set_border_width(GTK_CONTAINER(dstatus->prog_box), 4);
-    gtk_widget_show(dstatus->prog_box);
-    gtk_container_add(GTK_CONTAINER(dstatus->prog_frame), dstatus->prog_box);
-    gtk_widget_show(dstatus->prog_frame);
-
-    dstatus->progress_bar = gtk_progress_bar_new();
-    gtk_box_pack_start(GTK_BOX(dstatus->prog_box), dstatus->progress_bar,
-                       FALSE, TRUE, 0);
-    gtk_widget_show(dstatus->progress_bar);
-
-
-    sprintf(data, "%-8d", 0);
-    dstatus->proc_label = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(dstatus->prog_box),
-                       dstatus->proc_label, FALSE, FALSE, 0);
-    gtk_widget_show(dstatus->proc_label);
-    set_summary_attr(dstatus->proc_label);
-
-    sprintf(data, "%s", "of");
-    dstatus->total_text = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(dstatus->prog_box),
-                       dstatus->total_text, FALSE, TRUE, 0);
-    gtk_widget_show(dstatus->total_text);
-    set_summary_attr(dstatus->total_text);
-
-    sprintf(data, "%-8d", 0);
-    dstatus->total_label = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(dstatus->prog_box),
-                       dstatus->total_label, FALSE, TRUE, 0);
-    gtk_widget_show(dstatus->total_label);
-    set_summary_attr(dstatus->total_label);
-
-    sprintf(data, "%s", "Drops:");
-    dstatus->drop_text = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(dstatus->prog_box),
-                       dstatus->drop_text, FALSE, TRUE, 0);
-    gtk_widget_show(dstatus->drop_text);
-    set_summary_attr(dstatus->drop_text);
-
-    sprintf(data, "%-8d", 0);
-    dstatus->drop_label = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(dstatus->prog_box),
-                       dstatus->drop_label, FALSE, TRUE, 0);
-    gtk_widget_show(dstatus->drop_label);
-    set_summary_attr(dstatus->drop_label);
-
-    sprintf(data, "%s", "Deferred:");
-    dstatus->nproc_text = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(dstatus->prog_box),
-                       dstatus->nproc_text, FALSE, TRUE, 0);
-    gtk_widget_show(dstatus->nproc_text);
-    set_summary_attr(dstatus->nproc_text);
-
-    sprintf(data, "%-8d", 0);
-    dstatus->nproc_label = gtk_label_new(data);
-    gtk_box_pack_start(GTK_BOX(dstatus->prog_box),
-                       dstatus->nproc_label, FALSE, TRUE, 0);
-    gtk_widget_show(dstatus->nproc_label);
-    set_summary_attr(dstatus->nproc_label);
-
-
-    for (i = 0; i < MAX_FILT; i++) {
-        init_filt_data(&dstatus->filt_stats[i]);
-    }
-}
-
-
-
 
 void
 attach_data_rows(int dev, int num_filt, int verbose)
@@ -584,99 +485,6 @@ update_dev_status(int dev, dev_stats_t * dstats, int verbose)
 }
 
 
-/*
- * Setup the table for each of the devices.
- */
- 
-void
-setup_table(dev_stats_t * dstats, int num_dev, int verbose)
-{
-    int             col,
-                    row;
-    int             i;
-    GtkWidget      *frame;
-    GtkWidget      *box;
-    GtkWidget      *label;
-
-    GUI_THREAD_CHECK();
-
-    col = 3;                    /* machine+progress+filter_stats */
-    row = num_dev + 1;          /* 1=headings */
-
-    stats_table = gtk_table_new(row, col, FALSE);
-    gtk_box_pack_start(GTK_BOX(stats_box), stats_table, FALSE, TRUE, 0);
-
-
-    frame = gtk_frame_new(NULL);
-    box = gtk_hbox_new(FALSE, 10);
-    gtk_container_add(GTK_CONTAINER(frame), box);
-
-    label = gtk_label_new("Devices");
-    gtk_box_pack_start(GTK_BOX(box), label, FALSE, TRUE, 0);
-    gtk_widget_set_name(label, "heading");
-    gtk_table_attach_defaults(GTK_TABLE(stats_table), frame, 0, 1, 0, 1);
-
-
-
-    frame = gtk_frame_new(NULL);
-    box = gtk_hbox_new(FALSE, 10);
-    gtk_container_add(GTK_CONTAINER(frame), box);
-
-    label = gtk_label_new("Progress");
-    gtk_box_pack_start(GTK_BOX(box), label, FALSE, TRUE, 0);
-    gtk_widget_set_name(label, "heading");
-    gtk_table_attach_defaults(GTK_TABLE(stats_table), frame, 1, 2, 0, 1);
-
-#ifdef  XXX
-    /*
-     * create the heading for the filter statistics 
-     */
-    frame = gtk_frame_new(NULL);
-    box = gtk_hbox_new(FALSE, 10);
-    gtk_container_add(GTK_CONTAINER(frame), box);
-
-    label = gtk_label_new("Filters");
-    gtk_box_pack_start(GTK_BOX(box), label, FALSE, TRUE, 0);
-    gtk_widget_set_name(label, "heading");
-    if (verbose) {
-        gtk_widget_show(label);
-    }
-    gtk_table_attach_defaults(GTK_TABLE(stats_table), frame, 2, 3, 0, 1);
-#endif
-
-    /*
-     * create the notebook for the filter statistics 
-     */
-    LIST_INIT(&page_master.pm_pages);
-
-    // XXX frame = gtk_frame_new(NULL);
-    box = gtk_hbox_new(FALSE, 10);
-    // XXX gtk_container_add(GTK_CONTAINER(frame), box);
-    // XXX gtk_widget_show(frame);
-
-    page_master.pm_notebook = gtk_notebook_new();
-
-    gtk_box_pack_start(GTK_BOX(box), page_master.pm_notebook, FALSE, TRUE,
-                       0);
-    gtk_widget_set_name(label, "heading");
-    if (verbose) {
-        gtk_widget_show(page_master.pm_notebook);
-        gtk_table_attach_defaults(GTK_TABLE(stats_table), box, 2, 3, 0, row);
-    }
-
-    for (i = 0; i < dstats->ds_num_filters; i++) {
-        new_page(dstats->ds_filter_stats[i].fs_name, num_dev);
-    }
-
-
-    for (i = 0; i < num_dev; i++) {
-        attach_data_rows(i, dstats->ds_num_filters, verbose);
-    }
-
-    gtk_widget_show_all(stats_table);
-}
-
-
 void           *
 stats_main(void *data)
 {
@@ -712,10 +520,10 @@ stats_main(void *data)
         if (thread_close) {
             pthread_exit(0);
         }
-		done = 0.0;
-		total = 0.0;
+	done = 0.0;
+	total = 0.0;
 
-		time += 1.0;
+	time += 1.0;
 
         for (i = 0; i < num_dev; i++) {
             len = DEV_STATS_SIZE(MAX_FILT);
@@ -725,12 +533,18 @@ stats_main(void *data)
                 printf("failed to get dev stats %d \n", err);
                 exit(1);
             }
-			total += (float)dstats->ds_objs_total;
-			done += (float)dstats->ds_objs_processed;
+	    total += (float)dstats->ds_objs_total;
+	    done += (float)dstats->ds_objs_processed;
         }
-		printf("%f %f \n", done, total);
+	printf("%f %f \n", done, total);
+	if (total == 0.0) {
+		complete = 0.0;
+	} else {
 		complete = done/total * 100.0;
-		gwin->add_point(time, complete);
+	}
+	printf("complete %f total %f \n");
+
+	gwin->add_point(time, complete);
         sleep(1);
     }
 }
@@ -745,38 +559,12 @@ stats_close(GtkWidget * window)
     thread_close = 1;
 }
 
-#ifdef	OLD
-void
-open_stats_window()
-{
-    if (!stats_window) {
-
-        GUI_THREAD_CHECK();
-
-        stats_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-        gtk_window_set_title(GTK_WINDOW(stats_window), "Stats");
-
-        gtk_widget_set_name(stats_window, "stats_window");
-        g_signal_connect(G_OBJECT(stats_window), "destroy",
-                         G_CALLBACK(stats_close), NULL);
-        /*
-         * don't show window until we add all the components (for correct
-         * sizing) 
-         */
-        // gtk_widget_show(stats_window);
-
-        stats_box = gtk_hbox_new(FALSE, 0);
-        gtk_container_add(GTK_CONTAINER(stats_window), stats_box);
-        gtk_widget_show(stats_box);
-    }
-}
-#else
 
 void
-open_stats_window()
+open_progress_win()
 {
+    GtkWidget *	gwidget;
 
-	GtkWidget *	gwidget;
     if (!stats_window) {
 
         GUI_THREAD_CHECK();
@@ -795,17 +583,13 @@ open_stats_window()
         stats_box = gtk_hbox_new(FALSE, 0);
         gtk_container_add(GTK_CONTAINER(stats_window), stats_box);
 
-		gwin = new graph_win(0.0, 100.0, 0.0, 100.0);
+	gwin = new graph_win(0.0, 100.0, 0.0, 100.0);
 	
-		gwidget = gwin->get_graph_display(300, 200);
-   	 	gtk_box_pack_start(GTK_BOX(stats_box), gwidget, FALSE, TRUE, 0);
+	gwidget = gwin->get_graph_display(300, 200);
+	gtk_box_pack_start(GTK_BOX(stats_box), gwidget, FALSE, TRUE, 0);
         gtk_widget_show_all(stats_window);
-
-
     }
 }
-
-#endif
 
 
 
@@ -838,15 +622,14 @@ create_stats_win(ls_search_handle_t shandle, int verbose)
      * the search.
      */
 
-    open_stats_window();
+    open_progress_win();
 
 
     /*
      * Create a thread that processes gets the statistics.
      */
     thread_close = 0;
-    err =
-        pthread_create(&stats_thread, PATTR_DEFAULT, stats_main,
+    err = pthread_create(&stats_thread, PATTR_DEFAULT, stats_main,
                        (void *) shandle);
     if (err) {
         perror("create_stats_regions:");

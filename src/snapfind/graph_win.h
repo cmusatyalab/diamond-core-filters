@@ -44,7 +44,19 @@
 #include "texture_tools.h"
 #include "histo.h"
 
+/* different pixel offset for placing text and other goodies */
+#define		X_ZERO_OFFSET		50
+#define		X_FIRST_TEXT_OFFSET	10
+#define		X_END_OFFSET		30
+#define		X_END_TEXT_OFFSET	20
 
+#define		Y_ZERO_OFFSET		20
+#define		Y_END_OFFSET		20
+#define		Y_TEXT_GAP		5
+#define		Y_ZERO_TEXT_OFFSET	10
+
+#define		Y_LABEL_GAP		5
+	
                                                                                 
 enum gw_layers_t {
     GW_IMG_LAYER = 0,
@@ -71,6 +83,7 @@ public:
 	void 	event_realize();
 	void 	draw_res(GtkWidget *widget);
 	void 	process_expose(GtkWidget *widget, GdkEventExpose *event);
+	void 	init_window();
 
 
 	
@@ -90,6 +103,8 @@ private:
 
 	int		gw_width;
 	int		gw_height;
+	int		gw_xdisp;
+	int		gw_ydisp;
 
 	int		gw_lastx;
 	int		gw_lasty;
