@@ -586,9 +586,7 @@ histo_get_histo(HistoII * ii, int x, int y, int xsize, int ysize, Histo * h)
 void
 histo_print_ii(HistoII * ii)
 {
-
-    int             x,
-                    y;
+    int             x, y;
     printf("ii: %dx%d\n", ii->width, ii->height);
     for (y = 0; y < ii->height; y++) {
         for (x = 0; x < ii->width; x++) {
@@ -608,19 +606,16 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
                  histo_config_t * hconfig,
                  int num_req, bbox_list_t *blist)
 {
-    double          x,
-                    y;          /* XXX */
-    double          d;
+    float          x, y;          /* XXX */
+    float          d;
     dim_t           xsiz = hconfig->xsize;
     dim_t           ysiz = hconfig->ysize;
-    double          dx = (double) hconfig->stride;  /* XXX */
-    double          dy = (double) hconfig->stride;
 	bbox_t	 *		bbox;
     patch_t        *patch;
     int             done = 0;
     int             pass;
-    double          scale;
-    double          scale_factor = hconfig->scale;
+    float          scale;
+    float          scale_factor = hconfig->scale;
     const dim_t     width = img->width;
     const dim_t     height = img->height;
     int             inspected = 0;
@@ -628,20 +623,19 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
     int             old_x = 0, old_y = 0;
 
     pass = 0;
-
     for (scale = 1.0; (scale * ysiz) < height; scale *= scale_factor) {
         xsiz = (dim_t) scale *hconfig->xsize;
         ysiz = (dim_t) scale *hconfig->ysize;
-        dx = scale * (double) hconfig->stride;  /* XXX */
-        dy = scale * (double) hconfig->stride;
-        for (y = 0; !done && y + ysiz <= height; y += dy) {
+
+        for (y = 0; !done && y + ysiz <= height; y += (float)hconfig->stride) {
             if (!ii) {
                 histo_fill_from_subimage(&h2, img, (int) 0, (int) y, xsiz,
                                          ysiz, hconfig->type);
                 old_x = 0;
                 old_y = (int) y;
             }
-            for (x = 0; !done && x + xsiz <= width; x += dx) {
+            for (x = 0; !done && x + xsiz <= width; x += (float)hconfig->stride) {
+			printf("x %d y %d xsize %d ysz %d \n", (int)x, (int)y, (int)xsiz, (int)ysiz);
                 inspected++;
                 // histo_print_ii(ii);
                 if (ii) {

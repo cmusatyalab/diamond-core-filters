@@ -341,6 +341,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     int             rv = 0;     /* return value */
 	bbox_t *		cur_box;
 	int			i;
+	int				gcd;
 	
 
     lf_log(fhandle, LOGL_TRACE, "f_histo_detect: enter");
@@ -371,12 +372,18 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     ii = (HistoII *) ft_read_alloc_attr(fhandle, ohandle, HISTO_II);
 
     if (ii == NULL) {
-	int             width, height;
+		int             width, height;
     	int             scalebits;
     	int             nbytes;
 
+		/* XXX do better on gcd for scalebits */
+ 		if (hconfig->scale > 9000.0) {
+			gcd = hconfig->stride;
+		} else {
+			gcd = 1;
+		}
 
-    	scalebits = log2_int(1);
+    	scalebits = log2_int(gcd);
     	width = (img->width >> scalebits) + 1;
     	height = (img->height >> scalebits) + 1;
     	nbytes = width * height * sizeof(Histo) + sizeof(HistoII);
@@ -389,7 +396,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     	ii->height = height;
     	ii->scalebits = scalebits;
                                                                                                   
-    	histo_compute_ii(img, ii, 1, 1, hconfig->type);
+    	histo_compute_ii(img, ii, gcd, gcd, hconfig->type);
     }
 #ifdef	XXX
     ASSERT(ii);
@@ -598,7 +605,6 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
         lf_write_attr(fhandle, ohandles[0], HISTO_II, ii->nbytes,
                       (char *) ii);
     ASSERT(!err);
-
   done:
     if (img)
         ft_free(fhandle, (char *) img);
