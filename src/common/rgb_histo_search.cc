@@ -19,7 +19,7 @@ rgb_histo_search::rgb_histo_search(const char *name, char *descr)
 	: example_search(name, descr)
 {
 	metric = 0;
-	simularity = 0.8;
+	simularity = 0.93;
 	bins = 3;
 	edit_window = NULL;
 	htype = HISTO_INTERPOLATED;

@@ -17,7 +17,7 @@ texture_search::texture_search(const char *name, char *descr)
 	: example_search(name, descr)
 {
 	edit_window = NULL;
-	simularity = 0.90;
+	simularity = 0.93;
 	channels = 3;
 	distance_metric = TEXTURE_DIST_PAIRWISE; 
 }

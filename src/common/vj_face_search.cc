@@ -34,6 +34,11 @@ vj_face_search::vj_face_search(const char *name, char *descr)
 	end_widget = NULL;
 	face_merge = NULL;
 	merge_overlap = NULL;
+
+	set_scale(1.20);
+	set_stride(1);
+	set_testx(24);
+	set_testy(24);
 }
 
 vj_face_search::~vj_face_search()
