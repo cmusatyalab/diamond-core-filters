@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <opencv/cv.h>
 
 #include "fil_image_tools.h"
 #include "fil_assert.h"
@@ -24,7 +25,6 @@ pnm_file_read_header(ffile_t * file,
 
     ff_consume(file, *headerlen);
 
-done:
     return err;
 }
 
@@ -165,19 +165,17 @@ pnm_file_read_data(ffile_t * file, RGBImage * img)
     return err;
 }
 
-RGBImage *
+RGBImage       *
 get_rgb_img(lf_obj_handle_t ohandle)
 {
     RGBImage       *img = NULL;
-    int             err = 0,
-        pass = 1;
+    int             err = 0;
     lf_fhandle_t    fhandle = 0;
-    int             width,
-                    height,
-                    headerlen;
+    int             width, height, headerlen;
     off_t           bytes;
     image_type_t    magic;
     ffile_t         file;
+
 
 
     /*
@@ -223,8 +221,54 @@ get_rgb_img(lf_obj_handle_t ohandle)
          */
     }
 
-done:
-	ff_close(&file);
-    return(img);
-   
+    ff_close(&file);
+    return (img);
+
+}
+
+RGBImage       *
+get_attr_rgb_img(lf_obj_handle_t ohandle, char *attr_name)
+{
+    int             err = 0;
+    lf_fhandle_t    fhandle = 0;
+    char           *image_buf;
+    off_t           bsize;
+    IplImage       *srcimage;
+    IplImage       *image;
+    RGBImage       *rgb;
+
+    /*
+     * assume this attr > 0 size
+     */
+
+    bsize = 0;
+    err = lf_read_attr(fhandle, ohandle, attr_name, &bsize, (char *) NULL);
+    if (err != ENOMEM) {
+        return NULL;
+    }
+
+    err = lf_alloc_buffer(fhandle, bsize, (char **) &image_buf);
+    if (err) {
+        return NULL;
+    }
+
+    err = lf_read_attr(fhandle, ohandle, attr_name, &bsize,
+                       (char *) image_buf);
+    if (err) {
+        return NULL;
+    }
+
+
+    srcimage = (IplImage *) image_buf;
+    image = cvCreateImage(cvSize(srcimage->width, srcimage->height),
+                          srcimage->depth, srcimage->nChannels);
+
+    memcpy(image->imageDataOrigin, image_buf + sizeof(IplImage),
+           image->imageSize);
+
+
+    rgb = convert_ipl_to_rgb(image);
+    cvReleaseImage(&image);
+
+    return (rgb);
 }

@@ -605,6 +605,47 @@ get_rgb_ipl_image(RGBImage * rgb_img)
     return ipl_rgb_img;
 }
 
+RGBImage *
+convert_ipl_to_rgb(IplImage * ipl)
+{
+    IplImage       *ipl_rgba_img;
+    int             width = ipl->width;
+    int             height = ipl->height;
+	RGBImage *		rgb;
+	int				bytes;
+	int				i;
+
+
+    ipl_rgba_img = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 4);
+    cvCvtColor(ipl, ipl_rgba_img, CV_RGB2RGBA);
+
+    bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
+	rgb = (RGBImage *)malloc(bytes);
+
+    rgb->nbytes = bytes;
+    rgb->height = height;
+    rgb->width = width;
+    rgb->type = IMAGE_PPM;
+
+    memcpy(rgb->data, ipl_rgba_img->imageData, ipl_rgba_img->imageSize);
+
+    /*
+     * create grayscale image from rgb image 
+     */
+    cvReleaseImage(&ipl_rgba_img);
+
+	/* set all the alpha to 255 */
+	for (i=0; i < (width * height); i++) {
+		char 	tmp;
+		tmp = rgb->data[i].r;
+		rgb->data[i].r = rgb->data[i].b;
+		rgb->data[i].b = tmp;
+		rgb->data[i].a = 255;
+	}
+
+    return(rgb);
+}
+
 
 void
 img_constrain_bbox(bbox_t * bbox, RGBImage * img)

@@ -19,6 +19,7 @@
 #include "rgb.h"
 #include "histo.h"
 #include "fil_histo.h"
+#include "fil_tools.h"
 
 /* #define VERBOSE 1 */
 
@@ -80,26 +81,8 @@ f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
     RGBImage       *img;
     int             err = 0, pass = 1;
     lf_fhandle_t    fhandle = 0;
-    int             width,
-                    height,
-                    headerlen;
-    off_t           bytes;
-    image_type_t    magic;
-    ffile_t         file;
 
     lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: enter");
-#ifdef VERBOSE
-    /*
-     * XXX 
-     */
-    {
-        char            buf[BUFSIZ];
-        off_t           bsize = BUFSIZ;
-        err = lf_read_attr(fhandle, ohandle, OBJ_PATH, &bsize, buf);
-        if (!err)
-            lf_log(fhandle, LOGL_TRACE, "processing %s...", buf);
-    }
-#endif
 
     img = get_rgb_img(ohandle);
     if (img == NULL) {
@@ -298,7 +281,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     int             rv = 0;     /* return value */
 	bbox_t *		cur_box;
 	int			i;
-	int				gcd;
 	
 
     lf_log(fhandle, LOGL_TRACE, "f_histo_detect: enter");

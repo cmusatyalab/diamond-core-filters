@@ -1,4 +1,5 @@
-
+#ifndef	_IMAGE_TOOLS_H_
+#define	_IMAGE_TOOLS_H_ 	1
 
 #include <stdint.h>
 #include <errno.h>
@@ -46,7 +47,11 @@ int ppm_add_data(pnm_state_t *, char *fdata, size_t nb);
 
 void img_constrain_bbox(bbox_t * bbox, RGBImage * img);
 
+RGBImage * convert_ipl_to_rgb(IplImage * ipl);
+
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif	/* !_IMAGE_TOOLS_H_ */

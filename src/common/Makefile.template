@@ -18,10 +18,10 @@ SHARED_COMMON_OBJS += facedet.o  fil_data2ii.o fil_tools.o fil_file.o
 SHARED_COMMON_OBJS += merge_faces.o 
 
 SHARED_SEARCHLET_SRCS = fil_histo.c fil_texture.cc fil_face.c
-SHARED_SEARCHLET_SRCS += fil_image_tools.c
+SHARED_SEARCHLET_SRCS += fil_image_tools.c fil_rgb.c
 
 SHARED_SEARCHLET_OBJS = fil_histo.o fil_texture.o fil_face.o
-SHARED_SEARCHLET_OBJS += fil_image_tools.o
+SHARED_SEARCHLET_OBJS += fil_image_tools.o fil_rgb.o
 
       
 SHARED_APP_SRCS = rgb.c img_search.cc

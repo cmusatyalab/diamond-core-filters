@@ -53,6 +53,7 @@
 #include "snapfind.h"
 #include "import_sample.h"
 #include "gtk_image_tools.h"
+#include "fil_image_tools.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -615,7 +616,8 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	rgbimg = (RGBImage*)ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
 
 	if (rgbimg == NULL) {
-		rgbimg = get_rgb_img(ohandle);
+		rgbimg = get_attr_rgb_img(ohandle, "DATA0");
+		//rgbimg = get_rgb_img(ohandle);
 	}	
 	assert(rgbimg);
 	assert(rgbimg->width);

@@ -1058,7 +1058,10 @@ do_img_popup(GtkWidget *widget)
 	 * pointer we gave gtk. instead, we save a pointer in the
 	 * widget. (maybe the prototype didn't match) -RW */
 
-	if(!thumb->img) goto done;
+	if(!thumb->img) {
+		printf("no img !! \n");
+		goto done;
+	}
 
 	if(!popup_window.window) {
 		popup_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -1140,7 +1143,6 @@ do_img_popup(GtkWidget *widget)
 		  widget = existing_search_panel();
 		  gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
-
 		  /* control button to clear selected regions */
 		  hbox = gtk_hbox_new(FALSE, 10);
 		  gtk_box_pack_start (GTK_BOX(buttonbox), hbox, TRUE, FALSE, 0);
@@ -1183,6 +1185,7 @@ do_img_popup(GtkWidget *widget)
 	sprintf(buf, "Image: %s", thumb->name);
 	gtk_window_set_title(GTK_WINDOW(popup_window.window), buf);
 
+	rgb_write_image(popup_window.hooks->img, "dummy.ppm", ".");
 
 	image = popup_window.drawing_area = gtk_drawing_area_new();
 	GTK_WIDGET_UNSET_FLAGS (image, GTK_CAN_DEFAULT);
@@ -1229,8 +1232,7 @@ do_img_popup(GtkWidget *widget)
 	gtk_container_foreach(GTK_CONTAINER(popup_window.face_cb_area), 
 			remove_func, popup_window.face_cb_area);
 	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area), 
-		remove_func, 
-			      popup_window.histo_cb_area);
+		remove_func, popup_window.histo_cb_area);
 
 	{
 	    GtkWidget *button = NULL;
@@ -1247,10 +1249,10 @@ do_img_popup(GtkWidget *widget)
 	    }
 
 	    for(int i=0; i<thumb->nboxes; i++) {
-		GtkWidget *widget;
-		widget = describe_hbbox(fhandle, popup_window.hooks->ohandle, 
+			GtkWidget *widget;
+			widget = describe_hbbox(fhandle, popup_window.hooks->ohandle, 
 					       i, &button);
-		gtk_box_pack_start(GTK_BOX(popup_window.histo_cb_area), widget,
+			gtk_box_pack_start(GTK_BOX(popup_window.histo_cb_area), widget,
 				   FALSE, FALSE, 0);
 	    }
 	}

@@ -10,9 +10,7 @@ CFLAGS += -Wall
 CFLAGS += -D_REENTRANT
 CFLAGS += -D_THREAD_SAFE
 CFLAGS_SHARED = $(CFLAGS) -fPIC FLEX = flex 
-#
-# Set the include paths.
-#
+# # Set the include paths.  #
 INCDIR += -I ../../lib/libsearchlet
 INCDIR += -I../../lib/libtools
 INCDIR += -I../../lib/libfilter
@@ -46,11 +44,11 @@ include ../common_searches/Makefile.template
 SEARCHLET_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_COMMON_SRCS)
 SEARCHLET_SRCS += fil_regex.c
 SEARCHLET_SRCS += fil_data2cv.c 
-SEARCHLET_SRCS += fil_synth.c 
+SEARCHLET_SRCS += fil_synth.c  
 
 SEARCHLET_OBJS = $(SHARED_SEARCHLET_OBJS) $(SHARED_COMMON_OBJS)
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
-SEARCHLET_OBJS += fil_synth.o  
+SEARCHLET_OBJS += fil_synth.o 
 
 
 
