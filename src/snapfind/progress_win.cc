@@ -539,7 +539,7 @@ stats_main(void *data)
 		}
 		last_id = id;
 
-		if (time > 1.1)  {
+		if (time > 3.5)  {
 			// XXX printf("done %f \n", done);
 			gwin->add_point((double)time, done, id);
 		}
