@@ -3,15 +3,14 @@
  * texture filter
  */
 
+#include <opencv/cv.h>
+#include <stdio.h>
 #include "face.h"
 #include "filter_api.h"
 #include "fil_file.h"
 #include "fil_texture.h"
 #include "fil_tools.h"
 #include "texture_tools.h"
-#include "face_consts.h"
-#include <opencv/cv.h>
-#include <stdio.h>
 #include "image_tools.h"
 
 #define VERBOSE 1

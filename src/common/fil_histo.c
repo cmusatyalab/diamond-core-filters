@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
+#include <assert.h>
 
 #include "face.h"
 #include "common_consts.h"
