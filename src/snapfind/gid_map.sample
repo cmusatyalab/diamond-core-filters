@@ -1,0 +1,57 @@
+#01:02:03:04:05:06:07:08   localhost
+#00:00:00:00:00:00:00:00   localhost mucher
+#00:00:00:00:00:00:00:01   diamond05 diamond06 diamond07 diamond08  
+#00:00:00:00:00:00:00:01   localhost 
+
+# /data1/photos/larry - raw
+00:00:00:00:00:00:00:01   diamond01 diamond02 diamond03 diamond04  
+# /data1/photos/larry - ppm
+00:00:00:00:00:00:00:02   diamond01 diamond02 diamond03 diamond04  
+
+# /data1/photos/gbell - raw
+00:00:00:00:00:00:00:03   diamond01 diamond02 diamond03 diamond04  
+# /data1/photos/gbell - ppm
+00:00:00:00:00:00:00:04   diamond01 diamond02 diamond03 diamond04  
+
+# /data1/photos/intel_press - raw
+00:00:00:00:00:00:00:05   diamond01 diamond02 diamond03 diamond04  
+# /data1/photos/intel_press - ppm
+00:00:00:00:00:00:00:06   diamond01 diamond02 diamond03 diamond04  
+
+# /data1/photos/rahul - raw
+00:00:00:00:00:00:00:07   diamond01 diamond02 diamond03 diamond04  
+# /data1/photos/rahul - ppm
+00:00:00:00:00:00:00:08   diamond01 diamond02 diamond03 diamond04  
+
+# /data1/photos/dwestfall - raw
+00:00:00:00:00:00:00:09   diamond01 diamond02 diamond03 diamond04  
+# /data1/photos/dwestfall - ppm
+00:00:00:00:00:00:00:0A   diamond01 diamond02 diamond03 diamond04  
+
+# /data1/photos/mm270000 - raw
+00:00:00:00:00:00:00:0B   diamond01 diamond02 diamond03 diamond04  
+# /data1/photos/mm270000 - ppm
+00:00:00:00:00:00:00:0C   diamond01 diamond02 diamond03 diamond04  
+
+# /data1/photos/corel_professionl - raw
+00:00:00:00:00:00:00:0D   diamond01 diamond02 diamond03 diamond04  
+# /data1/photos/corel_professionl - ppm
+00:00:00:00:00:00:00:0E   diamond01 diamond02 diamond03 diamond04  
+
+# /data1/photos/bhuston - raw
+00:00:00:00:00:00:00:0F   diamond01 diamond02 diamond03 diamond04  
+# /data1/photos/bhuston - ppm
+00:00:00:00:00:00:00:10   diamond01 diamond02 diamond03 diamond04  
+
+# All images bug mm270000 - ppm
+00:00:00:00:00:00:04:00 diamond12 diamond11 diamond10 diamond09  \
+			diamond08 diamond07 diamond06 diamond05  \
+			diamond04 diamond03 diamond02 diamond01  
+
+00:00:00:00:00:00:00:21 diamond01 diamond02 diamond03 diamond04  \
+			diamond05 diamond06 diamond07 diamond08  \
+			diamond09 diamond10 diamond11 diamond12  
+
+# Live webcam data
+# 00:00:00:00:01:00:00:00  diamond05 diamond06 diamond07 diamond08  \
+#						diamond09 diamond10 diamond11 diamond12  
