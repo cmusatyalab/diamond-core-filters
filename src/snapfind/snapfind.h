@@ -28,9 +28,6 @@ extern thumbnail_t *cur_thumbnail;
 extern "C" {
 #endif
 
-void ss_add_dep(img_search *dep);
-
-                                                                                 
 #ifdef __cplusplus
 }
 #endif

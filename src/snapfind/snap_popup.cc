@@ -598,7 +598,7 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	sname =  gtk_entry_get_text(GTK_ENTRY(popup_window.search_name));
     	if (strlen(sname) < 1) {
 		dialog = gtk_dialog_new_with_buttons("Filter Name", 
-				GTK_WINDOW(popup_window.window), GTK_DIALOG_DESTROY_WITH_PARENT,
+		GTK_WINDOW(popup_window.window), GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_STOCK_OK, GTK_RESPONSE_NONE, NULL);
 		label = gtk_label_new("Please provide a name");
 		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), label);
@@ -614,13 +614,13 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	ssearch = create_search(stype, sname);
 	assert(ssearch != NULL);
 
-
 	/* put this in the list of searches */
 	sset->add_search(ssearch);
 
 	/* put the patches into the newly created search */
 	for(int i=0; i<popup_window.nselections; i++) {
-		ssearch->add_patch(popup_window.hooks->img, popup_window.selections[i]);
+		ssearch->add_patch(popup_window.hooks->img,
+			popup_window.selections[i]);
   	}
  
 	/* popup the edit window */ 

@@ -79,10 +79,9 @@ public:
 	void		close_edit_win();
 	/* XXX need to free the above */
 
-    img_search &operator=(const img_search &rhs);
-    int operator==(const img_search &rhs) const;
-    int operator<(const img_search &rhs) const;
-                                                                                
+    	img_search &operator=(const img_search &rhs);
+    	int operator==(const img_search &rhs) const;
+    	int operator<(const img_search &rhs) const;
 
 private:
 	char *	display_name;

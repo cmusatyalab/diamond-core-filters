@@ -9,6 +9,7 @@
 #include "image_tools.h"
 #include "texture_tools.h"
 #include "img_search.h"
+#include "search_set.h"
 //#include "snapfind.h"
 
 #define	MAX_DISPLAY_NAME	64
@@ -441,8 +442,8 @@ texture_search::write_fspec(FILE *ostream)
 	 fprintf(ostream, "REQUIRES  RGB # dependencies \n");
 	 fprintf(ostream, "MERIT  100 # some relative cost \n");
 
-    rgb = new rgb_img("RGB image", "RGB image");
-    ss_add_dep(rgb);
+    	rgb = new rgb_img("RGB image", "RGB image");
+	(this->get_parent())->add_dep(rgb);
 }
 
 void

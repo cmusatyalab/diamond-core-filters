@@ -8,16 +8,12 @@
 #include "queue.h"
 #include "rgb.h"
 #include "common_consts.h"
-//#include "histo.h"
 #include "image_tools.h"
-//#include "texture_tools.h"
 #include "img_search.h"
-//#include "gui_thread.h"
-//#include "snapfind.h"
-//#include "fil_tools.h"
 #include "facedet.h"
 #include "face_tools.h"
 #include "fil_data2ii.h"
+#include "search_set.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -336,7 +332,7 @@ ocv_face_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 
 	ss = new rgb_img("RGB image", "RGB image");
-	ss_add_dep(ss);
+  	(this->get_parent())->add_dep(ss);
 }
 
 void

@@ -9,6 +9,7 @@
 #include "rgb.h"
 //#include "histo.h"
 #include "img_search.h"
+#include "search_set.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -81,8 +82,8 @@ histo_ii::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  4  # dependancies \n");
 	fprintf(ostream, "ARG  %d  # dependancies \n", HISTO_INTERPOLATED);
 
-    rgb = new rgb_img("RGB image", "RGB image");
-    ss_add_dep(rgb);
+    	rgb = new rgb_img("RGB image", "RGB image");
+	(this->get_parent())->add_dep(rgb);
 }
 
 void

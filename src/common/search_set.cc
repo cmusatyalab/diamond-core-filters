@@ -28,6 +28,7 @@ search_set::~search_set()
 void
 search_set::add_search(img_search *new_search)
 {
+	new_search->set_parent(this);
 	ss_search_list.push_back(new_search);
 }
 
@@ -41,6 +42,18 @@ search_set::remove_search(img_search *old_search)
 void
 search_set::add_dep(img_search *dep_search)
 {
+	img_search *check;
+	search_iter_t iter;
+	
+	reset_dep_iter(&iter);
+	while((check = get_next_dep(&iter)) != NULL) {
+		if (*dep_search == *check) {
+			delete dep_search;
+			return;
+		}
+	}
+
+	dep_search->set_parent(this);
 	ss_dep_list.push_back(dep_search);
 }
 
@@ -48,8 +61,14 @@ search_set::add_dep(img_search *dep_search)
 void
 search_set::clear_deps()
 {
-	/* XXX */
+	img_search *old;
 
+	printf("XXXXXXXXXX clear deps \n");
+	while ((old = ss_dep_list.back()) != NULL) {
+		ss_dep_list.pop_back();
+		printf("delete %s \n", old->get_name());
+		delete old;
+	}
 }
 
 

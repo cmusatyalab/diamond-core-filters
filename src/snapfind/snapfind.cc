@@ -360,31 +360,6 @@ get_gid_list(gid_list_t *main_region)
 	}
 }
 
-void
-ss_clear_deps()
-{
-	snap_searchset->clear_deps();
-}
-
-void
-ss_add_dep(img_search *dep)
-{
-	img_search *check;
-	search_iter_t	iter;
-	/* for now we use the name to detect the same dependancy has been added*/
-	/* XXX TODO:  look for better method */
-
-	snap_searchset->reset_dep_iter(&iter);
-	while ((check = snap_searchset->get_next_dep(&iter)) != NULL) {
-		if (dep == check) {
-			delete dep;
-			return;
-		}
-	}
-
-	snap_searchset->add_dep(dep);
-	return;
-}
 
 /*
  * Build the filters specification into the temp file name
@@ -429,12 +404,11 @@ build_filter_spec(char *tmp_file)
 	}
 
 	/* clear the dependancies */
-	ss_clear_deps();
+	snap_searchset->clear_deps();
 
 	/* we always do rgb, XXX should we ??*/
 	rgb = new rgb_img("RGB image", "RGB image");
-    	ss_add_dep(rgb);
-
+	snap_searchset->add_dep(rgb);
 	
 	snap_searchset->reset_search_iter(&iter);
 	while ((snapobj = snap_searchset->get_next_search(&iter)) != NULL) {

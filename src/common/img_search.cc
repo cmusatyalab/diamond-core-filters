@@ -367,7 +367,8 @@ img_search::operator == (const img_search &rhs) const
 
 	t1 = get_name();
 	t2 = rhs.get_name();	
-	return(strcmp(t1, t2));
+
+	return(!strcmp(t1, t2));
 }
                                                                                 
 

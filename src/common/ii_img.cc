@@ -9,6 +9,7 @@
 #include "rgb.h"
 //#include "histo.h"
 #include "img_search.h"
+#include "search_set.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -79,8 +80,8 @@ ii_img::write_fspec(FILE *ostream)
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
 	fprintf(ostream, "MERIT  30  # merit value \n");
 
-    rgb = new rgb_img("RGB image", "RGB image");
-    ss_add_dep(rgb);
+	rgb = new rgb_img("RGB image", "RGB image");
+	(this->get_parent())->add_dep(rgb);
 }
 
 void

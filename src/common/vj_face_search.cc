@@ -18,6 +18,7 @@
 #include "facedet.h"
 #include "face_tools.h"
 #include "fil_data2ii.h"
+#include "search_set.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -433,7 +434,7 @@ vj_face_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 
 	ss = new ii_img("II image", "II image");
-	ss_add_dep(ss);
+	(this->get_parent())->add_dep(ss);
 
 	if (do_merge) {
 	 	fprintf(ostream, "\n");
@@ -448,7 +449,7 @@ vj_face_search::write_fspec(FILE *ostream)
 	}
 
 	ss = new rgb_img("RGB image", "RGB image");
-	ss_add_dep(ss);
+	(this->get_parent())->add_dep(ss);
 }
 
 void
