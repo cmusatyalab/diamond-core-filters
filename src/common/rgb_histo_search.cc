@@ -386,17 +386,15 @@ rgb_histo_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", get_matches());	/* XXX should we change */
+	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * simularity));
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo_detect \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_histo_detect \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_histo_detect \n");
 	fprintf(ostream, "ARG  %s  # name \n", get_name());
 	
-
-
 	/*
 	 * Next we write call the parent to write out the releated args,
-	 * not that since the args are passed as a vector of strings
+	 * note that since the args are passed as a vector of strings
 	 * we need keep the order the args are written constant or silly
 	 * things will happen.
 	 */
@@ -409,12 +407,11 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	 */
 
 	fprintf(ostream, "ARG  %d  # num bins \n", HBINS);
-	fprintf(ostream, "ARG  %f  # simularity \n", simularity);
+	fprintf(ostream, "ARG  %f  # simularity \n", 0.0);
 	fprintf(ostream, "ARG  %d  # distance metric \n", metric);
 	fprintf(ostream, "ARG  %d  # histo type \n", htype);
 	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
 
-	//printf("XXXX write patch \n");
 
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int	bins;
@@ -438,10 +435,10 @@ rgb_histo_search::write_fspec(FILE *ostream)
   	(this->get_parent())->add_dep(rgb);
 }
 
+
 void
 rgb_histo_search::write_config(FILE *ostream, const char *dirname)
 {
-
 	save_edits();
 
 	/* create the search configuration */
@@ -453,7 +450,6 @@ rgb_histo_search::write_config(FILE *ostream, const char *dirname)
 	/* XXX add bins XXX */
 
 	example_search::write_config(ostream, dirname);
-
 	return;
 }
 
@@ -504,10 +500,7 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 	pass =  histo_scan_image(hconfig.name, img, ii, &hconfig, 
 		INT_MAX /* XXX */, blist);
     
-
-	                                                                                 
 	/* XXX cleanup */
 
 	return;
 }
-

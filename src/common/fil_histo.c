@@ -77,9 +77,7 @@ static unsigned long long
 read_cycle()
 {
         unsigned long long      foo;
-                                                                                                  
         rdtscll(foo);
-                                                                                                  
         return(foo);
 }
 
@@ -314,26 +312,14 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     lf_fhandle_t    fhandle = 0;    /* XXX */
     histo_config_t *hconfig = (histo_config_t *) f_data;
     int             nhisto;
+    float           min_simularity;
     HistoII        *ii = NULL;
     int             rv = 0;     /* return value */
 	bbox_t *		cur_box;
-	int			i;
+	int				i;
 	
 
     lf_log(fhandle, LOGL_TRACE, "f_histo_detect: enter");
-
-#ifdef VERBOSE
-    /*
-     * XXX 
-     */
-    {
-        char            buf[BUFSIZ];
-        bsize = BUFSIZ;
-        err = lf_read_attr(fhandle, ohandle, OBJ_PATH, &bsize, buf);
-        if (!err)
-            lf_log(fhandle, LOGL_TRACE, "processing %s...", buf);
-    }
-#endif
 
     /*
      * get the img 
@@ -346,7 +332,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
      * get the ii 
      */
     ii = (HistoII *) ft_read_alloc_attr(fhandle, ohandle, HISTO_II);
-
     if (ii == NULL) {
 		ii = histo_get_ii(hconfig, img);
     } 
@@ -361,6 +346,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
         nhisto = 0;             /* XXX */
 	}
 
+
     /*
      * scan the image
      */
@@ -369,10 +355,11 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     context.ohandle = ohandle;
 
 	TAILQ_INIT(&blist);
-	pass = 	histo_scan_image(hconfig->name, img, ii, hconfig, hconfig->req_matches,
-		&blist);
+	pass = 	histo_scan_image(hconfig->name, img, ii, hconfig,
+		hconfig->req_matches, &blist);
 
 	i = nhisto;
+	min_simularity = 2.0;
 	while (!(TAILQ_EMPTY(&blist))) {
 		search_param_t param;
 		cur_box = TAILQ_FIRST(&blist);
@@ -382,6 +369,9 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 		param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
 		param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
 		param.distance = cur_box->distance;
+		if ((1.0 - cur_box->distance) < min_simularity) {
+			min_simularity = 1.0 - cur_box->distance;
+		}
 		strncpy(param.name, hconfig->name, PARAM_NAME_MAX);
 		param.name[PARAM_NAME_MAX] = '\0';
 		param.id = i;
@@ -402,7 +392,11 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
     /*
      * XXX ?? 
      */
-    rv = pass;
+	if (min_simularity == 2.0) {
+		rv = 0;
+	} else {
+    	rv = (int)(100.0 * min_simularity);
+	}
 
 done:
     if (img)
