@@ -54,6 +54,7 @@
 #include "import_sample.h"
 #include "gtk_image_tools.h"
 #include "fil_image_tools.h"
+#include "search_set.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -118,11 +119,8 @@ static struct {
 img_search * snap_searches[MAX_SEARCHES];
 int num_searches = 0;
 
-/* XXXX fix this */
-#define	MAX_SEARCHES	64
-img_search * snap_deps[MAX_SEARCHES];
-int num_deps = 0;
 
+search_set *	snap_searchset;
 
 static lf_fhandle_t fhandle = 0;	/* XXX */
 
@@ -215,7 +213,7 @@ extern region_t draw_bounding_box(RGBImage *img, int scale,
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
 
 /* from read_config.l */
-extern int read_search_config(char *fname, img_search **list, int *num);
+extern int read_search_config(char *fname, search_set *set);
 
 /* from face_search.c */
 extern void drain_ring(ring_data_t *ring);
@@ -365,31 +363,26 @@ get_gid_list(gid_list_t *main_region)
 void
 ss_clear_deps()
 {
-	int	i;
-	for (i=0; i < num_deps; i++) {
-		delete snap_deps[i];
-	}
-	num_deps = 0;
+	snap_searchset->clear_deps();
 }
 
 void
 ss_add_dep(img_search *dep)
 {
-	int 	i;
-
+	img_search *check;
 	/* for now we use the name to detect the same dependancy has been added*/
 	/* XXX TODO:  look for better method */
-	for (i=0; i < num_deps; i++) {
-		if (strcmp(dep->get_name(), snap_deps[i]->get_name()) == 0) {
+
+	check = snap_searchset->get_first_dep();
+	while (check != NULL) {
+		if (strcmp(dep->get_name(), check->get_name()) == 0) {
 			delete dep;
 			return;
 		}
+		check = snap_searchset->get_next_dep();
 	}
 
-	assert(num_deps < MAX_SEARCHES);
-
-	snap_deps[num_deps] = dep;
-	num_deps++;
+	snap_searchset->add_dep(dep);
 	return;
 }
 
@@ -407,7 +400,6 @@ build_filter_spec(char *tmp_file)
 	int			err;
 	int         fd;
 	img_search *		snapobj;
-	int					i;
 	img_search *		rgb;
 
 	tmp_storage = (char *)malloc(L_tmpnam);	/* where is the free for this? XXX */
@@ -443,19 +435,22 @@ build_filter_spec(char *tmp_file)
     ss_add_dep(rgb);
 
 
-	for (i = 0; i < num_searches ; i++) {
-		snapobj = snap_searches[i];
+	snapobj = snap_searchset->get_first_search();
+	while(snapobj != NULL) {
 		if (snapobj->is_selected()) {
 			snapobj->save_edits();
 			snapobj->write_fspec(fspec);
 		}
+		snapobj = snap_searchset->get_next_search();
 	}
 
-	/* write the dependancy lists */
-	for (i = 0; i < num_deps ; i++) {
-			snapobj = snap_deps[i];
+	/* write dependency list */
+	snapobj = snap_searchset->get_first_dep();
+	while (snapobj != NULL) {
 			snapobj->write_fspec(fspec);
+			snapobj = snap_searchset->get_next_dep();
 	}
+
 
 	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
 	fprintf(fspec, "REQUIRES  RGB  # dependancies \n");
@@ -498,7 +493,7 @@ cb_img_popup(GtkWidget *widget, GdkEventButton *event, gpointer data)
   /* dispatch based on the button pressed */
   switch(event->button) {
   case 1:
-    do_img_popup(widget);
+    do_img_popup(widget, snap_searchset);
     break;
   case 3:
     do_img_mark(widget);
@@ -952,13 +947,13 @@ cb_save_spec_to_filename()
 }
 
 static void
-write_search_config(const char *dirname, img_search **searches, int nsearches)
+write_search_config(const char *dirname, search_set *set)
 {
 	struct stat	buf;
 	int			err;
-	int			i;
 	FILE *		conf_file;
 	char		buffer[256];	/* XXX check */
+	img_search *snapobj;
 
 
 	/* Do some test on the dir */
@@ -986,9 +981,13 @@ write_search_config(const char *dirname, img_search **searches, int nsearches)
 	sprintf(buffer, "%s/%s", dirname, SEARCH_CONFIG_FILE);
 	conf_file = fopen(buffer, "w");
 
-	for (i=0; i < nsearches; i++) {
-		snap_searches[i]->write_config(conf_file, dirname);
+
+	snapobj = snap_searchset->get_first_search();
+	while(snapobj != NULL) {
+		snapobj->write_config(conf_file, dirname);
+		snapobj = snap_searchset->get_next_search();
 	}
+
 	fclose(conf_file);
 }
 
@@ -1015,7 +1014,7 @@ create_search_window()
     GtkWidget *table;
     GtkWidget *frame, *widget;
     int row = 0;        /* current table row */
-	int			i;
+	img_search	*snapobj;
 
     GUI_THREAD_CHECK(); 
 
@@ -1044,15 +1043,20 @@ create_search_window()
 	gtk_widget_show(widget);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
 
-	for (i=0; i < num_searches; i++) {
-		row = i + 1;
-		widget = snap_searches[i]->get_search_widget();
+
+	snapobj = snap_searchset->get_first_search();
+	while(snapobj != NULL) {
+		row++;
+		widget = snapobj->get_search_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
-		widget = snap_searches[i]->get_config_widget();
+		widget = snapobj->get_config_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
-		widget = snap_searches[i]->get_edit_widget();
+		widget = snapobj->get_edit_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+
+		snapobj = snap_searchset->get_next_search();
 	}
+
 	gtk_container_add(GTK_CONTAINER(frame), table);
     gtk_box_pack_start(GTK_BOX(box1), frame, FALSE, FALSE, 10);
     gtk_widget_show(frame);
@@ -1112,7 +1116,7 @@ cb_import_search_from_dir(GtkWidget *widget, gpointer user_data)
 
 	/* XXXX cleanup all the old searches first */
 
-	read_search_config(buf, snap_searches, &num_searches);
+	read_search_config(buf, snap_searchset);
 	
 	err = chdir(olddir);
 	assert(err == 0);
@@ -1153,7 +1157,7 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 	/* XXXX cleanup all the old searches first */
 
 	num_searches = 0;
-	read_search_config(buf, snap_searches, &num_searches);
+	read_search_config(buf, snap_searchset);
 	
 	err = chdir(olddir);
 	assert(err == 0);
@@ -1183,11 +1187,8 @@ cb_save_search_dir(GtkWidget *widget, gpointer user_data)
 
 	sprintf(buf, "%s/%s", dirname, "search_config");
 
-	/* XXXX cleanup all the old searches first */
-
-	printf("Reading scapes: %s ...\n", buf);
-	write_search_config(dirname, snap_searches, num_searches);
-	printf("Done reading scapes...\n");
+	/* write out the config */
+	write_search_config(dirname, snap_searchset);
 
 	gtk_widget_destroy(gui.search_widget);
     gui.search_widget = create_search_window();
@@ -1666,7 +1667,7 @@ cb_quit() {
 static void
 cb_import(GtkWidget *widget, gpointer user_data) 
 {
-	open_import_window(snap_searches, num_searches);
+	open_import_window(snap_searchset);
 }
 
 
@@ -1738,7 +1739,7 @@ redo:
 		}
 
 		/* check for name conflicts */
-		if (search_exists(new_name, snap_searches, num_searches)) {
+		if (search_exists(new_name, snap_searchset)) {
 			gtk_label_set_text(GTK_LABEL(helplabel),
 					"Name exists: Please change");
 			goto redo;
@@ -1748,7 +1749,7 @@ redo:
 		assert(ssearch != NULL);	
 
 		/* add to the list of searches */
-		search_add_list(ssearch, snap_searches, &num_searches);
+		snap_searchset->add_search(ssearch);
 
 		/* popup the new search edit box */	
 		ssearch->edit_search();
@@ -1756,7 +1757,6 @@ redo:
 	gtk_widget_destroy(dialog);
 
 	/* XXX get the name from the user */
-
 }
 
 
@@ -2062,6 +2062,8 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
+	
+	snap_searchset = new search_set();
 
 	/* 
 	 * read the list of collections
@@ -2090,7 +2092,7 @@ main(int argc, char *argv[])
 
 
 	GUI_THREAD_ENTER();
-    	create_main_window();
+	create_main_window();
 	GUI_THREAD_LEAVE();
 
 	/* 
@@ -2110,7 +2112,7 @@ main(int argc, char *argv[])
 	 */
 
 	MAIN_THREADS_ENTER(); 
-    	gtk_main();
+	gtk_main();
  	MAIN_THREADS_LEAVE();  
 
 	return(0);

@@ -40,7 +40,6 @@ void
 search_set::remove_search(img_search *old_search)
 {
 	/* XXX */
-
 }
 
 void
@@ -71,6 +70,11 @@ img_search *
 search_set::get_next_search()
 {
 	img_search  *	dsearch;
+
+	if (ss_cur_search == ss_search_list.end()) {
+		return(NULL);
+	}
+
 	dsearch = *ss_cur_search;
 	ss_cur_search++;
 	return(dsearch);
@@ -85,11 +89,14 @@ search_set::get_first_dep()
 }
 
 
-
 img_search *
 search_set::get_next_dep()
 {
 	img_search  *	dsearch;
+
+	if (ss_cur_dep == ss_dep_list.end()) {
+		return(NULL);
+	}
 	dsearch = *ss_cur_dep;
 	ss_cur_dep++;	
 	return(dsearch);	
@@ -98,10 +105,7 @@ search_set::get_next_dep()
 int
 search_set::get_search_count()
 {
-
 	return(ss_search_list.size());
 }
-
-
 
 

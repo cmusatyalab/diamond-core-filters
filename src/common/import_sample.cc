@@ -34,15 +34,14 @@
 #include "img_search.h"
 #include "search_support.h"
 #include "gtk_image_tools.h"
+#include "search_set.h"
 
 /* XXX horible hack */
 #define	MAX_SELECT	32	
 #include "import_sample.h"
 //#include "snapfind.h"
 
-/* XXX fix this */
-static img_search **search_list;
-static int	 	   search_list_size;
+static search_set *	sset = NULL;
 
 
 void update_search_entry(img_search *cur_search, int row);
@@ -227,8 +226,8 @@ image_highlight_main(void *ptr)
 	RGBPixel color = red;
 	guint			id;
 	int				use_box;
+	img_search *	csearch;
 	int err;
-	int	i;
 
 	err = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	assert(!err);
@@ -257,23 +256,26 @@ image_highlight_main(void *ptr)
 	GUI_THREAD_LEAVE();
 
 	import_window.nselections = 0;
-	for (i=0; i < search_list_size; i++) {
+
+	/* XXX we have ordering issues here */
+	csearch = sset->get_first_search();
+	while (csearch != NULL) {
 		/* if highlight isn't selected, then go to next object */
-		if (search_list[i]->is_hl_selected() == 0) {
-			continue;
+		if (csearch->is_hl_selected() == 0) {
+			goto next;
 		}
 
 		TAILQ_INIT(&bblist);
 
-  		snprintf(buf, BUFSIZ, "scanning %s ...", search_list[i]->get_name());
+  		snprintf(buf, BUFSIZ, "scanning %s ...", csearch->get_name());
 		buf[BUFSIZ - 1] = '\0';
 		GUI_THREAD_ENTER();
 		gtk_statusbar_push(GTK_STATUSBAR(import_window.statusbar), id, buf);
 		GUI_THREAD_LEAVE();
 
-		search_list[i]->region_match(import_window.img, &bblist);
+		csearch->region_match(import_window.img, &bblist);
 
-  		snprintf(buf, BUFSIZ, "highlighting %s", search_list[i]->get_name());
+  		snprintf(buf, BUFSIZ, "highlighting %s", csearch->get_name());
 		buf[BUFSIZ - 1] = '\0';
 		GUI_THREAD_ENTER();
 		gtk_statusbar_push(GTK_STATUSBAR(import_window.statusbar), id, buf);
@@ -297,11 +299,13 @@ image_highlight_main(void *ptr)
 			hl_img->width, hl_img->height);
 		GUI_THREAD_LEAVE();
 
-  		snprintf(buf, BUFSIZ, "done %s", search_list[i]->get_name());
+  		snprintf(buf, BUFSIZ, "done %s", csearch->get_name());
 		buf[BUFSIZ - 1] = '\0';
 		GUI_THREAD_ENTER();
 		gtk_statusbar_push(GTK_STATUSBAR(import_window.statusbar), id, buf);
 		GUI_THREAD_LEAVE();
+next:
+		csearch = sset->get_next_search();
 	}
 
 	/* update statusbar */ snprintf(buf, BUFSIZ, "Highlight complete");
@@ -489,14 +493,18 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	guint	id;
   	GUI_CALLBACK_ENTER();
 
+	/* XXXX fix */
+	return(TRUE);
+
 	active_item = gtk_menu_get_active(GTK_MENU(import_window.example_list));
 
 	idx = (int)g_object_get_data(G_OBJECT(active_item), "user data");
-
+#ifdef	XXX
 	assert(idx >= 0);
 	assert(idx < search_list_size);
 
 	ssearch = search_list[idx];
+#endif
 
 	for(int i=0; i<import_window.nselections; i++) {
 		ssearch->add_patch(import_window.img, 
@@ -570,9 +578,8 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	ssearch = create_search(stype, sname);
 	assert(ssearch != NULL);
 
-
 	/* put this in the list of searches */
-	search_add_list(ssearch, search_list, &search_list_size);
+	sset->add_search(ssearch);	
 
 	/* put the patches into the newly created search */
 	for(int i=0; i<import_window.nselections; i++) {
@@ -753,19 +760,22 @@ get_example_menu(void)
 	GtkWidget *     menu;
 	GtkWidget *     item;
 	img_search *	cur_search;
-	int		i;
+	int				i;
                                                                                 
 	menu = gtk_menu_new();
-                         
-	for (i=0;i<search_list_size; i++) {
-		cur_search = search_list[i];
+                        
+	cur_search = sset->get_first_search();
+	while (cur_search != NULL) {
 		if (cur_search->is_example() == 0) {
-			continue;
+			goto next;
 		}
 		item = gtk_menu_item_new_with_label(cur_search->get_name());
 		gtk_widget_show(item);
-		g_object_set_data(G_OBJECT(item), "user data", (void *)i);
+		g_object_set_data(G_OBJECT(item), "user data", (void *)cur_search);
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+
+next:
+		cur_search = sset->get_next_search();
 	}
                                        
 	return(menu);
@@ -927,7 +937,7 @@ make_highlight_table()
     GtkWidget *table;
     GtkWidget *widget;
     int row = 0;        /* current table row */
-	int			i;
+	img_search *csearch;
 
     table = gtk_table_new(MAX_SEARCHES+1, 3, FALSE);
     gtk_table_set_row_spacings(GTK_TABLE(table), 2);
@@ -945,14 +955,18 @@ make_highlight_table()
     widget = gtk_label_new("Edit");
     gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1); 
-	for (i=0; i < search_list_size; i++) {
-		row = i + 1;
-		widget = search_list[i]->get_highlight_widget();
+
+	csearch = sset->get_first_search();
+	while (csearch != NULL) {
+		row ++;
+		widget = csearch->get_highlight_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
-		widget = search_list[i]->get_config_widget();
+		widget = csearch->get_config_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
-		widget = search_list[i]->get_edit_widget();
+		widget = csearch->get_edit_widget();
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+
+		csearch = sset->get_next_search();
 	}
     gtk_widget_show_all(table);
 
@@ -1107,15 +1121,14 @@ load_import_file(const char *file)
 }
 
 void
-open_import_window(img_search ** search_array, int num_searches) 
+open_import_window(search_set *set)
 {
 	GtkWidget *frame;
 	GtkWidget *button;
 	GtkWidget *widget;
 	GtkWidget *hbox;
 
-	search_list = search_array;
-	search_list_size = num_searches;
+	sset = set;
 	if (import_window.window == NULL) {
 		import_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title(GTK_WINDOW(import_window.window), "Image");

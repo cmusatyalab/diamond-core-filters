@@ -88,7 +88,7 @@ TARGETS = $(SHARED_HEADERS) snapfind snap_searchlet.so
 include ${DIAMOND_ROOT}/Makefile.template
 
 # XXX
-CFLAGS += -finline-functions -fkeep-inline-functions -funroll-loops
+CFLAGS += -finline-functions -funroll-loops
 # turns on unsafe fp optimizations; we don't require strict IEEE
 CFLAGS += -ffast-math
 

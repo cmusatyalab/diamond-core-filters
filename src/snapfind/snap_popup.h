@@ -52,7 +52,7 @@ typedef	struct pop_win {
 
 extern pop_win_t popup_window;
 
-void do_img_popup(GtkWidget *widget);
+void do_img_popup(GtkWidget *widget, search_set *set);
 
 void search_popup_add(img_search *ssearch, int nsearch);
 

@@ -66,7 +66,7 @@ public:
 	void		set_parent(search_set *);
 	search_set *	get_parent();
 
-	char *			get_name();
+	const char *			get_name() const; 
 	int			set_name(const char *new_name);
 
 	void		set_active_val(int val);
@@ -78,6 +78,11 @@ public:
 	GtkWidget *	get_edit_widget();
 	void		close_edit_win();
 	/* XXX need to free the above */
+
+    img_search &operator=(const img_search &rhs);
+    int operator==(const img_search &rhs) const;
+    int operator<(const img_search &rhs) const;
+                                                                                
 
 private:
 	char *	display_name;

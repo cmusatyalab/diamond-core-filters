@@ -9,6 +9,7 @@
 #include "fil_histo.h"
 #include "img_search.h"
 #include "search_support.h"
+#include "search_set.h"
 
 static char *eat_token(char *tok);
 static void new_search(char *tok);
@@ -17,10 +18,8 @@ static void error();
 /* #define VERBOSE 1 */
 
 static img_search *cur_search = NULL;
+static search_set *set = NULL;
 
-static img_search **sslist;
-static int		     num_ss = 0;
-static int		     max_ss = 64;	/* XXX fix this, should be MAX_SEARCHES */
 
 %}
 
@@ -100,10 +99,6 @@ new_search(char *str)
 	type[i] = '\0';
 	name = eat_token(str);		
 
-	if (num_ss >= max_ss) {
-		printf("too many searches \n");
-		exit(1);
-	}
 
 	if (strcmp(type, "rgb_histogram") == 0) {
 		cur_search = create_search(RGB_HISTO_SEARCH, name);
@@ -122,8 +117,7 @@ new_search(char *str)
 		exit(1);
 	}
 
-	sslist[num_ss] = cur_search;
-	num_ss++;
+	set->add_search(cur_search);
 }
 
 
@@ -134,12 +128,11 @@ new_search(char *str)
  */
 
 int
-read_search_config(char *fname, img_search **list, int *num)
+read_search_config(char *fname, search_set *read_set)
 {
 	int err;
 
-	num_ss = *num;
-	sslist = list;
+	set = read_set;
 
 	yyin = fopen(fname, "r");
 	if(!yyin) {
@@ -147,8 +140,6 @@ read_search_config(char *fname, img_search **list, int *num)
 		return 1;
 	}
 	err = yylex();
-
-	*num = num_ss;
 
 	return(0);
 }

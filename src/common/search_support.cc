@@ -53,6 +53,7 @@
 //#include "snapfind.h"
 #define MAX_SELECT	64
 #include "import_sample.h"
+#include "search_set.h"
 
 /* XXXX fix this */
 #define MAX_SEARCHES    64
@@ -96,13 +97,16 @@ create_search(search_types_t type, const char *name)
 
 
 int
-search_exists(const char *name, img_search **search_list, int slist_size)
+search_exists(const char *name, search_set *set)
 {
-	int		i;
-	for (i=0; i < slist_size; i++) {
-		if (strcmp(search_list[i]->get_name(), name) == 0) {
-			return (1);
+	img_search *cur;
+
+	cur = set->get_first_search();
+	while (cur != NULL) {
+		if (strcmp(cur->get_name(), name) == 0) {
+			return(1);
 		}
+		cur = set->get_next_search();
 	}
 	return(0);
 }
@@ -149,6 +153,7 @@ unregister_update_function(void (*update_fn)(img_search *searches,
 	assert(0);
 }
 
+#ifdef	XXX
 void
 search_add_list(img_search *new_search, img_search **search_list, int
 	*search_list_size)
@@ -165,3 +170,4 @@ search_add_list(img_search *new_search, img_search **search_list, int
 		}
 	}
 }
+#endif

@@ -3,13 +3,14 @@
 
 #include <iostream>
 #include <list>
-#include <iterator>
+//#include <iterator>
 #include "rgb.h"
 #include "lib_searchlet.h"
 #include "img_search.h"
 
 /* XXX */
 using namespace	std;
+using namespace	__gnu_cxx;
 
 
 class search_set {

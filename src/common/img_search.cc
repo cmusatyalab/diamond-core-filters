@@ -45,8 +45,8 @@ img_search::~img_search()
 	return;
 }
 
-char *
-img_search::get_name()
+const char *
+img_search::get_name() const
 {
 	return(display_name);
 }
@@ -343,3 +343,31 @@ img_search::get_parent()
 {
 	return(parent_set);
 }
+
+img_search &
+img_search::operator = (const img_search &rhs)
+{
+    assert(0);
+    return *this;
+}
+                                                                                
+                                                                                
+int
+img_search::operator < (const img_search &rhs) const
+{
+	/* XXX */
+	return(0);
+}
+                                                                                
+int
+img_search::operator == (const img_search &rhs) const
+{
+	const char * t1;
+	const char * t2;
+
+	t1 = get_name();
+	t2 = rhs.get_name();	
+	return(strcmp(t1, t2));
+}
+                                                                                
+
