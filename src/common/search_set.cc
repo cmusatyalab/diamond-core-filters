@@ -8,12 +8,9 @@
 #include <unistd.h>
 #include <gtk/gtk.h>
 #include <assert.h>
-#include "map_display.h"
 #include "queue.h"
 #include "rgb.h"
 #include "image_tools.h"
-#include "event.h"
-#include "event_search.h"
 #include "img_search.h"
 #include "search_set.h"
 
@@ -65,31 +62,26 @@ search_set::clear_deps()
 img_search *
 search_set::get_first_search()
 {
-	img_search *	fsearch;
-
-	fsearch = ss_search_list.front();
 	ss_cur_search = ss_search_list.begin();
-
-	return(fsearch);
+	return(get_next_search());
 }
 
 
 img_search *
 search_set::get_next_search()
 {
-	return(NULL);	/* XXX */
+	img_search  *	dsearch;
+	dsearch = *ss_cur_search;
+	ss_cur_search++;
+	return(dsearch);
 }
 
 
 img_search *
 search_set::get_first_dep()
 {
-	img_search  *	dsearch;
-
-	dsearch = ss_dep_list.front();
 	ss_cur_dep = ss_dep_list.begin();
-
-	return(dsearch);
+	return(get_next_dep());
 }
 
 
@@ -97,9 +89,10 @@ search_set::get_first_dep()
 img_search *
 search_set::get_next_dep()
 {
-
-	return(NULL);	/* XXX */
-
+	img_search  *	dsearch;
+	dsearch = *ss_cur_dep;
+	ss_cur_dep++;	
+	return(dsearch);	
 }
 
 int

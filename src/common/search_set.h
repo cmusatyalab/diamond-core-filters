@@ -33,10 +33,10 @@ public:
 	int			get_search_count();
 
 private:
-	list<img_search *>				ss_search_list;
+	list<img_search *>		ss_search_list;
 	list<img_search *>::iterator	ss_cur_search;
 
-	list<img_search *>				ss_dep_list;
+	list<img_search *>		ss_dep_list;
 	list<img_search *>::iterator	ss_cur_dep;
 };
 

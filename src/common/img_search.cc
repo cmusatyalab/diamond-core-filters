@@ -18,7 +18,7 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
-#include "img_search.h"
+#include "img_search.h" 
 
 img_search::img_search(const char *name, char *descr)
 {
@@ -33,6 +33,8 @@ img_search::img_search(const char *name, char *descr)
 	name_entry = NULL;
 	search_label = NULL;
 	adjust_label = NULL;
+
+	parent_set = NULL;
 }
 
 
@@ -330,3 +332,14 @@ img_search::save_edits()
 	return;
 }
 
+void
+img_search::set_parent(search_set *new_set)
+{
+	parent_set = new_set;
+}
+
+search_set *
+img_search::get_parent()
+{
+	return(parent_set);
+}

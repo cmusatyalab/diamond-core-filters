@@ -44,6 +44,8 @@ typedef enum {
 } search_types_t; 
 
 
+/* forward declaration to we can get a pointer */
+class search_set;
 
 class img_search {
 public:
@@ -60,6 +62,9 @@ public:
 
 	int				is_selected();
 	int				is_hl_selected();
+	
+	void		set_parent(search_set *);
+	search_set *	get_parent();
 
 	char *			get_name();
 	int			set_name(const char *new_name);
@@ -79,6 +84,7 @@ private:
 	char *	descript;
 	int		search_selected;
 	int		hl_selected;
+	search_set *	parent_set;
 	GtkWidget *	name_entry;
 	GtkWidget *	search_label;
 	GtkWidget *	adjust_label;
