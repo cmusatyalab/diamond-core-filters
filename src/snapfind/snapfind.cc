@@ -432,7 +432,7 @@ ss_add_dep(snap_search *dep)
 
 char *
 build_filter_spec(char *tmp_file, topo_region_t *main_region)
-{ 
+{
 	char * 		tmp_storage = NULL;
 	FILE *		fspec;	
 	int		err;
@@ -501,7 +501,8 @@ build_filter_spec(char *tmp_file, topo_region_t *main_region)
 }
 
 static void
-do_img_mark(GtkWidget *widget) {
+do_img_mark(GtkWidget *widget) 
+{
   thumbnail_t *thumb;
 
   thumb= (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
@@ -519,7 +520,8 @@ do_img_mark(GtkWidget *widget) {
 }
 
 static void
-cb_img_popup(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+cb_img_popup(GtkWidget *widget, GdkEventButton *event, gpointer data) 
+{
 
   GUI_CALLBACK_ENTER();
 
@@ -820,7 +822,7 @@ display_thread(void *data)
 
 	while (1) {
 
-	        pthread_mutex_lock(&ring_mutex);
+        pthread_mutex_lock(&ring_mutex);
 		message = (message_t *)ring_deq(from_search_thread);
 		pthread_mutex_unlock(&ring_mutex);
 
@@ -864,8 +866,6 @@ display_thread(void *data)
 }
 
 
-
-
 static void 
 cb_stop_search(GtkButton* item, gpointer data)
 {
@@ -902,6 +902,7 @@ cb_stop_search(GtkButton* item, gpointer data)
 
         GUI_CALLBACK_LEAVE();
 }
+
 static void 
 cb_start_search(GtkButton* item, gpointer data)
 {
@@ -1264,6 +1265,7 @@ cb_load_search()
 
 	/* Display that dialog */
 	gtk_widget_show (file_selector);
+
 	GUI_CALLBACK_LEAVE();
 }
 
@@ -1733,8 +1735,8 @@ static GtkItemFactoryEntry menu_items[] = { /* XXX */
   //  { "/File/_Open",    "<control>O", (GtkItemFactoryCallback)print_hello,    0, "<StockItem>", GTK_STOCK_OPEN },
   //  { "/File/_Save",    "<control>S", (GtkItemFactoryCallback)print_hello,    0, "<StockItem>", GTK_STOCK_SAVE },
   //  { "/File/Save _As", NULL,         NULL,           0, "<Item>" },
-  { "/File/Load Search",   NULL,  G_CALLBACK(cb_load_search),   0, "<Item>" },
-  { "/File/Import Search",   NULL,  G_CALLBACK(cb_import_search),   0, "<Item>" },
+  {"/File/Load Search", NULL,  G_CALLBACK(cb_load_search), 0, "<Item>" },
+  {"/File/Import Search", NULL,  G_CALLBACK(cb_import_search), 0, "<Item>" },
   { "/File/Save Search As.",   NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
   { "/File/sep1",     NULL,         NULL,           0, "<Separator>" },
   { "/File/_Quit",    "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 0, "<StockItem>", GTK_STOCK_QUIT },
@@ -2031,36 +2033,6 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-#ifdef	XXX
-	printf("Reading scapes: %s ...\n", scapeconf);
-	read_search_config(scapeconf, snap_searches, &num_searches);
-	printf("Done reading scapes...\n");
-#endif
-
-#ifdef	XXX_NOW
-	/* read the histograms while we are at it */
-	for(int i=0; i<nscapes; i++) {
-		char buf[MAX_PATH];
-
-		sprintf(buf, "%s", scapes[i].file);
-		printf("processing %s\n", buf);
-
-		switch(scapes[i].fsp_info.type) {
-		case FILTER_TYPE_COLOR:
-		  err = patch_spec_make_histograms(dirname(buf), &scapes[i].fsp_info);
-		  break;
-		case FILTER_TYPE_TEXTURE:
-		  err = texture_make_features(dirname(buf), &scapes[i].fsp_info);
-		  break;
-		case FILTER_TYPE_ARENA:
-		  err = arena_make_vectors(dirname(buf), &scapes[i].fsp_info);
-		  break;
-		}
-		if(err) {
-		  scapes[i].disabled = 1;
-		}
-	}
-#endif
 
 	/* 
 	 * read the list of collections

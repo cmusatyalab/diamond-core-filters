@@ -177,7 +177,7 @@ static void
 cb_draw_res_layer(GtkWidget *widget, gpointer ptr) 
 {
 
-        GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 	
 	/* although we clear the pixbuf data here, we still need to
 	 * generate refreshes for either the whole image or the parts
@@ -189,10 +189,10 @@ cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
 			      popup_window.face_cb_area);
 
 	/* draw histo bboxes, if on */
-	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area), draw_hbbox_func, 
-			      popup_window.histo_cb_area);
+	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area), 	
+		draw_hbbox_func, popup_window.histo_cb_area);
 
-        GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_LEAVE();
 }
 
 
@@ -238,7 +238,8 @@ describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
 
 
 static gboolean
-realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data) {
+realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data) 
+{
 	
 	assert(widget == popup_window.drawing_area);
 
@@ -252,7 +253,8 @@ realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data) {
 
 
 static void
-draw_hbbox_func(GtkWidget *widget, void *ptr) {
+draw_hbbox_func(GtkWidget *widget, void *ptr) 
+{
 	int i = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget)));
 	region_t region;
 	RGBPixel mask = colorMask;
@@ -448,7 +450,7 @@ histo_scan_main(void *ptr)
 static void
 cb_popup_window_close(GtkWidget *window) 
 {
-        GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 
 	kill_highlight_thread(0);
 
@@ -456,7 +458,7 @@ cb_popup_window_close(GtkWidget *window)
 	ih_drop_ref(popup_window.hooks, fhandle);
 	popup_window.hooks = NULL;
 
-        GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_LEAVE();
 }
 
 
@@ -612,11 +614,13 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
 static gboolean
 cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data) 
 {
-	char buf[BUFSIZ] = "created new scene";
 	GtkWidget *	active_item;
+	GtkWidget *	dialog;
+	GtkWidget *	label;
 	snap_search *ssearch;
 	search_types_t	stype;
 	int		idx;
+	gint	result;
 	const char *	sname;
 	GtkWidget *		item;
   	GUI_CALLBACK_ENTER();
@@ -628,10 +632,17 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	stype = (search_types_t )idx;
    
 	sname =  gtk_entry_get_text(GTK_ENTRY(popup_window.search_name));
-    if(strlen(sname) < 1) {
-     	sprintf(buf, "ERROR bad name!");
-    	exit(1);
-		/* XXXX popup window, and exit */
+    if (strlen(sname) < 1) {
+		dialog = gtk_dialog_new_with_buttons("Filter Name", 
+				GTK_WINDOW(popup_window.window), GTK_DIALOG_DESTROY_WITH_PARENT,
+				GTK_STOCK_OK, GTK_RESPONSE_NONE, NULL);
+		label = gtk_label_new("Please provide a name");
+		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), label);
+		gtk_widget_show_all(dialog);
+		result = gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+		GUI_CALLBACK_LEAVE();
+		return(TRUE);
 		/* XXX make sure the name already exists */
     }
 
@@ -646,18 +657,15 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	 */
 	update_search_entry(ssearch, num_searches);
 
-
 	/* Put the list of searches in the ones we can select in the popup menu */
 	item = gtk_menu_item_new_with_label(ssearch->get_name());
 	gtk_widget_show(item);
 	g_object_set_data(G_OBJECT(item), "user data", (void *)(num_searches - 1));
 	gtk_menu_shell_append(GTK_MENU_SHELL(popup_window.example_list), item);
 
-
 	/* put the patches into the newly created search */
 	for(int i=0; i<popup_window.nselections; i++) {
-		ssearch->add_patch(popup_window.hooks->img, 
-				 popup_window.selections[i]);
+		ssearch->add_patch(popup_window.hooks->img, popup_window.selections[i]);
   	}
  
 	/* popup the edit window */ 
