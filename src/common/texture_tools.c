@@ -29,7 +29,7 @@ texture_test_entire_image(IplImage * img, texture_args_t *targs, bbox_list_t *bl
     int             passed = 0;
     int             i, s, x, y; 
     bbox_t*         bbox;
-    int		    quit_on_pass = 0; //quits as soon as its known that the image passes
+    int		    quit_on_pass = 1; //quits as soon as its known that the image passes
     int             extra_pixels_w = img->width % (1 << NUM_LAP_PYR_LEVELS);
     int             extra_pixels_h = img->height % (1 << NUM_LAP_PYR_LEVELS);
     cvSetImageROI(img, cvRect(0, 0, img->width - extra_pixels_w,
@@ -144,14 +144,14 @@ texture_test_entire_image(IplImage * img, texture_args_t *targs, bbox_list_t *bl
 
             if (min_distance <= targs->max_distance) {
                 passed++;
-				bbox = (bbox_t *)malloc(sizeof(*bbox));
-				assert(bbox != NULL);
-				bbox->min_x = x;
-				bbox->min_y = y;
-				bbox->max_x = x + targs->box_width;	/* XXX scale */
-				bbox->max_y = y + targs->box_height; /* XXX scale */
-				bbox->distance = min_distance;
-				TAILQ_INSERT_TAIL(blist, bbox, link);
+		bbox = (bbox_t *)malloc(sizeof(*bbox));
+		assert(bbox != NULL);
+		bbox->min_x = x;
+		bbox->min_y = y;
+		bbox->max_x = x + targs->box_width;	/* XXX scale */
+		bbox->max_y = y + targs->box_height; /* XXX scale */
+		 bbox->distance = min_distance;
+		TAILQ_INSERT_TAIL(blist, bbox, link);
 
                 if (quit_on_pass && (passed >= targs->min_matches)) {
                     goto done;

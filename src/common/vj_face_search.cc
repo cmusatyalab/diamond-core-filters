@@ -437,6 +437,7 @@ vj_face_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  %d  # end_stage \n", end_stage);
 	/* XXX fix RGB */
 	fprintf(ostream, "REQUIRES  INTEGRATE  # dependancies \n");
+	fprintf(ostream, "MERIT  100  # some relative cost \n");
 	fprintf(ostream, "\n");
 
 	ss = new ii_img("II image", "II image");

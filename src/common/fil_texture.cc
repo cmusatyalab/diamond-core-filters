@@ -150,10 +150,6 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
     bsize = sizeof(int);
     err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
     if (err) num_histo=0;
-    num_histo = num_histo+pass;
-    //fprintf(stderr, "%d", num_histo);
-    err = lf_write_attr(fhandle, ohandle, NUM_HISTO, sizeof(int), (char *)&num_histo);
-    ASSERT(!err);
 
     /* increase the ntexture counter */
     bsize = sizeof(int);
@@ -164,8 +160,8 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
     ASSERT(!err);
 
 
-	i = 0;
-    TAILQ_FOREACH(cur_box, &blist, link) {
+	i = num_histo;
+	TAILQ_FOREACH(cur_box, &blist, link) {
     	param.type = PARAM_HISTO;  //temporary hack
         param.bbox.xmin = cur_box->min_x;
         param.bbox.ymin = cur_box->min_y;
@@ -174,8 +170,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
 		param.distance = cur_box->distance;
         strncpy(param.name, targs->name, PARAM_NAME_MAX);
         param.name[PARAM_NAME_MAX] = '\0';
-        param.id = num_histo + i - pass;
-		printf("id %d \n", param.id);
+        param.id = i;
     	write_notify_context_t context;
     	context.fhandle = fhandle;
     	context.ohandle = ohandle;
@@ -184,6 +179,11 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
 		free(cur_box);
         i++;
     }
+
+	/* write out the update number of matches, XXX clean this up soon */
+    num_histo = num_histo+pass;
+    err = lf_write_attr(fhandle, ohandle, NUM_HISTO, sizeof(int), (char *)&num_histo);
+    ASSERT(!err);
   }
 
 done:

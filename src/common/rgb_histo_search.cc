@@ -373,6 +373,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 		i++;
 	}
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
+	fprintf(ostream, "MERIT 10  # some merit \n");
 	fprintf(ostream, "\n");
 
 	rgb = new rgb_img("RGB image", "RGB image");

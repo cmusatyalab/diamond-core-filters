@@ -388,6 +388,8 @@ texture_search::write_fspec(FILE *ostream)
 		}
 		i++;	/* count thenumber of samples for debugging */
 	}
+	 fprintf(ostream, "REQUIRES  RGB # dependencies \n");
+	 fprintf(ostream, "MERIT  5 # some relative cost \n");
 
     rgb = new rgb_img("RGB image", "RGB image");
     ss_add_dep(rgb);
