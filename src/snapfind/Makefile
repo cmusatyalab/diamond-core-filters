@@ -44,15 +44,18 @@ LIBDIR += -L../../lib/libdconfig
 SHARED_HEADERS = rgb.h image_tools.h common_consts.h img_search.h
 SHARED_HEADERS += image_common.h texture_tools.h fil_tools.h 
 SHARED_HEADERS += face_tools.h fil_data2ii.h facedet.h filter_api.h
-SHARED_HEADERS += face.h
+SHARED_HEADERS += face.h fil_histo.h histo.h gtk_image_tools.h
+SHARED_HEADERS += fil_texture.h face_data.h
 
-SHARED_COMMON_SRCS = image_tools.c 
+SHARED_COMMON_SRCS = image_tools.c histo.c face_tools.c texture_tools.c
+SHARED_COMMON_SRCS += facedet.c
 
-SHARED_COMMON_OBJS = image_tools.o
+SHARED_COMMON_OBJS = image_tools.o histo.o face_tools.o texture_tools.o
+SHARED_COMMON_OBJS = facedet.o
 
-SHARED_SEARCHLET_SRCS = 
+SHARED_SEARCHLET_SRCS = fil_histo.c fil_texture.cc fil_face.c
 
-SHARED_SEARCHLET_OBJS = 
+SHARED_SEARCHLET_OBJS = fil_histo.o fil_texture.o fil_face.o
 
       
 SHARED_APP_SRCS = rgb.c img_search.cc
@@ -73,36 +76,36 @@ SHARED_SRCS += $(SHARED_COMMON_SRCS)
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = $(SHARED_SEARCHLET_SRCS) $(SHARED_COMMON_SRCS)
-SEARCHLET_SRCS += fil_data2ii.c fil_face.c fil_file.c facedet.c
+SEARCHLET_SRCS += fil_data2ii.c fil_file.c facedet.c
 SEARCHLET_SRCS += fil_image_tools.c  
-SEARCHLET_SRCS += histo.c fil_histo.c merge_faces.c fil_tools.c 
-SEARCHLET_SRCS += texture_tools.c fil_regex.c
-SEARCHLET_SRCS += fil_data2cv.c fil_texture.cc 
-SEARCHLET_SRCS += fil_synth.c face_tools.c
+SEARCHLET_SRCS += merge_faces.c fil_tools.c 
+SEARCHLET_SRCS += fil_regex.c
+SEARCHLET_SRCS += fil_data2cv.c 
+SEARCHLET_SRCS += fil_synth.c 
 
 
 SEARCHLET_OBJS = $(SHARED_SEARCHLET_OBJS) $(SHARED_COMMON_OBJS)
-SEARCHLET_OBJS += fil_data2ii.o fil_face.o fil_file.o facedet.o 
-SEARCHLET_OBJS += fil_image_tools.o histo.o 
-SEARCHLET_OBJS += fil_histo.o merge_faces.o fil_tools.o texture_tools.o 
-SEARCHLET_OBJS += fil_regex.o fil_data2cv.o fil_texture.o 
-SEARCHLET_OBJS += fil_synth.o  face_tools.o
+SEARCHLET_OBJS += fil_data2ii.o fil_file.o facedet.o 
+SEARCHLET_OBJS += fil_image_tools.o  
+SEARCHLET_OBJS += merge_faces.o fil_tools.o 
+SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
+SEARCHLET_OBJS += fil_synth.o  
 
 
 
 # objects needed to build the main
 SNAPFIND_SRCS = $(SHARED_APP_SRCS) $(SHARED_COMMON_SRCS)
-SNAPFIND_SRCS += snapfind.cc face_tools.c face_image.c sfind_search.c 
-SNAPFIND_SRCS +=  read_config.cc histo.c 
+SNAPFIND_SRCS += snapfind.cc face_image.c sfind_search.c 
+SNAPFIND_SRCS +=  read_config.cc 
 SNAPFIND_SRCS += fil_tools.c stats_win.c rgb.c gui_thread.c  
-SNAPFIND_SRCS += texture_tools.c gtk_image_tools.c 
+SNAPFIND_SRCS += gtk_image_tools.c 
 SNAPFIND_SRCS += search_support.cc snap_popup.cc 
 SNAPFIND_SRCS += facedet.c sfind_tools.c fil_data2ii.c fil_file.c
 
 SNAPFIND_OBJS = $(SHARED_APP_OBJS) $(SHARED_COMMON_OBJS)
-SNAPFIND_OBJS += snapfind.o face_tools.o face_image.o sfind_search.o read_config.o \
-	histo.o fil_tools.o stats_win.o gui_thread.o \
-	texture_tools.o  \
+SNAPFIND_OBJS += snapfind.o face_image.o sfind_search.o read_config.o \
+	fil_tools.o stats_win.o gui_thread.o \
+	 fil_image_tools.o\
 	gtk_image_tools.o \
 	search_support.o snap_popup.o \
 	facedet.o sfind_tools.o fil_data2ii.o fil_file.o
