@@ -120,11 +120,9 @@ f_init_texture_detect(int numarg, char **args, int blob_len,
 	texture_args_t*	targs;
   	lf_fhandle_t 	fhandle = 0; /* XXX */
 	int				err;
-	off_t len;
 
-	len = sizeof(*targs);
-	err = lf_alloc_buffer(fhandle, len, (char **)&targs);
-	//err = lf_alloc_buffer(fhandle, sizeof(*targs), (char **)&targs);
+
+	err = lf_alloc_buffer(fhandle, sizeof(*targs), (char **)&targs);
   	assert(!err);
   
   	err = read_texture_args(fhandle, targs, numarg, args);
@@ -255,7 +253,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
 		printf("min unchange \n");
   	} else {
 		pass = (int)(100.0 * min_simularity);
-		printf("min change \n");
+		//printf("min change \n");
   	}
   } else {
 	pass = 0;

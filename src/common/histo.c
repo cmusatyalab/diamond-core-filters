@@ -1037,8 +1037,9 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
             	bbox->distance = best_box[count].distance;
             	TAILQ_INSERT_TAIL(blist, bbox, link);
 			}
-			free(best_box);
+			//free(best_box);
     }
+			free(best_box);
 
     return pass;
 }
