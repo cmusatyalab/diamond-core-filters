@@ -151,6 +151,8 @@ f_eval_detect(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
     err = lf_read_attr(fhandle, ohandle, COLS, &bsize, (char *) &width);
     assert(!err);
 
+
+
     /*
      * get count 
      */

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <gtk/gtk.h>
+#include <opencv/cv.h>
+#include <opencv/cvaux.h>
 #include "queue.h"
 #include "rgb.h"
 #include "common_consts.h"
@@ -27,6 +29,7 @@ vj_face_search::vj_face_search(const char *name, char *descr)
 	end_stage = 37;
 	do_merge = 1;
 	overlap_val = 0.75;
+	use_opencv = 1;
 
 	edit_window = NULL;
 	count_widget = NULL;
@@ -285,7 +288,7 @@ vj_face_search::edit_search()
 
 	
 	hbox = gtk_hbox_new(FALSE, 10);
-        gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
 
 	widget = gtk_button_new_with_label("Close");
         g_signal_connect(G_OBJECT(widget), "clicked",
@@ -331,6 +334,21 @@ vj_face_search::edit_search()
 	g_signal_connect(G_OBJECT(face_merge), "toggled", G_CALLBACK(cb_merge_face),
 		(void *)this);
 
+	hbox = gtk_hbox_new(FALSE, 10);
+    gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
+
+	opencv_widget = gtk_radio_button_new_with_label(NULL, "OpenCV");
+	gtk_box_pack_start(GTK_BOX(hbox), opencv_widget, FALSE, TRUE, 0);
+	vj_widget = gtk_radio_button_new_with_label_from_widget(
+		GTK_RADIO_BUTTON(opencv_widget), "Viola-Jones");
+	gtk_box_pack_start(GTK_BOX(hbox), vj_widget, FALSE, TRUE, 0);
+	if (use_opencv == 0) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vj_widget), TRUE);
+	} else {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(opencv_widget), TRUE);
+	}
+	
+
 	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
 
     gtk_widget_show(container);
@@ -375,6 +393,9 @@ vj_face_search::save_edits()
 
 	do_merge = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(face_merge));
 	overlap_val = (float)gtk_adjustment_get_value(GTK_ADJUSTMENT(merge_overlap));
+
+	use_opencv = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(opencv_widget));
+
 
 	/* call the parent class */	
 	window_search::save_edits();
@@ -464,6 +485,66 @@ vj_face_search::write_config(FILE *ostream, const char *dirname)
 	return;
 }
 
+CvHidHaarClassifierCascade* 
+new_face_detector(void)
+{
+
+        CvHaarClassifierCascade* cascade;
+        CvHidHaarClassifierCascade* hid_cascade;
+
+        cascade = cvLoadHaarClassifierCascade("<default_face_cascade>", 
+				cvSize(24,24));
+        hid_cascade = cvCreateHidHaarClassifierCascade(cascade, 0, 0, 0, 1);
+        cvReleaseHaarClassifierCascade( &cascade );
+
+		
+        return hid_cascade;
+}
+
+CvSeq *
+DetectFaces(IplImage * image, CvMemStorage * storage, bbox_list_t *blist)
+{
+		int 		i;
+		CvAvgComp	r1;	
+		bbox_t	*	bb;
+
+        CvHidHaarClassifierCascade* cascade = new_face_detector();
+        CvSeq* faces;
+
+        /* use the fastest variant */
+
+        faces = 
+			cvHaarDetectObjects( image, cascade, storage, 1.2, 2, 
+			CV_HAAR_DO_CANNY_PRUNING );
+
+        cvReleaseHidHaarClassifierCascade( &cascade );
+
+		for (i = 0; i < faces->total; i++) {
+			r1 = *(CvAvgComp*)cvGetSeqElem(faces, i);
+			bb = (bbox_t *)malloc(sizeof(*bb));
+			assert(bb != NULL);
+			bb->min_x = r1.rect.x;
+			bb->min_y = r1.rect.y;
+			bb->max_x = r1.rect.x + r1.rect.width;
+			bb->max_y = r1.rect.y + r1.rect.height;
+			bb->distance = 0.0;
+			TAILQ_INSERT_TAIL(blist, bb, link);
+		}
+		
+        return faces;
+}
+
+
+static void
+open_cv_search(RGBImage *rgb, bbox_list_t *blist) 
+{
+        CvMemStorage * storage = cvCreateMemStorage(0);
+        CvSeq * faces = NULL;
+        IplImage * gray = get_gray_ipl_image(rgb);       // convert to greyscale
+        faces = DetectFaces(gray, storage, blist);
+} 
+
+
 void
 vj_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 {
@@ -477,48 +558,51 @@ vj_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 
 	save_edits();
 
-	/* XXX */
-	init_classifier();
+	if (use_opencv) {
+		open_cv_search(img, blist);
+	} else {
+		/* XXX */
+		init_classifier();
+		
+		fconfig.name = strdup(get_name());
+		assert(fconfig.name != NULL);
 	
-	fconfig.name = strdup(get_name());
-	assert(fconfig.name != NULL);
-
-	fconfig.scale_mult = get_scale();
-	fconfig.xsize = get_testx();
-	fconfig.ysize = get_testy();
-	fconfig.stride = get_stride();
-	fconfig.lev1 = start_stage;
-	fconfig.lev2 = end_stage;
-
-	width = img->width;
-	height = img->height;
-
-	size = sizeof(ii_image_t) + sizeof(uint32_t) * (width + 1) * 
-		(height + 1);
-	ii = (ii_image_t *) malloc(size);
-	assert(ii != NULL);
-	ii->nbytes = size;
-	ii->width = width + 1;
-	ii->height = height + 1;
-
-	size = sizeof(ii2_image_t) + sizeof(float) * (width + 1) * 
-		(height + 1);
-	ii2 = (ii2_image_t *) malloc(size);
-	assert(ii2 != NULL);
-	ii2->nbytes = size;
-	ii2->width = width + 1;
-	ii2->height = height + 1;
-
-	/* build the integral image */
-	rgb_integrate(img, ii->data, ii2->data, width + 1, height + 1);
-
-	/* scan the image using the set parameters */
-	pass =  face_scan_image(ii, ii2, &fconfig, blist, height, width);
-
-	/* free any allocated state */
-	free(ii);
-	free(ii2);
-
+		fconfig.scale_mult = get_scale();
+		fconfig.xsize = get_testx();
+		fconfig.ysize = get_testy();
+		fconfig.stride = get_stride();
+		fconfig.lev1 = start_stage;
+		fconfig.lev2 = end_stage;
+	
+		width = img->width;
+		height = img->height;
+	
+		size = sizeof(ii_image_t) + sizeof(uint32_t) * (width + 1) * 
+			(height + 1);
+		ii = (ii_image_t *) malloc(size);
+		assert(ii != NULL);
+		ii->nbytes = size;
+		ii->width = width + 1;
+		ii->height = height + 1;
+	
+		size = sizeof(ii2_image_t) + sizeof(float) * (width + 1) * 
+			(height + 1);
+		ii2 = (ii2_image_t *) malloc(size);
+		assert(ii2 != NULL);
+		ii2->nbytes = size;
+		ii2->width = width + 1;
+		ii2->height = height + 1;
+	
+		/* build the integral image */
+		rgb_integrate(img, ii->data, ii2->data, width + 1, height + 1);
+	
+		/* scan the image using the set parameters */
+		pass =  face_scan_image(ii, ii2, &fconfig, blist, height, width);
+	
+		/* free any allocated state */
+		free(ii);
+		free(ii2);
+	}	
 	return;
 }
 

@@ -305,6 +305,7 @@ private:
 	int			start_stage;
 	int			end_stage;
 	int			do_merge;
+	int			use_opencv;
 	float		overlap_val;
 
 	GtkWidget *	edit_window;
@@ -314,6 +315,8 @@ private:
 	GtkWidget *	face_merge;
 	GtkObject *	merge_overlap;
 	GtkWidget *	overlap_widget;
+	GtkWidget *	opencv_widget;
+	GtkWidget *	vj_widget;
 };
 
 class rgb_img: public img_search {

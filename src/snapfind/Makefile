@@ -21,6 +21,7 @@ INCDIR += -I../../lib/libodisk
 INCDIR += -I../../lib/liblog
 INCDIR += -I../../lib/libod
 INCDIR += -I../../lib/libdconfig
+INCDIR += -I/usr/local/include/opencv
 INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I` 
 
 
@@ -30,7 +31,7 @@ LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -ltools -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -lopencv   -llog
+LIBS += -lopencv   -l cvaux -llog
 #LIBS += -lglib
 
 #
@@ -159,7 +160,7 @@ clean-targets:	clean-experiments
 default: $(TARGETS)
 
 snap_searchlet.so: $(SEARCHLET_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS)  -lm -Wl,-static -lopencv  $(LIBS) $(LIBDIR)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS)  -lm -Wl,-static -lopencv  -lcvaux $(LIBS) $(LIBDIR)
 
 libssearch.a: $(SEARCHLET_OBJS)
 	$(AR) r $@ $(SEARCHLET_OBJS)
@@ -191,7 +192,7 @@ face_benchmark: face_benchmark.o $(SEARCHLET_OBJS)
 
 experiment_%: experiment_%.o $(SEARCHLET_OBJS)
 	$(CC) $(CFLAGS) -o $@ $< \
-  -static $(SEARCHLET_OBJS)  $(LIBS) $(LIBDIR) -lpthread -ldl -lm -Wl,-static -lopencv 
+  -static $(SEARCHLET_OBJS)  $(LIBS) $(LIBDIR) -lpthread -ldl -lm -Wl,-static -lopencv  
 
 #	$(CC) $(CFLAGS) -o $@ $< $(SEARCHLET_OBJS) $(LIBS) $(LIBDIR) -lfilterexec -ltools -lodisk
 
