@@ -47,9 +47,23 @@
 #include "texture_tools.h"
 #include "img_search.h"
 #include "search_set.h"
+#include "read_config.h"
 //#include "snapfind.h"
 
 #define	MAX_DISPLAY_NAME	64
+
+
+void
+texture_init()
+{
+	texture_factory *fac; 
+	printf("texture init \n");
+
+	fac = new texture_factory;
+
+	read_config_register("texture", fac);	
+
+}
 
 texture_search::texture_search(const char *name, char *descr)
 		: example_search(name, descr)

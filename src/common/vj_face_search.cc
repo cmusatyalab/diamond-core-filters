@@ -56,8 +56,21 @@
 #include "face_tools.h"
 #include "fil_data2ii.h"
 #include "search_set.h"
+#include "read_config.h"
 
 #define	MAX_DISPLAY_NAME	64
+
+void
+vj_face_init()
+{
+        vj_face_factory *fac;
+        printf("vj_face init \n");
+
+        fac = new vj_face_factory;
+
+        read_config_register("vj_face_search", fac);
+}
+
 
 vj_face_search::vj_face_search(const char *name, char *descr)
 		: window_search(name, descr)

@@ -1859,6 +1859,9 @@ set_export_threshold(char *arg)
 
 /* XXX fix */
 void rgb_histo_init();
+void vj_face_init();
+void ocv_face_init();
+void texture_init();
 
 int
 main(int argc, char *argv[])
@@ -1995,6 +1998,9 @@ main(int argc, char *argv[])
 
 	/* XXX for now */
 	rgb_histo_init();
+	vj_face_init();
+	ocv_face_init();
+	texture_init();
 
 	/*
 	 * Start the main loop processing for the GUI.

@@ -92,6 +92,7 @@ read_config_register(const char *string,  img_factory *factory)
 	new_map = (factory_map_t *)malloc(sizeof(*new_map));
 	assert(new_map != NULL);
 
+	printf("register %s %p \n", string, factory);
 	new_map->fm_name = strdup(string);
 	assert(new_map->fm_name != NULL);
 	new_map->fm_factory = factory;
@@ -110,10 +111,12 @@ find_factory(const char *name)
 
 	cur_map = fmap;
 	for (cur_map = fmap; cur_map != NULL; cur_map = cur_map->fm_next) {
+		printf("name %s  fm %s \n", name, fmap->fm_name);
 		if (strcmp(name, fmap->fm_name) == 0) {
 			return(fmap->fm_factory);
 		}
 	}
+	printf("failed to find <%s> \n", name);
 	return(NULL);
 }
 

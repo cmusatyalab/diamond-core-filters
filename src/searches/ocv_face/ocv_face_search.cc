@@ -51,8 +51,22 @@
 #include "face_tools.h"
 #include "fil_data2ii.h"
 #include "search_set.h"
+#include "read_config.h"
 
 #define	MAX_DISPLAY_NAME	64
+
+void
+ocv_face_init()
+{
+        ocv_face_factory *fac;
+        printf("ocv_face init \n");
+
+        fac = new ocv_face_factory;
+
+        read_config_register("ocv_face_search", fac);
+
+}
+
 
 ocv_face_search::ocv_face_search(const char *name, char *descr)
 		: window_search(name, descr)
