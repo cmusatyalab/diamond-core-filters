@@ -154,7 +154,11 @@ load_searchlet(char *obj_file, char *spec_file)
 	sprintf(full_obj, "%s/%s", path_name, obj_file);
 	sprintf(full_spec, "%s/%s", path_name, spec_file);
 
-	err = ls_set_searchlet(shandle, DEV_ISA_IA32, full_obj, full_spec);
+	if (obj_file[0] == '/') {
+		err = ls_set_searchlet(shandle, DEV_ISA_IA32, obj_file, full_spec);
+	} else {
+		err = ls_set_searchlet(shandle, DEV_ISA_IA32, full_obj, full_spec);
+	}
 	if (err) {
 		printf("Failed to set searchlet on err %d \n", err);
 		exit(1);
