@@ -63,7 +63,7 @@ SEARCHLET_OBJS += fil_synth.o  face_tools.o
 # objects needed to build the main
 SNAPFIND_SRCS = snapfind.cc face_tools.c face_image.c sfind_search.c 
 SNAPFIND_SRCS += face_search.c read_config.cc image_tools.c histo.c 
-SNAPFIND_SRCS += fil_tools.c stats_win.c rgb.c gui_thread.c face_widgets.c 
+SNAPFIND_SRCS += fil_tools.c stats_win.c rgb.c gui_thread.c  
 SNAPFIND_SRCS += texture_tools.c arena_tools.c gtk_image_tools.c 
 SNAPFIND_SRCS += snap_search.cc window_search.cc example_search.cc
 SNAPFIND_SRCS += texture_search.cc vj_face_search.cc search_support.cc
@@ -72,7 +72,7 @@ SNAPFIND_SRCS += facedet.c sfind_tools.c fil_data2ii.c fil_file.c
 
 SNAPFIND_OBJS = snapfind.o face_tools.o face_image.o sfind_search.o face_search.o read_config.o \
 	image_tools.o histo.o fil_tools.o stats_win.o rgb.o gui_thread.o \
-	face_widgets.o texture_tools.o arena_tools.o rgb_histo_search.o \
+	texture_tools.o arena_tools.o rgb_histo_search.o \
 	texture_search.o \
 	snap_search.o window_search.o example_search.o gtk_image_tools.o \
 	vj_face_search.o search_support.o snap_popup.o rgb_img.o ii_img.o \

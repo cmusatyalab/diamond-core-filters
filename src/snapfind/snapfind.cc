@@ -1377,23 +1377,6 @@ cb_toggle_dump_attributes( gpointer   callback_data,
 }
 
 
-/* For the check button */
-static void
-cb_toggle_expert_mode( gpointer   callback_data,
-		       guint      callback_action,
-		       GtkWidget *menu_item )
-{
-    GUI_CALLBACK_ENTER();
-    if( GTK_CHECK_MENU_ITEM (menu_item)->active ) {
-      expert_mode = 1;
-      show_expert_widgets();
-    } else {
-      expert_mode = 0;
-      hide_expert_widgets();
-    }
-    GUI_CALLBACK_LEAVE();
-}
-
 
 /* ********************************************************************** */
 /* widget setup functions */

@@ -163,10 +163,10 @@ expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 						    0, 0);
 	}
 
-	gdk_gc_set_clip_rectangle (widget->style->fg_gc[widget->state],
+	gdk_gc_set_clip_rectangle(widget->style->fg_gc[widget->state],
 				   NULL);
 
- done:
+done:
 	return TRUE;
 }
 
@@ -196,10 +196,6 @@ cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
 }
 
 
-
-
-
-
 static GtkWidget *
 describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
 		      GtkWidget **button) 
@@ -211,6 +207,7 @@ describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
 	
 	err = read_param(fhandle, ohandle, HISTO_BBOX_FMT, &param, i);
 	if (err) {
+		printf("XXX failed to read parameter <%s> \n", HISTO_BBOX_FMT);
 /* 		label = gtk_label_new("ERR"); */
 /* 		gtk_box_pack_start(GTK_BOX(container), label, TRUE, TRUE, 0); */
 /* 		gtk_widget_show(label); */
@@ -218,8 +215,7 @@ describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
 		char buf[BUFSIZ];
 		
 		if(param.type == PARAM_HISTO) {
-			sprintf(buf, "%s (similarity %.0f%%)", 
-				param.name,
+			sprintf(buf, "%s (similarity %.0f%%)", param.name,
 				100 - 100.0*param.distance);
 			*button = gtk_check_button_new_with_label(buf);
 			g_signal_connect (G_OBJECT(*button), "toggled",
@@ -228,9 +224,10 @@ describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
 
 
 			gtk_widget_show(*button);
+		} else {
+			printf("param type not histo !!! %d \n", param.type);
 		}
 	}
-
 	return *button;
 }
 
@@ -323,9 +320,9 @@ void *
 image_highlight_main(void *ptr) 
 {
 	int insp=0, pass=0;
-		bbox_t bbox;
 	bbox_t *		cur_bb;
 	bbox_list_t		bblist;
+	guint			id;
 	int err;
 	int	i;
 
@@ -335,7 +332,7 @@ image_highlight_main(void *ptr)
 	assert(!err);
 
 	ih_get_ref(popup_window.hooks);
-	guint id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
+	id = gtk_statusbar_get_context_id(GTK_STATUSBAR(popup_window.statusbar),
 						"histo");
 
 	/* 
@@ -1046,8 +1043,7 @@ existing_search_panel(void)
 static GtkWidget *
 highlight_select()
 {
-    GtkWidget *box2, *box1;
-    GtkWidget *separator;
+    GtkWidget *box1;
     GtkWidget *table;
     GtkWidget *frame, *widget;
     int row = 0;        /* current table row */

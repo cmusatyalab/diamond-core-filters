@@ -19,8 +19,6 @@ extern "C" {
 #endif
 
 	
-GtkWidget *create_scapes_notebook(GtkWidget *notebook, fentry_t *scapes, int nscapes,
-				  GtkWidget **scapes_table);
 GtkWidget *create_slider_entry(char *name, float min, float max, GtkWidget **scalep,
 			       int show_widgets);
 
