@@ -38,7 +38,9 @@ TESTY[ \t]+[0-9]+ { cur_search->handle_config(TESTY_TOK, eat_token(yytext));}
 STRIDE[ \t]+[0-9]+ { cur_search->handle_config(STRIDE_TOK, eat_token(yytext));}
 SCALE[ \t]+{FLOAT} { cur_search->handle_config(SCALE_TOK, eat_token(yytext));}
 METRIC[ \t]+{FLOAT} { cur_search->handle_config(METRIC_TOK, eat_token(yytext));}
-PATCHFILE[ \t]+[[:alnum:]_"."-]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+ { cur_search->handle_config(PATCHFILE_TOK, eat_token(yytext));}
+MATCHES[ \t]+[0-9]+ { cur_search->handle_config(MATCHES_TOK, eat_token(yytext));}
+METHOD[ \t]+{FLOAT} { cur_search->handle_config(METHOD_TOK, eat_token(yytext));}
+PATCHFILE[ \t]+[[:alnum:]_"."-/]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+ { cur_search->handle_config(PATCHFILE_TOK, eat_token(yytext));}
 [[:blank:]]
 \n
 .					{ error(); }
@@ -102,8 +104,10 @@ new_search(char *str)
 
 	if (strcmp(type, "rgb_histogram") == 0) {
 		cur_search = new rgb_histo_search(name, "RGB Histogram");
+	} else if (strcmp(type, "texture") == 0) {
+		cur_search = new texture_search(name, "Texture Search");
 	} else {
-		printf("uknown type: %s \n", type);
+		printf("uknown type: <%s> \n", type);
 		exit(1);
 	}
 
