@@ -3,7 +3,6 @@ typedef struct fentry_t {
   /* scape list entry */
   char *name;
   char *file;
-  fsp_histo_t fsp_info;
 
   /* associated widgets */
   GtkWidget *cb;		/* activate */

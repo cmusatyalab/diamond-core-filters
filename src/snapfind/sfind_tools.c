@@ -28,7 +28,6 @@
 #include "gui_thread.h"
 #include "image_tools.h"
 #include "texture_tools.h"
-#include "arena_tools.h"
 #include "facedet.h"
 
 /*

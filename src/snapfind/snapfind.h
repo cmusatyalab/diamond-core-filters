@@ -14,20 +14,26 @@ typedef struct thumbnail_t {
 	char 		name[MAX_NAME];	/* name of image */
 	int		nboxes;	/* number of histo regions */
 	int             nfaces;	/* number of faces */
-	//ls_obj_handle_t ohandle;
-	//RGBImageRC	*fullimage; /* the full-sized image */
 	image_hooks_t   *hooks;
-        int              marked; /* if the user 'marked' this thumbnail */
-        GtkWidget       *frame;
+	int              marked; /* if the user 'marked' this thumbnail */
+	GtkWidget       *frame;
 } thumbnail_t;
 
 typedef TAILQ_HEAD(thumblist_t, thumbnail_t) thumblist_t;
 extern thumblist_t thumbnails;
 extern thumbnail_t *cur_thumbnail;
 
-/* XXX add c++ wrapper */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void ss_add_dep(snap_search *dep);
 void update_search_entry(snap_search *cur_search, int row);
+
+                                                                                 
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif	/* ! _SNAP_FIND_H_ */

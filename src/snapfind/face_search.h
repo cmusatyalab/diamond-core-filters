@@ -14,13 +14,6 @@
 
 
 
-typedef struct main_scape_t {
-	char	name[MAX_NAME];
-/*   	char 	path[MAX_PATH]; */
-
-	fsp_histo_t fsp_info;
-} main_scape_t;
-
 /* this struct is used to send info from the GUI to the search
  * thread.  */
 typedef	struct gid_list {
