@@ -500,8 +500,8 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	rgbimg = (RGBImage*)ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
 
 	if (rgbimg == NULL) {
-		rgbimg = get_attr_rgb_img(ohandle, "DATA0");
-		//rgbimg = get_rgb_img(ohandle);
+		//rgbimg = get_attr_rgb_img(ohandle, "DATA0");
+		rgbimg = get_rgb_img(ohandle);
 	}	
 	assert(rgbimg);
 	assert(rgbimg->width);
@@ -880,40 +880,36 @@ write_search_config(const char *dirname, search_set *set)
 	fclose(conf_file);
 }
 
+
+static GtkWidget *search_frame;
+
 void
-update_search_entry(img_search *cur_search, int row)
+update_search_entry()
 {
-	GtkWidget *widget;
-	widget = cur_search->get_search_widget();
-	gtk_table_attach_defaults(GTK_TABLE(config_table), widget, 0, 1, 
-		row+1, row+2);
-	widget = cur_search->get_config_widget();
-	gtk_table_attach_defaults(GTK_TABLE(config_table), widget, 1, 2, 
-		row+1, row+2);
-	widget = cur_search->get_edit_widget();
-	gtk_table_attach_defaults(GTK_TABLE(config_table), widget, 2, 3, 
-		row+1, row+2);
+	gtk_container_remove(GTK_CONTAINER(search_frame), config_table);
+	config_table = snap_searchset->build_edit_table();
+	gtk_container_add(GTK_CONTAINER(search_frame), config_table);
+    gtk_widget_show_all(search_frame);
 }
+
 
 static GtkWidget *
 create_search_window()
 {
     GtkWidget *box2, *box1;
     GtkWidget *separator;
-    GtkWidget *frame;
 
     GUI_THREAD_CHECK(); 
 
     box1 = gtk_vbox_new (FALSE, 0);
     gtk_widget_show (box1);
 
-    frame = gtk_frame_new("Searches");
+    search_frame = gtk_frame_new("Searches");
 	config_table = snap_searchset->build_edit_table();
 
-
-	gtk_container_add(GTK_CONTAINER(frame), config_table);
-    gtk_box_pack_start(GTK_BOX(box1), frame, FALSE, FALSE, 10);
-    gtk_widget_show_all(frame);
+	gtk_container_add(GTK_CONTAINER(search_frame), config_table);
+    gtk_box_pack_start(GTK_BOX(box1), search_frame, FALSE, FALSE, 10);
+    gtk_widget_show_all(search_frame);
 
     /* Add the start and stop buttons */
 

@@ -14,6 +14,8 @@
 #include "img_search.h"
 #include "search_set.h"
 
+extern void update_search_entry();
+
 search_set::search_set()
 {
 	ss_dep_list.erase(ss_dep_list.begin(), ss_dep_list.end());
@@ -33,6 +35,8 @@ search_set::add_search(img_search *new_search)
 {
 	new_search->set_parent(this);
 	ss_search_list.push_back(new_search);
+
+	update_search_entry();
 }
 
 
