@@ -10,6 +10,7 @@
 #include "img_search.h"
 #include "search_support.h"
 #include "search_set.h"
+#include "read_config.h"
 
 static char *eat_token(char *tok);
 static void new_search(char *tok);
@@ -20,8 +21,15 @@ static void error();
 static img_search *cur_search = NULL;
 static search_set *set = NULL;
 
+typedef struct factory_map {
+	struct factory_map  *	fm_next;
+	char * 					fm_name;
+ 	img_factory  *			fm_factory;
+} factory_map_t;
 
+static factory_map_t * fmap = NULL;
 %}
+
 
 	
 %option noyywrap
@@ -75,12 +83,48 @@ eat_token(char *str)
 	return(cur);
 }
 
+void
+read_config_register(const char *string,  img_factory *factory)
+{
+
+	factory_map_t *new_map;
+
+	new_map = (factory_map_t *)malloc(sizeof(*new_map));
+	assert(new_map != NULL);
+
+	new_map->fm_name = strdup(string);
+	assert(new_map->fm_name != NULL);
+	new_map->fm_factory = factory;
+
+	/* XXX find dups ?? */
+
+	new_map->fm_next = fmap;
+	fmap = new_map;
+
+}
+
+static img_factory *
+find_factory(const char *name)
+{
+	factory_map_t *cur_map;
+
+	cur_map = fmap;
+	for (cur_map = fmap; cur_map != NULL; cur_map = cur_map->fm_next) {
+		if (strcmp(name, fmap->fm_name) == 0) {
+			return(fmap->fm_factory);
+		}
+	}
+	return(NULL);
+}
+
+
 static void
 new_search(char *str)
 {
 	char *name;
 	char *type;
 	int		i, maxlen;
+	img_factory *	fac;
 
 	maxlen = strlen(str) + 1;
 	for (i=0; i < maxlen; i++) {
@@ -100,22 +144,12 @@ new_search(char *str)
 	name = eat_token(str);		
 
 
-	if (strcmp(type, "rgb_histogram") == 0) {
-		cur_search = create_search(RGB_HISTO_SEARCH, name);
-		assert(cur_search != NULL);
-	} else if (strcmp(type, "texture") == 0) {
-		cur_search = create_search(TEXTURE_SEARCH, name);
-		assert(cur_search != NULL);
-	} else if (strcmp(type, "vj_face_search") == 0) {
-		cur_search = create_search(VJ_FACE_SEARCH, name);
-		assert(cur_search != NULL);
-	} else if (strcmp(type, "ocv_face_search") == 0) {
-		cur_search = create_search(OCV_FACE_SEARCH, name);
-		assert(cur_search != NULL);
-	} else {
-		printf("uknown type: <%s> \n", type);
-		exit(1);
-	}
+	fac = find_factory(type);
+	/* XXX more graceful way to handle */
+	assert(fac != NULL);
+
+	cur_search = fac->create(name);	
+    assert(cur_search != NULL);
 
 	set->add_search(cur_search);
 }

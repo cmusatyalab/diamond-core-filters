@@ -92,6 +92,7 @@
 #include "gtk_image_tools.h"
 #include "fil_image_tools.h"
 #include "search_set.h"
+#include "read_config.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -252,9 +253,6 @@ extern region_t draw_bounding_box(RGBImage *img, int scale,
 	                                  RGBPixel color, RGBPixel mask, char *fmt, int i);
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
 
-/* from read_config.l */
-extern int read_search_config(char *fname, search_set *set
-	                             );
 
 /* from face_search.c */
 extern void drain_ring(ring_data_t *ring);
@@ -1470,14 +1468,6 @@ create_display_region(GtkWidget *main_box)
 	gtk_box_pack_start (GTK_BOX (result_box), box2, TRUE, TRUE, 0);
 	gtk_widget_show(box2);
 
-
-	/* 	image_window = gtk_scrolled_window_new(NULL, NULL); */
-	/*     	gtk_box_pack_start(GTK_BOX (box2), image_window, TRUE, TRUE, 0); */
-	/*     	gtk_widget_show(image_window); */
-
-	/* 	image_view = gtk_viewport_new(NULL, NULL); */
-	/* 	gtk_container_add(GTK_CONTAINER(image_window), image_view); */
-	/*     	gtk_widget_show(image_view); */
 
 	GtkWidget *thumbnail_view;
 	thumbnail_view = gtk_table_new(TABLE_ROWS, TABLE_COLS, TRUE);
