@@ -184,6 +184,14 @@ dump_dev_stats(dev_stats_t * dev_stats, int stat_len)
                 dev_stats->ds_filter_stats[i].fs_objs_processed);
         fprintf(stdout, "\tDropped: %d \n",
                 dev_stats->ds_filter_stats[i].fs_objs_dropped);
+/* JIAYING */
+        fprintf(stdout, "\tCACHE Dropped: %d \n",
+                dev_stats->ds_filter_stats[i].fs_objs_cache_dropped);
+        fprintf(stdout, "\tCACHE Passed: %d \n",
+                dev_stats->ds_filter_stats[i].fs_objs_cache_passed);
+        fprintf(stdout, "\tCACHE Compute: %d \n",
+                dev_stats->ds_filter_stats[i].fs_objs_compute);
+/* JIAYING */
         fprintf(stdout, "\tAvg Time: %lld \n\n",
                 dev_stats->ds_filter_stats[i].fs_avg_exec_time);
 
