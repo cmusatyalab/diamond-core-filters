@@ -1731,10 +1731,13 @@ static void
 cb_create(GtkWidget *widget, gpointer user_data) 
 {
 	GtkWidget 	*hbox;
+	GtkWidget 	*vbox;
 	GtkWidget	*dialog;
 	GtkWidget	*label;
+	GtkWidget	*helplabel;
 	GtkWidget	*entry;
-	int		x, result;
+	int			x, result;
+	unsigned int	i;
 	const char *		new_name;
 	search_types_t	stype;
 	snap_search *	ssearch;
@@ -1746,41 +1749,70 @@ cb_create(GtkWidget *widget, gpointer user_data)
 	dialog = gtk_dialog_new_with_buttons("Search Name",
                                 GTK_WINDOW(popup_window.window),
 				GTK_DIALOG_DESTROY_WITH_PARENT,
-                                GTK_STOCK_OK, GTK_RESPONSE_NONE, 
+                                GTK_STOCK_OK, GTK_RESPONSE_OK, 
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
 
+	vbox = gtk_vbox_new(FALSE, 10);
+	helplabel = gtk_label_new("Please enter name of search");
+	gtk_box_pack_start(GTK_BOX(vbox), helplabel, TRUE, FALSE, 0);
+	
+	
 	hbox = gtk_hbox_new(FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, FALSE, 0);
+
 	label = gtk_label_new("Search Name");
 	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, FALSE, 0);
 	
 	entry = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, FALSE, 0);
 	
-	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), hbox);
-	gtk_widget_show_all(dialog);
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), vbox);
 
 redo:
+	gtk_widget_show_all(dialog);
 	result = gtk_dialog_run(GTK_DIALOG(dialog));
 
 	if (result == GTK_RESPONSE_CANCEL) {
+		gtk_widget_destroy(dialog);
 		return;
 	} else {
+		/* get the name from the box and do some error checking on it */
 		new_name = gtk_entry_get_text(GTK_ENTRY(entry));
+	
+		/* if name is null, then redo */
 		if (strlen(new_name) == 0) {
-			/* XXX feedback on why this doesn't work */
+			gtk_label_set_text(GTK_LABEL(helplabel),
+				"No name: please enter search name");
 			goto redo;		
 		}
-		/* XXX check for name conflicts */
+		/* Make sure there are not spaces */
+		for (i=0; i < strlen(new_name); i++) {
+			if (new_name[i] == ' ') {
+				gtk_label_set_text(GTK_LABEL(helplabel),
+					"Name has spaces: please changes");
+				goto redo;
+			}
+		}
+
+		/* check for name conflicts */
+		if (search_exists(new_name)) {
+			gtk_label_set_text(GTK_LABEL(helplabel),
+					"Name exists: Please change");
+			goto redo;
+		}
+
 		ssearch = create_search(stype, new_name);
 		assert(ssearch != NULL);	
 
+		/* add to the list of searches */
+		search_add_list(ssearch);
+
+		/* popup the new search edit box */	
+		ssearch->edit_search();
 	}
 	gtk_widget_destroy(dialog);
 
 	/* XXX get the name from the user */
-
-	/* 	 */
-	printf("cp create %d \n", stype);
 
 }
 

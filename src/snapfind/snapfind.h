@@ -27,5 +27,7 @@ extern thumbnail_t *cur_thumbnail;
 
 /* XXX add c++ wrapper */
 void ss_add_dep(snap_search *dep);
+void update_search_entry(snap_search *cur_search, int row);
+
 
 #endif	/* ! _SNAP_FIND_H_ */

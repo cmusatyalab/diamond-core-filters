@@ -447,6 +447,8 @@ histo_scan_main(void *ptr)
 	return NULL;
 }
 
+
+
 static void
 cb_popup_window_close(GtkWidget *window) 
 {
@@ -605,6 +607,26 @@ cb_add_to_existing(GtkWidget *widget, GdkEventAny *event, gpointer data)
   return TRUE;
 }
 
+void
+search_popup_add(snap_search *ssearch, int nsearch)
+{
+	GtkWidget *		item;
+
+	/* see if the popup window exists, if not, then just return */
+	if (popup_window.window == NULL) {
+		return;
+	}
+	/* Put the list of searches in the ones we can select in the popup menu */
+	item = gtk_menu_item_new_with_label(ssearch->get_name());
+	gtk_widget_show(item);
+	/* XXX change to obj pointer */
+	g_object_set_data(G_OBJECT(item), "user data", (void *)(nsearch - 1));
+	gtk_menu_shell_append(GTK_MENU_SHELL(popup_window.example_list), item);
+
+	/* XXX deal with other list later */
+}
+
+
 
 /*
  * The callback function that takes user selected regions and creates
@@ -622,7 +644,6 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	int		idx;
 	gint	result;
 	const char *	sname;
-	GtkWidget *		item;
   	GUI_CALLBACK_ENTER();
 
 	active_item = gtk_menu_get_active(GTK_MENU(popup_window.search_type));
@@ -649,19 +670,10 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	/* create the new search and put it in the global list */
 	ssearch = create_search(stype, sname);
 	assert(ssearch != NULL);
-	snap_searches[num_searches] = ssearch;
-	num_searches++;
 
-	/*
-	 * Put this in the list of searches in the selection pane.
-	 */
-	update_search_entry(ssearch, num_searches);
 
-	/* Put the list of searches in the ones we can select in the popup menu */
-	item = gtk_menu_item_new_with_label(ssearch->get_name());
-	gtk_widget_show(item);
-	g_object_set_data(G_OBJECT(item), "user data", (void *)(num_searches - 1));
-	gtk_menu_shell_append(GTK_MENU_SHELL(popup_window.example_list), item);
+	/* put this in the list of searches */
+	search_add_list(ssearch);
 
 	/* put the patches into the newly created search */
 	for(int i=0; i<popup_window.nselections; i++) {
@@ -891,12 +903,10 @@ new_search_panel(void)
 	GtkWidget *widget;
 
   	frame = gtk_frame_new("Create New Search");
-  	gtk_widget_show(frame);
 		  
 	box = gtk_vbox_new(FALSE, 10);
 	gtk_container_set_border_width(GTK_CONTAINER(box), 10);
 	gtk_container_add(GTK_CONTAINER(frame), box);
-	gtk_widget_show(box);
 
 	/*
 	 * Create a hbox that has the controls for
@@ -909,40 +919,34 @@ new_search_panel(void)
 	g_signal_connect_after(GTK_OBJECT(button), "clicked",
 	   GTK_SIGNAL_FUNC(cb_add_to_new), NULL);
 	gtk_box_pack_start(GTK_BOX(box), button, TRUE, FALSE, 0);
-	gtk_widget_show(button);
 
 
 	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(box), hbox, TRUE, FALSE, 0);
-	gtk_widget_show(hbox);
 
 	widget = gtk_label_new("Type");
 	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
-	gtk_widget_show(widget);
 
 	popup_window.search_type =  get_example_searches_menu();
 	widget = gtk_option_menu_new();
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(widget), 
 		popup_window.search_type);
-	gtk_widget_show(widget);
 	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
 
 	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(box), hbox, TRUE, FALSE, 0);
-	gtk_widget_show(hbox);
 
 	widget = gtk_label_new("Name");
 	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
-	gtk_widget_show(widget);
 
 	popup_window.search_name = gtk_entry_new();
-	gtk_widget_show(popup_window.search_name);
 	gtk_entry_set_activates_default(GTK_ENTRY(popup_window.search_name),
 		TRUE);
 	gtk_box_pack_start(GTK_BOX(hbox), popup_window.search_name, 
 		TRUE, FALSE, 0);
 
+	gtk_widget_show_all(GTK_WIDGET(frame));
 	return(frame);
 }
 
@@ -955,12 +959,10 @@ existing_search_panel(void)
 	GtkWidget *widget;
 
   	frame = gtk_frame_new("Add to Existing Search");
-  	gtk_widget_show(frame);
 		  
 	box = gtk_vbox_new(FALSE, 10);
 	gtk_container_set_border_width(GTK_CONTAINER(box), 10);
 	gtk_container_add(GTK_CONTAINER(frame), box);
-	gtk_widget_show(box);
 
 	/*
 	 * Create a hbox that has the controls for
@@ -973,30 +975,27 @@ existing_search_panel(void)
 	g_signal_connect_after(GTK_OBJECT(button), "clicked",
 	   GTK_SIGNAL_FUNC(cb_add_to_existing), NULL);
 	gtk_box_pack_start (GTK_BOX(box), button, TRUE, FALSE, 0);
-	gtk_widget_show(button);
 
 	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(box), hbox, TRUE, FALSE, 0);
-	gtk_widget_show(hbox);
 
 	widget = gtk_label_new("Search");
 	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
-	gtk_widget_show(widget);
 
 	popup_window.example_list =  get_example_menu();
 	widget = gtk_option_menu_new();
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(widget), 
 		popup_window.example_list);
-	gtk_widget_show(widget);
 	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
+	gtk_widget_show_all(GTK_WIDGET(frame));
 	return(frame);
 }
 
 void
 do_img_popup(GtkWidget *widget) 
 {
-        thumbnail_t *thumb;
+	thumbnail_t *thumb;
 	GtkWidget *eb;
 	GtkWidget *frame;
 	GtkWidget *image;
@@ -1254,7 +1253,7 @@ do_img_popup(GtkWidget *widget)
 	gtk_widget_queue_resize(popup_window.window);
 	gtk_widget_show(popup_window.window);
 
- done:
+done:
 	return;
 }
 

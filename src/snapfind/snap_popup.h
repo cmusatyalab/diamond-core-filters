@@ -52,4 +52,6 @@ extern pop_win_t popup_window;
 
 void do_img_popup(GtkWidget *widget);
 
+void search_popup_add(snap_search *ssearch, int nsearch);
+
 #endif	/* ! _SNAP_POPUP_H_ */
