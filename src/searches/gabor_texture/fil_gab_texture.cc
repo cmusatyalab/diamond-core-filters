@@ -80,6 +80,8 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 		}
 	}
 
+	data->gobj = new gabor(data->num_angles, data->radius, data->num_freq,
+		data->max_freq, data->min_freq, data->sigma);
 	return (0);
 }
 
@@ -105,7 +107,7 @@ f_init_gab_texture(int numarg, char **args, int blob_len,
 	assert(!err);
 
 	err = read_texture_args(fhandle, data, numarg, args);
-	assert(err);
+	assert(err == 0);
 
 	*f_datap = data;
 	return(0);
