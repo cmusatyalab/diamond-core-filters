@@ -22,6 +22,9 @@ public:
 		float min_freq, float sigma);
 	~gabor(void);
 
+                                                                                
+	int get_responses(RGBImage* image, int x, int y, int size, float *rvec);
+
 private:
 	int		gab_angles;		
 	int		gab_radius;

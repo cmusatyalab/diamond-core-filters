@@ -1630,6 +1630,7 @@ static GtkItemFactoryEntry menu_items[] = { /* XXX */
             {"/Searches/New/VJ Face Detect", NULL, G_CALLBACK(cb_create), VJ_FACE_SEARCH, "<Item>" },
             {"/Searches/New/OCV Face Detect", NULL, G_CALLBACK(cb_create), OCV_FACE_SEARCH, "<Item>" },
             {"/Searches/New/Texture", NULL, G_CALLBACK(cb_create), TEXTURE_SEARCH, "<Item>" },
+            {"/Searches/New/Gabor Texture", NULL, G_CALLBACK(cb_create), GABOR_TEXTURE_SEARCH, "<Item>" },
             {"/Searches/New/Regex", NULL, G_CALLBACK(cb_create), REGEX_SEARCH, "<Item>" },
             {"/Searches/Import Example", NULL, G_CALLBACK(cb_import), 0, "<Item>" },
 
@@ -1838,6 +1839,7 @@ void rgb_histo_init();
 void vj_face_init();
 void ocv_face_init();
 void texture_init();
+void gabor_texture_init();
 
 int
 main(int argc, char *argv[])
@@ -1977,6 +1979,7 @@ main(int argc, char *argv[])
 	vj_face_init();
 	ocv_face_init();
 	texture_init();
+	gabor_texture_init();
 
 	/*
 	 * Start the main loop processing for the GUI.

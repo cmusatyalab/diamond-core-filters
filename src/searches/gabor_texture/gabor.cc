@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <gtk/gtk.h>
+#include <errno.h>
 #include "rgb.h"
 #include "gabor.h"
 
@@ -50,6 +51,36 @@ gabor::gabor(int angles, int radius, int freq, float max_freq, float min_freq,
 				new gabor_filter(gab_radius, cur_angle, cur_freq, gab_sigma);
 		}
 	}
+}
+
+
+int
+gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec)
+{
+	int		i,j;
+	int		foffset;
+	int		err;
+	int		num_responses;
+	gabor_filter *	filt;
+
+	/* make sure response vector is large enough */
+	num_responses = gab_angles * gab_freq;
+	if (num_responses > size) {
+		return (EINVAL);
+	}
+
+
+	for (i=0; i < gab_angles; i++) {
+		for (j=0; j < gab_freq; j++) {
+			foffset = FILTER_OFFSET(i,j);
+			filt = gab_filters[foffset];
+			err = filt->get_response(image, x, y, &rvec[foffset]);
+			if (err) {
+				return(err);
+			}
+		}
+	}
+	return(0);
 }
 
 gabor::~gabor()

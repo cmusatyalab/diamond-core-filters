@@ -30,6 +30,7 @@
 gabor_filter::gabor_filter(int radius, float angle, float freq, float sigma)
 {
 	int x, y, dist;
+	int		voffset;
 	float	cos_val, sin_val, exp_val, exp_const;
 	float	sum_val;
 
@@ -46,9 +47,9 @@ gabor_filter::gabor_filter(int radius, float angle, float freq, float sigma)
 			dist = x*x + y*y;		
 			exp_val = exp(-((float)dist)/sigma);
 			sum_val = freq*(((float)y*cos_val)-((float)x*sin_val));
-			gfilt_real[VAL_OFFSET(x,y)] = exp_val * sin(sum_val);
-			gfilt_img[VAL_OFFSET(x,y)] = exp_val * 
-				(cos(sum_val) - exp_const);
+			voffset = VAL_OFFSET((x + radius),(y+radius));
+			gfilt_real[voffset] = exp_val * sin(sum_val);
+			gfilt_img[voffset] = exp_val * (cos(sum_val) - exp_const);
 		}
 	}
 }
@@ -69,6 +70,8 @@ gabor_filter::get_response(RGBImage *image, int x, int y, float *response)
 	int	poffset;
 	int	voffset;
 	int	xoff, yoff;
+	int	pval;
+	float	real, img, dist;
 	assert(x >=0);
 	assert(y >=0);
 
@@ -80,14 +83,21 @@ gabor_filter::get_response(RGBImage *image, int x, int y, float *response)
 		return(1);
 	}
 
+	real = 0.0;
+	img = 0.0;
+
 	for (yoff = 0; yoff < gfilt_dim; yoff++) {
 		for (xoff = 0; xoff < gfilt_dim; xoff++) {
 			poffset = PIXEL_OFFSET(image, (x + xoff), (y +yoff));
 			voffset = VAL_OFFSET(xoff, yoff);
-			
+			pval = 	(image->data[poffset].r + image->data[poffset].g + 
+				image->data[poffset].b)/3;
+			real = pval * gfilt_real[voffset];
+			img = pval * gfilt_img[voffset];
 		}
 	}
-
+	dist = sqrt(real*real + img*img);
+	*response = dist;
 	return(0);
 }
 
