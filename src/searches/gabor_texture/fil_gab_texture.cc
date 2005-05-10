@@ -157,6 +157,8 @@ comp_distance(int num_resp, float * new_vec, float *orig_vec)
 
 	for (i=0; i < num_resp; i++) {
 		running += fabsf(orig_vec[i]/osum - new_vec[i]/nsum);
+		printf("osum: %f nsum: %f running %f i %d or %f nr %f\n", 
+			osum, nsum, running, i, orig_vec[i], new_vec[i]);
 	}
 	running = running/(float)num_resp;
 	return(running);

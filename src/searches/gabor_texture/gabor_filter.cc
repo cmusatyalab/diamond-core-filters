@@ -92,6 +92,8 @@ gabor_filter::get_response(RGBImage *image, int x, int y, float *response)
 			voffset = VAL_OFFSET(xoff, yoff);
 			pval = 	(image->data[poffset].r + image->data[poffset].g + 
 				image->data[poffset].b)/3;
+			printf("getresp: xoff %d yoff %d poff %d voff %d pval %d\n",
+				xoff, yoff, poffset, voffset, pval);
 			real = pval * gfilt_real[voffset];
 			img = pval * gfilt_img[voffset];
 		}

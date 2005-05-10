@@ -51,7 +51,7 @@ gabor_texture_search::gabor_texture_search(const char *name, char *descr)
 	channels = 3;
 	num_angles = 4;
 	num_freq = 2;
-	radius = 16;
+	radius = 32;
 	sigma = 10.0;
 	min_freq = 0.2;
 	max_freq = 1.0;
