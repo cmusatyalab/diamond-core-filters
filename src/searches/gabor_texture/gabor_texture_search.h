@@ -52,6 +52,13 @@ private:
 	int				method;
 	double			simularity;
 	int				channels;
+	int			num_angles;
+	int			num_freq;
+	int			radius;
+	float			sigma;
+	float			min_freq;
+	float			max_freq;
+
 	texture_dist_t	distance_metric;
 	GtkWidget *		distance_menu;
 
@@ -60,5 +67,14 @@ private:
 	GtkWidget *	gray_widget;
 	GtkWidget *	rgb_widget;
 };
+
+
+class gabor_texture_factory: public img_factory {
+public:
+   gabor_texture_search *create(const char *name) {
+                return new gabor_texture_search(name, "Gabor Texture");
+   }
+};
+                                                                                
 
 #endif	/* !_GABOR_TEXTURE_SEARCH_H_ */

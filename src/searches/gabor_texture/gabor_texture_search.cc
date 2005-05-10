@@ -23,10 +23,25 @@
 #include "texture_tools.h"
 #include "img_search.h"
 #include "search_set.h"
+#include "gabor.h"
+#include "read_config.h"
 #include "gabor_texture_search.h"
-//#include "snapfind.h"
 
 #define	MAX_DISPLAY_NAME	64
+
+
+void
+gabor_texture_init()
+{
+        gabor_texture_factory *fac;
+        printf("gabor_texture init \n");
+                                                                                
+        fac = new gabor_texture_factory;
+                                                                                
+        read_config_register("gabor_texture_factory", fac);
+}
+
+
 
 gabor_texture_search::gabor_texture_search(const char *name, char *descr)
 		: example_search(name, descr)
@@ -34,6 +49,13 @@ gabor_texture_search::gabor_texture_search(const char *name, char *descr)
 	edit_window = NULL;
 	simularity = 0.93;
 	channels = 3;
+	num_angles = 4;
+	num_freq = 2;
+	radius = 16;
+	sigma = 10.0;
+	min_freq = 0.2;
+	max_freq = 1.0;
+
 	distance_metric = TEXTURE_DIST_PAIRWISE;
 }
 
@@ -370,13 +392,15 @@ gabor_texture_search::save_edits()
 void
 gabor_texture_search::write_fspec(FILE *ostream)
 {
-	IplImage	*img;
-	IplImage	*scale_img;
 	RGBImage	*rimg;
-	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
+	gabor *		gab;
+	float *		rvec;
 	example_patch_t	*cur_patch;
 	img_search *	rgb;
 	int		i = 0;
+	int		patch_size;
+	int		err;
+	int		num_resp;
 
 	save_edits();
 	/*
@@ -387,9 +411,9 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
 	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * simularity));
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_texture_detect \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_texture_detect \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_texture_detect \n");
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_gab_texture \n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_gab_texture \n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_gab_texture \n");
 	fprintf(ostream, "ARG  %s  # name \n", get_name());
 
 	/*
@@ -407,54 +431,57 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	 */
 
 	fprintf(ostream, "ARG  %f  # simularity \n", 0.0);
-	fprintf(ostream, "ARG  %d  # channels \n", channels);
-	fprintf(ostream, "ARG  %d  # distance type \n", distance_metric);
-	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
+	fprintf(ostream, "ARG  %d  # num_angles \n", num_angles);
+	fprintf(ostream, "ARG  %d  # num_freq \n", num_freq);
+	fprintf(ostream, "ARG  %d  # radius \n", radius);
+	fprintf(ostream, "ARG  %f  # max_freq \n", max_freq);
+	fprintf(ostream, "ARG  %f  # min_freq \n", min_freq);
+	fprintf(ostream, "ARG  %f  # sigma \n", sigma);
 
+	patch_size = 2 * radius + 1;
+
+	/* count the number of patches of the appropriate size*/
+	i = 0;
+	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
+		if ((cur_patch->patch_image->width < patch_size) ||
+		    (cur_patch->patch_image->height < patch_size)) {
+				continue;
+		} else {
+			i++;
+		}
+	}
+	fprintf(ostream, "ARG  %d  # num examples \n", i);
+
+
+	gab = new gabor(num_angles, radius, num_freq, max_freq, min_freq, sigma);
+	num_resp = num_angles * num_freq;
+	rvec = (float *) malloc(sizeof(float) * num_resp);
+
+	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
 		int j;
-		int neww, newh;
-		if ((cur_patch->patch_image->width < 32) ||
-		    (cur_patch->patch_image->height < 32)) {
+		if ((cur_patch->patch_image->width < patch_size) ||
+		    (cur_patch->patch_image->height < patch_size)) {
 			continue;
 		}
 
-		neww = cur_patch->xsize;
-		newh = cur_patch->ysize;
 
-		/* XXX only works for assume we want squares */
-		if (neww > newh) {
-			neww = newh;
-		} else {
-			newh = neww;
-
-		}
+		/* XXX scale this later */
 		rimg = create_rgb_subimage(cur_patch->patch_image,
-		                           0, 0, neww, newh);
+		                           0, 0, patch_size, patch_size);
 
-		if (channels == 1) {
-			img = get_gray_ipl_image(rimg);
-		} else {
-			img = get_rgb_ipl_image(rimg);
+		err = gab->get_responses(rimg, 0, 0, num_resp, rvec);
+		if (err) {
+			fprintf(stderr, "get_response failed\n");
+			continue;
 		}
-		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U, channels);
-		cvResize(img, scale_img, CV_INTER_LINEAR);
-#ifdef	XXX
-
-		texture_get_lap_pyr_features_from_subimage(img, channels, 0, 0,
-		        cur_patch->xsize, cur_patch->ysize, feature_vals);
-#else
-
-		texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
-		        32, 32, feature_vals);
-#endif
-
-		for (j=0; j < (NUM_LAP_PYR_LEVELS*channels); j++) {
-			fprintf(ostream, "ARG  %f  # sample %d val %d \n",
-			        feature_vals[j], i, j);
+		for (j=0; j < num_resp; j++) {
+			fprintf(ostream, "ARG  %f  # sample %d resp %d \n",
+			        rvec[j], i, j);
 		}
-		i++;	/* count thenumber of samples for debugging */
+		i++;	/* count the number of samples for debugging */
 	}
+	delete gab;
 	fprintf(ostream, "REQUIRES  RGB # dependencies \n");
 	fprintf(ostream, "MERIT  100 # some relative cost \n");
 

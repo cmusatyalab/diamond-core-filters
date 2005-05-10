@@ -508,9 +508,9 @@ vj_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 	fconfig_fdetect_t	fconfig;
 	ii_image_t	 *	ii;
 	ii2_image_t	 *	ii2;
-	int				pass;
-	int				size;
-	int				width, height;
+	int			pass;
+	int			size;
+	int			width, height;
 
 	save_edits();
 

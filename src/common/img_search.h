@@ -54,6 +54,7 @@ typedef enum {
 	VJ_FACE_SEARCH,
 	OCV_FACE_SEARCH,
 	REGEX_SEARCH,
+	GABOR_TEXTURE_SEARCH,
 } search_types_t; 
 
 

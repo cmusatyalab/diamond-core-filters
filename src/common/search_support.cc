@@ -67,6 +67,7 @@
 #define MAX_SELECT	64
 #include "import_sample.h"
 #include "search_set.h"
+#include "gabor_texture_search.h"
 
 /* XXXX fix this */
 #define MAX_SEARCHES    64
@@ -96,6 +97,10 @@ create_search(search_types_t type, const char *name)
 
 		case REGEX_SEARCH:
 			cur_search = new regex_search(name, "Regex Search");
+			break;
+
+		case GABOR_TEXTURE_SEARCH:
+			cur_search = new gabor_texture_search(name, "Gabor Texture");
 			break;
 
 		default:

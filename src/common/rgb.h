@@ -49,6 +49,7 @@ typedef struct {
   RGBPixel data[0];		/* var size struct */
 } RGBImage;
 
+#define	PIXEL_OFFSET(img, x, y)	(((y) * ((img)->width)) + (x))
 
 /* some colors/masks */
 
