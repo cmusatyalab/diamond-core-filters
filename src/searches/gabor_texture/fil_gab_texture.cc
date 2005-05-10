@@ -117,16 +117,16 @@ f_init_gab_texture(int numarg, char **args, int blob_len,
 int
 f_fini_gab_texture(void *f_datap)
 {
-	texture_args_t  *targs = (texture_args_t *)f_datap;
-	lf_fhandle_t 	fhandle = 0; /* XXX */
+	gtexture_args_t  *data = (gtexture_args_t *)f_datap;
 	int		i;
 
-	for (i=0; i<targs->num_samples; i++) {
-		free(targs->sample_values[i]);
+	delete data->gobj;
+
+	for (i=0; i < data->num_samples; i++) {
+		free(data->response_list[i]);
 	}
-	free(targs->sample_values);
-	lf_free_buffer(fhandle, (char*)targs);
-	return(0);
+	free(data->response_list);
+	free(data);
 }
 
 
@@ -157,20 +157,17 @@ comp_distance(int num_resp, float * new_vec, float *orig_vec)
 
 	for (i=0; i < num_resp; i++) {
 		running += fabsf(orig_vec[i]/osum - new_vec[i]/nsum);
-		printf("osum: %f nsum: %f running %f i %d or %f nr %f\n", 
-			osum, nsum, running, i, orig_vec[i], new_vec[i]);
+	//	printf("osum: %f nsum: %f running %f i %d or %f nr %f\n", 
+	//		osum, nsum, running, i, orig_vec[i], new_vec[i]);
 	}
-	running = running/(float)num_resp;
+	//running = running/(float)num_resp;
+	//printf("distance: %f \n", running);
 	return(running);
 }
 
 static int
 gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 {
-
-	/*
-	 * first process entire image 
-	 */
 	int		num_resp;
 	double          min_distance;   // min distance for one window from all
 	// samples
@@ -181,7 +178,9 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 	int		err;
 	float		dist;
 	bbox_t         *bbox;
-	int             quit_on_pass = 1;   // quits as soon as its known that
+	bbox_t          best_box;
+
+	best_box.distance = 500000.0;
 
 
 	num_resp = targs->num_angles * targs->num_freq;
@@ -209,23 +208,45 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 				}
 			}
 
-			if (min_distance <= targs->max_distance) {
-					passed++;
-					bbox = (bbox_t *) malloc(sizeof(*bbox));
-					assert(bbox != NULL);
-					bbox->min_x = x;
-					bbox->min_y = y;
-					bbox->max_x = x + test_x;   /* XXX scale */
-					bbox->max_y = y + test_y;
-					bbox->distance = min_distance;
-					TAILQ_INSERT_TAIL(blist, bbox, link);
-
-					if (quit_on_pass && (passed >= targs->min_matches)) {
-						goto done;
-					}
+			if ((targs->min_matches == 1) &&
+				(min_distance <= targs->max_distance) &&
+				(min_distance < best_box.distance)) {
+				best_box.min_x = x;
+				best_box.min_y = y;
+				best_box.max_x = x + test_x;    /* XXX scale */
+				best_box.max_y = y + test_y;
+				best_box.distance = min_distance;
+			} else if ((targs->min_matches > 1) &&
+					   (min_distance < targs->max_distance)) {
+				passed++;
+				bbox = (bbox_t *) malloc(sizeof(*bbox));
+				assert(bbox != NULL);
+				bbox->min_x = x;
+                    bbox->min_y = y;
+				bbox->max_x = x + test_x;   /* XXX scale */
+				bbox->max_y = y + test_y;
+				bbox->distance = min_distance;
+				TAILQ_INSERT_TAIL(blist, bbox, link);
+																			
+				if (passed >= targs->min_matches) {
+					goto done;
+				}
 			}
 		}
 	}
+
+    if ((targs->min_matches == 1)
+        && (best_box.distance < targs->max_distance)) {
+        passed++;
+        bbox = (bbox_t *) malloc(sizeof(*bbox));
+        assert(bbox != NULL);
+        bbox->min_x = best_box.min_x;
+        bbox->min_y = best_box.min_y;
+        bbox->max_x = best_box.max_x;
+        bbox->max_y = best_box.max_y;
+        bbox->distance = best_box.distance;
+        TAILQ_INSERT_TAIL(blist, bbox, link);
+    }
 
 done:
 	free(respv);
@@ -237,7 +258,6 @@ int
 f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
                       lf_obj_handle_t *ohandles, void *f_datap)
 {
-
 	int		pass = 0;
 	int		err;
 	RGBImage      * rgb_img = NULL;
@@ -255,8 +275,8 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 
 	lf_log(fhandle, LOGL_TRACE, "f_texture_detect: enter");
 
-        err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&rgb_img);
-        assert(err == 0);
+	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&rgb_img);
+	assert(err == 0);
 	if (rgb_img == NULL) {
 		rgb_alloc = 1;
 		rgb_img = get_rgb_img(ohandle);
@@ -322,10 +342,8 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 
 		if (min_simularity == 2.0) {
 			pass = 0;
-			printf("min unchange \n");
 		} else {
 			pass = (int)(100.0 * min_simularity);
-			//printf("min change \n");
 		}
 	} else {
 		pass = 0;
