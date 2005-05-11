@@ -416,7 +416,7 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 	gargs->num_angles = num_angles;
 	gargs->num_freq = num_freq;
 	gargs->radius = radius;
-	gargs->max_freq = min_freq;
+	gargs->max_freq = max_freq;
 	gargs->min_freq = min_freq;
 	gargs->sigma = sigma;
 
@@ -522,12 +522,12 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	 */
 
 	fprintf(ostream, "ARG  %f  # simularity \n", 0.0);
-	fprintf(ostream, "ARG  %d  # num_angles \n", num_angles);
-	fprintf(ostream, "ARG  %d  # num_freq \n", num_freq);
-	fprintf(ostream, "ARG  %d  # radius \n", radius);
-	fprintf(ostream, "ARG  %f  # max_freq \n", max_freq);
-	fprintf(ostream, "ARG  %f  # min_freq \n", min_freq);
-	fprintf(ostream, "ARG  %f  # sigma \n", sigma);
+	fprintf(ostream, "ARG  %d  # num_angles \n", gargs.num_angles);
+	fprintf(ostream, "ARG  %d  # num_freq \n", gargs.num_freq);
+	fprintf(ostream, "ARG  %d  # radius \n", gargs.radius);
+	fprintf(ostream, "ARG  %f  # max_freq \n", gargs.max_freq);
+	fprintf(ostream, "ARG  %f  # min_freq \n", gargs.min_freq);
+	fprintf(ostream, "ARG  %f  # sigma \n", gargs.sigma);
 	fprintf(ostream, "ARG  %d  # num examples \n", gargs.num_samples);
 
 	num_resp = num_angles * num_freq;
@@ -585,8 +585,6 @@ gabor_texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 
 	/* generate list of bounding boxes */
 	pass = gabor_test_image(rimg, &gargs, blist);
-	printf("pass %d \n", pass);
-	printf("dist %f \n", gargs.max_distance);
 	/* cleanup */
 	release_args(&gargs);
 	return;

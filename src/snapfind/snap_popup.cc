@@ -1214,8 +1214,7 @@ do_img_popup(GtkWidget *widget, search_set *set
 
 		gtk_widget_show_all(popup_window.window);
 
-		set
-			->register_update_fn(popup_update_searches);
+		sset->register_update_fn(popup_update_searches);
 
 	} else {
 		kill_highlight_thread(0);

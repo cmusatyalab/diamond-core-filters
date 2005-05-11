@@ -131,7 +131,6 @@ f_fini_gab_texture(void *f_datap)
 
 
 
-static int	count = 0;
 
 int
 f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
@@ -168,7 +167,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 
 	pass = gabor_test_image(rgb_img, targs, &blist);
 
-	printf("(%d) gabor test %d \n", count++, pass);
 	if (pass >= targs->min_matches) {
 
 		/* increase num_histo counter (for boxes in app)*/
@@ -199,7 +197,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 			param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
 			param.distance = cur_box->distance;
 
-			printf("dist: %f \n", cur_box->distance);
 			if ((1.0 - param.distance) < min_simularity) {
 				min_simularity = 1.0 - param.distance;
 			}
@@ -240,4 +237,3 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 
 	return pass;
 }
-

@@ -66,6 +66,25 @@ gabor_vsum(int num, float *vec)
 
 /* XXX make more efficient */
 
+static void
+dump_respv(int num_resp, float *new_vec, float *orig_vec)
+{
+	int	i;
+	fprintf(stderr, "new: ");
+	for (i=0; i < num_resp; i++) {
+		fprintf(stderr, "%f ", new_vec[i]);
+	}
+	fprintf(stderr, "\n");
+
+	fprintf(stderr, "old: ");
+	for (i=0; i < num_resp; i++) {
+		fprintf(stderr, "%f ", orig_vec[i]);
+	}
+	fprintf(stderr, "\n");
+}
+
+
+
 static float
 gabor_comp_distance(int num_resp, float * new_vec, float *orig_vec)
 {
@@ -98,8 +117,6 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 
 	best_box.distance = 500000.0;
 
-	dump_gtexture_args(targs);
-
 	num_resp = targs->num_angles * targs->num_freq;
 	respv = (float *)malloc(sizeof(float)*num_resp);
 	assert(respv != NULL);
@@ -124,7 +141,6 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 				}
 			}
 
-			fprintf(stderr, "<%d %d > = %f \n", x, y, min_distance);
 			if ((targs->min_matches == 1) &&
 				(min_distance <= targs->max_distance) &&
 				(min_distance < best_box.distance)) {
@@ -132,13 +148,9 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 				best_box.min_y = y;
 				best_box.max_x = x + width;    /* XXX scale */
 				best_box.max_y = y + width;
-				printf("update bbox: %d %d old %f new %f \n", 
-					x,y, best_box.distance,
-					min_distance);
 				best_box.distance = min_distance;
 			} else if ((targs->min_matches > 1) &&
 					   (min_distance <= targs->max_distance)) {
-				printf("%d %d -- %f \n", x, y, min_distance);
 				passed++;
 				bbox = (bbox_t *) malloc(sizeof(*bbox));
 				assert(bbox != NULL);
@@ -147,7 +159,6 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 				bbox->max_x = x + width;   /* XXX scale */
 				bbox->max_y = y + width;
 				bbox->distance = min_distance;
-				printf("add bbox:  new %f \n", min_distance);
 				TAILQ_INSERT_TAIL(blist, bbox, link);
 																			
 				if (passed >= targs->min_matches) {
@@ -174,6 +185,4 @@ done:
 	free(respv);
 	return (passed);
 }
-
-
 
