@@ -68,7 +68,6 @@ gabor_texture_search::~gabor_texture_search()
 void
 gabor_texture_search::set_simularity(char *data)
 {
-
 	simularity = atof(data);
 	if (simularity < 0) {
 		simularity = 0.0;
@@ -384,6 +383,95 @@ gabor_texture_search::save_edits()
 	example_search::save_edits();
 }
 
+void
+gabor_texture_search::release_args(gtexture_args_t *gargs)
+{
+
+	int	i;
+	delete	gargs->gobj;
+	
+	for (i=0; i < gargs->num_samples; i++) {
+		free(gargs->response_list[i]);
+	}
+	free(gargs->response_list);
+}
+
+int
+gabor_texture_search::gen_args(gtexture_args_t *gargs)
+{
+	int		samples, patch_size, num_resp;
+	example_patch_t	*	cur_patch;
+	RGBImage	*	rimg;
+	float *			respv;
+	int			err;
+	int	i;
+
+	gargs->name = strdup(get_name());
+	assert(gargs->name != NULL);
+
+	gargs->scale = get_scale();	/* XXX ignored for now */
+	gargs->step = get_stride();
+	gargs->min_matches = get_matches();
+	gargs->max_distance = 1.0 - simularity;
+	gargs->num_angles = num_angles;
+	gargs->num_freq = num_freq;
+	gargs->radius = radius;
+	gargs->max_freq = min_freq;
+	gargs->min_freq = min_freq;
+	gargs->sigma = sigma;
+
+	patch_size = 2 * radius + 1;
+	/* count the number of patches of the appropriate size*/
+	samples = 0;
+	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
+		if ((cur_patch->patch_image->width < patch_size) ||
+		    (cur_patch->patch_image->height < patch_size)) {
+				continue;
+		} else {
+			samples++;
+		}
+	}
+
+	/* if no samples we skip out */
+	if (samples == 0) {
+		return(0);
+	}
+	
+	gargs->num_samples = samples;
+	num_resp = num_angles * num_freq;
+	gargs->response_list = (float **)malloc(sizeof(float *) * samples);
+
+
+	gargs->gobj = new gabor(gargs->num_angles, gargs->radius, 
+		gargs->num_freq, gargs->max_freq, gargs->min_freq, 
+		gargs->sigma);
+
+	i = 0;
+	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
+		if ((cur_patch->patch_image->width < patch_size) ||
+		    (cur_patch->patch_image->height < patch_size)) {
+			continue;
+		}
+
+		/* XXX scale this later */
+		rimg = create_rgb_subimage(cur_patch->patch_image,
+		                           0, 0, patch_size, patch_size);
+
+		respv = (float *) malloc(sizeof(float) * num_resp);
+		assert(respv != NULL);
+		gargs->response_list[i] = respv;
+
+		err = gargs->gobj->get_responses(rimg, 0, 0, num_resp, respv);
+		if (err) {
+			fprintf(stderr, "get_response failed\n");
+			/* XXX */
+			continue;
+		}
+		i++;
+	}
+	return(1);
+}
+
 /*
  * This write the relevant section of the filter specification file
  * for this search.
@@ -392,21 +480,24 @@ gabor_texture_search::save_edits()
 void
 gabor_texture_search::write_fspec(FILE *ostream)
 {
-	RGBImage	*rimg;
-	gabor *		gab;
-	float *		rvec;
-	example_patch_t	*cur_patch;
 	img_search *	rgb;
 	int		i = 0;
-	int		patch_size;
+	int 		j;
 	int		err;
 	int		num_resp;
+	gtexture_args_t	gargs;
 
 	save_edits();
+
+	err = gen_args(&gargs);
+	if (err == 0) {
+		fprintf(stderr, "No patches of large enough size \n");
+		return;
+	}
 	/*
-		 * First we write the header section that corrspons
-		 * to the filter, the filter name, the assocaited functions.
-		 */
+	 * First we write the header section that corrspons
+	 * to the filter, the filter name, the assocaited functions.
+	 */
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
@@ -414,7 +505,7 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_gab_texture \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_gab_texture \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_gab_texture \n");
-	fprintf(ostream, "ARG  %s  # name \n", get_name());
+	fprintf(ostream, "ARG  %s  # name (helps debug) \n", get_name());
 
 	/*
 	 * Next we write call the parent to write out the releated args,
@@ -437,51 +528,19 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  %f  # max_freq \n", max_freq);
 	fprintf(ostream, "ARG  %f  # min_freq \n", min_freq);
 	fprintf(ostream, "ARG  %f  # sigma \n", sigma);
+	fprintf(ostream, "ARG  %d  # num examples \n", gargs.num_samples);
 
-	patch_size = 2 * radius + 1;
-
-	/* count the number of patches of the appropriate size*/
-	i = 0;
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		if ((cur_patch->patch_image->width < patch_size) ||
-		    (cur_patch->patch_image->height < patch_size)) {
-				continue;
-		} else {
-			i++;
-		}
-	}
-	fprintf(ostream, "ARG  %d  # num examples \n", i);
-
-
-	gab = new gabor(num_angles, radius, num_freq, max_freq, min_freq, sigma);
 	num_resp = num_angles * num_freq;
-	rvec = (float *) malloc(sizeof(float) * num_resp);
 
-	i = 0;
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		int j;
-		if ((cur_patch->patch_image->width < patch_size) ||
-		    (cur_patch->patch_image->height < patch_size)) {
-			continue;
-		}
-
-
-		/* XXX scale this later */
-		rimg = create_rgb_subimage(cur_patch->patch_image,
-		                           0, 0, patch_size, patch_size);
-
-		err = gab->get_responses(rimg, 0, 0, num_resp, rvec);
-		if (err) {
-			fprintf(stderr, "get_response failed\n");
-			continue;
-		}
+	for (i=0; i < gargs.num_samples; i++) {
 		for (j=0; j < num_resp; j++) {
 			fprintf(ostream, "ARG  %f  # sample %d resp %d \n",
-			        rvec[j], i, j);
+			        gargs.response_list[i][j], i, j);
 		}
-		i++;	/* count the number of samples for debugging */
 	}
-	delete gab;
+
+	release_args(&gargs);
+
 	fprintf(ostream, "REQUIRES  RGB # dependencies \n");
 	fprintf(ostream, "MERIT  100 # some relative cost \n");
 
@@ -511,94 +570,25 @@ gabor_texture_search::write_config(FILE *ostream, const char *dirname)
 void
 gabor_texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 {
-	texture_args_t	targs;
-	example_patch_t	*cur_patch;
-	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
-	IplImage *		iimg;
-	IplImage *		scale_img;
-	RGBImage *		tmp_img;
-	int				i;
-	int				pass;
-	double *		data_arr;
+	int		pass;
+	gtexture_args_t	gargs;
 
 	save_edits();
 
-	targs.name = strdup(get_name());
-	assert(targs.name != NULL);
-
-	targs.box_width = get_testx();
-	targs.box_height = get_testy();
-	targs.step = get_stride();
-	targs.scale = get_scale();
-	targs.min_matches = INT_MAX; 	/* get all bounding boxes */
-	targs.max_distance = (1.0 - simularity);
-	targs.num_channels = channels;
-
-	i = 0;
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		i++;
+	/* get the gabor argument data structure */
+	pass = gen_args(&gargs);
+	if (pass == 0) {
+		fprintf(stderr, "No patches of large enough size \n");
+		return;
 	}
+	gargs.min_matches = INT_MAX;	/* get all the matches */
 
-	targs.num_samples = i;
-
-	targs.sample_values = (double **)malloc(sizeof(double *) * targs.num_samples);
-
-	i = 0;
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		int j;
-		if ((cur_patch->patch_image->width < 32) ||
-		    (cur_patch->patch_image->height < 32)) {
-			continue;
-		}
-
-		tmp_img = create_rgb_subimage(cur_patch->patch_image,
-		                              0, 0, 32, 32);
-		if (channels == 1) {
-			iimg = get_gray_ipl_image(tmp_img);
-		} else {
-			iimg = get_rgb_ipl_image(tmp_img);
-		}
-		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U, channels);
-		cvResize(iimg, scale_img, CV_INTER_LINEAR);
-
-#ifdef	XXX
-
-		texture_get_lap_pyr_features_from_subimage(iimg, channels, 0, 0,
-		        cur_patch->xsize, cur_patch->ysize,
-		        feature_vals);
-#else
-
-		texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
-		        cur_patch->xsize, cur_patch->ysize,
-		        feature_vals);
-#endif
-
-		/* XXX free iimg */
-		data_arr = (double *)malloc(sizeof(double) * NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS);
-		assert(data_arr != NULL);
-		for (j=0; j < (NUM_LAP_PYR_LEVELS*channels); j++) {
-			data_arr[j] = feature_vals[j];
-		}
-		targs.sample_values[i] = data_arr;
-		i++;	/* count thenumber of samples for debugging */
-
-		release_rgb_image(tmp_img);
-	}
-	if (channels == 1) {
-		iimg = get_gray_ipl_image(rimg);
-	} else {
-		iimg = get_rgb_ipl_image(rimg);
-	}
-
-	if (distance_metric == TEXTURE_DIST_MAHOLONOBIS) {
-		pass = texture_test_entire_image_maholonobis(iimg, &targs, blist);
-	} else if (distance_metric == TEXTURE_DIST_VARIANCE) {
-		pass = texture_test_entire_image_variance(iimg, &targs, blist);
-	} else if (distance_metric == TEXTURE_DIST_PAIRWISE)  {
-		pass = texture_test_entire_image_pairwise(iimg, &targs, blist);
-	}
-
-	/* XXX cleanup */
+	/* generate list of bounding boxes */
+	pass = gabor_test_image(rimg, &gargs, blist);
+	printf("pass %d \n", pass);
+	printf("dist %f \n", gargs.max_distance);
+	/* cleanup */
+	release_args(&gargs);
 	return;
 }
 

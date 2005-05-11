@@ -16,6 +16,7 @@
 
 #include <gtk/gtk.h>
 #include "img_search.h"
+#include "gabor_tools.h"
 
 
 
@@ -48,7 +49,12 @@ public:
 
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
+
+
 private:
+	int 	gen_args(gtexture_args_t *gargs);
+ 	void 	release_args(gtexture_args_t *gargs);
+
 	int				method;
 	double			simularity;
 	int				channels;
