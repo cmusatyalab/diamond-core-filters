@@ -25,6 +25,7 @@
 #include "fil_tools.h"
 #include "texture_tools.h"
 #include "image_tools.h"
+#include "gabor_tools.h"
 #include "gabor.h"
 
 #define VERBOSE 1
@@ -43,9 +44,9 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	assert(data->name != NULL);
 
 	data->scale = atof(*args++);
-	/* XXX size of the radius?? */
-	data->box_width = atoi(*args++);
-	data->box_height = atoi(*args++);
+	/* XXX fix this later , eat box sizes ...*/
+	args++;
+	args++;
 
 	data->step = atoi(*args++);
 	data->min_matches = atoi(*args++);
@@ -63,9 +64,6 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	data->num_samples = atoi(*args++);
 	num_resp = data->num_angles * data->num_freq;
 
-	/* XXX hack for now */
-	data->box_width = 2 * data->radius + 1;
-	data->box_height = 2 * data->radius + 1;
 
 	data->response_list = (float **) malloc(sizeof(float *) *
 		data->num_samples);
@@ -127,132 +125,13 @@ f_fini_gab_texture(void *f_datap)
 	}
 	free(data->response_list);
 	free(data);
+	return(0);
 }
 
 
-static float
-vsum(int num, float *vec)
-{
-	float	sum = 0.0;
-	int		i;
-
-	for (i=0; i < num;i++) {
-		sum += vec[i];	
-	}
-	return(sum);
-
-}
-
-/* XXX make more efficient */
-
-static float
-comp_distance(int num_resp, float * new_vec, float *orig_vec)
-{
-	float	osum, nsum;
-	float	running = 0.0;
-	int		i;
-
-	osum = vsum(num_resp, orig_vec);
-	nsum = vsum(num_resp, new_vec);
-
-	for (i=0; i < num_resp; i++) {
-		running += fabsf(orig_vec[i]/osum - new_vec[i]/nsum);
-	//	printf("osum: %f nsum: %f running %f i %d or %f nr %f\n", 
-	//		osum, nsum, running, i, orig_vec[i], new_vec[i]);
-	}
-	//running = running/(float)num_resp;
-	//printf("distance: %f \n", running);
-	return(running);
-}
-
-static int
-gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
-{
-	int		num_resp;
-	double          min_distance;   // min distance for one window from all
-	// samples
-	int             passed = 0;
-	int             i, x, y;
-	int             test_x, test_y;
-	float *			respv;
-	int		err;
-	float		dist;
-	bbox_t         *bbox;
-	bbox_t          best_box;
-
-	best_box.distance = 500000.0;
 
 
-	num_resp = targs->num_angles * targs->num_freq;
-	respv = (float *)malloc(sizeof(float)*num_resp);
-	assert(respv != NULL);
-
-	/*
-	 * test each subwindow 
-	 */
-	for (x = 0; (x + targs->box_width) < img->width; x += targs->step) {
-		for (y = 0; (y + targs->box_height) < img->height; y += targs->step) {
-			test_x = (int) targs->box_width;
-			test_y = (int) targs->box_height;
-
-			/* XXX scale ?? */
-
-			err = targs->gobj->get_responses(img, x, y, num_resp, respv);
-			assert(err == 0);
-
-			min_distance = 2000.0;
-			for (i=0; i < targs->num_samples; i++) {
-				dist = comp_distance(num_resp, respv, targs->response_list[i]);
-				if (dist < min_distance) {
-					min_distance = dist;
-				}
-			}
-
-			if ((targs->min_matches == 1) &&
-				(min_distance <= targs->max_distance) &&
-				(min_distance < best_box.distance)) {
-				best_box.min_x = x;
-				best_box.min_y = y;
-				best_box.max_x = x + test_x;    /* XXX scale */
-				best_box.max_y = y + test_y;
-				best_box.distance = min_distance;
-			} else if ((targs->min_matches > 1) &&
-					   (min_distance < targs->max_distance)) {
-				passed++;
-				bbox = (bbox_t *) malloc(sizeof(*bbox));
-				assert(bbox != NULL);
-				bbox->min_x = x;
-                    bbox->min_y = y;
-				bbox->max_x = x + test_x;   /* XXX scale */
-				bbox->max_y = y + test_y;
-				bbox->distance = min_distance;
-				TAILQ_INSERT_TAIL(blist, bbox, link);
-																			
-				if (passed >= targs->min_matches) {
-					goto done;
-				}
-			}
-		}
-	}
-
-    if ((targs->min_matches == 1)
-        && (best_box.distance < targs->max_distance)) {
-        passed++;
-        bbox = (bbox_t *) malloc(sizeof(*bbox));
-        assert(bbox != NULL);
-        bbox->min_x = best_box.min_x;
-        bbox->min_y = best_box.min_y;
-        bbox->max_x = best_box.max_x;
-        bbox->max_y = best_box.max_y;
-        bbox->distance = best_box.distance;
-        TAILQ_INSERT_TAIL(blist, bbox, link);
-    }
-
-done:
-	free(respv);
-	return (passed);
-}
-
+static int	count = 0;
 
 int
 f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
@@ -289,6 +168,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 
 	pass = gabor_test_image(rgb_img, targs, &blist);
 
+	printf("(%d) gabor test %d \n", count++, pass);
 	if (pass >= targs->min_matches) {
 
 		/* increase num_histo counter (for boxes in app)*/
@@ -319,6 +199,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 			param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
 			param.distance = cur_box->distance;
 
+			printf("dist: %f \n", cur_box->distance);
 			if ((1.0 - param.distance) < min_simularity) {
 				min_simularity = 1.0 - param.distance;
 			}

@@ -11,8 +11,8 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	_FIL_TEXTURE_H_
-#define	_FIL_TEXTURE_H_	1
+#ifndef	_FIL_GABOR_TEXTURE_H_
+#define	_FIL_GABOR_TEXTURE_H_	1
 
 #include "filter_api.h"
 #include "gabor.h"
@@ -22,26 +22,6 @@ typedef struct write_notify_context_t {
     lf_obj_handle_t ohandle;    
 } write_notify_context_t;
                                                                                 
-typedef struct gtexture_args_t {
-    char*               name;
-    float	    	scale;
-    int                 box_width;
-    int                 box_height;
-    int                 step;
-    int                 min_matches;
-    float               max_distance;
-    int			num_angles;
-    int			num_freq;
-    int			radius;
-    float		max_freq;
-    float		min_freq;
-    float		sigma;
-    int                 num_samples;
-    float **		response_list;
-    gabor *		gobj;
-} gtexture_args_t;
-                                                                                
-
 
 
 #ifdef __cplusplus
@@ -59,4 +39,4 @@ int f_eval_gab_texture(lf_obj_handle_t ihandle, int numout,
 }
 #endif
 
-#endif	/* ! _FIL_TEXTURE_H_ */
+#endif	/* ! _FIL_GABOR_TEXTURE_H_ */

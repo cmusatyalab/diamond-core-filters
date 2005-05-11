@@ -52,6 +52,7 @@ gabor_filter::gabor_filter(int radius, float angle, float freq, float sigma)
 			gfilt_img[voffset] = exp_val * (cos(sum_val) - exp_const);
 		}
 	}
+	
 }
 
 gabor_filter::~gabor_filter()
