@@ -28,6 +28,9 @@ window_search::window_search(const char *name, char *descr)
 	testy = 32;
 	stride = 16;
 	num_matches = 1;
+	enable_size = 1;
+	enable_stride = 1;
+	enable_scale = 1;
 
 }
 
@@ -36,6 +39,25 @@ window_search::~window_search()
 	/* XXX example search destruct */
 	return;
 }
+
+void
+window_search::set_stride_control(int val)
+{
+	enable_stride = val;
+}
+
+void
+window_search::set_size_control(int val)
+{
+	enable_size = val;
+}
+
+void
+window_search::set_scale_control(int val)
+{
+	enable_scale = val;
+}
+
 
 void
 window_search::set_matches(int new_matches)
@@ -258,28 +280,32 @@ window_search::get_window_cntrl()
 	GtkWidget *	frame;
 	GtkWidget *	container;
 
-	//box = gtk_vbox_new(FALSE, 10);
 	frame = gtk_frame_new("Window Search");
-	//gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 10);
 
 	container = gtk_vbox_new(FALSE, 10);
 	gtk_container_add(GTK_CONTAINER(frame), container);
 
-	widget = create_slider_entry("scale", 1.0, 200.0, 2,
+	if (enable_scale) {
+		widget = create_slider_entry("scale", 1.0, 200.0, 2,
 	                             scale, 0.25, &scale_adj);
-	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+	}
 
-	widget = create_slider_entry("testx", 1.0, 100.0, 0,
+	if (enable_size) {
+		widget = create_slider_entry("testx", 1.0, 100.0, 0,
 	                             testx, 1.0, &testx_adj);
-	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 
-	widget = create_slider_entry("testy", 1.0, 100.0, 0,
+		widget = create_slider_entry("testy", 1.0, 100.0, 0,
 	                             testy, 1.0, &testy_adj);
-	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+	}
 
-	widget = create_slider_entry("stride", 1.0, 100.0, 0,
+	if (enable_stride) {
+		widget = create_slider_entry("stride", 1.0, 100.0, 0,
 	                             stride, 1.0, &stride_adj);
-	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
+	}
 
 	widget = create_slider_entry("Matches", 1.0, 100.0, 0,
 	                             num_matches, 1.0, &match_adj);
@@ -299,18 +325,24 @@ window_search::save_edits()
 	int     ival;
 	double  dval;
 
-	/* get the scale value */
-	dval = gtk_adjustment_get_value(GTK_ADJUSTMENT(scale_adj));
-	set_scale(dval);
+	if (enable_scale) {
+		/* get the scale value */
+		dval = gtk_adjustment_get_value(GTK_ADJUSTMENT(scale_adj));
+		set_scale(dval);
+	}
 
-	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(testx_adj));
-	set_testx(ival);
+	if (enable_size) {
+		ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(testx_adj));
+		set_testx(ival);
 
-	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(testy_adj));
-	set_testy(ival);
+		ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(testy_adj));
+		set_testy(ival);
+	}
 
-	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(stride_adj));
-	set_stride(ival);
+	if (enable_stride) {
+		ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(stride_adj));
+		set_stride(ival);
+	}
 
 	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(match_adj));
 	set_matches(ival);
@@ -330,10 +362,16 @@ window_search::write_fspec(FILE *ostream)
 {
 
 	/* write the related filter spec arguments*/
-	fprintf(ostream, "ARG  %9.7f  # Scale \n", get_scale());
-	fprintf(ostream, "ARG  %d  # Test X \n", testx);
-	fprintf(ostream, "ARG  %d  # Test Y \n", testy);
-	fprintf(ostream, "ARG  %d  # Stride \n", stride);
+	if (enable_scale) {
+		fprintf(ostream, "ARG  %9.7f  # Scale \n", get_scale());
+	}
+	if (enable_size) {
+		fprintf(ostream, "ARG  %d  # Test X \n", testx);
+		fprintf(ostream, "ARG  %d  # Test Y \n", testy);
+	}
+	if (enable_stride) {
+		fprintf(ostream, "ARG  %d  # Stride \n", stride);
+	}
 	fprintf(ostream, "ARG  %d  # matches \n", num_matches);
 
 }
@@ -348,7 +386,5 @@ window_search::write_config(FILE *ostream, const char *dirname)
 	fprintf(ostream, "STRIDE %d \n", stride);
 	fprintf(ostream, "SCALE %f \n", scale);
 	fprintf(ostream, "MATCHES %d \n", num_matches);
-
-
 }
 

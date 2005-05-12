@@ -42,6 +42,25 @@ public:
 	void 		set_channels(char *data);
 	void 		set_channels(int num);
 
+	void 		set_radius(char *data);
+	void 		set_radius(int val);
+
+	void 		set_num_angle(char *data);
+	void 		set_num_angle(int val);
+
+	void 		set_num_freq(char *data);
+	void 		set_num_freq(int val);
+
+	void 		set_min_freq(char *data);
+	void 		set_min_freq(float val);
+
+	void 		set_max_freq(char *data);
+	void 		set_max_freq(float val);
+
+	void 		set_sigma(char *data);
+	void 		set_sigma(float val);
+
+
 	virtual	int	handle_config(config_types_t conf_type, char *data);
 
 	void		set_matches(char *matches);
@@ -55,9 +74,9 @@ private:
 	int 	gen_args(gtexture_args_t *gargs);
  	void 	release_args(gtexture_args_t *gargs);
 
-	int				method;
+	int			method;
 	double			simularity;
-	int				channels;
+	int			channels;
 	int			num_angles;
 	int			num_freq;
 	int			radius;
@@ -69,6 +88,12 @@ private:
 	GtkWidget *		distance_menu;
 
 	GtkObject *	sim_adj;
+	GtkObject *	rad_adj;
+	GtkObject *	nangle_adj;
+	GtkObject *	nfreq_adj;
+	GtkObject *	sigma_adj;
+	GtkObject *	minfreq_adj;
+	GtkObject *	maxfreq_adj;
 	GtkWidget *	edit_window;
 	GtkWidget *	gray_widget;
 	GtkWidget *	rgb_widget;

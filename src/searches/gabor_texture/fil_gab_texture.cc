@@ -43,10 +43,8 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	data->name = strdup(*args++);
 	assert(data->name != NULL);
 
-	data->scale = atof(*args++);
 	/* XXX fix this later , eat box sizes ...*/
-	args++;
-	args++;
+	//data->scale = atof(*args++);
 
 	data->step = atoi(*args++);
 	data->min_matches = atoi(*args++);
@@ -60,10 +58,8 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	data->min_freq = atof(*args++);
 	data->sigma = atof(*args++);
 		
-
 	data->num_samples = atoi(*args++);
 	num_resp = data->num_angles * data->num_freq;
-
 
 	data->response_list = (float **) malloc(sizeof(float *) *
 		data->num_samples);

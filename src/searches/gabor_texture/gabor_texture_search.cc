@@ -18,7 +18,6 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
-//#include "histo.h"
 #include "image_tools.h"
 #include "texture_tools.h"
 #include "img_search.h"
@@ -56,6 +55,10 @@ gabor_texture_search::gabor_texture_search(const char *name, char *descr)
 	min_freq = 0.2;
 	max_freq = 1.0;
 
+	/* disble some stride and scale controls in the window search */
+	set_scale_control(0);
+	set_size_control(0);
+
 	distance_metric = TEXTURE_DIST_PAIRWISE;
 }
 
@@ -89,6 +92,7 @@ gabor_texture_search::set_simularity(double sim)
 	return;
 }
 
+/* this is currently not used, but we may want to add it back in */
 void
 gabor_texture_search::set_channels(int num)
 {
@@ -103,6 +107,97 @@ gabor_texture_search::set_channels(char *data)
 	num = atoi(data);
 	set_channels(num);
 }
+
+void
+gabor_texture_search::set_radius(int num)
+{
+	radius = num;
+}
+
+void
+gabor_texture_search::set_radius(char *data)
+{
+	int	 num;
+	num = atoi(data);
+	set_radius(num);
+}
+
+void
+gabor_texture_search::set_num_angle(int num)
+{
+	num_angles = num;
+}
+
+void
+gabor_texture_search::set_num_angle(char *data)
+{
+	int	 num;
+	num = atoi(data);
+	set_num_angle(num);
+}
+
+void
+gabor_texture_search::set_num_freq(int num)
+{
+	num_freq = num;
+}
+
+void
+gabor_texture_search::set_num_freq(char *data)
+{
+	int	 num;
+	num = atoi(data);
+	set_num_freq(num);
+}
+
+void
+gabor_texture_search::set_min_freq(float num)
+{
+	min_freq = num;
+}
+
+void
+gabor_texture_search::set_min_freq(char *data)
+{
+	float	 num;
+	num = atof(data);
+	set_min_freq(num);
+}
+void
+gabor_texture_search::set_max_freq(float num)
+{
+	max_freq = num;
+}
+
+void
+gabor_texture_search::set_max_freq(char *data)
+{
+	float	 num;
+	num = atof(data);
+	set_max_freq(num);
+}
+
+void
+gabor_texture_search::set_sigma(float num)
+{
+	sigma = num;
+}
+
+void
+gabor_texture_search::set_sigma(char *data)
+{
+	float	 num;
+	num = atof(data);
+	set_sigma(num);
+}
+
+
+
+
+
+
+
+
 
 int
 gabor_texture_search::handle_config(config_types_t conf_type, char *data)
@@ -285,6 +380,35 @@ gabor_texture_search::edit_search()
 	                             simularity, 0.05, &sim_adj);
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
+	widget = create_slider_entry("Radius", 0.0, 80.0, 0,
+	                             radius, 2.0, &rad_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+	widget = create_slider_entry("Num Angles", 1.0, 16.0, 0,
+	                             num_angles, 1.0, &nangle_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+	widget = create_slider_entry("Num Frequency", 1.0, 16.0, 0,
+	                             num_freq, 1.0, &nfreq_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+	widget = create_slider_entry("Min Frequency", 0.0, 5.0, 1,
+	                             min_freq, 0.5, &minfreq_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+	widget = create_slider_entry("Max Frequency", 0.0, 5.0, 1,
+	                             max_freq, 0.5, &maxfreq_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+	widget = create_slider_entry("Sigma", 1.0, 40.0, 0,
+	                             sigma, 1.0, &sigma_adj);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+
+
+
+
+#ifdef	XXX
 	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(container), hbox, FALSE, TRUE, 0);
 
@@ -299,7 +423,7 @@ gabor_texture_search::edit_search()
 	} else {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gray_widget), TRUE);
 	}
-
+#endif
 
 	distance_menu = gtk_option_menu_new();
 	menu = gtk_menu_new();
@@ -357,8 +481,8 @@ gabor_texture_search::edit_search()
 void
 gabor_texture_search::save_edits()
 {
-	double	sim;
-	int		color;
+	double		fval;
+	int		ival;
 
 	/* no active edit window, so return */
 	if (edit_window == NULL) {
@@ -366,15 +490,35 @@ gabor_texture_search::save_edits()
 	}
 
 	/* get the simularity and save */
-	sim = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
-	set_simularity(sim);
+	fval = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
+	set_simularity(fval);
 
+	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(rad_adj));
+	set_radius(ival);
+
+	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(nangle_adj));
+	set_num_angle(ival);
+
+	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(nfreq_adj));
+	set_num_freq(ival);
+
+	fval = gtk_adjustment_get_value(GTK_ADJUSTMENT(minfreq_adj));
+	set_min_freq(fval);
+
+	fval = gtk_adjustment_get_value(GTK_ADJUSTMENT(maxfreq_adj));
+	set_max_freq(fval);
+
+	fval = gtk_adjustment_get_value(GTK_ADJUSTMENT(sigma_adj));
+	set_sigma(fval);
+
+#ifdef	XXX
 	color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(rgb_widget));
 	if (color) {
 		set_channels(3);
 	} else {
 		set_channels(1);
 	}
+#endif
 
 	distance_metric =
 	    (texture_dist_t)gtk_option_menu_get_history(GTK_OPTION_MENU(distance_menu));

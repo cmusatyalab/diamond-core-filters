@@ -132,6 +132,10 @@ public:
 	virtual	void write_config(FILE* stream, const char *data_dir);
 	void		save_edits();
 
+	void	set_stride_control(int val);
+	void	set_size_control(int val);
+	void	set_scale_control(int val);
+
 	void set_testx(char *data);
 	void set_testx(int val);
 	int	 get_testx();
@@ -156,6 +160,10 @@ public:
 	void		close_edit_win();
 
 private:
+	int		enable_scale;
+	int		enable_size;
+	int		enable_stride;
+
 	double		scale;
 	GtkObject *	scale_adj;
 	int			testx;
