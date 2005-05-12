@@ -27,7 +27,7 @@
 
 
 
-gabor_filter::gabor_filter(int radius, float angle, float freq, float sigma)
+gabor_filter::gabor_filter(int radius, float angle, float freq, float sigma_sq)
 {
 	int x, y, dist;
 	int		voffset;
@@ -45,7 +45,7 @@ gabor_filter::gabor_filter(int radius, float angle, float freq, float sigma)
 	for (x = -radius; x <= radius; x++) {
 		for (y = -radius; y <= radius; y++) {
 			dist = x*x + y*y;		
-			exp_val = exp(-((float)dist)/sigma);
+			exp_val = exp(-((float)dist)/sigma_sq);
 			sum_val = freq*(((float)y*cos_val)-((float)x*sin_val));
 			voffset = VAL_OFFSET((x + radius),(y+radius));
 			gfilt_real[voffset] = exp_val * sin(sum_val);

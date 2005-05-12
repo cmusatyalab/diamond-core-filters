@@ -56,7 +56,6 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	data->radius = atoi(*args++);
 	data->max_freq = atof(*args++);
 	data->min_freq = atof(*args++);
-	data->sigma = atof(*args++);
 		
 	data->num_samples = atoi(*args++);
 	num_resp = data->num_angles * data->num_freq;
@@ -75,7 +74,7 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	}
 
 	data->gobj = new gabor(data->num_angles, data->radius, data->num_freq,
-		data->max_freq, data->min_freq, data->sigma);
+		data->max_freq, data->min_freq);
 	return (0);
 }
 

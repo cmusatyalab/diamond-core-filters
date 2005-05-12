@@ -51,7 +51,6 @@ gabor_texture_search::gabor_texture_search(const char *name, char *descr)
 	num_angles = 4;
 	num_freq = 2;
 	radius = 32;
-	sigma = 10.0;
 	min_freq = 0.2;
 	max_freq = 1.0;
 
@@ -176,24 +175,6 @@ gabor_texture_search::set_max_freq(char *data)
 	num = atof(data);
 	set_max_freq(num);
 }
-
-void
-gabor_texture_search::set_sigma(float num)
-{
-	sigma = num;
-}
-
-void
-gabor_texture_search::set_sigma(char *data)
-{
-	float	 num;
-	num = atof(data);
-	set_sigma(num);
-}
-
-
-
-
 
 
 
@@ -400,10 +381,6 @@ gabor_texture_search::edit_search()
 	                             max_freq, 0.5, &maxfreq_adj);
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
-	widget = create_slider_entry("Sigma", 1.0, 40.0, 0,
-	                             sigma, 1.0, &sigma_adj);
-	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
-
 
 
 
@@ -509,9 +486,6 @@ gabor_texture_search::save_edits()
 	fval = gtk_adjustment_get_value(GTK_ADJUSTMENT(maxfreq_adj));
 	set_max_freq(fval);
 
-	fval = gtk_adjustment_get_value(GTK_ADJUSTMENT(sigma_adj));
-	set_sigma(fval);
-
 #ifdef	XXX
 	color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(rgb_widget));
 	if (color) {
@@ -563,7 +537,6 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 	gargs->radius = radius;
 	gargs->max_freq = max_freq;
 	gargs->min_freq = min_freq;
-	gargs->sigma = sigma;
 
 	patch_size = 2 * radius + 1;
 	/* count the number of patches of the appropriate size*/
@@ -588,8 +561,7 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 
 
 	gargs->gobj = new gabor(gargs->num_angles, gargs->radius, 
-		gargs->num_freq, gargs->max_freq, gargs->min_freq, 
-		gargs->sigma);
+		gargs->num_freq, gargs->max_freq, gargs->min_freq);
 
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
@@ -672,7 +644,6 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  %d  # radius \n", gargs.radius);
 	fprintf(ostream, "ARG  %f  # max_freq \n", gargs.max_freq);
 	fprintf(ostream, "ARG  %f  # min_freq \n", gargs.min_freq);
-	fprintf(ostream, "ARG  %f  # sigma \n", gargs.sigma);
 	fprintf(ostream, "ARG  %d  # num examples \n", gargs.num_samples);
 
 	num_resp = num_angles * num_freq;

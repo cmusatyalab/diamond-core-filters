@@ -24,18 +24,20 @@
 #define	FILTER_OFFSET(angle, freq)  (((angle) * (gab_freq)) + (freq))
 
 
-gabor::gabor(int angles, int radius, int freq, float max_freq, float min_freq,
-	float sigma)
+gabor::gabor(int angles, int radius, int freq, float max_freq, float min_freq)
 {
 	int	i,j;
 	float 	cur_angle;
 	float 	cur_freq;
 	float 	freq_step;
+	float	sig_sq;
 
 	gab_angles = angles;
 	gab_radius = radius;
 	gab_freq = freq;
-	gab_sigma = M_PI * M_PI * sigma;
+	gab_sigma = ((float)radius)/3.0;
+
+	sig_sq = M_PI * M_PI * gab_sigma * gab_sigma;
 	gab_max_freq = max_freq;
 	gab_min_freq = min_freq;
 	gab_filters = new gabor_filter *[gab_angles * gab_freq];
@@ -48,7 +50,8 @@ gabor::gabor(int angles, int radius, int freq, float max_freq, float min_freq,
 			cur_freq = gab_min_freq + (j * freq_step);
 			cur_freq = (cur_freq * M_PI)/2.0;
 			gab_filters[FILTER_OFFSET(i,j)] = 
-				new gabor_filter(gab_radius, cur_angle, cur_freq, gab_sigma);
+				new gabor_filter(gab_radius, cur_angle,
+				cur_freq, sig_sq);
 		}
 	}
 }
@@ -66,6 +69,7 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec)
 	/* make sure response vector is large enough */
 	num_responses = gab_angles * gab_freq;
 	if (num_responses > size) {
+		fprintf(stderr, "get_reponses: too little space \n");
 		return (EINVAL);
 	}
 
@@ -76,6 +80,7 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec)
 			filt = gab_filters[foffset];
 			err = filt->get_response(image, x, y, &rvec[foffset]);
 			if (err) {
+				fprintf(stderr, "get_reponses: get resp failed\n");
 				return(err);
 			}
 		}

@@ -27,7 +27,6 @@ typedef struct gtexture_args_t {
     int			radius;
     float		max_freq;
     float		min_freq;
-    float		sigma;
     int                 num_samples;
     float **		response_list;
     gabor *		gobj;

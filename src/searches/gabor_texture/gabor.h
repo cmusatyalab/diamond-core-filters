@@ -19,7 +19,7 @@
 class gabor {
 public:
 	gabor(int angles, int radius, int freq, float max_freq, 
-		float min_freq, float sigma);
+		float min_freq);
 	~gabor(void);
 
                                                                                 

@@ -57,8 +57,6 @@ public:
 	void 		set_max_freq(char *data);
 	void 		set_max_freq(float val);
 
-	void 		set_sigma(char *data);
-	void 		set_sigma(float val);
 
 
 	virtual	int	handle_config(config_types_t conf_type, char *data);
@@ -80,7 +78,6 @@ private:
 	int			num_angles;
 	int			num_freq;
 	int			radius;
-	float			sigma;
 	float			min_freq;
 	float			max_freq;
 
@@ -91,7 +88,6 @@ private:
 	GtkObject *	rad_adj;
 	GtkObject *	nangle_adj;
 	GtkObject *	nfreq_adj;
-	GtkObject *	sigma_adj;
 	GtkObject *	minfreq_adj;
 	GtkObject *	maxfreq_adj;
 	GtkWidget *	edit_window;

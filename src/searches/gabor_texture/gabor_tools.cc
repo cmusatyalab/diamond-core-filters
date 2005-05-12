@@ -38,7 +38,6 @@ dump_gtexture_args(gtexture_args_t *gargs)
 	fprintf(stderr, "radius - %d\n", gargs->radius);
 	fprintf(stderr, "max_freq - %f\n", gargs->max_freq);
 	fprintf(stderr, "min_freq - %f\n", gargs->min_freq);
-	fprintf(stderr, "sigma - %f\n", gargs->sigma);
 	fprintf(stderr, "samples - %d\n", gargs->num_samples);
 
 	for (i=0; i < gargs->num_samples; i++) {
@@ -64,7 +63,17 @@ gabor_vsum(int num, float *vec)
 
 }
 
-/* XXX make more efficient */
+static void
+dump_single_respv(int num_resp, float *new_vec)
+{
+	int	i;
+	fprintf(stderr, "new: ");
+	for (i=0; i < num_resp; i++) {
+		fprintf(stderr, "%f ", new_vec[i]);
+	}
+	fprintf(stderr, "\n");
+
+}
 
 static void
 dump_respv(int num_resp, float *new_vec, float *orig_vec)
@@ -84,6 +93,8 @@ dump_respv(int num_resp, float *new_vec, float *orig_vec)
 }
 
 
+
+/* XXX make more efficient */
 
 static float
 gabor_comp_distance(int num_resp, float * new_vec, float *orig_vec)
@@ -152,6 +163,7 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 			} else if ((targs->min_matches > 1) &&
 					   (min_distance <= targs->max_distance)) {
 				passed++;
+				dump_single_respv(num_resp, respv);
 				bbox = (bbox_t *) malloc(sizeof(*bbox));
 				assert(bbox != NULL);
 				bbox->min_x = x;
