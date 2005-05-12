@@ -425,6 +425,7 @@ gabor_texture_search::edit_search()
 	}
 #endif
 
+#ifdef	XXX
 	distance_menu = gtk_option_menu_new();
 	menu = gtk_menu_new();
 
@@ -453,6 +454,7 @@ gabor_texture_search::edit_search()
 
 	gtk_option_menu_set_menu(GTK_OPTION_MENU (opt), menu);
 	gtk_box_pack_start(GTK_BOX(container), opt, FALSE, TRUE, 0);
+#endif
 
 	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
 
@@ -461,7 +463,6 @@ gabor_texture_search::edit_search()
 		 */
 	widget = get_window_cntrl();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
-
 	/*
 		 * Get the controls from the example search class.
 	 */
@@ -518,11 +519,11 @@ gabor_texture_search::save_edits()
 	} else {
 		set_channels(1);
 	}
-#endif
 
 	distance_metric =
 	    (texture_dist_t)gtk_option_menu_get_history(GTK_OPTION_MENU(distance_menu));
 
+#endif
 	/* call the parent class */
 	example_search::save_edits();
 }
