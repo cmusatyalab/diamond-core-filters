@@ -57,10 +57,24 @@ gabor::gabor(int angles, int radius, int freq, float max_freq, float min_freq)
 }
 
 
-int
-gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec)
+static float
+vector_sum(int num, float *vec)
 {
-	int		i,j;
+        float   sum = 0.0;
+        int             i;
+
+        for (i=0; i < num;i++) {
+                sum += vec[i];
+        }
+        return(sum);
+
+}
+
+int
+gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
+	int normalize)
+{
+	int		i;
 	int		foffset;
 	int		err;
 	int		num_responses;
@@ -74,17 +88,22 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec)
 	}
 
 
-	for (i=0; i < gab_angles; i++) {
-		for (j=0; j < gab_freq; j++) {
-			foffset = FILTER_OFFSET(i,j);
-			filt = gab_filters[foffset];
-			err = filt->get_response(image, x, y, &rvec[foffset]);
-			if (err) {
-				fprintf(stderr, "get_reponses: get resp failed\n");
-				return(err);
-			}
+	for (i=0; i < num_responses; i++) {
+		filt = gab_filters[foffset];
+		err = gab_filters[i]->get_response(image, x, y, &rvec[i]);
+		if (err) {
+			fprintf(stderr, "get_reponses: get resp failed\n");
+			return(err);
 		}
 	}
+	if (normalize) {
+		float	sum;
+		sum = vector_sum(num_responses, rvec);
+		for (i=0; i < num_responses; i++) {
+			rvec[i] = rvec[i]/sum;
+		}
+	}
+
 	return(0);
 }
 

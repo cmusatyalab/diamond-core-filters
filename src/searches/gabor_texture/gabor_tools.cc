@@ -141,7 +141,7 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 
 			/* XXX scale ?? */
 
-			err = targs->gobj->get_responses(img, x, y, num_resp, respv);
+			err = targs->gobj->get_responses(img, x, y, num_resp, respv, 1);
 			assert(err == 0);
 
 			min_distance = 2000.0;

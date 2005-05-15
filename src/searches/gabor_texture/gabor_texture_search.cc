@@ -578,7 +578,7 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 		assert(respv != NULL);
 		gargs->response_list[i] = respv;
 
-		err = gargs->gobj->get_responses(rimg, 0, 0, num_resp, respv);
+		err = gargs->gobj->get_responses(rimg, 0, 0, num_resp, respv,1);
 		if (err) {
 			fprintf(stderr, "get_response failed\n");
 			/* XXX */

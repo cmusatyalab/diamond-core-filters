@@ -16,7 +16,7 @@
 
 #include "gabor.h"
 
-typedef struct gtexture_args_t {
+typedef struct gtexture_args {
     char*               name;
     float	    	scale;
     int                 step;
@@ -32,6 +32,25 @@ typedef struct gtexture_args_t {
     gabor *		gobj;
 } gtexture_args_t;
                                                                                 
+typedef struct gabor_img {
+    int			orig_x_size;	/* base image x size */
+    int			orig_y_size;	/* base image y size */
+    int			num_angles;	/* angles in gabor filter */
+    int			num_freq;	/* freqs in gabor filter */
+    char*               name;
+    float	    	scale;
+    int                 step;
+    int                 min_matches;
+    float               max_distance;
+    int			num_angles;
+    int			num_freq;
+    int			radius;
+    float		max_freq;
+    float		min_freq;
+    int                 num_samples;
+    float 		responses[0];
+} gabor_img_t;
+
 
 
 

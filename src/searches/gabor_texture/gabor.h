@@ -23,7 +23,8 @@ public:
 	~gabor(void);
 
                                                                                 
-	int get_responses(RGBImage* image, int x, int y, int size, float *rvec);
+	int get_responses(RGBImage* image, int x, int y, int size, float *rvec,
+		int normalize);
 
 private:
 	int		gab_angles;		
