@@ -11,7 +11,7 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#include <opencv/cv.h>
+#include <opencv/cv.h> 
 #include <stdio.h>
 #include "face.h"
 #include "filter_api.h"
@@ -113,7 +113,7 @@ gabor_comp_distance(int num_resp, float * new_vec, float *orig_vec)
 }
 
 int
-gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
+gabor_test_image(RGBImage * img, gtexture_args_t * gargs, bbox_list_t * blist)
 {
 	int				num_resp;
 	float          min_distance; 
@@ -128,40 +128,40 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 
 	best_box.distance = 500000.0;
 
-	num_resp = targs->num_angles * targs->num_freq;
-	respv = (float *)malloc(sizeof(float)*num_resp);
+	num_resp = NUM_RESPONSES(gargs);
+	respv = (float *)malloc(RESPONSE_SIZE(gargs));
 	assert(respv != NULL);
 
 	/*
 	 * test each subwindow 
 	 */
-	width = targs->radius *2 + 1;
-	for (x = 0; (x + width) < img->width; x += targs->step) {
-		for (y = 0; (y + width) < img->height; y += targs->step) {
+	width = gargs->radius *2 + 1;
+	for (x = 0; (x + width) < img->width; x += gargs->step) {
+		for (y = 0; (y + width) < img->height; y += gargs->step) {
 
 			/* XXX scale ?? */
 
-			err = targs->gobj->get_responses(img, x, y, num_resp, respv, 1);
+			err = gargs->gobj->get_responses(img, x, y, num_resp, respv, 1);
 			assert(err == 0);
 
 			min_distance = 2000.0;
-			for (i=0; i < targs->num_samples; i++) {
-				dist = gabor_comp_distance(num_resp, respv, targs->response_list[i]);
+			for (i=0; i < gargs->num_samples; i++) {
+				dist = gabor_comp_distance(num_resp, respv, gargs->response_list[i]);
 				if (dist < min_distance) {
 					min_distance = dist;
 				}
 			}
 
-			if ((targs->min_matches == 1) &&
-				(min_distance <= targs->max_distance) &&
+			if ((gargs->min_matches == 1) &&
+				(min_distance <= gargs->max_distance) &&
 				(min_distance < best_box.distance)) {
 				best_box.min_x = x;
 				best_box.min_y = y;
 				best_box.max_x = x + width;    /* XXX scale */
 				best_box.max_y = y + width;
 				best_box.distance = min_distance;
-			} else if ((targs->min_matches > 1) &&
-					   (min_distance <= targs->max_distance)) {
+			} else if ((gargs->min_matches > 1) &&
+					   (min_distance <= gargs->max_distance)) {
 				passed++;
 				dump_single_respv(num_resp, respv);
 				bbox = (bbox_t *) malloc(sizeof(*bbox));
@@ -173,15 +173,15 @@ gabor_test_image(RGBImage * img, gtexture_args_t * targs, bbox_list_t * blist)
 				bbox->distance = min_distance;
 				TAILQ_INSERT_TAIL(blist, bbox, link);
 																			
-				if (passed >= targs->min_matches) {
+				if (passed >= gargs->min_matches) {
 					goto done;
 				}
 			}
 		}
 	}
 
-    if ((targs->min_matches == 1)
-        && (best_box.distance <= targs->max_distance)) {
+    if ((gargs->min_matches == 1)
+        && (best_box.distance <= gargs->max_distance)) {
         passed++;
         bbox = (bbox_t *) malloc(sizeof(*bbox));
         assert(bbox != NULL);
@@ -198,3 +198,152 @@ done:
 	return (passed);
 }
 
+/* 
+ * returns the average responses over patch.
+ */
+int
+gabor_patch_response(RGBImage * img, gtexture_args_t * gargs, int
+	num_resp, float *rvec)
+{
+	int             passed = 0;
+	int              x, y;
+	float *			respv;
+	int		err;
+	int		width;
+	int				patches;
+
+	/* make sure we have the correct amount of space */
+	assert(NUM_RESPONSES(gargs) == num_resp);
+
+
+	/* make sure the patch is big enough */
+	width = gargs->radius *2 + 1;
+
+	if ((img->width < width) || (img->height < width)) {
+		return(1);
+	}
+
+	respv = (float *)malloc(RESPONSE_SIZE(gargs));
+	assert(respv != NULL);
+
+	memset(rvec, 0, RESPONSE_SIZE(gargs));
+
+
+	/* test each subwindow and sum them */
+	patches = 0;
+	for (x = 0; (x + width) < img->width; x += gargs->step) {
+		for (y = 0; (y + width) < img->height; y += gargs->step) {
+
+			/* XXX scale ?? */
+
+			err = gargs->gobj->get_responses(img, x, y, num_resp, respv, 1);
+			assert(err == 0);
+			gabor_response_add(num_resp, rvec, respv);
+			patches++;
+
+		}
+	}
+
+	/* normalize the values */
+	for (x=0; x < num_resp; x++) {
+		rvec[x] = rvec[x]/((float)patches);
+	}
+
+	free(respv);
+	return (passed);
+}
+
+
+
+void
+gabor_init_ii_img(int x, int y, gtexture_args_t * gargs, 
+	gabor_ii_img_t * gii_img)
+{
+
+	gii_img->orig_x_size = x;
+	gii_img->orig_y_size = y;
+
+	gii_img->x_size = x - 2*gargs->radius;
+	gii_img->y_size = y - 2*gargs->radius; 
+	gii_img->x_offset = gargs->radius - 1;
+	gii_img->y_offset = gargs->radius - 1;
+	gii_img->num_resp = gargs->num_freq * gargs->num_angles;
+	gii_img->resp_size = gii_img->num_resp * sizeof(float);
+
+}
+
+/* add response res2 to res1 and store the result in res1 */
+
+void
+gabor_response_add(int num_resp, float *res1, float *res2)
+{
+	int	i;
+	for (i=0; i < num_resp; i++) {
+		res1[i] += res2[i];
+	}
+}
+
+
+/* subtract response res2 from res1 and store the result in res1 */
+void
+gabor_response_subtract(int num_resp, float *res1, float *res2)
+{
+	int	i;
+	for (i=0; i < num_resp; i++) {
+		res1[i] -= res2[i];
+	}
+}
+
+
+int
+gabor_compute_ii_img(RGBImage * img, gtexture_args_t * gargs, 
+	gabor_ii_img_t * gii_img)
+{
+	int             x, y;
+	int				xoff, yoff;
+	float *			respv;
+	int				err;
+	int				width;
+
+	respv = (float *)malloc(gii_img->resp_size);
+	assert(respv != NULL);
+
+	width = gargs->radius *2 + 1;
+
+	/* clear the first row and column */
+	memset(respv, 0, gii_img->resp_size);
+	for (x=0; (x + width) < img->width; x++) {
+		memcpy(&GII_PROBE(gii_img, x, 0), respv, gii_img->resp_size);
+	}
+	for (y=0; (y + width) < img->height; y++) {
+		memcpy(&GII_PROBE(gii_img, 0, y), respv, gii_img->resp_size);
+	}
+
+
+	/*
+	 * Compute the II for each of the pixels.  (We may
+	 * want to do this at a lower resolution later).
+	 */
+	for (xoff = 0; (xoff + width) < img->width; xoff++) {
+		for (yoff = 0; (yoff + width) < img->height; yoff++) {
+			x = xoff + 1;
+			y = yoff + 1;
+			err = gargs->gobj->get_responses(img, xoff, yoff,
+			gii_img->num_resp, 
+					respv, 1);
+
+			/* get the II by do the adds/subtracts */
+			gabor_response_add(gii_img->num_resp, respv, 
+				&GII_PROBE(gii_img, x-1, y));
+			gabor_response_add(gii_img->num_resp, respv, 
+				&GII_PROBE(gii_img, x, y-1));
+			gabor_response_subtract(gii_img->num_resp, respv, 
+				&GII_PROBE(gii_img, x-1, y-1));
+
+			/* store the new value */
+			memcpy(&GII_PROBE(gii_img, x, y), respv, gii_img->resp_size);
+		}
+	}
+
+	return (0);
+}

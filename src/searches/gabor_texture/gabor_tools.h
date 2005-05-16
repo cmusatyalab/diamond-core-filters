@@ -1,6 +1,5 @@
 /*
- * 	SnapFind (Release 0.9)
- *      An interactive image search application
+ * 	SnapFind (Release 0.9) *      An interactive image search application
  *
  *      Copyright (c) 2002-2005, Intel Corporation
  *      All Rights Reserved
@@ -40,17 +39,12 @@ typedef struct gtexture_args {
 typedef struct gabor_ii_img {
     int			orig_x_size;	/* base image x size */
     int			orig_y_size;	/* base image y size */
-    int			num_angles;	/* angles in gabor filter */
-    int			num_freq;	/* freqs in gabor filter */
-    char*               name;
-    float	    	scale;
-    int                 step;
-    int                 min_matches;
-    float               max_distance;
-    int			radius;
-    float		max_freq;
-    float		min_freq;
-    int                 num_samples;
+    int			x_size;		/* x size of this image */
+    int			y_size;		/* y size of the image */
+    int			x_offset;	/* convert x to picture coords */
+    int			y_offset;	/* convert y to picture coords */
+    int			num_resp;	/* # of responses */
+    int			resp_size;	/* response size */
     float 		responses[0];
 } gabor_ii_img_t;
 
@@ -60,10 +54,22 @@ typedef struct gabor_ii_img {
  * for the variable sized data structures.
  */
 
-#define	NUM_REPSONSES(nangle, nfreq)	((nangle)*(nfreq))
+#define	NUM_RESPONSES(gargs)	(((gargs)->num_angles) * (gargs->num_freq))
 
-#define	REPSONSE_SIZE(nangle, nfreq)	((nangle)*(nfreq) * sizeof(float))
+#define	RESPONSE_SIZE(gargs)		\
+	(((gargs)->num_angles)*((gargs)->num_freq) * sizeof(float))
 
+#define	II_RESPONSE_OFFSET(gii_img, x, y) \
+	(((((y) * (gii_img)->x_size)) + (x)) * (gii_img)->num_resp)
+
+                                                                               
+#define GII_PROBE(gii,x,y)                        \
+ 	((gii)->responses[((y) * ((gii)->x_size) + (x) * (gii)->num_resp)])
+
+#define GII_size(x, y, gargs) \
+ 	(sizeof(gabor_ii_img_t) + \
+	(RESPONSE_SIZE(gargs) * ((x)-2*(gargs)->radius) * \
+	((y)-2*(gargs)->radius)))
 
 
 #ifdef __cplusplus
@@ -73,6 +79,16 @@ extern "C" {
 int gabor_test_image(RGBImage * img, gtexture_args_t * targs, 
 			bbox_list_t * blist);
 
+
+void gabor_init_ii_img(int x, int y, gtexture_args_t * gargs,
+    gabor_ii_img_t * gii_img);
+
+                                                                               
+void gabor_response_add(int num_resp, float *res1, float *res2);
+void gabor_response_subtract(int num_resp, float *res1, float *res2);
+
+int   gabor_patch_response(RGBImage * img, gtexture_args_t * gargs, int
+        num_resp, float *rvec);
 
 
 #ifdef __cplusplus
