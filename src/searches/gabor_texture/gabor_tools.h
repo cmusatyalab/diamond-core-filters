@@ -31,8 +31,13 @@ typedef struct gtexture_args {
     float **		response_list;
     gabor *		gobj;
 } gtexture_args_t;
-                                                                                
-typedef struct gabor_img {
+
+
+/*
+ * An integral image that describes the gabor
+ * textures.
+ */                       
+typedef struct gabor_ii_img {
     int			orig_x_size;	/* base image x size */
     int			orig_y_size;	/* base image y size */
     int			num_angles;	/* angles in gabor filter */
@@ -42,15 +47,22 @@ typedef struct gabor_img {
     int                 step;
     int                 min_matches;
     float               max_distance;
-    int			num_angles;
-    int			num_freq;
     int			radius;
     float		max_freq;
     float		min_freq;
     int                 num_samples;
     float 		responses[0];
-} gabor_img_t;
+} gabor_ii_img_t;
 
+
+/*
+ * Some useful macros to compute various sizes and offsets
+ * for the variable sized data structures.
+ */
+
+#define	NUM_REPSONSES(nangle, nfreq)	((nangle)*(nfreq))
+
+#define	REPSONSE_SIZE(nangle, nfreq)	((nangle)*(nfreq) * sizeof(float))
 
 
 
