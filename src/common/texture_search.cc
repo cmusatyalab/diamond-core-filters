@@ -97,10 +97,10 @@ texture_search::set_channels(char *data)
 }
 
 int
-texture_search::handle_config(config_types_t conf_type, char *data)
+texture_search::handle_config(int nconf, char **confv)
 {
 	int	err;
-
+#ifdef XXX
 	switch (conf_type) {
 		case METRIC_TOK:
 			set_simularity(data);
@@ -116,6 +116,9 @@ texture_search::handle_config(config_types_t conf_type, char *data)
 			err = example_search::handle_config(conf_type, data);
 			break;
 	}
+#else
+			err = example_search::handle_config(nconf, confv);
+#endif
 	return(err);
 }
 

@@ -39,7 +39,7 @@ histo_ii::~histo_ii()
 
 
 int
-histo_ii::handle_config(config_types_t conf_type, char *data)
+histo_ii::handle_config(int nconf, char **data)
 {
 	/* should never be called for this class */
 	assert(0);

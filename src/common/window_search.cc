@@ -182,11 +182,11 @@ window_search::get_testy()
 }
 
 int
-window_search::handle_config(config_types_t conf_type, char *data)
+window_search::handle_config(int nconf, char **data)
 {
 	/* XXX example search destruct */
 	int		err;
-
+#ifdef	XXX
 	switch (conf_type) {
 		case TESTX_TOK:
 			set_testx(data);
@@ -218,6 +218,15 @@ window_search::handle_config(config_types_t conf_type, char *data)
 			assert(err == 0);
 			break;
 	}
+#else
+	if (strcmp(data[0], "STRIDE") == 0) {
+		assert(nconf == 2);
+		set_stride(data[1]);
+		err = 0;
+	} else {
+		err = img_search::handle_config(nconf, data);
+	}
+#endif
 	return(err);
 }
 

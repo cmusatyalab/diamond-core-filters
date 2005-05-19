@@ -18,6 +18,7 @@ STRIDE 16
 SCALE 1.500000 
 MATCHES 1 
 PATCHFILE pure_white.ex0.ppm 0 0 16 16 
+PATCHFIL pure_white.ex0.ppm 0 0 16 16 
 
 
 SEARCH rgb_histogram pure_green

@@ -59,7 +59,7 @@ public:
 
 
 
-	virtual	int	handle_config(config_types_t conf_type, char *data);
+	virtual	int	handle_config(int num_conf, char **confv);
 
 	void		set_matches(char *matches);
 	void		set_matches(int matches);

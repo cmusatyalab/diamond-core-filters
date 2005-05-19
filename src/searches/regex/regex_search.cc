@@ -43,7 +43,7 @@ regex_search::~regex_search()
 
 
 int
-regex_search::handle_config(config_types_t conf_type, char *data)
+regex_search::handle_config(int nconf, char **data)
 {
 	/* should never be called for this class */
 	assert(0);

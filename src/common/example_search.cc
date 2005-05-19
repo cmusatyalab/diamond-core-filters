@@ -216,10 +216,11 @@ example_search::add_patch(char *str)
 }
 
 int
-example_search::handle_config(config_types_t conf_type, char *data)
+example_search::handle_config(int nconf, char **data)
 {
-	/* XXX example search destruct */
 	int		err;
+#ifdef	XXX
+	/* XXX example search destruct */
 	switch (conf_type) {
 
 		case PATCHFILE_TOK:
@@ -232,6 +233,9 @@ example_search::handle_config(config_types_t conf_type, char *data)
 			assert(err == 0);
 			break;
 	}
+#else
+	err = window_search::handle_config(nconf, data);
+#endif
 	return(err);
 }
 

@@ -43,8 +43,8 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	data->name = strdup(*args++);
 	assert(data->name != NULL);
 
-	/* XXX fix this later , eat box sizes ...*/
-	//data->scale = atof(*args++);
+	data->xdim = atoi(*args++);
+	data->ydim = atoi(*args++);
 
 	data->step = atoi(*args++);
 	data->min_matches = atoi(*args++);
@@ -143,6 +143,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 	bbox_t	*		cur_box;
 	int				i;
 	int			rgb_alloc = 0;
+	gabor_ii_img_t *	gii_img;
 	search_param_t param;
 	int ntexture;
 
@@ -156,11 +157,20 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 	}
 	assert(rgb_img);
 
+	/* Get the gabor II */
+	/* XXX move this to a different stage */
+	bsize = GII_SIZE(rgb_img->width, rgb_img->height, targs);
+	gii_img = (gabor_ii_img_t *)malloc(bsize);
+	assert(gii_img != NULL);
+	gabor_init_ii_img(rgb_img->width, rgb_img->height, targs, gii_img);
 
+	gabor_compute_ii_img(rgb_img, targs, gii_img);
+
+	/* XXX */
 
 	TAILQ_INIT(&blist);
 
-	pass = gabor_test_image(rgb_img, targs, &blist);
+	pass = gabor_test_image(gii_img, targs, &blist);
 
 	if (pass >= targs->min_matches) {
 
@@ -225,6 +235,8 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 	if (rgb_alloc) {
 		ft_free(fhandle, (char*)rgb_img);
 	}
+
+	free(gii_img);
 
 	char buf[BUFSIZ];
 	sprintf(buf, "_texture_detect.int");

@@ -142,16 +142,12 @@ img_search::set_active_hlval(int val)
 }
 
 int
-img_search::handle_config(config_types_t conf_type, char *data)
+img_search::handle_config(int num_conf, char **confv)
 {
 	/* XXX example search destruct */
 	int		err;
 
-	switch (conf_type) {
-		default:
-			err = 1;
-			break;
-	}
+	err = 1;
 	return(err);
 }
 

@@ -109,10 +109,10 @@ ocv_face_search::set_support(int new_count)
 
 
 int
-ocv_face_search::handle_config(config_types_t conf_type, char *data)
+ocv_face_search::handle_config(int nconf, char **data)
 {
 	int	err;
-
+#ifdef	XXX
 	switch (conf_type) {
 		case NUMF_TOK:
 			set_face_count(data);
@@ -130,6 +130,9 @@ ocv_face_search::handle_config(config_types_t conf_type, char *data)
 			err = window_search::handle_config(conf_type, data);
 			break;
 	}
+#else
+	    err = window_search::handle_config(nconf, data);
+#endif
 	return(err);
 }
 

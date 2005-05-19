@@ -2,8 +2,8 @@
 %{
 #include <string.h>
 #include <ctype.h>
-#include <assert.h>
-#include <stdlib.h>
+#include <assert.h> 
+#include <stdlib.h> 
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "fil_histo.h"
@@ -15,9 +15,11 @@
 static char *eat_token(char *tok);
 static void new_search(char *tok);
 static void error();
+static void new_config(char *yyt);
 
 /* #define VERBOSE 1 */
 
+#define	MAX_ARG		64
 static img_search *cur_search = NULL;
 static search_set *set = NULL;
 
@@ -31,6 +33,7 @@ static factory_map_t * fmap = NULL;
 %}
 
 
+
 	
 %option noyywrap
 
@@ -40,23 +43,9 @@ FNAME (([0-9]*"."[0-9]+)|([0-9]+))
 %%
 #.*\n
 SEARCH[ \t]+[[:alnum:]_]+[ \t]+[[:alnum:]_]+ {new_search(eat_token(yytext));}
-TESTX[ \t]+[0-9]+ { cur_search->handle_config(TESTX_TOK, eat_token(yytext));}
-TESTY[ \t]+[0-9]+ { cur_search->handle_config(TESTY_TOK, eat_token(yytext));}
-STRIDE[ \t]+[0-9]+ { cur_search->handle_config(STRIDE_TOK, eat_token(yytext));}
-SCALE[ \t]+{FLOAT} { cur_search->handle_config(SCALE_TOK, eat_token(yytext));}
-METRIC[ \t]+{FLOAT} { cur_search->handle_config(METRIC_TOK, eat_token(yytext));}
-MATCHES[ \t]+[0-9]+ { cur_search->handle_config(MATCHES_TOK, eat_token(yytext));}
-CHANNEL[ \t]+[0-9]+ { cur_search->handle_config(CHANNEL_TOK, eat_token(yytext));}
-NUMFACE[ \t]+[0-9]+ { cur_search->handle_config(NUMF_TOK, eat_token(yytext));}
-START[ \t]+[0-9]+ { cur_search->handle_config(START_TOK, eat_token(yytext));}
-END[ \t]+[0-9]+ { cur_search->handle_config(END_TOK, eat_token(yytext));}
-MERGE[ \t]+[0-9]+ { cur_search->handle_config(MERGE_TOK, eat_token(yytext));}
-SUPPORT[ \t]+[0-9]+ { cur_search->handle_config(SUPPORT_TOK, eat_token(yytext));}
-OVERLAP[ \t]+{FLOAT} { cur_search->handle_config(OVERLAP_TOK, eat_token(yytext));}
-METHOD[ \t]+{FLOAT} { cur_search->handle_config(METHOD_TOK, eat_token(yytext));}
-PATCHFILE[ \t]+[[:alnum:]_"."-/]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+ { cur_search->handle_config(PATCHFILE_TOK, eat_token(yytext));}
 [[:blank:]]
-\n
+\n	
+.*	{ new_config(yytext);}
 .					{ error(); }
 %%
 
@@ -81,6 +70,57 @@ eat_token(char *str)
 		cur++;
 	}
 	return(cur);
+}
+
+
+static void
+new_config(char *yyt)
+{
+	char *	argv[MAX_ARG];
+	int	cur_arg;
+	char *	cur_str;
+	char *	arg;
+	int	arg_offset;
+	int	maxlen;
+	int	i;
+	int  	err;
+
+
+	cur_str = yyt;
+	arg_offset = 0;
+
+	while ((maxlen = strlen(cur_str) + 1) > 1) {
+		for (i=0; i < maxlen; i++) {
+			if (isspace(cur_str[i]) || (cur_str[i] == '\0')) {
+				break;
+			}
+		}
+		if (i > maxlen) {
+			printf("no end of string \n");
+			assert(0);
+		}
+		arg = (char *)malloc(i + 1);
+		assert(arg != NULL);
+
+		strncpy(arg, cur_str, i);
+		arg[i] = '\0';
+
+
+		argv[arg_offset] = arg;
+		arg_offset++;
+
+		cur_str = eat_token(cur_str);
+	}
+
+	err = cur_search->handle_config(arg_offset, argv);
+
+	/* XXX more graceful way to handle */
+	if (err) {
+		fprintf(stderr, "config not handled: <%d>\n", arg_offset);
+		for (i=0; i < arg_offset; i++) {
+			fprintf(stderr, " %d -> <%s> \n", i, argv[i]);
+		}
+	}
 }
 
 void
@@ -149,7 +189,7 @@ new_search(char *str)
 	assert(fac != NULL);
 
 	cur_search = fac->create(name);	
-    assert(cur_search != NULL);
+    	assert(cur_search != NULL);
 
 	set->add_search(cur_search);
 }

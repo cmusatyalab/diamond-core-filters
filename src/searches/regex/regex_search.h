@@ -65,7 +65,7 @@ class img_search {
 public:
 	img_search(const char *name, char *descr);
 	virtual ~img_search();
-	virtual	int 	handle_config(config_types_t conf_type, char *data);
+	virtual	int 	handle_config(int num_conf, char **conf);
 	virtual	void 	edit_search() = 0;
 	virtual	void 	write_fspec(FILE* stream) = 0;
 	virtual	void 	write_config(FILE* stream, const char *data_dir) = 0;
@@ -126,7 +126,7 @@ class window_search: public img_search {
 public:
 	window_search(const char *name, char *descr);
 	virtual ~window_search();
-	virtual	int handle_config(config_types_t conf_type, char *data);
+	virtual	int 	handle_config(int num_conf, char **conf);
 	virtual	void edit_search() = 0;
 	virtual	void write_fspec(FILE* stream);
 	virtual	void write_config(FILE* stream, const char *data_dir);
@@ -203,7 +203,7 @@ class example_search: public window_search {
 public:
 	example_search(const char *name, char *descr);
 	virtual ~example_search();
-	virtual	int handle_config(config_types_t conf_type, char *data); 
+	virtual	int 	handle_config(int num_conf, char **conf);
 	int add_patch(RGBImage* img, bbox_t bbox);
 	int add_patch(char *conf_str);
 	void remove_patch(example_patch_t *patch);
@@ -248,7 +248,7 @@ public:
 	void 		set_simularity(char *data);
 	void 		set_simularity(double sim);
 
-	int handle_config(config_types_t conf_type, char *data);
+	virtual	int 	handle_config(int num_conf, char **conf);
 	void rgb_write_state(void);
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
@@ -297,7 +297,7 @@ public:
 	void 		set_channels(char *data);
 	void 		set_channels(int num);
 
-	virtual	int	handle_config(config_types_t conf_type, char *data);
+	virtual	int	handle_config(int num_conf, char **datav);
 
 	void		set_matches(char *matches);
 	void		set_matches(int matches);
@@ -353,7 +353,7 @@ public:
 	void 		update_toggle();
 
 
-	int handle_config(config_types_t conf_type, char *data);
+	virtual	int	handle_config(int num_conf, char **datav);
 
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
@@ -402,7 +402,7 @@ public:
 	void 		set_support(char *data);
 	void 		set_support(int new_count);
 
-	int handle_config(config_types_t conf_type, char *data);
+	virtual	int	handle_config(int num_conf, char **datav);
 
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
@@ -432,7 +432,7 @@ public:
 	void	edit_search();
 	void 	write_fspec(FILE* stream);
 	void	write_config(FILE* stream, const char *data_dir);
-	int handle_config(config_types_t conf_type, char *data);
+	virtual	int	handle_config(int num_conf, char **datav);
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
 private:
@@ -448,7 +448,7 @@ public:
 	void	edit_search();
 	void 	write_fspec(FILE* stream);
 	void	write_config(FILE* stream, const char *data_dir);
-	int handle_config(config_types_t conf_type, char *data);
+	virtual	int	handle_config(int num_conf, char **datav);
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 private:
 };
@@ -462,7 +462,7 @@ public:
 	void	edit_search();
 	void 	write_fspec(FILE* stream);
 	void	write_config(FILE* stream, const char *data_dir);
-	int handle_config(config_types_t conf_type, char *data);
+	virtual	int	handle_config(int num_conf, char **datav);
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
 private:
@@ -478,7 +478,7 @@ public:
 	void	edit_search();
 	void 	write_fspec(FILE* stream);
 	void	write_config(FILE* stream, const char *data_dir);
-	int 	handle_config(config_types_t conf_type, char *data);
+	virtual	int	handle_config(int num_conf, char **datav);
 	void	close_edit_win();
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 

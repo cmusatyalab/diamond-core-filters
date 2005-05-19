@@ -92,10 +92,10 @@ rgb_histo_search::set_simularity(double sim)
 }
 
 int
-rgb_histo_search::handle_config(config_types_t conf_type, char *data)
+rgb_histo_search::handle_config(int nconf, char **data)
 {
 	int	err;
-
+#ifdef	XXX
 	switch (conf_type) {
 		case METRIC_TOK:
 			set_simularity(data);
@@ -106,6 +106,9 @@ rgb_histo_search::handle_config(config_types_t conf_type, char *data)
 			err = example_search::handle_config(conf_type, data);
 			break;
 	}
+#else
+	err = example_search::handle_config(nconf, data);
+#endif
 	return(err);
 }
 

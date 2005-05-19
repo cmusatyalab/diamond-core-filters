@@ -152,10 +152,10 @@ vj_face_search::set_end_level(int new_level)
 
 
 int
-vj_face_search::handle_config(config_types_t conf_type, char *data)
+vj_face_search::handle_config(int nconf, char **data)
 {
 	int	err;
-
+#ifdef	XXX
 	switch (conf_type) {
 		case NUMF_TOK:
 			set_face_count(data);
@@ -186,6 +186,9 @@ vj_face_search::handle_config(config_types_t conf_type, char *data)
 			err = window_search::handle_config(conf_type, data);
 			break;
 	}
+#else
+	err = window_search::handle_config(nconf, data);
+#endif
 	return(err);
 }
 

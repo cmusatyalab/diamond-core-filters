@@ -17,8 +17,9 @@
 
 typedef struct gtexture_args {
     char*               name;
-    float	    	scale;
     int                 step;
+    int                 xdim;
+    int                 ydim;
     int                 min_matches;
     float               max_distance;
     int			num_angles;
@@ -64,9 +65,9 @@ typedef struct gabor_ii_img {
 
                                                                                
 #define GII_PROBE(gii,x,y)                        \
- 	((gii)->responses[((y) * ((gii)->x_size) + (x) * (gii)->num_resp)])
+ 	((gii)->responses[((y) * ((gii)->x_size) + (x)) * (gii)->num_resp])
 
-#define GII_size(x, y, gargs) \
+#define GII_SIZE(x, y, gargs) \
  	(sizeof(gabor_ii_img_t) + \
 	(RESPONSE_SIZE(gargs) * ((x)-2*(gargs)->radius) * \
 	((y)-2*(gargs)->radius)))
@@ -76,12 +77,15 @@ typedef struct gabor_ii_img {
 extern "C" {
 #endif
 
-int gabor_test_image(RGBImage * img, gtexture_args_t * targs, 
+int gabor_test_image(gabor_ii_img_t * gii_img, gtexture_args_t * targs, 
 			bbox_list_t * blist);
 
 
 void gabor_init_ii_img(int x, int y, gtexture_args_t * gargs,
     gabor_ii_img_t * gii_img);
+
+int gabor_compute_ii_img(RGBImage * img, gtexture_args_t * gargs,
+        gabor_ii_img_t * gii_img);
 
                                                                                
 void gabor_response_add(int num_resp, float *res1, float *res2);

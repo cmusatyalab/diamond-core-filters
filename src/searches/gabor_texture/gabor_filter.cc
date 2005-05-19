@@ -25,8 +25,6 @@
 
 
 
-
-
 gabor_filter::gabor_filter(int radius, float angle, float freq, float sigma_sq)
 {
 	int x, y, dist;

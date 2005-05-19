@@ -34,9 +34,7 @@ gabor_texture_init()
 {
         gabor_texture_factory *fac;
         printf("gabor_texture init \n");
-                                                                                
         fac = new gabor_texture_factory;
-                                                                                
         read_config_register("gabor_texture_factory", fac);
 }
 
@@ -54,12 +52,12 @@ gabor_texture_search::gabor_texture_search(const char *name, char *descr)
 	min_freq = 0.2;
 	max_freq = 1.0;
 
-	/* disble some stride and scale controls in the window search */
+	/* disble scale control in the window search */
 	set_scale_control(0);
-	set_size_control(0);
 
 	distance_metric = TEXTURE_DIST_PAIRWISE;
 }
+
 
 gabor_texture_search::~gabor_texture_search()
 {
@@ -181,10 +179,10 @@ gabor_texture_search::set_max_freq(char *data)
 
 
 int
-gabor_texture_search::handle_config(config_types_t conf_type, char *data)
+gabor_texture_search::handle_config(int num_conf, char **confv)
 {
 	int	err;
-
+#ifdef	XXX
 	switch (conf_type) {
 		case METRIC_TOK:
 			set_simularity(data);
@@ -200,6 +198,9 @@ gabor_texture_search::handle_config(config_types_t conf_type, char *data)
 			err = example_search::handle_config(conf_type, data);
 			break;
 	}
+#else
+	err = example_search::handle_config(num_conf, confv);
+#endif
 	return(err);
 }
 
@@ -528,8 +529,9 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 	gargs->name = strdup(get_name());
 	assert(gargs->name != NULL);
 
-	gargs->scale = get_scale();	/* XXX ignored for now */
 	gargs->step = get_stride();
+	gargs->xdim = get_testx();
+	gargs->ydim = get_testy();
 	gargs->min_matches = get_matches();
 	gargs->max_distance = 1.0 - simularity;
 	gargs->num_angles = num_angles;
@@ -542,8 +544,8 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 	/* count the number of patches of the appropriate size*/
 	samples = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		if ((cur_patch->patch_image->width < patch_size) ||
-		    (cur_patch->patch_image->height < patch_size)) {
+		if ((cur_patch->patch_image->width < (patch_size+1)) ||
+		    (cur_patch->patch_image->height < (patch_size+1))) {
 				continue;
 		} else {
 			samples++;
@@ -570,15 +572,11 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 			continue;
 		}
 
-		/* XXX scale this later */
-		rimg = create_rgb_subimage(cur_patch->patch_image,
-		                           0, 0, patch_size, patch_size);
-
 		respv = (float *) malloc(sizeof(float) * num_resp);
 		assert(respv != NULL);
 		gargs->response_list[i] = respv;
 
-		err = gargs->gobj->get_responses(rimg, 0, 0, num_resp, respv,1);
+		err = gabor_patch_response(cur_patch->patch_image, gargs, num_resp, respv);
 		if (err) {
 			fprintf(stderr, "get_response failed\n");
 			/* XXX */
@@ -686,8 +684,10 @@ gabor_texture_search::write_config(FILE *ostream, const char *dirname)
 void
 gabor_texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 {
-	int		pass;
-	gtexture_args_t	gargs;
+	int			pass;
+	size_t			bsize;
+	gabor_ii_img_t *	gii_img;
+	gtexture_args_t		gargs;
 
 	save_edits();
 
@@ -699,8 +699,17 @@ gabor_texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	}
 	gargs.min_matches = INT_MAX;	/* get all the matches */
 
+	bsize = (GII_SIZE(rimg->width, rimg->height, &gargs));
+
+  	gii_img = (gabor_ii_img_t *)malloc(bsize);
+
+        assert(gii_img != NULL);
+        gabor_init_ii_img(rimg->width, rimg->height, &gargs, gii_img);
+        gabor_compute_ii_img(rimg, &gargs, gii_img);
+
+
 	/* generate list of bounding boxes */
-	pass = gabor_test_image(rimg, &gargs, blist);
+	pass = gabor_test_image(gii_img, &gargs, blist);
 	/* cleanup */
 	release_args(&gargs);
 	return;
