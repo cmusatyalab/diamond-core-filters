@@ -21,18 +21,20 @@
 #include "queue.h"
 #include "rgb.h"
 #include "common_consts.h"
-//#include "histo.h"
 #include "image_tools.h"
-//#include "texture_tools.h"
 #include "img_search.h"
-//#include "gui_thread.h"
-//#include "snapfind.h"
-//#include "fil_tools.h"
 #include "facedet.h"
 #include "face_tools.h"
 #include "fil_data2ii.h"
 #include "search_set.h"
 #include "read_config.h"
+
+/* config tokens */
+#define	NUMFACE_ID	"NUMFACE"
+#define	START_ID	"START"
+#define	END_ID		"END"
+#define	MERGE_ID	"MERGE"
+#define	OVERLAP_ID	"OVERLAP"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -151,44 +153,34 @@ vj_face_search::set_end_level(int new_level)
 }
 
 
+
 int
 vj_face_search::handle_config(int nconf, char **data)
 {
 	int	err;
-#ifdef	XXX
-	switch (conf_type) {
-		case NUMF_TOK:
-			set_face_count(data);
-			err = 0;
-			break;
-
-		case START_TOK:
-			set_start_level(data);
-			err = 0;
-			break;
-
-		case END_TOK:
-			set_end_level(data);
-			err = 0;
-			break;
-
-		case MERGE_TOK:
-			do_merge = atoi(data);
-			err = 0;
-			break;
-
-		case OVERLAP_TOK:
-			overlap_val = atof(data);
-			err = 0;
-			break;
-
-		default:
-			err = window_search::handle_config(conf_type, data);
-			break;
+	if (strcmp(NUMFACE_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		set_face_count(data[1]);
+		err = 0;
+	} else  if (strcmp(START_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		set_start_level(data[1]);
+		err = 0;
+	} else  if (strcmp(END_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		set_end_level(data[1]);
+		err = 0;
+	} else  if (strcmp(MERGE_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		do_merge = atoi(data[1]);
+		err = 0;
+	} else  if (strcmp(OVERLAP_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		overlap_val = atof(data[1]);
+		err = 0;
+	} else {
+		err = window_search::handle_config(nconf, data);
 	}
-#else
-	err = window_search::handle_config(nconf, data);
-#endif
 	return(err);
 }
 
@@ -482,6 +474,7 @@ vj_face_search::write_fspec(FILE *ostream)
 	(this->get_parent())->add_dep(ss);
 }
 
+
 void
 vj_face_search::write_config(FILE *ostream, const char *dirname)
 {
@@ -492,11 +485,11 @@ vj_face_search::write_config(FILE *ostream, const char *dirname)
 	fprintf(ostream, "\n\n");
 	fprintf(ostream, "SEARCH vj_face_search %s\n", get_name());
 
-	fprintf(ostream, "NUMFACE %d \n", face_count);
-	fprintf(ostream, "START %d \n", start_stage);
-	fprintf(ostream, "END %d \n", end_stage);
-	fprintf(ostream, "MERGE %d \n", do_merge);
-	fprintf(ostream, "OVERLAP %f \n", overlap_val);
+	fprintf(ostream, "%s %d \n", NUMFACE_ID, face_count);
+	fprintf(ostream, "%s %d \n", START_ID, start_stage);
+	fprintf(ostream, "%s %d \n", END_ID, end_stage);
+	fprintf(ostream, "%s %d \n", MERGE_ID, do_merge);
+	fprintf(ostream, "%s %f \n", OVERLAP_ID, overlap_val);
 
 	window_search::write_config(ostream, dirname);
 	return;

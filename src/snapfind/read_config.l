@@ -122,7 +122,7 @@ new_config(char *yyt)
 		fprintf(stderr, "config for %s not handled \n", 
 			cur_search->get_name());
 		for (i=0; i < arg_offset; i++) {
-			fprintf(stderr, "<%s> ", i, argv[i]);
+			fprintf(stderr, "<%s> ", argv[i]);
 		}
 		fprintf(stderr, "\n");
 	}

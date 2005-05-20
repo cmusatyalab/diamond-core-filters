@@ -27,6 +27,8 @@
 #include "face_consts.h"
 #include "import_sample.h"
 
+/* tokens for the config file */
+#define	PATCH_ID	"PATCHFILE"
 
 example_search::example_search(const char *name, char * descr)
 		: window_search(name, descr)
@@ -41,20 +43,6 @@ example_search::~example_search()
 {
 	/* XXX example search destruct */
 	return;
-}
-
-static char *
-eat_token(char *str)
-{
-	char * cur = str;
-
-	while (!isspace(*cur)) {
-		cur++;
-	}
-	while (isspace(*cur)) {
-		cur++;
-	}
-	return(cur);
 }
 
 static void
@@ -145,10 +133,9 @@ example_search::is_example()
 }
 
 int
-example_search::add_patch(char *str)
+example_search::add_patch(char *fname, char *xoff, char *yoff, char *xsize,
+	char *ysize)
 {
-	int					i, maxlen;
-	char *				tmp;
 	example_patch_t *	cur_patch;
 	RGBImage  *			img;
 
@@ -156,44 +143,25 @@ example_search::add_patch(char *str)
 	cur_patch = (example_patch_t *)malloc(sizeof(*cur_patch));
 	assert(cur_patch != NULL);
 
-	maxlen = strlen(str) + 1;
-	for (i=0; i < maxlen; i++) {
-		if (isspace(str[i]) || (str[i] == '\0')) {
-			break;
-		}
-	}
-	if (i > maxlen) {
-		fprintf(stderr, "no end of string \n");
-		assert(0);
-	}
-
-	/* XXX patch name */
-
-	cur_patch->file_name = (char *)malloc(i+1);
+	cur_patch->file_name = (char *)malloc(strlen(fname)+1);
 	assert(cur_patch->file_name != NULL);
 
-	strncpy(cur_patch->file_name, str, i);
-	cur_patch->file_name[i] = '\0';
+	strncpy(cur_patch->file_name, fname, (strlen(fname) + 1));
+	cur_patch->file_name[strlen(fname)] = '\0';
 
-	tmp = eat_token(str);
 
-	cur_patch->xoff = atoi(tmp);
-	tmp = eat_token(tmp);
-
-	cur_patch->yoff = atoi(tmp);
-	tmp = eat_token(tmp);
-
-	cur_patch->xsize = atoi(tmp);
-	tmp = eat_token(tmp);
-	cur_patch->ysize = atoi(tmp);
+	cur_patch->xoff = atoi(xoff);
+	cur_patch->yoff = atoi(yoff);
+	cur_patch->xsize = atoi(xsize);
+	cur_patch->ysize = atoi(ysize);
 
 	/* point to the base class */
 	cur_patch->parent = this;
 
 	/*
 	 * We assume that the current working directory has been
-	    * changed, so we can use the relative path.
-		 */
+	 * changed, so we can use the relative path.
+	 */
 	img = create_rgb_image(cur_patch->file_name);
 	/* XXX do popup and terminate ??? */
 	if (img == NULL) {
@@ -219,23 +187,14 @@ int
 example_search::handle_config(int nconf, char **data)
 {
 	int		err;
-#ifdef	XXX
-	/* XXX example search destruct */
-	switch (conf_type) {
 
-		case PATCHFILE_TOK:
-			add_patch(data);
-			err = 0;
-			break;
-
-		default:
-			err = window_search::handle_config(conf_type, data);
-			assert(err == 0);
-			break;
+	if (strcmp(PATCH_ID, data[0]) == 0) {
+		assert(nconf > 5);
+		add_patch(data[1], data[2], data[3], data[4], data[5]);
+		err = 0;
+	} else {
+		err = window_search::handle_config(nconf, data);
 	}
-#else
-	err = window_search::handle_config(nconf, data);
-#endif
 	return(err);
 }
 
@@ -351,9 +310,9 @@ void
 example_search::write_config(FILE *ostream, const char *dirname)
 {
 	example_patch_t *		cur_patch;
-	int						i;
-	int						err;
-	char					fname[COMMON_MAX_PATH];
+	int				i;
+	int				err;
+	char				fname[COMMON_MAX_PATH];
 
 
 	window_search::write_config(ostream, dirname);
@@ -370,8 +329,8 @@ example_search::write_config(FILE *ostream, const char *dirname)
 		rgb_write_image(cur_patch->patch_image, fname, dirname);
 		/* XXX write out the file */
 
-		fprintf(ostream, "PATCHFILE %s 0 0 %d %d \n", fname, cur_patch->xsize,
-		        cur_patch->ysize);
+		fprintf(ostream, "%s %s 0 0 %d %d \n", PATCH_ID, fname, 
+			cur_patch->xsize, cur_patch->ysize);
 		i++;
 	}
 	return;

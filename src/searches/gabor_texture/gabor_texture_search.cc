@@ -28,14 +28,24 @@
 
 #define	MAX_DISPLAY_NAME	64
 
+/* name we use to indentify this type of search */
+#define	SEARCH_NAME	"gabor_texture"
+
+/* key words for the config file */
+#define	SIMULARITY_ID	"SIMULARITY"
+#define	CHANNEL_ID	"CHANNELS"
+#define	NANGLE_ID	"NUM_ANGLES"
+#define	NFREQ_ID	"NUM_FREQ"
+#define	RADIUS_ID	"RADIUS"
+#define	MIN_FREQ_ID	"MIN_FREQ"
+#define	MAX_FREQ_ID	"MAX_FREQ"
 
 void
 gabor_texture_init()
 {
         gabor_texture_factory *fac;
-        printf("gabor_texture init \n");
         fac = new gabor_texture_factory;
-        read_config_register("gabor_texture_factory", fac);
+        read_config_register(SEARCH_NAME, fac);
 }
 
 
@@ -182,25 +192,59 @@ int
 gabor_texture_search::handle_config(int num_conf, char **confv)
 {
 	int	err;
-#ifdef	XXX
-	switch (conf_type) {
-		case METRIC_TOK:
-			set_simularity(data);
-			err = 0;
-			break;
 
-		case CHANNEL_TOK:
-			set_channels(data);
+	if (strcmp(SIMULARITY_ID, confv[0]) == 0) {
+		if (num_conf < 2) {
+			err = 1;
+		} else {
+			set_simularity(confv[1]);
 			err = 0;
-			break;
-
-		default:
-			err = example_search::handle_config(conf_type, data);
-			break;
+		}
+	} else if (strcmp(CHANNEL_ID, confv[0]) == 0) {
+		if (num_conf < 2) {
+			err = 1;
+		} else {
+			set_channels(confv[1]);
+			err = 0;
+		}
+	} else if (strcmp(NANGLE_ID, confv[0]) == 0) {
+		if (num_conf < 2) {
+			err = 1;
+		} else {
+			set_num_angle(confv[1]);
+			err = 0;
+		}
+	} else if (strcmp(NFREQ_ID, confv[0]) == 0) {
+		if (num_conf < 2) {
+			err = 1;
+		} else {
+			set_num_freq(confv[1]);
+			err = 0;
+		}
+	} else if (strcmp(RADIUS_ID, confv[0]) == 0) {
+		if (num_conf < 2) {
+			err = 1;
+		} else {
+			set_radius(confv[1]);
+			err = 0;
+		}
+	} else if (strcmp(MIN_FREQ_ID, confv[0]) == 0) {
+		if (num_conf < 2) {
+			err = 1;
+		} else {
+			set_min_freq(confv[1]);
+			err = 0;
+		}
+	} else if (strcmp(MAX_FREQ_ID, confv[0]) == 0) {
+		if (num_conf < 2) {
+			err = 1;
+		} else {
+			set_max_freq(confv[1]);
+			err = 0;
+		}
+	} else {
+		err = example_search::handle_config(num_conf, confv);
 	}
-#else
-	err = example_search::handle_config(num_conf, confv);
-#endif
 	return(err);
 }
 
@@ -665,16 +709,18 @@ gabor_texture_search::write_fspec(FILE *ostream)
 void
 gabor_texture_search::write_config(FILE *ostream, const char *dirname)
 {
-
 	save_edits();
 
-	/* create the search configuration */
 	fprintf(ostream, "\n\n");
-	fprintf(ostream, "SEARCH texture %s\n", get_name());
+	fprintf(ostream, "SEARCH %s %s\n", SEARCH_NAME, get_name());
+	fprintf(ostream, "%s %f \n", SIMULARITY_ID, simularity);
+	fprintf(ostream, "%s %d \n", CHANNEL_ID, channels);
+	fprintf(ostream, "%s %d \n", NANGLE_ID, num_angles);
+	fprintf(ostream, "%s %d \n", NFREQ_ID, num_freq);
+	fprintf(ostream, "%s %d \n", RADIUS_ID, radius);
+	fprintf(ostream, "%s %f \n", MIN_FREQ_ID, min_freq);
+	fprintf(ostream, "%s %f \n", MAX_FREQ_ID, max_freq);
 
-	fprintf(ostream, "METRIC %f \n", simularity);
-
-	fprintf(ostream, "CHANNEL %d \n", channels);
 
 	example_search::write_config(ostream, dirname);
 	return;

@@ -28,6 +28,9 @@
 
 #define	MAX_DISPLAY_NAME	64
 
+/* config tokens */
+#define	METRIC_ID	"METRIC"
+#define	CHANNEL_ID	"CHANNEL"
 
 void
 texture_init()
@@ -100,25 +103,18 @@ int
 texture_search::handle_config(int nconf, char **confv)
 {
 	int	err;
-#ifdef XXX
-	switch (conf_type) {
-		case METRIC_TOK:
-			set_simularity(data);
-			err = 0;
-			break;
 
-		case CHANNEL_TOK:
-			set_channels(data);
-			err = 0;
-			break;
-
-		default:
-			err = example_search::handle_config(conf_type, data);
-			break;
+	if (strcmp(METRIC_ID, confv[0]) == 0) {
+		assert(nconf > 1);
+		set_simularity(confv[1]);
+		err = 0;
+	} else if (strcmp(CHANNEL_ID, confv[0]) == 0) {
+		assert(nconf > 1);
+		set_channels(confv[1]);
+		err = 0;
+	} else {
+		err = example_search::handle_config(nconf, confv);
 	}
-#else
-			err = example_search::handle_config(nconf, confv);
-#endif
 	return(err);
 }
 
@@ -478,19 +474,17 @@ texture_search::write_fspec(FILE *ostream)
 	(this->get_parent())->add_dep(rgb);
 }
 
+
 void
 texture_search::write_config(FILE *ostream, const char *dirname)
 {
-
 	save_edits();
 
 	/* create the search configuration */
 	fprintf(ostream, "\n\n");
 	fprintf(ostream, "SEARCH texture %s\n", get_name());
-
-	fprintf(ostream, "METRIC %f \n", simularity);
-
-	fprintf(ostream, "CHANNEL %d \n", channels);
+	fprintf(ostream, "%s %f \n", METRIC_ID, simularity);
+	fprintf(ostream, "%s %d \n", CHANNEL_ID, channels);
 
 	example_search::write_config(ostream, dirname);
 	return;

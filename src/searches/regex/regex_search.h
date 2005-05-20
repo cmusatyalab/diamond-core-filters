@@ -21,30 +21,6 @@
 #include "histo.h"
 
 
-/* 
- * This file defines all the search classes that
- * are used to keep track of the various search parameters.
- */
-
-typedef enum {
-	TESTX_TOK,
-	TESTY_TOK,
-	STRIDE_TOK,
-	SCALE_TOK,
-	METRIC_TOK,
-	PATCHFILE_TOK,
-	MATCHES_TOK,
-	METHOD_TOK,
-	CHANNEL_TOK,
-	NUMF_TOK,
-	START_TOK,
-	END_TOK,
-	MERGE_TOK,
-	OVERLAP_TOK,
-	SUPPORT_TOK,
-} config_types_t;
-
-
 /*
  * An enumeration of the different seacrch types.
  */
@@ -205,7 +181,8 @@ public:
 	virtual ~example_search();
 	virtual	int 	handle_config(int num_conf, char **conf);
 	int add_patch(RGBImage* img, bbox_t bbox);
-	int add_patch(char *conf_str);
+	int add_patch(char *fname, char *xoff, char *yoff, char *xsize,
+		char *ysize);
 	void remove_patch(example_patch_t *patch);
 	virtual	void edit_search() = 0;
 	virtual	void write_fspec(FILE* stream);
@@ -452,6 +429,7 @@ public:
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 private:
 };
+
 
 class histo_ii: public img_search {
 public:

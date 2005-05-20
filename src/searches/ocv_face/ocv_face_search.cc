@@ -31,16 +31,19 @@
 
 #define	MAX_DISPLAY_NAME	64
 
+/* config tokens  */
+#define	NUMFACE_ID	"NUMFACE"
+#define	SUPPORT_ID	"SUPPORT"
+
+#define	SEARCH_NAME	"ocv_face_search"
+
 void
 ocv_face_init()
 {
         ocv_face_factory *fac;
-        printf("ocv_face init \n");
 
         fac = new ocv_face_factory;
-
-        read_config_register("ocv_face_search", fac);
-
+        read_config_register(SEARCH_NAME, fac);
 }
 
 
@@ -108,31 +111,24 @@ ocv_face_search::set_support(int new_count)
 
 
 
+#define	NUMFACE_ID	"NUMFACE"
+#define	SUPPORT_ID	"SUPPORT"
+
 int
 ocv_face_search::handle_config(int nconf, char **data)
 {
 	int	err;
-#ifdef	XXX
-	switch (conf_type) {
-		case NUMF_TOK:
-			set_face_count(data);
-			err = 0;
-			break;
-
-		case SUPPORT_TOK:
-			set_support(data);
-			err = 0;
-			break;
-
-			/* XXX support ?? */
-
-		default:
-			err = window_search::handle_config(conf_type, data);
-			break;
+	if (strcmp(NUMFACE_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		set_face_count(data[1]);
+		err = 0;
+	} else if (strcmp(SUPPORT_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		set_support(data[1]);
+		err = 0;
+	} else {
+		err = window_search::handle_config(nconf, data);
 	}
-#else
-	    err = window_search::handle_config(nconf, data);
-#endif
 	return(err);
 }
 
@@ -365,20 +361,17 @@ ocv_face_search::write_fspec(FILE *ostream)
 	(this->get_parent())->add_dep(ss);
 }
 
+
 void
 ocv_face_search::write_config(FILE *ostream, const char *dirname)
 {
-
 	save_edits();
 
 	/* create the search configuration */
 	fprintf(ostream, "\n\n");
-	fprintf(ostream, "SEARCH ocv_face_search %s\n", get_name());
-
-	fprintf(ostream, "NUMFACE %d \n", face_count);
-	/* XXXX save support */
-	fprintf(ostream, "SUPPORT %d \n", support_matches);
-
+	fprintf(ostream, "SEARCH %s %s\n", SEARCH_NAME, get_name());
+	fprintf(ostream, "%s %d \n", NUMFACE_ID, face_count);
+	fprintf(ostream, "%s %d \n", SUPPORT_ID, support_matches);
 	window_search::write_config(ostream, dirname);
 	return;
 }
@@ -390,7 +383,6 @@ ocv_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 	opencv_fdetect_t fconfig;
 	CvHaarClassifierCascade *cascade;
 	int			pass;
-
 
 	save_edits();
 
@@ -404,9 +396,8 @@ ocv_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 	fconfig.stride = get_stride();
 	fconfig.support = support_matches;
 
-
 	cascade = cvLoadHaarClassifierCascade("<default_face_cascade>",
-	                                      cvSize(fconfig.xsize, fconfig.ysize));
+				      cvSize(fconfig.xsize, fconfig.ysize));
 	/* XXX check args */
 	fconfig.haar_cascade = cvCreateHidHaarClassifierCascade(
 	                           cascade, 0, 0, 0, 1);
@@ -417,7 +408,6 @@ ocv_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 	/* cleanup */
 	cvReleaseHidHaarClassifierCascade(&fconfig.haar_cascade);
 	free(fconfig.name);
-
 
 	return;
 }
