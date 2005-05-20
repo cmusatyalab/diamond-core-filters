@@ -20,6 +20,13 @@
 #include "rgb.h"
 #include "img_search.h"
 
+/* tokens for the config file */
+#define	BOX_X_ID	"TESTX"
+#define	BOX_Y_ID	"TESTY"
+#define	STRIDE_ID	"STRIDE"
+#define	SCALE_ID	"SCALE"
+#define	MATCH_ID	"MATCHES"
+
 window_search::window_search(const char *name, char *descr)
 		: img_search(name, descr)
 {
@@ -181,52 +188,36 @@ window_search::get_testy()
 	return(testy);
 }
 
+
 int
 window_search::handle_config(int nconf, char **data)
 {
 	/* XXX example search destruct */
 	int		err;
-#ifdef	XXX
-	switch (conf_type) {
-		case TESTX_TOK:
-			set_testx(data);
-			err = 0;
-			break;
 
-		case TESTY_TOK:
-			set_testy(data);
-			err = 0;
-			break;
-
-		case STRIDE_TOK:
-			set_stride(data);
-			err = 0;
-			break;
-
-		case SCALE_TOK:
-			set_scale(data);
-			err = 0;
-			break;
-
-		case MATCHES_TOK:
-			set_matches(data);
-			err = 0;
-			break;
-
-		default:
-			err = window_search::handle_config(conf_type, data);
-			assert(err == 0);
-			break;
-	}
-#else
-	if (strcmp(data[0], "STRIDE") == 0) {
-		assert(nconf == 2);
+	if (strcmp(data[0], BOX_X_ID) == 0) {
+		assert(nconf > 1);
+		set_testx(data[1]);
+		err = 0;
+	} else if (strcmp(data[0], BOX_Y_ID) == 0) {
+		assert(nconf > 1);
+		set_testy(data[1]);
+		err = 0;
+	} else if (strcmp(data[0], STRIDE_ID) == 0) {
+		assert(nconf > 1);
 		set_stride(data[1]);
+		err = 0;
+	} else if (strcmp(data[0], SCALE_ID) == 0) {
+		assert(nconf > 1);
+		set_scale(data[1]);
+		err = 0;
+	} else if (strcmp(data[0], MATCH_ID) == 0) {
+		assert(nconf >1);
+		set_matches(data[1]);
 		err = 0;
 	} else {
 		err = img_search::handle_config(nconf, data);
 	}
-#endif
 	return(err);
 }
 
@@ -390,10 +381,10 @@ window_search::write_config(FILE *ostream, const char *dirname)
 {
 	/* write the related filter spec arguments*/
 
-	fprintf(ostream, "TESTX %d \n", testx);
-	fprintf(ostream, "TESTY %d \n", testy);
-	fprintf(ostream, "STRIDE %d \n", stride);
-	fprintf(ostream, "SCALE %f \n", scale);
-	fprintf(ostream, "MATCHES %d \n", num_matches);
+	fprintf(ostream, "%s %d \n", BOX_X_ID, testx);
+	fprintf(ostream, "%s %d \n", BOX_Y_ID, testy);
+	fprintf(ostream, "%s %d \n", STRIDE_ID, stride);
+	fprintf(ostream, "%s %f \n", SCALE_ID, scale);
+	fprintf(ostream, "%s %d \n", MATCH_ID, num_matches);
 }
 

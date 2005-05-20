@@ -30,6 +30,9 @@
 
 #define	MAX_DISPLAY_NAME	64
 
+/* These are the tokens used in the config files */
+#define	METRIC_ID	"METRIC"
+
 void
 rgb_histo_init()
 {
@@ -91,24 +94,19 @@ rgb_histo_search::set_simularity(double sim)
 	return;
 }
 
+
 int
 rgb_histo_search::handle_config(int nconf, char **data)
 {
 	int	err;
-#ifdef	XXX
-	switch (conf_type) {
-		case METRIC_TOK:
-			set_simularity(data);
-			err = 0;
-			break;
 
-		default:
-			err = example_search::handle_config(conf_type, data);
-			break;
+	if (strcmp(METRIC_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		set_simularity(data[1]);
+		err = 0;
+	} else {
+		err = example_search::handle_config(nconf, data);
 	}
-#else
-	err = example_search::handle_config(nconf, data);
-#endif
 	return(err);
 }
 
@@ -438,7 +436,7 @@ rgb_histo_search::write_config(FILE *ostream, const char *dirname)
 	fprintf(ostream, "SEARCH rgb_histogram %s\n", get_name());
 
 	/* write out the rgb parameters */
-	fprintf(ostream, "METRIC %f \n", simularity);
+	fprintf(ostream, "%s %f \n", METRIC_ID, simularity);
 	/* XXX add bins XXX */
 
 	example_search::write_config(ostream, dirname);

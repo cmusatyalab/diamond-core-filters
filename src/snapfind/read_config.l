@@ -112,14 +112,19 @@ new_config(char *yyt)
 		cur_str = eat_token(cur_str);
 	}
 
+	if (arg_offset == 0) {
+		return;
+	}
 	err = cur_search->handle_config(arg_offset, argv);
 
 	/* XXX more graceful way to handle */
 	if (err) {
-		fprintf(stderr, "config not handled: <%d>\n", arg_offset);
+		fprintf(stderr, "config for %s not handled \n", 
+			cur_search->get_name());
 		for (i=0; i < arg_offset; i++) {
-			fprintf(stderr, " %d -> <%s> \n", i, argv[i]);
+			fprintf(stderr, "<%s> ", i, argv[i]);
 		}
+		fprintf(stderr, "\n");
 	}
 }
 
