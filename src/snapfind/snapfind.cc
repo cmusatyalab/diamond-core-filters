@@ -1541,7 +1541,7 @@ cb_create(GtkWidget *widget, gpointer user_data)
 
 	stype = (search_types_t)x;
 
-        GUI_CALLBACK_ENTER();
+	GUI_CALLBACK_ENTER();
 
 	/* get the search name from the user */
 	dialog = gtk_dialog_new_with_buttons("Search Name",
@@ -1611,7 +1611,7 @@ redo:
 	}
 	gtk_widget_destroy(dialog);
 
-        GUI_CALLBACK_LEAVE();
+	GUI_CALLBACK_LEAVE();
 
 	/* XXX get the name from the user */
 }
