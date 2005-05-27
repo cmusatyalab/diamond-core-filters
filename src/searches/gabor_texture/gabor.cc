@@ -17,6 +17,8 @@
 #include <pthread.h>
 #include <gtk/gtk.h>
 #include <errno.h>
+#include <math.h>
+#include <assert.h>
 #include "rgb.h"
 #include "gabor.h"
 
@@ -31,27 +33,32 @@ gabor::gabor(int angles, int radius, int freq, float max_freq, float min_freq)
 	float 	cur_freq;
 	float 	freq_step;
 	float	sig_sq;
+	int		resp;
 
 	gab_angles = angles;
 	gab_radius = radius;
+	gab_dim = 2*radius + 1;
 	gab_freq = freq;
+	gab_responses = gab_angles * gab_freq;
 	gab_sigma = ((float)radius)/3.0;
 
 	sig_sq = M_PI * M_PI * gab_sigma * gab_sigma;
 	gab_max_freq = max_freq;
 	gab_min_freq = min_freq;
-	gab_filters = new gabor_filter *[gab_angles * gab_freq];
+
+	gab_filt_real = new float[gab_dim * gab_dim * gab_responses];
+	gab_filt_img = new float[gab_dim * gab_dim * gab_responses];
 
 	freq_step = (gab_max_freq - gab_min_freq)/ (float)gab_freq;
 
+	resp = 0;
 	for (i=0; i < gab_angles; i++) {
 		cur_angle = (float)i * M_PI/(float)gab_angles;
 		for (j=0; j < gab_freq; j++) {
 			cur_freq = gab_min_freq + (j * freq_step);
 			cur_freq = (cur_freq * M_PI)/2.0;
-			gab_filters[FILTER_OFFSET(i,j)] = 
-				new gabor_filter(gab_radius, cur_angle,
-				cur_freq, sig_sq);
+			filter_init(cur_angle, cur_freq, sig_sq, resp);
+			resp++;
 		}
 	}
 }
@@ -70,36 +77,105 @@ vector_sum(int num, float *vec)
 
 }
 
+
+gabor::~gabor()
+{
+	delete gab_filt_real;
+	delete gab_filt_img;
+	return;
+}
+
+
+
+
+#define	VAL_OFFSET(x, y, resp)   \
+    (((((y) * (gab_dim)) + (x)) * gab_responses) + (resp))
+
+
+void
+gabor::filter_init(float angle, float freq, float sigma_sq, int resp)
+{
+	int x, y, dist;
+	int		voffset;
+	float	cos_val, sin_val, exp_val, exp_const;
+	float	sum_val;
+
+
+	cos_val = cos(angle);
+	sin_val = sin(angle);
+	exp_const = exp((-1.0*M_PI*M_PI)/2.0);
+
+	for (x = -gab_radius; x <= gab_radius; x++) {
+		for (y = -gab_radius; y <= gab_radius; y++) {
+			dist = x*x + y*y;		
+			exp_val = exp(-((float)dist)/sigma_sq);
+			sum_val = freq*(((float)y*cos_val)-((float)x*sin_val));
+			voffset = VAL_OFFSET((x + gab_radius),(y+gab_radius), resp);
+			gab_filt_real[voffset] = exp_val * sin(sum_val);
+			gab_filt_img[voffset] = exp_val * (cos(sum_val) - exp_const);
+		}
+	}
+}
+
+
 int
 gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
 	int normalize)
 {
 	int		i;
-	int		foffset;
-	int		err;
-	int		num_responses;
-	gabor_filter *	filt;
+	int	poffset;
+	int	voffset;
+	int	xoff, yoff;
+	int	pval;
+	float	*real, *img;
+	assert(x >=0);
+	assert(y >=0);
 
 	/* make sure response vector is large enough */
-	num_responses = gab_angles * gab_freq;
-	if (num_responses > size) {
+	if (gab_responses > size) {
 		fprintf(stderr, "get_reponses: too little space \n");
 		return (EINVAL);
 	}
 
+	if ((x + gab_dim) > image->width) {
+		return(1);
+	}
+	if ((y + gab_dim) > image->height) {
+		return(1);
+	}
 
-	for (i=0; i < num_responses; i++) {
-		filt = gab_filters[foffset];
-		err = gab_filters[i]->get_response(image, x, y, &rvec[i]);
-		if (err) {
-			fprintf(stderr, "get_reponses: get resp failed\n");
-			return(err);
+	real = new float[gab_responses];
+	img = new float[gab_responses];
+	for (i=0; i < gab_responses; i++) {
+		real[i] = 0.0;
+		img[i] = 0.0;
+	}
+
+
+	for (yoff = 0; yoff < gab_dim; yoff++) {
+		for (xoff = 0; xoff < gab_dim; xoff++) {
+			poffset = PIXEL_OFFSET(image, (x + xoff), (y +yoff));
+			pval = 	(image->data[poffset].r + image->data[poffset].g + 
+				image->data[poffset].b)/3;
+
+
+			for (i=0; i < gab_responses; i++) {
+				voffset = VAL_OFFSET(xoff, yoff, i);
+				real[i] += pval * gab_filt_real[voffset];
+				img[i] += pval * gab_filt_img[voffset];
+			}
 		}
 	}
+
+
+	for (i=0; i < gab_responses; i++) {
+		rvec[i] = sqrt(real[i]*real[i] + img[i]*img[i]);
+	}
+
 	if (normalize) {
 		float	sum;
-		sum = vector_sum(num_responses, rvec);
-		for (i=0; i < num_responses; i++) {
+		sum = vector_sum(gab_responses, rvec);
+		for (i=0; i < gab_responses; i++) {
 			rvec[i] = rvec[i]/sum;
 		}
 	}
@@ -107,11 +183,6 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
 	return(0);
 }
 
-gabor::~gabor()
-{
-	delete gab_filters;
-	return;
-}
 
 
 

@@ -14,7 +14,6 @@
 #ifndef	_GABOR_H_
 #define	_GABOR_H_	1
 
-#include "gabor_filter.h"
 
 class gabor {
 public:
@@ -26,14 +25,19 @@ public:
 	int get_responses(RGBImage* image, int x, int y, int size, float *rvec,
 		int normalize);
 
+	void filter_init(float angle, float freq, float sigma_sq, int resp);
+
 private:
 	int		gab_angles;		
+	int		gab_dim;
+	int		gab_responses;
 	int		gab_radius;
 	int		gab_freq;
 	float		gab_sigma;
 	float		gab_max_freq;
 	float		gab_min_freq;
-	gabor_filter **	gab_filters;
+	float *		gab_filt_real;
+	float *		gab_filt_img;
 };
 
 

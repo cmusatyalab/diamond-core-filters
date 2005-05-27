@@ -18,6 +18,7 @@
 
 #include <opencv/cv.h>
 #include <stdio.h>
+#include "rgb.h"
 #include "face.h"
 #include "filter_api.h"
 #include "fil_file.h"
