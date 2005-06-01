@@ -49,13 +49,11 @@ include ../image_common/Makefile.template
 SEARCHLET_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_SHARED_SRCS)
 SEARCHLET_SRCS += fil_regex.c
 SEARCHLET_SRCS += fil_data2cv.c 
-SEARCHLET_SRCS += fil_synth.c  fil_gab_texture.cc gabor.cc 
-SEARCHLET_SRCS += gabor_tools.cc
+SEARCHLET_SRCS += fil_synth.c  
 
 SEARCHLET_OBJS = $(COMMON_SEARCHLET_OBJS) $(COMMON_SHARED_OBJS)
 SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
-SEARCHLET_OBJS += fil_synth.o  fil_gab_texture.o gabor.o 
-SEARCHLET_OBJS += gabor_tools.o
+SEARCHLET_OBJS += fil_synth.o 
 
 SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv
 
@@ -67,13 +65,13 @@ SNAPFIND_SRCS += snapfind.cc sfind_search.cc
 SNAPFIND_SRCS +=  read_config.cc  stats_win.c
 SNAPFIND_SRCS += progress_win.cc rgb.c   
 SNAPFIND_SRCS += snap_popup.cc graph_win.cc cache_control.cc
-SNAPFIND_SRCS += sfind_tools.c gabor.cc gabor_tools.cc
+SNAPFIND_SRCS += sfind_tools.c 
 
 SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
 SNAPFIND_OBJS += progress_win.o snap_popup.o  stats_win.o
-SNAPFIND_OBJS += sfind_tools.o  fil_histo.o graph_win.o cache_control.o
-SNAPFIND_OBJS += gabor.o  gabor_tools.o
+SNAPFIND_OBJS += fil_histo.o graph_win.o cache_control.o
+SNAPFIND_OBJS += sfind_tools.o
 
 DEBUG_SRCS = face.c
 DEBUG_OBJS = face.o

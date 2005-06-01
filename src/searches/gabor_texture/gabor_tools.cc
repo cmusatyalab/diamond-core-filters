@@ -22,7 +22,7 @@
 #include "fil_tools.h"
 #include "gabor_tools.h"
 #include "texture_tools.h"
-#include "fil_gab_texture.h"
+//#include "fil_gab_texture.h"
 #include "gabor.h"
 
 

@@ -1,3 +1,4 @@
+- Before starting you need to have opencv 0.95 installed
 
 - You need to set the environmental variable SNAPFIND_ROOT
   that points to the top level of the tree (it should

@@ -20,29 +20,32 @@ COMMON_HEADERS += fil_texture.h face_data.h fil_file.h fil_assert.h
 COMMON_HEADERS += fil_image_tools.h fil_face.h merge_faces.h
 COMMON_HEADERS += import_sample.h face_consts.h gui_thread.h face_image.h
 COMMON_HEADERS += search_support.h search_set.h display_img.h
-COMMON_HEADERS += gabor_texture_search.h
+COMMON_HEADERS += gabor_texture_search.h gabor.h gabor_tools.h
+COMMON_HEADERS += fil_gab_texture.h
 
 
 COMMON_SHARED_SRCS = image_tools.c histo.c face_tools.c texture_tools.c
 COMMON_SHARED_SRCS += facedet.c  fil_data2ii.c fil_tools.c fil_file.c
-COMMON_SHARED_SRCS += merge_faces.c  rgb.c fil_image_tools.c 
+COMMON_SHARED_SRCS += merge_faces.c  rgb.c fil_image_tools.c  gabor_tools.cc
+COMMON_SHARED_SRCS += gabor.cc
 
 COMMON_SHARED_OBJS = image_tools.o histo.o face_tools.o texture_tools.o
 COMMON_SHARED_OBJS += facedet.o  fil_data2ii.o fil_tools.o fil_file.o
-COMMON_SHARED_OBJS += merge_faces.o  rgb.o fil_image_tools.o
+COMMON_SHARED_OBJS += merge_faces.o  rgb.o fil_image_tools.o gabor_tools.o
+COMMON_SHARED_OBJS += gabor.o
 
 COMMON_SEARCHLET_SRCS = fil_histo.c fil_texture.cc fil_face.c
-COMMON_SEARCHLET_SRCS += fil_rgb.c
+COMMON_SEARCHLET_SRCS += fil_rgb.c fil_gab_texture.cc
 
 COMMON_SEARCHLET_OBJS = fil_histo.o fil_texture.o fil_face.o
-COMMON_SEARCHLET_OBJS += fil_rgb.o
+COMMON_SEARCHLET_OBJS += fil_rgb.o fil_gab_texture.o
 
       
 COMMON_APP_SRCS = img_search.cc search_set.cc
 COMMON_APP_SRCS += texture_search.cc vj_face_search.cc
-COMMON_APP_SRCS += window_search.cc example_search.cc
-COMMON_APP_SRCS += rgb_histo_search.cc rgb_img.cc
-COMMON_APP_SRCS += regex_search.cc ii_img.cc face_image.c
+COMMON_APP_SRCS += window_search.cc example_search.cc 
+COMMON_APP_SRCS += rgb_histo_search.cc rgb_img.cc 
+COMMON_APP_SRCS += regex_search.cc ii_img.cc face_image.c 
 COMMON_APP_SRCS += gtk_image_tools.c histo_ii.cc search_support.cc
 COMMON_APP_SRCS += import_sample.cc ocv_face_search.cc gui_thread.c
 COMMON_APP_SRCS += display_img.cc gabor_texture_search.cc
