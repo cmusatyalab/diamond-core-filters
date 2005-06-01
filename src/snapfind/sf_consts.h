@@ -14,7 +14,7 @@
 #ifndef _SF_CONSTS_H_
 #define _SF_CONSTS_H_	1
 
-/* name of the searchlet object file */ 
+/* name of the searchlet object file */
 #define	SEARCHLET_OBJ_NAME	"snap_searchlet.so"
 
 

@@ -67,13 +67,13 @@ gabor::gabor(int angles, int radius, int freq, float max_freq, float min_freq)
 static float
 vector_sum(int num, float *vec)
 {
-        float   sum = 0.0;
-        int             i;
+	float   sum = 0.0;
+	int             i;
 
-        for (i=0; i < num;i++) {
-                sum += vec[i];
-        }
-        return(sum);
+	for (i=0; i < num;i++) {
+		sum += vec[i];
+	}
+	return(sum);
 
 }
 
@@ -107,7 +107,7 @@ gabor::filter_init(float angle, float freq, float sigma_sq, int resp)
 
 	for (x = -gab_radius; x <= gab_radius; x++) {
 		for (y = -gab_radius; y <= gab_radius; y++) {
-			dist = x*x + y*y;		
+			dist = x*x + y*y;
 			exp_val = exp(-((float)dist)/sigma_sq);
 			sum_val = freq*(((float)y*cos_val)-((float)x*sin_val));
 			voffset = VAL_OFFSET((x + gab_radius),(y+gab_radius), resp);
@@ -120,7 +120,7 @@ gabor::filter_init(float angle, float freq, float sigma_sq, int resp)
 
 int
 gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
-	int normalize)
+                     int normalize)
 {
 	int		i;
 	int	poffset;
@@ -155,8 +155,8 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
 	for (yoff = 0; yoff < gab_dim; yoff++) {
 		for (xoff = 0; xoff < gab_dim; xoff++) {
 			poffset = PIXEL_OFFSET(image, (x + xoff), (y +yoff));
-			pval = 	(image->data[poffset].r + image->data[poffset].g + 
-				image->data[poffset].b)/3;
+			pval = 	(image->data[poffset].r + image->data[poffset].g +
+			         image->data[poffset].b)/3;
 
 
 			for (i=0; i < gab_responses; i++) {

@@ -42,7 +42,7 @@ gabor_filter::gabor_filter(int radius, float angle, float freq, float sigma_sq)
 
 	for (x = -radius; x <= radius; x++) {
 		for (y = -radius; y <= radius; y++) {
-			dist = x*x + y*y;		
+			dist = x*x + y*y;
 			exp_val = exp(-((float)dist)/sigma_sq);
 			sum_val = freq*(((float)y*cos_val)-((float)x*sin_val));
 			voffset = VAL_OFFSET((x + radius),(y+radius));
@@ -88,8 +88,8 @@ gabor_filter::get_response(RGBImage *image, int x, int y, float *response)
 		for (xoff = 0; xoff < gfilt_dim; xoff++) {
 			poffset = PIXEL_OFFSET(image, (x + xoff), (y +yoff));
 			voffset = VAL_OFFSET(xoff, yoff);
-			pval = 	(image->data[poffset].r + image->data[poffset].g + 
-				image->data[poffset].b)/3;
+			pval = 	(image->data[poffset].r + image->data[poffset].g +
+			         image->data[poffset].b)/3;
 			real += pval * gfilt_real[voffset];
 			img += pval * gfilt_img[voffset];
 		}

@@ -67,13 +67,13 @@ read_texture_args(lf_fhandle_t fhandle, texture_args_t *texture_args,
 
 	args += 10;
 
-	texture_args->sample_values = (double **) 
-		malloc(sizeof(double *) * texture_args->num_samples);
+	texture_args->sample_values = (double **)
+	                              malloc(sizeof(double *) * texture_args->num_samples);
 	assert(texture_args->sample_values != NULL);
 	for (s_index = 0; s_index < texture_args->num_samples; s_index++) {
 		texture_args->sample_values[s_index] =
-			(double *)malloc(sizeof(double) * 
-				(NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS));
+		    (double *)malloc(sizeof(double) *
+		                     (NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS));
 		for (f_index = 0; f_index < NUM_LAP_PYR_LEVELS*texture_args->num_channels;
 		     f_index++) {
 			texture_args->sample_values[s_index][f_index] = atof(*args);
@@ -154,14 +154,16 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, int numout,
 	lf_log(fhandle, LOGL_TRACE, "f_texture_detect: enter");
 
 #ifdef	OLD
+
 	rgb_img = (RGBImage*)ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
 	if (rgb_img == NULL) {
 		rgb_img = get_rgb_img(ohandle);
 	}
 	ASSERT(rgb_img);
 #else
-        err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
-        assert(err == 0);
+
+	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
+	assert(err == 0);
 	if (rgb_img == NULL) {
 		rgb_alloc = 1;
 		rgb_img = get_rgb_img(ohandle);

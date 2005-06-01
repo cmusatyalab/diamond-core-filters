@@ -24,19 +24,21 @@
 //typedef u_int32_t dim_t;
 typedef int32_t dim_t;
 
-/* 
+/*
  * bounding box of region to consider
  */
-typedef struct region {
+typedef struct region
+{
 	dim_t xmin, ymin;
 	dim_t xsiz, ysiz;
-} region_t;
+}
+region_t;
 
 typedef enum param_type_t {
-	PARAM_UNKNOWN = 0,
-	PARAM_FACE, 
-	PARAM_HISTO,
-	PARAM_TEXTURE
+    PARAM_UNKNOWN = 0,
+    PARAM_FACE,
+    PARAM_HISTO,
+    PARAM_TEXTURE
 } param_type_t;
 
 //void param_type_string(char *buf, param_type_t type);
@@ -45,7 +47,8 @@ typedef enum param_type_t {
  * attributes passed to the test function
  */
 #define PARAM_NAME_MAX 15
-typedef struct search_param {
+typedef struct search_param
+{
 	param_type_t type;
 	int lev1, lev2;		/* range of tests to apply (face) */
 	region_t bbox;		/* bounding box */
@@ -56,7 +59,8 @@ typedef struct search_param {
 	};
 	char name[PARAM_NAME_MAX+1];
 	int id;
-} search_param_t;
+}
+search_param_t;
 
 
 /*
@@ -98,7 +102,8 @@ typedef struct search_param {
  * used for the filter config.
  */
 
-typedef struct fconfig_fdetect {
+typedef struct fconfig_fdetect
+{
 	char *		name;
 	int			lev1;
 	int			lev2;
@@ -106,22 +111,25 @@ typedef struct fconfig_fdetect {
 	double		ysize;
 	double		stride;
 	double		scale_mult;
-} fconfig_fdetect_t;
+}
+fconfig_fdetect_t;
 
 
 /*
  * Structure we use to keep track of the state
  * used for the filter config.
  */
-typedef struct opencv_fdetect {
+typedef struct opencv_fdetect
+{
 	char *		name;
 	int		xsize;
 	int		ysize;
 	int		stride;
 	float		scale_mult;
 	int		support;
-	CvHidHaarClassifierCascade	*haar_cascade;	
-} opencv_fdetect_t;
+	CvHidHaarClassifierCascade	*haar_cascade;
+}
+opencv_fdetect_t;
 
 
 

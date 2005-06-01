@@ -20,7 +20,8 @@ static const int THUMBSIZE_Y = 150;
 
 /* this is a misnomer; the thumbnail keeps everything we want to know
  * about an image */
-typedef struct thumbnail_t {
+typedef struct thumbnail_t
+{
 	RGBImage 	*img;	/* the thumbnail image */
 	GtkWidget 	*viewport; /* the viewport that contains the image */
 	GtkWidget 	*gimage; /* the image widget */
@@ -31,14 +32,16 @@ typedef struct thumbnail_t {
 	image_hooks_t   *hooks;
 	int              marked; /* if the user 'marked' this thumbnail */
 	GtkWidget       *frame;
-} thumbnail_t;
+}
+thumbnail_t;
 
 typedef TAILQ_HEAD(thumblist_t, thumbnail_t) thumblist_t;
 extern thumblist_t thumbnails;
 extern thumbnail_t *cur_thumbnail;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #ifdef __cplusplus

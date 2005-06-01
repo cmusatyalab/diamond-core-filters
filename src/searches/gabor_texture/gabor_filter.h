@@ -17,7 +17,8 @@
 #include <math.h>
 #include "rgb.h"
 
-class gabor_filter {
+class gabor_filter
+{
 public:
 	gabor_filter(int radius, float cur_angle, float cur_freq, float sigma);
 	~gabor_filter(void);

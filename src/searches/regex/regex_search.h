@@ -25,19 +25,20 @@
  * An enumeration of the different seacrch types.
  */
 typedef enum {
-	TEXTURE_SEARCH,
-	RGB_HISTO_SEARCH,
-	VJ_FACE_SEARCH,
-	OCV_FACE_SEARCH,
-	REGEX_SEARCH,
-	GABOR_TEXTURE_SEARCH,
-} search_types_t; 
+    TEXTURE_SEARCH,
+    RGB_HISTO_SEARCH,
+    VJ_FACE_SEARCH,
+    OCV_FACE_SEARCH,
+    REGEX_SEARCH,
+    GABOR_TEXTURE_SEARCH,
+} search_types_t;
 
 
 /* forward declaration to we can get a pointer */
 class search_set;
 
-class img_search {
+class img_search
+{
 public:
 	img_search(const char *name, char *descr);
 	virtual ~img_search();
@@ -52,11 +53,11 @@ public:
 
 	int				is_selected();
 	int				is_hl_selected();
-	
+
 	void		set_parent(search_set *);
 	search_set *	get_parent();
 
-	const char *			get_name() const; 
+	const char *			get_name() const;
 	int			set_name(const char *new_name);
 
 	void		set_active_val(int val);
@@ -69,9 +70,9 @@ public:
 	void		close_edit_win();
 	/* XXX need to free the above */
 
-    	img_search &operator=(const img_search &rhs);
-    	int operator==(const img_search &rhs) const;
-    	int operator<(const img_search &rhs) const;
+	img_search &operator=(const img_search &rhs);
+	int operator==(const img_search &rhs) const;
+	int operator<(const img_search &rhs) const;
 
 private:
 	char *	display_name;
@@ -86,19 +87,21 @@ private:
 
 
 /* factory class for creating new image searches */
-class img_factory {
+class img_factory
+{
 public:
-    virtual img_search *create(const char *name) = 0;
+	virtual img_search *create(const char *name) = 0;
 };
 
 
 
-/* 
+/*
  * The class for doing windowed searches over
  * the image.  This is a subclass of img_search.
  */
 
-class window_search: public img_search {
+class window_search: public img_search
+{
 public:
 	window_search(const char *name, char *descr);
 	virtual ~window_search();
@@ -153,7 +156,8 @@ private:
 };
 
 
-typedef struct example_patch {
+typedef struct example_patch
+{
 	char *		file_name;
 	char *		source_name;
 	int			xoff;
@@ -163,26 +167,28 @@ typedef struct example_patch {
 	RGBImage  *	patch_image;
 	void	  *	parent;
 	TAILQ_ENTRY(example_patch)	link;
-} example_patch_t;
+}
+example_patch_t;
 
 
 typedef	TAILQ_HEAD(example_list_t, example_patch)	example_list_t;
 
-/* 
+/*
  * The class for searches using images patches as input.  For
  * now this is a subclass of window_search.  XXX it isn't clear
  * if this is correct, but I don't want to deal with multiple
  * inheritence ...
  */
 
-class example_search: public window_search {
+class example_search: public window_search
+{
 public:
 	example_search(const char *name, char *descr);
 	virtual ~example_search();
 	virtual	int 	handle_config(int num_conf, char **conf);
 	int add_patch(RGBImage* img, bbox_t bbox);
 	int add_patch(char *fname, char *xoff, char *yoff, char *xsize,
-		char *ysize);
+	              char *ysize);
 	void remove_patch(example_patch_t *patch);
 	virtual	void edit_search() = 0;
 	virtual	void write_fspec(FILE* stream);
@@ -195,7 +201,7 @@ public:
 
 protected:
 
-	example_list_t		ex_plist;	
+	example_list_t		ex_plist;
 	GtkWidget *		patch_holder;
 	int			num_patches;
 
@@ -205,11 +211,12 @@ private:
 	GtkWidget *	patch_table;
 };
 
-/* 
+/*
  * The class for doing windowed searches over
  * the image.  This is a subclass of img_search.
  */
-class rgb_histo_search: public example_search {
+class rgb_histo_search: public example_search
+{
 public:
 	rgb_histo_search(const char *name, char *descr);
 	~rgb_histo_search(void);
@@ -221,7 +228,7 @@ public:
 	void 	write_fspec(FILE* stream);
 	void	write_config(FILE* stream, const char *data_dir);
 
-	/* set the simularity metric, either via string or double */	
+	/* set the simularity metric, either via string or double */
 	void 		set_simularity(char *data);
 	void 		set_simularity(double sim);
 
@@ -243,16 +250,19 @@ private:
 	GtkWidget *	interpolated_box;
 };
 
-                                                                                
-class rgb_histo_factory: public img_factory {
+
+class rgb_histo_factory: public img_factory
+{
 public:
-   img_search *create(const char *name) {
- 		return new rgb_histo_search(name, "RGB Histogram");
-   }
+	img_search *create(const char *name)
+	{
+		return new rgb_histo_search(name, "RGB Histogram");
+	}
 };
 
 
-class texture_search: public example_search {
+class texture_search: public example_search
+{
 public:
 	texture_search(const char *name, char *descr);
 	~texture_search(void);
@@ -266,7 +276,7 @@ public:
 	virtual void 	edit_search();
 	virtual void	close_edit_win();
 
-	/* set the simularity metric, either via string or double */	
+	/* set the simularity metric, either via string or double */
 	void 		set_simularity(char *data);
 	void 		set_simularity(double sim);
 
@@ -294,16 +304,19 @@ private:
 	GtkWidget *	rgb_widget;
 };
 
-class texture_factory: public img_factory {
+class texture_factory: public img_factory
+{
 public:
-   img_search *create(const char *name) {
- 		return new texture_search(name, "DOG Texture");
-   }
+	img_search *create(const char *name)
+	{
+		return new texture_search(name, "DOG Texture");
+	}
 };
 
 
 
-class vj_face_search: public window_search {
+class vj_face_search: public window_search
+{
 public:
 	vj_face_search(const char *name, char *descr);
 	~vj_face_search(void);
@@ -326,7 +339,7 @@ public:
 	/* set ending detector level */
 	void 		set_end_level(char *data);
 	void 		set_end_level(int elevel);
-	
+
 	void 		update_toggle();
 
 
@@ -350,16 +363,19 @@ private:
 	GtkWidget *	overlap_widget;
 };
 
-class vj_face_factory: public img_factory {
+class vj_face_factory: public img_factory
+{
 public:
-   img_search *create(const char *name) {
- 		return new vj_face_search(name, "VJ Face");
-   }
+	img_search *create(const char *name)
+	{
+		return new vj_face_search(name, "VJ Face");
+	}
 };
 
 
 
-class ocv_face_search: public window_search {
+class ocv_face_search: public window_search
+{
 public:
 	ocv_face_search(const char *name, char *descr);
 	~ocv_face_search(void);
@@ -392,15 +408,18 @@ private:
 	GtkObject *	support_widget;
 };
 
-class ocv_face_factory: public img_factory {
+class ocv_face_factory: public img_factory
+{
 public:
-   img_search *create(const char *name) {
- 		return new ocv_face_search(name, "OCV Face");
-   }
+	img_search *create(const char *name)
+	{
+		return new ocv_face_search(name, "OCV Face");
+	}
 };
 
 
-class rgb_img: public img_search {
+class rgb_img: public img_search
+{
 public:
 	rgb_img(const char *name, char *descr);
 	~rgb_img(void);
@@ -416,7 +435,8 @@ private:
 };
 
 
-class ii_img: public img_search {
+class ii_img: public img_search
+{
 public:
 	ii_img(const char *name, char *descr);
 	~ii_img(void);
@@ -431,7 +451,8 @@ private:
 };
 
 
-class histo_ii: public img_search {
+class histo_ii: public img_search
+{
 public:
 	histo_ii(const char *name, char *descr);
 	~histo_ii(void);
@@ -447,7 +468,8 @@ private:
 };
 
 
-class regex_search: public img_search {
+class regex_search: public img_search
+{
 public:
 	regex_search(const char *name, char *descr);
 	~regex_search(void);
@@ -468,11 +490,12 @@ private:
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* this needs to be provide by someone calling this library */
-void ss_add_dep(img_search *dep);
+	/* this needs to be provide by someone calling this library */
+	void ss_add_dep(img_search *dep);
 
 #ifdef __cplusplus
 }

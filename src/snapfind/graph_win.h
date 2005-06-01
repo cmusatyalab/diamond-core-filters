@@ -37,11 +37,11 @@ using	namespace	std;
 #define		Y_ZERO_TEXT_OFFSET	10
 
 #define		Y_LABEL_GAP		5
-	
+
 
 /* The maximum number of series the graph supports */
 #define		GW_MAX_SERIES		8
-                                                                                
+
 enum gw_layers_t {
     GW_IMG_LAYER = 0,
     GW_RES_LAYER,
@@ -50,27 +50,32 @@ enum gw_layers_t {
     GW_MAX_LAYERS
 };
 
-typedef struct {
+typedef struct
+{
 	double	x;
 	double	y;
-} point_t;
+}
+point_t;
 
 typedef	vector<point_t>::iterator	point_iter_t;
 
-typedef struct {
+typedef struct
+{
 	GdkGC *		gc;
 	GdkColor	color;
 	int			lastx;
 	int			lasty;
 	/* XXX hold the points when I am cool */
 	vector<point_t>	points;
-} series_info_t;
+}
+series_info_t;
 
 
 /*
  * This is a c++ class that creates a gtk graph window.
  */
-class graph_win {
+class graph_win
+{
 public:
 	graph_win(const double xmin, const double xmax, const double ymin, const double ymax);
 
@@ -82,7 +87,7 @@ public:
 	void	add_point(const double x, const double y, int series);
 	void	draw_point(const double x, const double y, int series);
 	void	clear_series(int series);
-	
+
 	void	clear_graph();
 	void 	event_realize();
 	void 	draw_res(GtkWidget *widget);
@@ -90,7 +95,7 @@ public:
 	void 	init_window();
 
 
-	
+
 
 private:
 	void	get_series_color(int series, GdkColor * color);
@@ -121,7 +126,7 @@ private:
 
 	int		gw_active_win;
 
-	series_info_t	gw_series[GW_MAX_SERIES];	
+	series_info_t	gw_series[GW_MAX_SERIES];
 
 	char *	display_name;
 	char *	descript;
@@ -132,10 +137,10 @@ private:
 	GtkWidget *	search_label;
 	GtkWidget *	adjust_label;
 
-    GdkPixbuf  *    gw_pixbufs[GW_MAX_LAYERS];
-    RGBImage   *    gw_layers[GW_MAX_LAYERS];
-    RGBImage   *    gw_cur_img;
-    GdkPixmap  *    gw_pixmap;
+	GdkPixbuf  *    gw_pixbufs[GW_MAX_LAYERS];
+	RGBImage   *    gw_layers[GW_MAX_LAYERS];
+	RGBImage   *    gw_cur_img;
+	GdkPixmap  *    gw_pixmap;
 
 
 };

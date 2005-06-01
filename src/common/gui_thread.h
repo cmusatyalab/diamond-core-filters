@@ -33,7 +33,7 @@ extern pthread_t __gui_thread_id;
 #ifndef DISABLE_G_LOCK_ASSERTS
 #define ASSERT(x)  assert(x)
 #else
-#define ASSERT(x) 
+#define ASSERT(x)
 #endif
 
 #define GUI_THREAD_INIT()			\
@@ -89,7 +89,7 @@ extern pthread_t __gui_thread_id;
         ASSERT(__gui_callback_flag == 1);		\
 	(__gui_callback_flag = 0);			\
         __gui_thread_id = THREAD_NULL;		\
-}						
+}
 
 #define MAIN_THREADS_ENTER() 			\
 { 						\

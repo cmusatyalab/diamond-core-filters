@@ -55,7 +55,8 @@ static GtkWidget      *res_cache;
 
 
 
-typedef struct filt_data {
+typedef struct filt_data
+{
 	GtkWidget      *frame;
 	GtkWidget      *box;
 	GtkWidget      *sbox1;
@@ -68,7 +69,8 @@ typedef struct filt_data {
 	GtkWidget      *drop_label;
 	GtkWidget      *nproc_label;
 	GtkWidget      *drop_val;
-} filt_data_t;
+}
+filt_data_t;
 
 
 

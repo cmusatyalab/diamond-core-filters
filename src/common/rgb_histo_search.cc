@@ -36,12 +36,12 @@
 void
 rgb_histo_init()
 {
-	rgb_histo_factory *fac; 
+	rgb_histo_factory *fac;
 	printf("histo init \n");
 
 	fac = new rgb_histo_factory;
 
-	read_config_register("rgb_histogram", fac);	
+	read_config_register("rgb_histogram", fac);
 
 }
 

@@ -287,23 +287,23 @@ window_search::get_window_cntrl()
 
 	if (enable_scale) {
 		widget = create_slider_entry("scale", 1.0, 200.0, 2,
-	                             scale, 0.25, &scale_adj);
+		                             scale, 0.25, &scale_adj);
 		gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 	}
 
 	if (enable_size) {
 		widget = create_slider_entry("testx", 1.0, 100.0, 0,
-	                             testx, 1.0, &testx_adj);
+		                             testx, 1.0, &testx_adj);
 		gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 
 		widget = create_slider_entry("testy", 1.0, 100.0, 0,
-	                             testy, 1.0, &testy_adj);
+		                             testy, 1.0, &testy_adj);
 		gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 	}
 
 	if (enable_stride) {
 		widget = create_slider_entry("stride", 1.0, 100.0, 0,
-	                             stride, 1.0, &stride_adj);
+		                             stride, 1.0, &stride_adj);
 		gtk_box_pack_start(GTK_BOX(container), widget, FALSE, FALSE, 0);
 	}
 

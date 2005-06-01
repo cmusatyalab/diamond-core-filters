@@ -27,28 +27,30 @@
 
 
 typedef	enum {
-	TEXTURE_DIST_MAHOLONOBIS,
-	TEXTURE_DIST_VARIANCE,
-	TEXTURE_DIST_PAIRWISE
+    TEXTURE_DIST_MAHOLONOBIS,
+    TEXTURE_DIST_VARIANCE,
+    TEXTURE_DIST_PAIRWISE
 } texture_dist_t;
 
 
 
-typedef struct texture_args_t {
-    char* 		name;
-    int 		num_samples;
-    double **	sample_values;
-    double 		max_distance;
-    int 		box_width;
-    int 		box_height;
-    int 		step;
-    double 		scale;
-    int 		min_matches;
-    int 		num_channels;
+typedef struct texture_args_t
+{
+	char* 		name;
+	int 		num_samples;
+	double **	sample_values;
+	double 		max_distance;
+	int 		box_width;
+	int 		box_height;
+	int 		step;
+	double 		scale;
+	int 		min_matches;
+	int 		num_channels;
 	texture_dist_t	texture_distance;
-} texture_args_t;
+}
+texture_args_t;
 
-/** 
+/**
  * Returns the value of the minimum distance from some box in the image to
  * one of the samples.
  * img - the image to be tested
@@ -62,30 +64,31 @@ typedef struct texture_args_t {
  **/
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-	
-int texture_test_entire_image_maholonobis(IplImage *img, texture_args_t *targs, 
-		bbox_list_t *blist);
-int texture_test_entire_image_variance(IplImage *img, texture_args_t *targs, 
-		bbox_list_t *blist);
-int texture_test_entire_image_pairwise(IplImage *img, texture_args_t *targs, 
-		bbox_list_t *blist);
-				       
-				       
-/* gets features from a single subwindow
-*/
-void texture_get_lap_pyr_features_from_subimage(IplImage* img,
-						int num_channels,
-						int min_x,
-						int min_y,
-						int box_width,
-						int box_height,
-						double *feature_values);
-						
+
+	int texture_test_entire_image_maholonobis(IplImage *img, texture_args_t *targs,
+	        bbox_list_t *blist);
+	int texture_test_entire_image_variance(IplImage *img, texture_args_t *targs,
+	                                       bbox_list_t *blist);
+	int texture_test_entire_image_pairwise(IplImage *img, texture_args_t *targs,
+	                                       bbox_list_t *blist);
+
+
+	/* gets features from a single subwindow
+	*/
+	void texture_get_lap_pyr_features_from_subimage(IplImage* img,
+	        int num_channels,
+	        int min_x,
+	        int min_y,
+	        int box_width,
+	        int box_height,
+	        double *feature_values);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif //TEXTURE_TOOLS 
+#endif //TEXTURE_TOOLS

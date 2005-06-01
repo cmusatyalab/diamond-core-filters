@@ -21,7 +21,7 @@
 #include "face_consts.h"
 #include "face.h"
 
-/* 
+/*
  * inherited from topo.h  -- cleanup!
  */
 
@@ -29,23 +29,27 @@
 
 /* this struct is used to send info from the GUI to the search
  * thread.  */
-typedef	struct gid_list {
-        int                     ngids;
-        groupid_t               gids[MAX_ALBUMS];
-} gid_list_t;
+typedef	struct gid_list
+{
+    int                     ngids;
+    groupid_t               gids[MAX_ALBUMS];
+}
+gid_list_t;
 
 
 typedef enum message_ops {
-	START_SEARCH,
-	TERM_SEARCH,
-	NEXT_OBJECT,
-	DONE_OBJECTS,
+    START_SEARCH,
+    TERM_SEARCH,
+    NEXT_OBJECT,
+    DONE_OBJECTS,
 } message_ops_t;
 
-typedef struct {
+typedef struct
+{
 	message_ops_t	type;
 	void *		data;
-} message_t;
+}
+message_t;
 
 
 
@@ -64,23 +68,24 @@ extern int		dobj_cnt;
  * Key words for the filter spec file.
  */
 #define	FILTER_DEF	"\nFILTER"
-#define THRESHOLD	"THRESHOLD"	
-#define MERIT		"MERIT"	
-#define EVAL_FUNCTION	"EVAL_FUNCTION"	
-#define INIT_FUNCTION	"INIT_FUNCTION"	
-#define FINI_FUNCTION	"FINI_FUNCTION"	
+#define THRESHOLD	"THRESHOLD"
+#define MERIT		"MERIT"
+#define EVAL_FUNCTION	"EVAL_FUNCTION"
+#define INIT_FUNCTION	"INIT_FUNCTION"
+#define FINI_FUNCTION	"FINI_FUNCTION"
 #define FUNCTION				"HELP"
-#define ARGUMENT	"ARG"	
+#define ARGUMENT	"ARG"
 #define REQUIRES        "REQUIRES"
 
-                                                                               
+
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-                                                                               
-void * sfind_search_main(void *);
-char *build_filter_spec(char *file);
-void do_search(gid_list_t *main_region, char *opt_filename);
+
+	void * sfind_search_main(void *);
+	char *build_filter_spec(char *file);
+	void do_search(gid_list_t *main_region, char *opt_filename);
 
 #ifdef __cplusplus
 }

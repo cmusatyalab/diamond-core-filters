@@ -36,14 +36,18 @@
 
 /* #define VERBOSE 1 */
 
-typedef struct {
+typedef struct
+{
 	int             	scale;
 	histo_type_t	type;
-} hintegrate_data_t;
+}
+hintegrate_data_t;
 
-typedef struct {
+typedef struct
+{
 	int             num_hist;
-} hpass_data_t;
+}
+hpass_data_t;
 
 
 /* call to read the cycle counter */
@@ -307,7 +311,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	 */
 	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
 	if (err != 0) {
-		img_alloc = 1;	
+		img_alloc = 1;
 		img = get_rgb_img(ohandle);
 	}
 	ASSERT(img->type == IMAGE_PPM);
@@ -513,7 +517,7 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
 	 */
 	err = lf_ref_attr(fhandle, ihandle, RGB_IMAGE, &len, (char**)&img);
 	if (err != 0) {
-		img_alloc = 1;	
+		img_alloc = 1;
 		img = get_rgb_img(ihandle);
 	}
 
@@ -541,7 +545,7 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
 
 
 	err = lf_write_attr(fhandle, ohandles[0], HISTO_II, ii->nbytes,
-	                  (char *) ii);
+	                    (char *) ii);
 	ASSERT(!err);
 done:
 	if (img_alloc) {

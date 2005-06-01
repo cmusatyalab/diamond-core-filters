@@ -112,17 +112,20 @@ create_search(search_types_t type, const char *name)
 
 
 int
-search_exists(const char *name, search_set *set)
+search_exists(const char *name, search_set *set
+             )
 {
 	img_search *cur;
 	search_iter_t	iter;
 
-	set->reset_search_iter(&iter);
-	while ((cur = set->get_next_search(&iter)) != NULL) {
-		if (strcmp(cur->get_name(), name) == 0) {
-			return(1);
+	set
+		->reset_search_iter(&iter);
+	while ((cur = set
+		              ->get_next_search(&iter)) != NULL) {
+			if (strcmp(cur->get_name(), name) == 0) {
+				return(1);
+			}
 		}
-	}
 	return(0);
 }
 

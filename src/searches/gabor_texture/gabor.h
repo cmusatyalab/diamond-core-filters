@@ -15,20 +15,21 @@
 #define	_GABOR_H_	1
 
 
-class gabor {
+class gabor
+{
 public:
-	gabor(int angles, int radius, int freq, float max_freq, 
-		float min_freq);
+	gabor(int angles, int radius, int freq, float max_freq,
+	      float min_freq);
 	~gabor(void);
 
-                                                                                
+
 	int get_responses(RGBImage* image, int x, int y, int size, float *rvec,
-		int normalize);
+	                  int normalize);
 
 	void filter_init(float angle, float freq, float sigma_sq, int resp);
 
 private:
-	int		gab_angles;		
+	int		gab_angles;
 	int		gab_dim;
 	int		gab_responses;
 	int		gab_radius;

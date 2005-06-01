@@ -133,7 +133,7 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
 	  * get the img
 	  */
 	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
-    assert(err == 0);
+	assert(err == 0);
 
 
 	TAILQ_INIT(&blist);
@@ -366,8 +366,8 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 	ft_free(fhandle, (char *) ii2);
 	ii2 = NULL;
 	err = lf_write_attr(fhandle, ohandle, II_SQ_DATA, sizeof(char *), (char *) &ii2);   /* pseudo
-	                                                                                         * delete 
-	                                                                                         */
+		                                                                                         * delete 
+		                                                                                         */
 	assert(!err);
 
 	lf_log(fhandle, LOGL_TRACE, "f_detect: done\n");

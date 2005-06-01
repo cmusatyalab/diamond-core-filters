@@ -20,7 +20,7 @@ COMMON_HEADERS += fil_texture.h face_data.h fil_file.h fil_assert.h
 COMMON_HEADERS += fil_image_tools.h fil_face.h merge_faces.h
 COMMON_HEADERS += import_sample.h face_consts.h gui_thread.h face_image.h
 COMMON_HEADERS += search_support.h search_set.h display_img.h
-COMMON_HEADERS += gabor_texture_search.h gabor.h gabor_tools.h
+COMMON_HEADERS += gabor.h gabor_tools.h
 COMMON_HEADERS += fil_gab_texture.h
 
 
@@ -48,7 +48,7 @@ COMMON_APP_SRCS += rgb_histo_search.cc rgb_img.cc
 COMMON_APP_SRCS += regex_search.cc ii_img.cc face_image.c 
 COMMON_APP_SRCS += gtk_image_tools.c histo_ii.cc search_support.cc
 COMMON_APP_SRCS += import_sample.cc ocv_face_search.cc gui_thread.c
-COMMON_APP_SRCS += display_img.cc gabor_texture_search.cc
+COMMON_APP_SRCS += display_img.cc 
                             
 COMMON_APP_OBJS = img_search.o search_set.o
 COMMON_APP_OBJS += texture_search.o vj_face_search.o

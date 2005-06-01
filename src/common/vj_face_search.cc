@@ -41,12 +41,12 @@
 void
 vj_face_init()
 {
-        vj_face_factory *fac;
-        printf("vj_face init \n");
+	vj_face_factory *fac;
+	printf("vj_face init \n");
 
-        fac = new vj_face_factory;
+	fac = new vj_face_factory;
 
-        read_config_register("vj_face_search", fac);
+	read_config_register("vj_face_search", fac);
 }
 
 

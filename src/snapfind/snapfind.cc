@@ -1304,8 +1304,8 @@ cb_next_image(GtkButton* item, gpointer data)
 	                            GTK_SPIN_BUTTON(image_controls.zbutton));
 	clear_thumbnails();
 	GUI_CALLBACK_LEAVE(); /* need to put this here instead of at
-										 end because signal wakes up another
-										 thread immediately... */
+											 end because signal wakes up another
+											 thread immediately... */
 
 	pthread_mutex_lock(&display_mutex);
 	image_controls.cur_op = CNTRL_NEXT;
@@ -1572,7 +1572,7 @@ redo:
 
 	if (result == GTK_RESPONSE_CANCEL) {
 		gtk_widget_destroy(dialog);
-        	GUI_CALLBACK_LEAVE();
+		GUI_CALLBACK_LEAVE();
 		return;
 	} else {
 		/* get the name from the box and do some error checking on it */

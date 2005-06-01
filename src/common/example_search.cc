@@ -134,7 +134,7 @@ example_search::is_example()
 
 int
 example_search::add_patch(char *fname, char *xoff, char *yoff, char *xsize,
-	char *ysize)
+                          char *ysize)
 {
 	example_patch_t *	cur_patch;
 	RGBImage  *			img;
@@ -329,8 +329,8 @@ example_search::write_config(FILE *ostream, const char *dirname)
 		rgb_write_image(cur_patch->patch_image, fname, dirname);
 		/* XXX write out the file */
 
-		fprintf(ostream, "%s %s 0 0 %d %d \n", PATCH_ID, fname, 
-			cur_patch->xsize, cur_patch->ysize);
+		fprintf(ostream, "%s %s 0 0 %d %d \n", PATCH_ID, fname,
+		        cur_patch->xsize, cur_patch->ysize);
 		i++;
 	}
 	return;

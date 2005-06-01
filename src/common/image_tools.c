@@ -238,7 +238,7 @@ pnm_state_new(RGBImage * img)
 	state->img = img;
 	state->parity = 0;
 	state->bytes_remaining = img->width * img->height * 3;  /* 3 bytes per
-	                                                             * pixel */
+		                                                             * pixel */
 	assert(img->nbytes > (size_t) (img->width * img->height * 4));
 	state->img_cur = (uint8_t *) state->img->data;
 

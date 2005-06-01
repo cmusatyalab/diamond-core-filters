@@ -40,10 +40,10 @@
 void
 ocv_face_init()
 {
-        ocv_face_factory *fac;
+	ocv_face_factory *fac;
 
-        fac = new ocv_face_factory;
-        read_config_register(SEARCH_NAME, fac);
+	fac = new ocv_face_factory;
+	read_config_register(SEARCH_NAME, fac);
 }
 
 
@@ -397,7 +397,7 @@ ocv_face_search::region_match(RGBImage *img, bbox_list_t *blist)
 	fconfig.support = support_matches;
 
 	cascade = cvLoadHaarClassifierCascade("<default_face_cascade>",
-				      cvSize(fconfig.xsize, fconfig.ysize));
+	                                      cvSize(fconfig.xsize, fconfig.ysize));
 	/* XXX check args */
 	fconfig.haar_cascade = cvCreateHidHaarClassifierCascade(
 	                           cascade, 0, 0, 0, 1);

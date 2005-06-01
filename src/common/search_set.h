@@ -31,10 +31,12 @@ class search_set;
 typedef  list<img_search *>::iterator	search_iter_t;
 
 /* function proto type for a callback when the set changes */
-typedef  void (*sset_notify_fn)(search_set *set);
+typedef  void (*sset_notify_fn)(search_set *set
+                               );
 typedef  vector<sset_notify_fn>::iterator	cb_iter_t;
 
-class search_set {
+class search_set
+{
 public:
 	search_set();
 	virtual 	~search_set();

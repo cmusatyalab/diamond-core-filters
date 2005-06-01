@@ -35,12 +35,12 @@
 void
 texture_init()
 {
-	texture_factory *fac; 
+	texture_factory *fac;
 	printf("texture init \n");
 
 	fac = new texture_factory;
 
-	read_config_register("texture", fac);	
+	read_config_register("texture", fac);
 
 }
 

@@ -57,12 +57,12 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	data->radius = atoi(*args++);
 	data->max_freq = atof(*args++);
 	data->min_freq = atof(*args++);
-		
+
 	data->num_samples = atoi(*args++);
 	num_resp = data->num_angles * data->num_freq;
 
 	data->response_list = (float **) malloc(sizeof(float *) *
-		data->num_samples);
+	                                        data->num_samples);
 
 	for (i=0; i < data->num_samples; i++) {
 		respv = (float *) malloc(sizeof(float) * num_resp);
@@ -75,7 +75,7 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	}
 
 	data->gobj = new gabor(data->num_angles, data->radius, data->num_freq,
-		data->max_freq, data->min_freq);
+	                       data->max_freq, data->min_freq);
 	return (0);
 }
 
@@ -90,7 +90,7 @@ write_notify_f(void *cont, search_param_t *param)
 
 int
 f_init_gab_texture(int numarg, char **args, int blob_len,
-                      void *blob, void **f_datap)
+                   void *blob, void **f_datap)
 {
 	gtexture_args_t*	data;
 	lf_fhandle_t 	fhandle = 0; /* XXX */
@@ -130,7 +130,7 @@ f_fini_gab_texture(void *f_datap)
 
 int
 f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
-                      lf_obj_handle_t *ohandles, void *f_datap)
+                   lf_obj_handle_t *ohandles, void *f_datap)
 {
 	int		pass = 0;
 	int		err;
