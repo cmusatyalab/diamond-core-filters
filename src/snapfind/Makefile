@@ -15,14 +15,6 @@
 
 CFLAGS += -DDEBUG 
 # # Set the include paths.  #
-INCDIR += -I ../../lib/libsearchlet
-INCDIR += -I../../lib/libtools
-INCDIR += -I../../lib/libfilter
-INCDIR += -I../../lib/libodisk
-INCDIR += -I../../lib/libdctl
-INCDIR += -I../../lib/liblog
-INCDIR += -I../../lib/libod
-INCDIR += -I../../lib/libdconfig
 INCDIR += -I/usr/local/include/opencv
 INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I` 
 
@@ -43,7 +35,7 @@ LIBDIR += -L../../lib/liblog -L../../lib/libodisk
 LIBDIR += -L../../transport/socket/hoststub -L../../lib/libdctl 
 LIBDIR += -L../../lib/libdconfig
 
-include ../image_common/Makefile.template
+include ../shared_source/common/Makefile.template
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_SHARED_SRCS)
@@ -163,7 +155,7 @@ clean-experiments:
 
 
 $(COMMON_SRCS):
-	ln -f -s ../image_common/$@
+	ln -f -s ../shared_source/common/$@
                                  
 
 

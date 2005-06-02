@@ -12,7 +12,7 @@
 #
 
 
-INCDIR += -I../image_common
+INCDIR += -I../shared_source/common
 INCDIR += -I/usr/local/include/opencv
 
 
