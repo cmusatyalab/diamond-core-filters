@@ -32,6 +32,25 @@ of machines, each group will list 1 or more machines.
 The default locations of these files is in /usr/local/diamond/etc but
 this can be over-ridden by environmental values.
 
+If you are running in standalone mode (disk and app are on the same
+machine) do the following.  
+
+	1) copy name_map and gid_map from config to /usr/local/diamond/etc
+	2) cd snapfind
+	3) run snapfind by "./snapfind".
+
+Note, currently you need to run snapfind in the directory it is built so it
+find all the shared files it needs.
+
+Running a null search will return and display all the images.
+
+To load or save a search is a little tricky.  Searches are named by
+the directory not a single config file.  So if you click load search
+you will need to go into the directory of the search and click ok.
+There is a sample_search in the directory called "sample_search" under
+snapfind.
+	
+
 
 
 
