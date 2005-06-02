@@ -1,8 +1,39 @@
-- Before starting you need to have opencv 0.95 installed
+Building SnapFind
+-----------------
 
-- You need to set the environmental variable SNAPFIND_ROOT
-  that points to the top level of the tree (it should
-  be the directory this file is in).
+Before starting you need to have built and install opencv 0.95.  Snapfind
+requires that you build opencv with static libraries.  This can be done
+at opencv configuration time by: 
+
+  	./configure --enable-static=yes
+
+To build snapfind you must set the environment variable SNAPFIND_ROOT
+to point to the top of the source tree (this should be the directory 
+that contains this Intall file).
+
+Then build the system by typing "make".
+
+Assuming the build completes correctly, the binary should be located
+in the snapfind directory.  The program is called snapfind.
+
+
+Running Snapfind
+----------------
+
+To run snapfind you must have two configurations files.  The first
+is called "gid_map" and the second is called "name_map".  The name_map
+groups logical collections of files into one or more group numbers. 
+Snapfind allows the user to select the groups id to search.  There must be
+at least 1 collection defined.  The gid_map file is used to map
+the each group to 1 or more diamond backends.  If running standalone
+this should map the group to localhost, if running across a distributed set
+of machines, each group will list 1 or more machines.
+
+The default locations of these files is in /usr/local/diamond/etc but
+this can be over-ridden by environmental values.
+
+
+
 
 - Build Snapfind.
 

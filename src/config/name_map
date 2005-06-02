@@ -1,0 +1,5 @@
+#
+# This file maps between logical collections and 1 or more group IDs.  
+# the first entry is the logical name followed by one or more 64-bit group
+# ids.
+default 00:00:00:00:00:00:00:01
