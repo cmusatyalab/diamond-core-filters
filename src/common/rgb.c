@@ -115,3 +115,19 @@ release_rgb_image(RGBImage * img)
 	free(img);
 }
 
+
+void
+release_fgimage(FGImage_t * img)
+{
+	free(img);
+}
+
+void
+create_fgimage(FGImage_t * img)
+{
+
+	img = (RGBImage *) calloc(imgsrc->nbytes, 1);
+
+}
+
+

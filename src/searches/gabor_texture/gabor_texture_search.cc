@@ -59,7 +59,7 @@ gabor_texture_search::gabor_texture_search(const char *name, char *descr)
 	channels = 3;
 	num_angles = 4;
 	num_freq = 2;
-	radius = 32;
+	radius = 16;
 	min_freq = 0.2;
 	max_freq = 1.0;
 
@@ -266,8 +266,6 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 	GtkWidget *scale;
 	GtkWidget *button;
 	GtkWidget *label;
-
-
 
 	container = gtk_hbox_new(FALSE, 10);
 

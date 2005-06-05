@@ -85,9 +85,6 @@ gabor::~gabor()
 	return;
 }
 
-
-
-
 #define	VAL_OFFSET(x, y, resp)   \
     (((((y) * (gab_dim)) + (x)) * gab_responses) + (resp))
 
@@ -105,8 +102,8 @@ gabor::filter_init(float angle, float freq, float sigma_sq, int resp)
 	sin_val = sin(angle);
 	exp_const = exp((-1.0*M_PI*M_PI)/2.0);
 
-	for (x = -gab_radius; x <= gab_radius; x++) {
-		for (y = -gab_radius; y <= gab_radius; y++) {
+	for (y = -gab_radius; y <= gab_radius; y++) {
+		for (x = -gab_radius; x <= gab_radius; x++) {
 			dist = x*x + y*y;
 			exp_val = exp(-((float)dist)/sigma_sq);
 			sum_val = freq*(((float)y*cos_val)-((float)x*sin_val));
@@ -117,7 +114,6 @@ gabor::filter_init(float angle, float freq, float sigma_sq, int resp)
 	}
 }
 
-
 int
 gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
                      int normalize)
@@ -126,7 +122,7 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
 	int	poffset;
 	int	voffset;
 	int	xoff, yoff;
-	int	pval;
+	float	pval;
 	float	*real, *img;
 	assert(x >=0);
 	assert(y >=0);
@@ -143,30 +139,26 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
 	if ((y + gab_dim) > image->height) {
 		return(1);
 	}
-
-	real = new float[gab_responses];
-	img = new float[gab_responses];
-	for (i=0; i < gab_responses; i++) {
-		real[i] = 0.0;
-		img[i] = 0.0;
-	}
+	real = (float *)calloc(gab_responses, sizeof(float));
+	img = (float *)calloc(gab_responses, sizeof(float));
 
 
 	for (yoff = 0; yoff < gab_dim; yoff++) {
+		poffset = PIXEL_OFFSET(image, x, (y +yoff));
+		voffset = VAL_OFFSET(0, yoff, 0);
 		for (xoff = 0; xoff < gab_dim; xoff++) {
-			poffset = PIXEL_OFFSET(image, (x + xoff), (y +yoff));
-			pval = 	(image->data[poffset].r + image->data[poffset].g +
-			         image->data[poffset].b)/3;
+			pval = 	((float)(image->data[poffset+xoff].r + 
+					image->data[poffset+xoff].g + 
+					image->data[poffset+xoff].b))/3.0;
 
-
+			voffset = VAL_OFFSET(xoff, yoff, 0);
 			for (i=0; i < gab_responses; i++) {
-				voffset = VAL_OFFSET(xoff, yoff, i);
-				real[i] += pval * gab_filt_real[voffset];
-				img[i] += pval * gab_filt_img[voffset];
+				real[i] += pval * gab_filt_real[voffset+i];
+				img[i] += pval * gab_filt_img[voffset+i];
 			}
+			voffset += gab_responses;
 		}
 	}
-
 
 	for (i=0; i < gab_responses; i++) {
 		rvec[i] = sqrt(real[i]*real[i] + img[i]*img[i]);
@@ -180,6 +172,8 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
 		}
 	}
 
+	free(real);
+	free(img);
 	return(0);
 }
 

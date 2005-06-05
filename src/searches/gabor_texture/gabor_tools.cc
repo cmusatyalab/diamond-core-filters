@@ -247,11 +247,8 @@ gabor_patch_response(RGBImage * img, gtexture_args_t * gargs, int
 
 	/* test each subwindow and sum them */
 	patches = 0;
-	for (x = 0; (x + width) < img->width; x++) {
-		for (y = 0; (y + width) < img->height; y++) {
-
-			/* XXX scale ?? */
-
+	for (y = 0; (y + width) < img->height; y++) {
+		for (x = 0; (x + width) < img->width; x++) {
 			err = gargs->gobj->get_responses(img, x, y, num_resp, respv, 1);
 			assert(err == 0);
 			gabor_response_add(num_resp, rvec, respv);

@@ -37,8 +37,7 @@ typedef enum image_type_t {
 } image_type_t;
 
 
-typedef struct
-{
+typedef struct {
 	image_type_t type;
 	size_t nbytes;			/* size of this var size struct */
 	union {
@@ -50,8 +49,22 @@ typedef struct
 		int columns;
 	};
 	RGBPixel data[0];		/* var size struct */
-}
-RGBImage;
+} RGBImage;
+
+
+typedef struct FGImage{
+	image_type_t type;
+	size_t nelemnts;		/* size of this var size struct */
+	union {
+		int height;
+		int rows;
+	};
+	union {
+		int width;
+		int columns;
+	};
+	float 	data[0];		/* var size struct */
+} FGImage_t;
 
 #define	PIXEL_OFFSET(img, x, y)	(((y) * ((img)->width)) + (x))
 
@@ -118,6 +131,7 @@ extern "C"
 	void release_rgb_image(RGBImage *);
 
 	RGBImage * get_rgb_img(lf_obj_handle_t ohandle);
+	FGImage_t * rgb_fgimage(RGBImage *);
 
 	RGBImage * rgbimg_blank_image(int width, int height);
 
