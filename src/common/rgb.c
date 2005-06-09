@@ -122,12 +122,35 @@ release_fgimage(FGImage_t * img)
 	free(img);
 }
 
-void
-create_fgimage(FGImage_t * img)
+FGImage_t *
+create_fgimage(int width, int height)
 {
+	FGImage_t * 	img;
+	size_t		bytes;
 
-	img = (RGBImage *) calloc(imgsrc->nbytes, 1);
+	bytes = sizeof(FGImage_t) + (width * height * sizeof(float));
 
+	img = (FGImage_t *) calloc(bytes, 1);
+
+	img->nelements = width * height;
+	img->height = height;
+	img->width = width;
+	return(img);
 }
 
+FGImage_t *
+rgb_to_fgimage(RGBImage *orig)
+{
+	FGImage_t *	img;
+	int		i;
+	
 
+	img = create_fgimage(orig->width, orig->height);
+	
+
+	for (i=0; i < (orig->width * orig->height); i++) {
+		img->data[i] = ((float)(orig->data[i].r + orig->data[i].b + 
+			orig->data[i].g))/3.0;
+	}
+	return(img);
+}

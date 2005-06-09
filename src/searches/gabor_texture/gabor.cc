@@ -114,6 +114,7 @@ gabor::filter_init(float angle, float freq, float sigma_sq, int resp)
 	}
 }
 
+#ifdef	XXX
 int
 gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
                      int normalize)
@@ -176,6 +177,68 @@ gabor::get_responses(RGBImage *image, int x, int y, int size, float *rvec,
 	free(img);
 	return(0);
 }
+
+#else
+int
+gabor::get_responses(FGImage_t *image, int x, int y, int size, float *rvec,
+                     int normalize)
+{
+	int		i;
+	int	poffset;
+	int	voffset;
+	int	xoff, yoff;
+	float	pval;
+	float	*real, *img;
+	assert(x >=0);
+	assert(y >=0);
+
+	/* make sure response vector is large enough */
+	if (gab_responses > size) {
+		fprintf(stderr, "get_reponses: too little space \n");
+		return (EINVAL);
+	}
+
+	if ((x + gab_dim) > image->width) {
+		return(1);
+	}
+	if ((y + gab_dim) > image->height) {
+		return(1);
+	}
+	real = (float *)calloc(gab_responses, sizeof(float));
+	img = (float *)calloc(gab_responses, sizeof(float));
+
+
+	for (yoff = 0; yoff < gab_dim; yoff++) {
+		poffset = PIXEL_OFFSET(image, x, (y +yoff));
+		for (xoff = 0; xoff < gab_dim; xoff++) {
+			pval = image->data[poffset + xoff];
+			voffset = VAL_OFFSET(xoff, yoff, 0);
+			for (i=0; i < gab_responses; i++) {
+				real[i] += pval * gab_filt_real[voffset+i];
+				img[i] +=  pval * gab_filt_img[voffset+i];
+			}
+			voffset += gab_responses;
+		}
+	}
+
+	for (i=0; i < gab_responses; i++) {
+		rvec[i] = sqrt(real[i]*real[i] + img[i]*img[i]);
+	}
+
+	if (normalize) {
+		float	sum;
+		sum = vector_sum(gab_responses, rvec);
+		for (i=0; i < gab_responses; i++) {
+			rvec[i] = rvec[i]/sum;
+		}
+	}
+
+	free(real);
+	free(img);
+	return(0);
+}
+
+#endif
 
 
 

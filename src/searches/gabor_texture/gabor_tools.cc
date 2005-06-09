@@ -227,6 +227,7 @@ gabor_patch_response(RGBImage * img, gtexture_args_t * gargs, int
 	int		err;
 	int		width;
 	int				patches;
+	FGImage_t	*fimg;
 
 	/* make sure we have the correct amount of space */
 	assert(NUM_RESPONSES(gargs) == num_resp);
@@ -244,12 +245,13 @@ gabor_patch_response(RGBImage * img, gtexture_args_t * gargs, int
 
 	memset(rvec, 0, RESPONSE_SIZE(gargs));
 
+	fimg = rgb_to_fgimage(img);
 
 	/* test each subwindow and sum them */
 	patches = 0;
 	for (y = 0; (y + width) < img->height; y++) {
 		for (x = 0; (x + width) < img->width; x++) {
-			err = gargs->gobj->get_responses(img, x, y, num_resp, respv, 1);
+			err = gargs->gobj->get_responses(fimg, x, y, num_resp, respv, 1);
 			assert(err == 0);
 			gabor_response_add(num_resp, rvec, respv);
 			patches++;
@@ -321,6 +323,7 @@ gabor_compute_ii_img(RGBImage * img, gtexture_args_t * gargs,
 	float *			respv;
 	int				err;
 	int				width;
+	FGImage_t *		fimg;
 
 	respv = (float *)malloc(gii_img->resp_size);
 	assert(respv != NULL);
@@ -335,8 +338,9 @@ gabor_compute_ii_img(RGBImage * img, gtexture_args_t * gargs,
 	for (y=0; (y + width) < img->height; y++) {
 		memcpy(&GII_PROBE(gii_img, 0, y), respv, gii_img->resp_size);
 	}
+	fimg = rgb_to_fgimage(img);
 
-
+	
 	/*
 	 * Compute the II for each of the pixels.  (We may
 	 * want to do this at a lower resolution later).
@@ -345,7 +349,7 @@ gabor_compute_ii_img(RGBImage * img, gtexture_args_t * gargs,
 		for (xoff = 0; (xoff + width) < img->width; xoff++) {
 			x = xoff + 1;
 			y = yoff + 1;
-			err = gargs->gobj->get_responses(img, xoff, yoff,
+			err = gargs->gobj->get_responses(fimg, xoff, yoff,
 			                                 gii_img->num_resp, respv, 1);
 
 			/* get the II by do the adds/subtracts */

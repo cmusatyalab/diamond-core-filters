@@ -54,15 +54,9 @@ typedef struct {
 
 typedef struct FGImage{
 	image_type_t type;
-	size_t nelemnts;		/* size of this var size struct */
-	union {
-		int height;
-		int rows;
-	};
-	union {
-		int width;
-		int columns;
-	};
+	size_t nelements;		/* size of this var size struct */
+	int width;
+	int height;
 	float 	data[0];		/* var size struct */
 } FGImage_t;
 
@@ -131,7 +125,7 @@ extern "C"
 	void release_rgb_image(RGBImage *);
 
 	RGBImage * get_rgb_img(lf_obj_handle_t ohandle);
-	FGImage_t * rgb_fgimage(RGBImage *);
+	FGImage_t * rgb_to_fgimage(RGBImage *);
 
 	RGBImage * rgbimg_blank_image(int width, int height);
 
