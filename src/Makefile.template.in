@@ -24,20 +24,16 @@ INSTALLDIR_LIB=${INSTALLBASE}/lib
 INSTALLDIR_INCLUDE=${INSTALLBASE}/include
 
 INCDIR += -I${DIAMOND_INC_PATH}
-INCDIR += -I$(ROOTDIR)/shared_source/common
+INCDIR += -I$(ROOTDIR)/common
 INCDIR += -I$(SDIR)
 
 # include the shared source files
-VPATH += $(ROOTDIR)/shared_source/common
+VPATH += $(ROOTDIR)/common
 
 vpath %.h $(VPATH)
 vpath %.h $(VPATH)
-
-
-
 
 LIBDIR += -L${DIAMOND_LIB_PATH}
-
 
 # general flags
 CFLAGS += -O2
@@ -86,8 +82,6 @@ DIST_OBJS += .depend
 	@${LD} -x -r $@
 	@${MV} a.out $@
 
-%.c: %.l
-	${FLEX} -o$@ $<
 
 %.c: %.l
 	${FLEX} -o$@ $<
@@ -96,11 +90,9 @@ DIST_OBJS += .depend
 	${FLEX} -o$@ $<
 
 %.o: %.c
-	echo $(VPATH)
 	${CC} ${INCDIR} ${CFLAGS} -c $< -o $@
 
 %.o: %.cc
-	echo $(VPATH)
 	${CPLUSPLUS} ${INCDIR} ${CFLAGS} -c $< -o $@
 
 %.a: $(LIBOBJS)
