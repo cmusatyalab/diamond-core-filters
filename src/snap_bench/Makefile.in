@@ -12,6 +12,12 @@
 #
 
 
+ROOTDIR = @top_srcdir@
+VPATH = @srcdir@
+SDIR = @srcdir@
+OBJROOT = @OBJROOT@
+
+
 INCDIR += -I../shared_source/common
 INCDIR += -I/usr/local/include/opencv
 
@@ -32,7 +38,7 @@ SRCS = snap_bench.c
 TARGETS = snap_bench 
 
 
-include ${SNAPFIND_ROOT}/Makefile.template
+include $(ROOTDIR)/Makefile.template
 
 #
 #

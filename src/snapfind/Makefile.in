@@ -11,31 +11,29 @@
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
 
+ROOTDIR = @top_srcdir@
+VPATH = @srcdir@
+SDIR = @srcdir@
+OBJROOT = @OBJROOT@
 
 
-CFLAGS += -DDEBUG 
-# # Set the include paths.  #
+# 
+# Set the include paths.  
+# XXX configure should set ...
 INCDIR += -I/usr/local/include/opencv
 INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I` 
 
 
-# # Set the libraries and the library paths we will need
+# 
+# Set the libraries and the library paths we will need
 # to build these files.
 LIBS += -ldl -lfl -lpthread -lm 
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
 LIBS += -lhstub -ldctl -ldconfig
 LIBS += -lopencv   -lcvaux -llog -lssl
-#LIBS += -lglib
 
-#
-LIBDIR += -L../../lib/libsearchlet -L../../lib/libfilter 
-LIBDIR += -L../../lib/libfilterexec -L../../lib/libtools
-LIBDIR += -L../../lib/liblog -L../../lib/libodisk 
-LIBDIR += -L../../transport/socket/hoststub -L../../lib/libdctl 
-LIBDIR += -L../../lib/libdconfig
-
-include ../shared_source/common/Makefile.template
+include $(ROOTDIR)/shared_source/common/Makefile.template
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_SHARED_SRCS)
@@ -85,7 +83,7 @@ CLEAN_OTHERS += read_config.cc $(COMMON_SRCS)
 
 TARGETS = $(COMMON_HEADERS) snapfind snap_searchlet.so
 
-include ${SNAPFIND_ROOT}/Makefile.template
+include ${ROOTDIR}/Makefile.template
 
 # XXX
 # turns on unsafe fp optimizations; we don't require strict IEEE
@@ -114,10 +112,6 @@ snap_searchlet.so: $(SEARCHLET_OBJS)
 
 libssearch.a: $(SEARCHLET_OBJS)
 	$(AR) r $@ $(SEARCHLET_OBJS)
-
-read_config.cc:	read_config.l
-	$(FLEX) -Pyyhist -o$@ $<
-
 
 snapfind: $(SNAPFIND_OBJS)
 	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
@@ -154,10 +148,6 @@ clean-experiments:
 	$(RM) $(EXPERIMENT_TGTS)
 
 
-$(COMMON_SRCS):
-	ln -f -s ../shared_source/common/$@
-                                 
-
 
 %.eps:	%.gviz
 	dot $< -Gsize="8,10" -Tps -o$@
@@ -168,4 +158,3 @@ deps.gviz::
 
 wavelet-test:	wavelet.o rgb.o
 	$(CC) $(CFLAGS) -o wavelet-test wavelet.o rgb.o -static -lwvlt -lm
-#	$(CC) $(CFLAGS) -o wavelet-test wavelet.o rgb.o $(LIBS) $(LIBDIR) -static -lwvlt

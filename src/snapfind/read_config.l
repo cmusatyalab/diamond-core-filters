@@ -1,4 +1,5 @@
 %option nounput
+%option prefix="sfconf"
 %{
 #include <string.h>
 #include <ctype.h>
