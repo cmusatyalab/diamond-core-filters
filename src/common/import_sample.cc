@@ -47,11 +47,11 @@
 #include "search_support.h"
 #include "gtk_image_tools.h"
 #include "search_set.h"
+#include "factory.h"
 
 /* XXX horible hack */
 #define	MAX_SELECT	32
 #include "import_sample.h"
-//#include "snapfind.h"
 
 static search_set *	sset = NULL;
 
@@ -65,18 +65,15 @@ import_win_t	import_window = {NULL};
 /*
  * global state used for highlighting (running filters locally)
  */
-static struct
-{
+static struct {
 	pthread_mutex_t mutex;
 	int 		thread_running;
 	pthread_t 	thread;
-}
-highlight_info = { PTHREAD_MUTEX_INITIALIZER, 0 };
+} highlight_info = { PTHREAD_MUTEX_INITIALIZER, 0 };
+
 
 /* forward function declarations */
-
 static void kill_highlight_thread(int run);
-
 
 static inline int
 min(int a, int b)
@@ -538,30 +535,32 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
 	GtkWidget *	active_item;
 	img_search *ssearch;
-	search_types_t	stype;
 	int		idx;
 	const char *	sname;
+	img_factory *	factory;
 	GUI_CALLBACK_ENTER();
 
 	active_item = gtk_menu_get_active(GTK_MENU(import_window.search_type));
 
 	/* XXX can't directly get the cast to work ??? */
 	idx = (int) g_object_get_data(G_OBJECT(active_item), "user data");
-	stype = (search_types_t )idx;
+	factory = (img_factory *)idx;
 
+	/* 
+	 * Get the new name and make sure it is valid
+	 */
 	sname = gtk_entry_get_text(GTK_ENTRY(import_window.search_name));
 	if (strlen(sname) < 1) {
-		show_popup_error("Filter name", "Please provide a name", import_window.window);
+		show_popup_error("Filter name", "Please provide a name", 
+			import_window.window);
+		/* XXX we need to disallow existing names ... */
 		GUI_CALLBACK_LEAVE();
 		return(TRUE);
-		/* XXX make sure the name already exists */
 	}
 
 	/* create the new search and put it in the global list */
-	ssearch = create_search(stype, sname);
+	ssearch = factory->create(sname);
 	assert(ssearch != NULL);
-
-	/* put this in the list of searches */
 	sset->add_search(ssearch);
 
 	/* put the patches into the newly created search */
@@ -774,20 +773,24 @@ get_example_searches_menu(void)
 {
 	GtkWidget *     menu;
 	GtkWidget *     item;
+	img_factory *	factory;
+	void *		cookie;
+	const char *	fname;
 
 	menu = gtk_menu_new();
 
-	item = gtk_menu_item_new_with_label("Texture Search");
-	gtk_widget_show(item);
-	g_object_set_data(G_OBJECT(item), "user data", (void *)TEXTURE_SEARCH);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+	factory = get_first_factory(&cookie);
+	while (factory != NULL) {
+		if (factory->is_example()) {
+			fname = factory->get_name();
+			item = gtk_menu_item_new_with_label(fname);
+			gtk_widget_show(item);
+			g_object_set_data(G_OBJECT(item), "user data", (void *)factory);
+			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		}	
+		factory = get_next_factory(&cookie);
 
-	item = gtk_menu_item_new_with_label("RGB Histogram");
-	gtk_widget_show(item);
-	g_object_set_data(G_OBJECT(item), "user data",
-	                  (void *)RGB_HISTO_SEARCH);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
+	}
 	return(menu);
 }
 

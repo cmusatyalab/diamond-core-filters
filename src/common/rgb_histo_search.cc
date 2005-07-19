@@ -27,6 +27,7 @@
 #include "fil_histo.h"
 #include "search_set.h"
 #include "read_config.h"
+#include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -41,7 +42,7 @@ rgb_histo_init()
 
 	fac = new rgb_histo_factory;
 
-	read_config_register("rgb_histogram", fac);
+	factory_register(fac);
 
 }
 
@@ -494,3 +495,6 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 
 	return;
 }
+
+
+

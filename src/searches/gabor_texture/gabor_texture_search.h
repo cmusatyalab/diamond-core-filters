@@ -98,9 +98,16 @@ private:
 
 class gabor_texture_factory: public img_factory {
 public:
-   gabor_texture_search *create(const char *name) {
-                return new gabor_texture_search(name, "Gabor Texture");
-   }
+	gabor_texture_factory() {
+		set_description("gabor_texture");
+		set_name("Gabor Texture"); 
+	}
+	gabor_texture_search *create(const char *name) {
+		return new gabor_texture_search(name, "Gabor Texture");
+   	}
+	int is_example() {
+		return(1);
+	}
 };
                                                                                 
 

@@ -18,13 +18,12 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
-//#include "histo.h"
 #include "image_tools.h"
 #include "texture_tools.h"
 #include "img_search.h"
 #include "search_set.h"
 #include "read_config.h"
-//#include "snapfind.h"
+#include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -40,7 +39,7 @@ texture_init()
 
 	fac = new texture_factory;
 
-	read_config_register("texture", fac);
+	factory_register(fac);
 
 }
 

@@ -37,8 +37,7 @@ typedef enum {
 /* forward declaration to we can get a pointer */
 class search_set;
 
-class img_search
-{
+class img_search {
 public:
 	img_search(const char *name, char *descr);
 	virtual ~img_search();
@@ -87,10 +86,26 @@ private:
 
 
 /* factory class for creating new image searches */
-class img_factory
-{
+class img_factory {
 public:
 	virtual img_search *create(const char *name) = 0;
+	virtual int 	is_example() = 0;
+	const char * get_description() {
+		return(fa_name);
+	}
+	const char * get_name() {
+		return(fa_name);
+	};
+	void set_name(const char *name) {
+		fa_name = strdup(name);
+	}
+	void set_description(const char *descr) {
+		fa_descr = strdup(descr);
+	}
+private:
+	const char * fa_name;
+	const char * fa_descr;
+
 };
 
 
@@ -100,8 +115,7 @@ public:
  * the image.  This is a subclass of img_search.
  */
 
-class window_search: public img_search
-{
+class window_search: public img_search {
 public:
 	window_search(const char *name, char *descr);
 	virtual ~window_search();
@@ -156,8 +170,7 @@ private:
 };
 
 
-typedef struct example_patch
-{
+typedef struct example_patch {
 	char *		file_name;
 	char *		source_name;
 	int			xoff;
@@ -180,8 +193,7 @@ typedef	TAILQ_HEAD(example_list_t, example_patch)	example_list_t;
  * inheritence ...
  */
 
-class example_search: public window_search
-{
+class example_search: public window_search {
 public:
 	example_search(const char *name, char *descr);
 	virtual ~example_search();
@@ -215,8 +227,7 @@ private:
  * The class for doing windowed searches over
  * the image.  This is a subclass of img_search.
  */
-class rgb_histo_search: public example_search
-{
+class rgb_histo_search: public example_search {
 public:
 	rgb_histo_search(const char *name, char *descr);
 	~rgb_histo_search(void);
@@ -251,18 +262,22 @@ private:
 };
 
 
-class rgb_histo_factory: public img_factory
-{
+class rgb_histo_factory: public img_factory {
 public:
-	img_search *create(const char *name)
-	{
+	rgb_histo_factory() {
+		set_name("RGB Histogram");
+		set_description("rgb_histogram");
+	}
+	img_search *create(const char *name) {
 		return new rgb_histo_search(name, "RGB Histogram");
+	}
+	int 	is_example() {
+		return(1);
 	}
 };
 
 
-class texture_search: public example_search
-{
+class texture_search: public example_search {
 public:
 	texture_search(const char *name, char *descr);
 	~texture_search(void);
@@ -304,19 +319,23 @@ private:
 	GtkWidget *	rgb_widget;
 };
 
-class texture_factory: public img_factory
-{
+class texture_factory: public img_factory {
 public:
-	img_search *create(const char *name)
-	{
+	texture_factory() {
+		set_name("DOG Texture");
+		set_description("texture");
+	}
+	img_search *create(const char *name) {
 		return new texture_search(name, "DOG Texture");
+	}
+	int 	is_example() {
+		return(1);
 	}
 };
 
 
 
-class vj_face_search: public window_search
-{
+class vj_face_search: public window_search {
 public:
 	vj_face_search(const char *name, char *descr);
 	~vj_face_search(void);
@@ -363,19 +382,23 @@ private:
 	GtkWidget *	overlap_widget;
 };
 
-class vj_face_factory: public img_factory
-{
+class vj_face_factory: public img_factory {
 public:
-	img_search *create(const char *name)
-	{
+	vj_face_factory() {
+		set_name("VJ Face");
+		set_description("vj_face_search");
+	}
+	img_search *create(const char *name) {
 		return new vj_face_search(name, "VJ Face");
+	}
+	int is_example() {
+		return(0);
 	}
 };
 
 
 
-class ocv_face_search: public window_search
-{
+class ocv_face_search: public window_search {
 public:
 	ocv_face_search(const char *name, char *descr);
 	~ocv_face_search(void);
@@ -408,18 +431,22 @@ private:
 	GtkObject *	support_widget;
 };
 
-class ocv_face_factory: public img_factory
-{
+class ocv_face_factory: public img_factory {
 public:
-	img_search *create(const char *name)
-	{
+	ocv_face_factory() {
+		set_name("OCV Face");
+		set_description("ocv_face_search");
+	}
+	img_search *create(const char *name) {
 		return new ocv_face_search(name, "OCV Face");
+	}
+	int is_example() {
+		return(0);
 	}
 };
 
 
-class rgb_img: public img_search
-{
+class rgb_img: public img_search {
 public:
 	rgb_img(const char *name, char *descr);
 	~rgb_img(void);
@@ -435,8 +462,7 @@ private:
 };
 
 
-class ii_img: public img_search
-{
+class ii_img: public img_search {
 public:
 	ii_img(const char *name, char *descr);
 	~ii_img(void);
@@ -451,8 +477,7 @@ private:
 };
 
 
-class histo_ii: public img_search
-{
+class histo_ii: public img_search {
 public:
 	histo_ii(const char *name, char *descr);
 	~histo_ii(void);
@@ -468,8 +493,7 @@ private:
 };
 
 
-class regex_search: public img_search
-{
+class regex_search: public img_search {
 public:
 	regex_search(const char *name, char *descr);
 	~regex_search(void);
@@ -494,8 +518,8 @@ extern "C"
 {
 #endif
 
-	/* this needs to be provide by someone calling this library */
-	void ss_add_dep(img_search *dep);
+/* this needs to be provide by someone calling this library */
+void ss_add_dep(img_search *dep);
 
 #ifdef __cplusplus
 }

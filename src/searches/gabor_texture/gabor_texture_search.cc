@@ -26,6 +26,7 @@
 #include "read_config.h"
 #include "gabor_texture_search.h"
 #include "rtimer.h"
+#include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -46,7 +47,7 @@ gabor_texture_init()
 {
         gabor_texture_factory *fac;
         fac = new gabor_texture_factory;
-        read_config_register(SEARCH_NAME, fac);
+        factory_register(fac);
 }
 
 

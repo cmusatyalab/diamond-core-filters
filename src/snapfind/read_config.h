@@ -16,8 +16,5 @@
 
 int read_search_config(char *fname, search_set *read_set);
 
-void read_config_register(const char *string,  img_factory *factory);
-
-
 
 #endif	/* ! _READ_CONFIG_H_ */

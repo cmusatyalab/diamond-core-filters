@@ -28,6 +28,7 @@
 #include "fil_data2ii.h"
 #include "search_set.h"
 #include "read_config.h"
+#include "factory.h"
 
 /* config tokens */
 #define	NUMFACE_ID	"NUMFACE"
@@ -46,7 +47,7 @@ vj_face_init()
 
 	fac = new vj_face_factory;
 
-	read_config_register("vj_face_search", fac);
+	factory_register( fac);
 }
 
 

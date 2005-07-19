@@ -28,6 +28,7 @@
 #include "fil_data2ii.h"
 #include "search_set.h"
 #include "read_config.h"
+#include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -43,7 +44,7 @@ ocv_face_init()
 	ocv_face_factory *fac;
 
 	fac = new ocv_face_factory;
-	read_config_register(SEARCH_NAME, fac);
+	factory_register(fac);
 }
 
 

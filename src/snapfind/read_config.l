@@ -12,6 +12,7 @@
 #include "search_support.h"
 #include "search_set.h"
 #include "read_config.h"
+#include "factory.h"
 
 static char *eat_token(char *tok);
 static void new_search(char *tok);
@@ -24,13 +25,6 @@ static void new_config(char *yyt);
 static img_search *cur_search = NULL;
 static search_set *set = NULL;
 
-typedef struct factory_map {
-	struct factory_map  *	fm_next;
-	char * 					fm_name;
- 	img_factory  *			fm_factory;
-} factory_map_t;
-
-static factory_map_t * fmap = NULL;
 %}
 
 
@@ -78,7 +72,6 @@ static void
 new_config(char *yyt)
 {
 	char *	argv[MAX_ARG];
-	int	cur_arg;
 	char *	cur_str;
 	char *	arg;
 	int	arg_offset;
@@ -129,39 +122,6 @@ new_config(char *yyt)
 	}
 }
 
-void
-read_config_register(const char *string,  img_factory *factory)
-{
-
-	factory_map_t *new_map;
-
-	new_map = (factory_map_t *)malloc(sizeof(*new_map));
-	assert(new_map != NULL);
-
-	new_map->fm_name = strdup(string);
-	assert(new_map->fm_name != NULL);
-	new_map->fm_factory = factory;
-
-	/* XXX find dups ?? */
-
-	new_map->fm_next = fmap;
-	fmap = new_map;
-
-}
-
-static img_factory *
-find_factory(const char *name)
-{
-	factory_map_t *cur_map;
-
-	cur_map = fmap;
-	for (cur_map = fmap; cur_map != NULL; cur_map = cur_map->fm_next) {
-		if (strcmp(name, cur_map->fm_name) == 0) {
-			return(cur_map->fm_factory);
-		}
-	}
-	return(NULL);
-}
 
 
 static void
@@ -206,14 +166,12 @@ new_search(char *str)
 /*
  * Read the search configuration file.
  */
-
 int
 read_search_config(char *fname, search_set *read_set)
 {
 	int err;
 
 	set = read_set;
-
 	yyin = fopen(fname, "r");
 	if(!yyin) {
 		perror(fname);
