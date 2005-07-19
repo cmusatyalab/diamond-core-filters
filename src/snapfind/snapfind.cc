@@ -113,8 +113,7 @@ export_threshold_t;
 TAILQ_HEAD(export_list_t, export_threshold_t) export_list = TAILQ_HEAD_INITIALIZER(export_list);
 
 
-static struct
-{
+static struct {
 	GtkWidget *main_window;
 	GtkWidget *min_faces;
 	GtkWidget *face_levels;
@@ -124,8 +123,7 @@ static struct
 	GtkWidget *search_widget;
 	GtkWidget *attribute_cb, *attribute_entry;
 	GtkWidget *scapes_tables[2];
-}
-gui;
+} gui;
 
 
 
@@ -150,11 +148,9 @@ pop_win_t	 popup_window = {NULL, NULL, NULL};
 
 /* some stats for user study */
 
-struct
-{
+struct {
 	int total_seen, total_marked;
-}
-user_measurement = { 0, 0 };
+} user_measurement = { 0, 0 };
 
 
 typedef enum {
@@ -958,7 +954,7 @@ create_search_window()
 	gui.stop_button = gtk_button_new_with_label ("Stop");
 	g_signal_connect_swapped (G_OBJECT (gui.stop_button), "clicked",
 	                          G_CALLBACK(cb_stop_search), NULL);
-	gtk_box_pack_start (GTK_BOX (box2), gui.stop_button, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX (box2), gui.stop_button, TRUE, TRUE, 0);
 	GTK_WIDGET_SET_FLAGS (gui.stop_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_sensitive(gui.stop_button, FALSE);
 	gtk_widget_show (gui.stop_button);
@@ -1394,8 +1390,6 @@ create_image_control(GtkWidget *container_box,
 	img_cntrl->zbutton = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 0);
 	gtk_box_pack_start (GTK_BOX(img_cntrl->control_box),img_cntrl->zbutton,
 	                    FALSE, FALSE, 0);
-	//gtk_widget_show(img_cntrl->zbutton);
-
 
 	img_cntrl->cur_op = CNTRL_ELEV;
 }
@@ -1479,8 +1473,6 @@ create_display_region(GtkWidget *main_box)
 			thumb->hooks = NULL;
 			TAILQ_INSERT_TAIL(&thumbnails, thumb, link);
 
-			//fprintf(stderr, "thumb=%p\n", thumb);
-
 			/* the data pointer mechanism seems to be
 			 * broken, so use the object user pointer
 			 * instead */
@@ -1524,7 +1516,7 @@ cb_import(GtkWidget *widget, gpointer user_data)
 
 
 static void
-cb_create(GtkWidget *widget, gpointer user_data)
+cb_create(gpointer *callback_data, guint callback_action, GtkWidget *widget)
 {
 	GtkWidget 	*hbox;
 	GtkWidget 	*vbox;
@@ -1532,14 +1524,13 @@ cb_create(GtkWidget *widget, gpointer user_data)
 	GtkWidget	*label;
 	GtkWidget	*helplabel;
 	GtkWidget	*entry;
-	int			x, result;
+	int		result;
 	unsigned int	i;
 	const char *		new_name;
-	search_types_t	stype;
 	img_search *	ssearch;
-	x = (int) user_data;
+	img_factory *	factory;
 
-	stype = (search_types_t)x;
+	factory = (img_factory *)callback_data;
 
 	GUI_CALLBACK_ENTER();
 
@@ -1599,8 +1590,7 @@ redo:
 			                   "Name exists: Please change");
 			goto redo;
 		}
-
-		ssearch = create_search(stype, new_name);
+		ssearch = factory->create(new_name);
 		assert(ssearch != NULL);
 
 		/* add to the list of searches */
@@ -1631,12 +1621,12 @@ static GtkItemFactoryEntry menu_items[] = { /* XXX */
 
             { "/_Searches", NULL, NULL, 0, "<Branch>"},
             {"/Searches/New", NULL, NULL, 0, "<Branch>"},
-            {"/Searches/New/RGB Histogram", NULL, G_CALLBACK(cb_create), RGB_HISTO_SEARCH, "<Item>" },
-            {"/Searches/New/VJ Face Detect", NULL, G_CALLBACK(cb_create), VJ_FACE_SEARCH, "<Item>" },
-            {"/Searches/New/OCV Face Detect", NULL, G_CALLBACK(cb_create), OCV_FACE_SEARCH, "<Item>" },
-            {"/Searches/New/Texture", NULL, G_CALLBACK(cb_create), TEXTURE_SEARCH, "<Item>" },
-            {"/Searches/New/Gabor Texture", NULL, G_CALLBACK(cb_create), GABOR_TEXTURE_SEARCH, "<Item>" },
-            {"/Searches/New/Regex", NULL, G_CALLBACK(cb_create), REGEX_SEARCH, "<Item>" },
+            //{"/Searches/New/RGB Histogram", NULL, G_CALLBACK(cb_create), RGB_HISTO_SEARCH, "<Item>" },
+            //{"/Searches/New/VJ Face Detect", NULL, G_CALLBACK(cb_create), VJ_FACE_SEARCH, "<Item>" },
+            //{"/Searches/New/OCV Face Detect", NULL, G_CALLBACK(cb_create), OCV_FACE_SEARCH, "<Item>" },
+            //{"/Searches/New/Texture", NULL, G_CALLBACK(cb_create), TEXTURE_SEARCH, "<Item>" },
+            //{"/Searches/New/Gabor Texture", NULL, G_CALLBACK(cb_create), GABOR_TEXTURE_SEARCH, "<Item>" },
+            //{"/Searches/New/Regex", NULL, G_CALLBACK(cb_create), REGEX_SEARCH, "<Item>" },
             {"/Searches/Import Example", NULL, G_CALLBACK(cb_import), 0, "<Item>" },
 
             { "/_View", NULL,  NULL, 0, "<Branch>" },
@@ -1650,7 +1640,7 @@ static GtkItemFactoryEntry menu_items[] = { /* XXX */
             { "/Albums",                  NULL, NULL, 0, "<Branch>" },
             { "/Albums/tear",             NULL, NULL, 0, "<Tearoff>" },
             { NULL, NULL, NULL }
-        };
+};
 
 static void
 cb_collection(gpointer callback_data, guint callback_action,
@@ -1667,11 +1657,12 @@ cb_collection(gpointer callback_data, guint callback_action,
 }
 
 
+static GtkItemFactory *item_factory;
+
 /* Returns a menubar widget made from the above menu */
 static GtkWidget *
 get_menubar_menu( GtkWidget  *window )
 {
-	GtkItemFactory *item_factory;
 	GtkAccelGroup *accel_group;
 	gint nmenu_items;
 
@@ -1693,7 +1684,7 @@ get_menubar_menu( GtkWidget  *window )
 	/* This function generates the menu items. Pass the item factory,
 	   the number of items in the array, the array itself, and any
 	   callback data for the the menu items. */
-	gtk_item_factory_create_items (item_factory, nmenu_items, menu_items, NULL);
+	gtk_item_factory_create_items(item_factory, nmenu_items, menu_items, NULL);
 
 	/* create more menu items */
 	struct collection_t *tmp_coll;
@@ -1732,6 +1723,23 @@ get_menubar_menu( GtkWidget  *window )
 	return gtk_item_factory_get_widget (item_factory, "<main>");
 }
 
+void
+add_new_search_type(img_factory *factory)
+{
+	GtkItemFactoryEntry entry;
+	char buf[BUFSIZ];
+
+	sprintf(buf, "/Searches/New/%s", factory->get_name());
+
+	entry.path = strdup(buf);
+	entry.accelerator = NULL;
+	entry.callback = G_CALLBACK(cb_create);
+	entry.callback_action = 1;
+	entry.item_type = "<Item>";
+
+	gtk_item_factory_create_item(item_factory, &entry, factory, 1); 
+	GtkWidget *widget = gtk_item_factory_get_widget(item_factory, buf);
+}
 
 
 /*
@@ -1962,7 +1970,6 @@ main(int argc, char *argv[])
 	tooltips = gtk_tooltips_new();
 	gtk_tooltips_enable(tooltips);
 
-
 	GUI_THREAD_ENTER();
 	create_main_window();
 	GUI_THREAD_LEAVE();
@@ -1977,7 +1984,6 @@ main(int argc, char *argv[])
 		perror("failed to create search thread");
 		exit(1);
 	}
-	//gtk_timeout_add(100, func, NULL);
 
 	/* XXX for now */
 	rgb_histo_init();

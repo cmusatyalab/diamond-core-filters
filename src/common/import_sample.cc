@@ -738,6 +738,7 @@ cb_motion_notify_event( GtkWidget *widget,
  * searches that use the example class.
  */
 
+/* XXX dup code !!! */
 static GtkWidget *
 get_example_menu(void)
 {
@@ -768,7 +769,7 @@ get_example_menu(void)
  * based searches.  This should be done using other state
  * instead of statically defined. XXX.
  */
-static GtkWidget *
+GtkWidget *
 get_example_searches_menu(void)
 {
 	GtkWidget *     menu;

@@ -16,6 +16,9 @@
 
 static factory_map_t * fmap = NULL;
 
+void add_new_search_type(img_factory *fact);
+
+
 void
 factory_register(img_factory *factory)
 {
@@ -32,6 +35,7 @@ factory_register(img_factory *factory)
 	new_map->fm_next = fmap;
 	fmap = new_map;
 
+	add_new_search_type(factory);
 }
 
 img_factory *

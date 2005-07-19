@@ -48,22 +48,15 @@
 #include "queue.h"
 #include "ring.h"
 #include "rtimer.h"
-//#include "sf_consts.h"
 
-//#include "face_search.h"
 #include "face_image.h"
 #include "rgb.h"
 #include "face.h"
 #include "fil_tools.h"
 #include "image_tools.h"
-//#include "face_widgets.h"
 #include "texture_tools.h"
 #include "img_search.h"
-//#include "sfind_search.h"
 #include "search_support.h"
-//#include "sfind_tools.h"
-//#include "snap_popup.h"
-//#include "snapfind.h"
 #define MAX_SELECT	64
 #include "import_sample.h"
 #include "search_set.h"
@@ -73,59 +66,18 @@
 #define MAX_SEARCHES    64
 
 
-img_search *
-create_search(search_types_t type, const char *name)
-{
-	img_search *cur_search;
-
-	switch(type) {
-		case TEXTURE_SEARCH:
-			cur_search = new texture_search(name, "Texture Search");
-			break;
-
-		case RGB_HISTO_SEARCH:
-			cur_search = new rgb_histo_search(name, "RGB Histogram");
-			break;
-
-		case VJ_FACE_SEARCH:
-			cur_search = new vj_face_search(name, "VJ Face Detect");
-			break;
-
-		case OCV_FACE_SEARCH:
-			cur_search = new ocv_face_search(name, "OCV Face Detect");
-			break;
-
-		case REGEX_SEARCH:
-			cur_search = new regex_search(name, "Regex Search");
-			break;
-
-		case GABOR_TEXTURE_SEARCH:
-			cur_search = new gabor_texture_search(name, "Gabor Texture");
-			break;
-
-		default:
-			cur_search = NULL;
-
-	}
-	return(cur_search);
-}
-
-
 int
-search_exists(const char *name, search_set *set
-             )
+search_exists(const char *name, search_set *set)
 {
 	img_search *cur;
 	search_iter_t	iter;
 
-	set
-		->reset_search_iter(&iter);
-	while ((cur = set
-		              ->get_next_search(&iter)) != NULL) {
-			if (strcmp(cur->get_name(), name) == 0) {
-				return(1);
-			}
+	set->reset_search_iter(&iter);
+	while ((cur = set->get_next_search(&iter)) != NULL) {
+		if (strcmp(cur->get_name(), name) == 0) {
+			return(1);
 		}
+	}
 	return(0);
 }
 

@@ -582,10 +582,10 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	GtkWidget *	active_item;
 	GtkWidget *	dialog;
 	GtkWidget *	label;
-	img_search *ssearch;
-	search_types_t	stype;
+	img_search *	ssearch;
+	img_factory *	factory;
 	int		idx;
-	gint	result;
+	gint		result;
 	const char *	sname;
 	GUI_CALLBACK_ENTER();
 
@@ -593,7 +593,7 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 
 	/* XXX can't directly get the cast to work ??? */
 	idx = (int) g_object_get_data(G_OBJECT(active_item), "user data");
-	stype = (search_types_t )idx;
+	factory = (img_factory *)idx;
 
 	sname =  gtk_entry_get_text(GTK_ENTRY(popup_window.search_name));
 	if (strlen(sname) < 1) {
@@ -612,11 +612,10 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	}
 
 	/* create the new search and put it in the global list */
-	ssearch = create_search(stype, sname);
+	ssearch = factory->create(sname);
 	assert(ssearch != NULL);
-
-	/* put this in the list of searches */
 	sset->add_search(ssearch);
+
 
 	/* put the patches into the newly created search */
 	for(int i=0; i<popup_window.nselections; i++) {
@@ -810,34 +809,9 @@ get_example_menu(void)
 	return(menu);
 }
 
-/*
- * Return a gtk_menu with a list of all the example
- * based searches.  This should be done using other state
- * instead of statically defined. XXX.
- */
-GtkWidget *
-get_example_searches_menu(void)
-{
-	GtkWidget *     menu;
-	GtkWidget *     item;
 
-	menu = gtk_menu_new();
-
-	item = gtk_menu_item_new_with_label("Texture Search");
-	gtk_widget_show(item);
-	g_object_set_data(G_OBJECT(item), "user data", (void *)TEXTURE_SEARCH);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-	item = gtk_menu_item_new_with_label("RGB Histogram");
-	gtk_widget_show(item);
-	g_object_set_data(G_OBJECT(item), "user data",
-	                  (void *)RGB_HISTO_SEARCH);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-	return(menu);
-}
-
-
+/* XXX in import .. should be in seperate library ... */
+GtkWidget * get_example_searches_menu(void);
 
 static GtkWidget *
 new_search_panel(void)
