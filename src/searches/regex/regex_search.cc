@@ -188,9 +188,6 @@ regex_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  2  # number of attributes to search \n");
 	fprintf(ostream, "ARG  Keywords  # search keywords  \n");
 	fprintf(ostream, "ARG  Display-Name  # search Display-Name \n");
-	// XXX fprintf(ostream, "ARG  Display-Name  # search Display-Name \n");
-	// XXX allow user to select attributes
-	/* XXX use more than 1 regex?? */
 	fprintf(ostream, "ARG  %s  # Search string \n", search_string);
 	fprintf(ostream, "\n");
 	fprintf(ostream, "\n");

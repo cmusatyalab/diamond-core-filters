@@ -37,12 +37,11 @@ include $(ROOTDIR)/common/Makefile.template
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_SHARED_SRCS)
-SEARCHLET_SRCS += fil_regex.c
 SEARCHLET_SRCS += fil_data2cv.c 
 SEARCHLET_SRCS += fil_synth.c  
 
 SEARCHLET_OBJS = $(COMMON_SEARCHLET_OBJS) $(COMMON_SHARED_OBJS)
-SEARCHLET_OBJS += fil_regex.o fil_data2cv.o 
+SEARCHLET_OBJS += fil_data2cv.o 
 SEARCHLET_OBJS += fil_synth.o 
 
 SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv
@@ -125,36 +124,8 @@ profile: profile.o $(SEARCHLET_OBJS)
 foo: foo.o rgb_histo_search.o snap_search.o window_search.o example_search.o
 	$(CC) $(CFLAGS) -o foo foo.o rgb_histo_search.o snap_search.o window_search.o example_search.o
 
-histo_bench: histo_bench.o $(SEARCHLET_OBJS)
-	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -rdynamic -o histo_bench histo_bench.o $(SEARCHLET_OBJS) $(LIBS)  $(LIBDIR) 
-
-
-
-face_benchmark: face_benchmark.o $(SEARCHLET_OBJS)
-	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -rdynamic -o face_benchmark face_benchmark.o $(SEARCHLET_OBJS) $(LIBS)  $(LIBDIR) 
-
-experiment_%: experiment_%.o $(SEARCHLET_OBJS)
-	$(CC) $(CFLAGS) -o $@ $< \
-  -static $(SEARCHLET_OBJS)  $(LIBS) $(LIBDIR) -lpthread -ldl -lm -Wl,-static -lopencv  
 
 #	$(CC) $(CFLAGS) -o $@ $< $(SEARCHLET_OBJS) $(LIBS) $(LIBDIR) -lfilterexec -ltools -lodisk
-
-EXPERIMENT_OBJS := $(wildcard experiment_*.o)
-EXPERIMENT_TGTS = $(EXPERIMENT_OBJS:%.o=%)
-
-experiments:	$(EXPERIMENT_TGTS)
-
-clean-experiments:
-	$(RM) $(EXPERIMENT_TGTS)
-
-
-
-%.eps:	%.gviz
-	dot $< -Gsize="8,10" -Tps -o$@
-
-deps.gviz::
-	cp /dev/null $@
-	./hviz 5 $(SRCS) >> $@
 
 wavelet-test:	wavelet.o rgb.o
 	$(CC) $(CFLAGS) -o wavelet-test wavelet.o rgb.o -static -lwvlt -lm

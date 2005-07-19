@@ -100,6 +100,14 @@ DIST_OBJS += .depend
 	ar -csr $@  $^
 	cp -f $@ ${BUILD_LIB_PATH}
 
+%.so: $(FILTER_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)
+
+%.so: $(SEARCH_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS)
+
+
+
 # The common targets
 
 .PHONY :  all depend clean installdirs install mail FORCE

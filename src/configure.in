@@ -72,5 +72,7 @@ AC_CHECK_FUNCS([getcwd gethostbyaddr gettimeofday inet_ntoa memset mkdir pow reg
 
 AC_CONFIG_FILES([Makefile
                  snap_bench/Makefile
-                 snapfind/Makefile])
+                 snapfind/Makefile
+                 searches/Makefile
+                 searches/regex/Makefile])
 AC_OUTPUT
