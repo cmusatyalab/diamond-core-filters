@@ -18,6 +18,7 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include <errno.h>
+#include <string.h>
 #include "queue.h"
 #include "rgb.h"
 //#include "histo.h"

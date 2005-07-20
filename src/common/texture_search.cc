@@ -21,6 +21,7 @@
 #include "image_tools.h"
 #include "texture_tools.h"
 #include "img_search.h"
+#include "dog_texture_search.h"
 #include "search_set.h"
 #include "read_config.h"
 #include "factory.h"

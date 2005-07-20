@@ -20,9 +20,9 @@
 #include "rgb.h"
 #include "image_tools.h"
 #include "texture_tools.h"
-#include "img_search.h"
 #include "search_set.h"
 #include "gabor.h"
+#include "gabor_priv.h"
 #include "read_config.h"
 #include "gabor_texture_search.h"
 #include "rtimer.h"
@@ -42,8 +42,12 @@
 #define	MIN_FREQ_ID	"MIN_FREQ"
 #define	MAX_FREQ_ID	"MAX_FREQ"
 
+extern "C" {
+void search_init();
+}
+                                                                                
 void
-gabor_texture_init()
+search_init()
 {
         gabor_texture_factory *fac;
         fac = new gabor_texture_factory;
@@ -251,14 +255,6 @@ gabor_texture_search::handle_config(int num_conf, char **confv)
 }
 
 
-
-static void
-cb_update_menu_select(GtkWidget* item, GtkUpdateType  policy)
-{
-	/* XXXX do something ?? */
-}
-
-
 static GtkWidget *
 create_slider_entry(char *name, float min, float max, int dec, float initial,
                     float step, GtkObject **adjp)
@@ -303,19 +299,6 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 	return(container);
 }
 
-/* XXX redunant, with rgb */
-
-static GtkWidget *
-make_menu_item (gchar* name, GCallback callback, gpointer  data)
-{
-	GtkWidget *item;
-
-	item = gtk_menu_item_new_with_label(name);
-	g_signal_connect (G_OBJECT (item), "activate", callback, (gpointer) data);
-	gtk_widget_show(item);
-
-	return item;
-}
 
 static void
 cb_close_edit_window(GtkWidget* item, gpointer data)
@@ -354,12 +337,9 @@ gabor_texture_search::edit_search()
 {
 	GtkWidget * widget;
 	GtkWidget * box;
-	GtkWidget * opt;
-	GtkWidget * item;
 	GtkWidget * frame;
 	GtkWidget * hbox;
 	GtkWidget * container;
-	GtkWidget * menu;
 	char		name[MAX_DISPLAY_NAME];
 
 	/* see if it already exists */
@@ -425,58 +405,6 @@ gabor_texture_search::edit_search()
 	widget = create_slider_entry("Max Frequency", 0.0, 5.0, 1,
 	                             max_freq, 0.5, &maxfreq_adj);
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
-
-
-
-
-
-#ifdef	XXX
-	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(container), hbox, FALSE, TRUE, 0);
-
-	gray_widget = gtk_radio_button_new_with_label(NULL, "Grayscale");
-	gtk_box_pack_start(GTK_BOX(hbox), gray_widget, FALSE, TRUE, 0);
-	rgb_widget = gtk_radio_button_new_with_label_from_widget(
-	                 GTK_RADIO_BUTTON(gray_widget), "Color");
-	gtk_box_pack_start(GTK_BOX(hbox), rgb_widget, FALSE, TRUE, 0);
-
-	if (channels == 3) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rgb_widget), TRUE);
-	} else {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gray_widget), TRUE);
-	}
-#endif
-
-#ifdef	XXX
-	distance_menu = gtk_option_menu_new();
-	menu = gtk_menu_new();
-
-	/* these must be declared as the order of the enum  */
-	item = gtk_menu_item_new_with_label("Maholonibis");
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-	item = gtk_menu_item_new_with_label("Variance");
-	gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
-	item = gtk_menu_item_new_with_label("Pairwise");
-	gtk_menu_shell_append (GTK_MENU_SHELL(menu), item);
-
-	gtk_option_menu_set_menu(GTK_OPTION_MENU(distance_menu), menu);
-	gtk_box_pack_start(GTK_BOX(container), distance_menu, FALSE, TRUE, 0);
-	/* set the default value in the GUI */
-	gtk_option_menu_set_history(GTK_OPTION_MENU(distance_menu), (guint)distance_metric);
-
-
-
-
-	opt = gtk_option_menu_new();
-	menu = gtk_menu_new();
-
-	item = make_menu_item("Difference of Gaussians",
-	                      G_CALLBACK(cb_update_menu_select), GINT_TO_POINTER(0));
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-
-	gtk_option_menu_set_menu(GTK_OPTION_MENU (opt), menu);
-	gtk_box_pack_start(GTK_BOX(container), opt, FALSE, TRUE, 0);
-#endif
 
 	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
 
@@ -565,7 +493,6 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 {
 	int		samples, patch_size, num_resp;
 	example_patch_t	*	cur_patch;
-	RGBImage	*	rimg;
 	float *			respv;
 	int			err;
 	int	i;

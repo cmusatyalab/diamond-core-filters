@@ -60,7 +60,6 @@
 #define MAX_SELECT	64
 #include "import_sample.h"
 #include "search_set.h"
-#include "gabor_texture_search.h"
 
 /* XXXX fix this */
 #define MAX_SEARCHES    64

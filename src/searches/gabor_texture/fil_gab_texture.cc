@@ -16,16 +16,13 @@
  * texture filter
  */
 
-#include <opencv/cv.h>
 #include <stdio.h>
 #include "rgb.h"
-#include "face.h"
 #include "filter_api.h"
-#include "fil_file.h"
 #include "fil_gab_texture.h"
-#include "fil_tools.h"
 #include "texture_tools.h"
 #include "image_tools.h"
+#include "gabor_priv.h"
 #include "gabor_tools.h"
 #include "gabor.h"
 
@@ -79,12 +76,34 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 	return (0);
 }
 
+                                                                                
+static int
+write_param(lf_fhandle_t fhandle, lf_obj_handle_t ohandle, char *fmt,
+            search_param_t * param, int i)
+{
+        off_t           bsize;
+        char            buf[BUFSIZ];
+        int             err;
+                                                                                
+#ifdef VERBOSE
+                                                                                
+        lf_log(fhandle, LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
+               param->bbox.xmin, param->bbox.ymin, param->scale);
+#endif
+                                                                                
+        sprintf(buf, fmt, i);
+        bsize = sizeof(search_param_t);
+        err = lf_write_attr(fhandle, ohandle, buf, bsize, (char *) param);
+                                                                                
+        return err;
+}
+
 
 static void
 write_notify_f(void *cont, search_param_t *param)
 {
 	write_notify_context_t *context = (write_notify_context_t *)cont;
-	write_param(context->fhandle, context->ohandle, HISTO_BBOX_FMT, param, param->id);
+	write_param(context->fhandle, context->ohandle, GAB_BBOX_FMT, param, param->id);
 }
 
 
@@ -125,8 +144,8 @@ f_fini_gab_texture(void *f_datap)
 }
 
 
-
-
+/* XXX */
+#define RGB_IMAGE  "_rgb_image.rgbimage"
 
 int
 f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
@@ -234,7 +253,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 	}
 
 	if (rgb_alloc) {
-		ft_free(fhandle, (char*)rgb_img);
+		lf_free_buffer(fhandle, (char*)rgb_img);
 	}
 
 	free(gii_img);

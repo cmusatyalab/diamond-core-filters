@@ -21,7 +21,6 @@
 #include "queue.h"
 
 /* image dimension */
-//typedef u_int32_t dim_t;
 typedef int32_t dim_t;
 
 /*

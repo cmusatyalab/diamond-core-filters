@@ -23,6 +23,7 @@
 #include "common_consts.h"
 #include "image_tools.h"
 #include "img_search.h"
+#include "vj_face_search.h"
 #include "facedet.h"
 #include "face_tools.h"
 #include "fil_data2ii.h"
@@ -236,9 +237,9 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 static void
 cb_close_edit_window(GtkWidget* item, gpointer data)
 {
-	texture_search *	search;
+	vj_face_search *	search;
 
-	search = (texture_search *)data;
+	search = (vj_face_search *)data;
 	search->close_edit_win();
 }
 

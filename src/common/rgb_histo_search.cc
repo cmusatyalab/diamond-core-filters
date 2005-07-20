@@ -23,6 +23,7 @@
 #include "rgb.h"
 #include "histo.h"
 #include "image_common.h"
+#include "rgb_histo_search.h"
 #include "img_search.h"
 #include "fil_histo.h"
 #include "search_set.h"

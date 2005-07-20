@@ -1992,7 +1992,6 @@ main(int argc, char *argv[])
 	vj_face_init();
 	ocv_face_init();
 	texture_init();
-	gabor_texture_init();
 
 	{
 	void *handle;
@@ -2005,7 +2004,17 @@ main(int argc, char *argv[])
 		(*fp)();	
 	}
 	}
-
+	{
+	void *handle;
+	search_init_t fp;
+	handle = dlopen("/tmp/gabor_texture_search.so", RTLD_GLOBAL|RTLD_NOW);
+	fp = (search_init_t) dlsym(handle, "search_init");
+	if (fp == NULL) {
+		printf("Failed to find search_init\n");
+	} else {
+		(*fp)();	
+	}
+	}
 	/*
 	 * Start the main loop processing for the GUI.
 	 */

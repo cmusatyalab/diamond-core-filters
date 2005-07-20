@@ -16,7 +16,7 @@ SDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
 
-SUBDIRS = regex
+SUBDIRS = regex gabor_texture
 
 include $(ROOTDIR)/Makefile.template
 

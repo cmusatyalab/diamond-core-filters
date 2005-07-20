@@ -18,11 +18,13 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include <errno.h>
+#include <string.h>
 #include "queue.h"
 #include "rgb.h"
 //#include "histo.h"
 #include "img_search.h"
 #include "search_set.h"
+#include "histo.h"
 
 #define	MAX_DISPLAY_NAME	64
 

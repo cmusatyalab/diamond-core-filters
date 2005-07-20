@@ -25,13 +25,8 @@ extern "C"
 {
 #endif
 
-	/* external declaration to create new search  of specified type */
-	img_search * create_search(search_types_t type, const char *name);
-
-	int search_exists(const char *name, search_set *set
-	                 );
-	void search_add_list(img_search *new_search, search_set *set
-	                    );
+int search_exists(const char *name, search_set *set);
+void search_add_list(img_search *new_search, search_set *set);
 
 
 

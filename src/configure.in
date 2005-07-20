@@ -74,5 +74,6 @@ AC_CONFIG_FILES([Makefile
                  snap_bench/Makefile
                  snapfind/Makefile
                  searches/Makefile
-                 searches/regex/Makefile])
+                 searches/regex/Makefile
+                 searches/gabor_texture/Makefile])
 AC_OUTPUT
