@@ -82,6 +82,8 @@ CLEAN_OTHERS += read_config.cc $(COMMON_SRCS)
 
 TARGETS = $(COMMON_HEADERS) snapfind snap_searchlet.so
 
+SHARED_BIN += snap_searchlet.so snapfind 
+
 include ${ROOTDIR}/Makefile.template
 
 # XXX

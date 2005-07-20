@@ -1996,7 +1996,7 @@ main(int argc, char *argv[])
 	{
 	void *handle;
 	search_init_t fp;
-	handle = dlopen("/tmp/regex_search.so", RTLD_GLOBAL|RTLD_NOW);
+	handle = dlopen("./regex_search.so", RTLD_GLOBAL|RTLD_NOW);
 	fp = (search_init_t) dlsym(handle, "search_init");
 	if (fp == NULL) {
 		printf("Failed to find search_init\n");
@@ -2007,7 +2007,7 @@ main(int argc, char *argv[])
 	{
 	void *handle;
 	search_init_t fp;
-	handle = dlopen("/tmp/gabor_texture_search.so", RTLD_GLOBAL|RTLD_NOW);
+	handle = dlopen("./gabor_texture_search.so", RTLD_GLOBAL|RTLD_NOW);
 	fp = (search_init_t) dlsym(handle, "search_init");
 	if (fp == NULL) {
 		printf("Failed to find search_init\n");

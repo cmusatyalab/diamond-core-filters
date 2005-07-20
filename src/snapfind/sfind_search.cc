@@ -141,13 +141,13 @@ do_search(gid_list_t * main_region, char *fspec)
 
 	/* XXX current ugly hack */
 	err = ls_add_filter_file(shandle, DEV_ISA_IA32,
-	"/tmp/fil_gabor_texture.so");
+	"./fil_gabor_texture.so");
 	if (err) {
 		printf("Failed to set searchlet on err %d \n", err);
 		exit(1);
 	}
 	err = ls_add_filter_file(shandle, DEV_ISA_IA32,
-	"/tmp/fil_regex.so");
+	"./fil_regex.so");
 	if (err) {
 		printf("Failed to set searchlet on err %d \n", err);
 		exit(1);

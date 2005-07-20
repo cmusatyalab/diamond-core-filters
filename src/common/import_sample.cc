@@ -1069,7 +1069,11 @@ load_import_file(const char *file)
 	/* open the and create RGB image */
 	import_window.nselections = 0;
 
-	import_window.img = create_rgb_image(file);
+	if (file == NULL) {
+		import_window.img = rgbimg_blank_image(300, 400);
+	} else {
+		import_window.img = create_rgb_image(file);
+	}
 	import_window.button_down = 0;
 	assert(import_window.img != NULL);
 
@@ -1239,10 +1243,9 @@ open_import_window(search_set *set
 		gtk_widget_show(import_window.image_area);
 		gtk_paned_pack2(GTK_PANED(pane), import_window.image_area, TRUE, TRUE);
 
-		load_import_file("diamond1.ppm");
+		load_import_file(NULL);
 
-		set
-			->register_update_fn(import_update_searches);
+		set->register_update_fn(import_update_searches);
 
 	} else {
 		kill_highlight_thread(0);
