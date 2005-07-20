@@ -493,24 +493,6 @@ private:
 };
 
 
-class regex_search: public img_search {
-public:
-	regex_search(const char *name, char *descr);
-	~regex_search(void);
-
-	void	save_edits();
-	void	edit_search();
-	void 	write_fspec(FILE* stream);
-	void	write_config(FILE* stream, const char *data_dir);
-	virtual	int	handle_config(int num_conf, char **datav);
-	void	close_edit_win();
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
-
-private:
-	char *	search_string;
-	GtkWidget	*string_entry;
-	GtkWidget	*edit_window;
-};
 
 
 #ifdef __cplusplus

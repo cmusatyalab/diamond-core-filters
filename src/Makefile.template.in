@@ -25,6 +25,7 @@ INSTALLDIR_INCLUDE=${INSTALLBASE}/include
 
 INCDIR += -I${DIAMOND_INC_PATH}
 INCDIR += -I$(ROOTDIR)/common
+INCDIR += -I$(ROOTDIR)/snapfind
 INCDIR += -I$(SDIR)
 
 # include the shared source files

@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <signal.h>
+#include <dlfcn.h>
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -1853,6 +1854,7 @@ void vj_face_init();
 void ocv_face_init();
 void texture_init();
 void gabor_texture_init();
+typedef void (*search_init_t)();
 
 int
 main(int argc, char *argv[])
@@ -1991,6 +1993,18 @@ main(int argc, char *argv[])
 	ocv_face_init();
 	texture_init();
 	gabor_texture_init();
+
+	{
+	void *handle;
+	search_init_t fp;
+	handle = dlopen("/tmp/regex_search.so", RTLD_GLOBAL|RTLD_NOW);
+	fp = (search_init_t) dlsym(handle, "search_init");
+	if (fp == NULL) {
+		printf("Failed to find search_init\n");
+	} else {
+		(*fp)();	
+	}
+	}
 
 	/*
 	 * Start the main loop processing for the GUI.

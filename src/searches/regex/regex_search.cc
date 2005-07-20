@@ -21,9 +21,24 @@
 #include <errno.h>
 #include "queue.h"
 #include "rgb.h"
-#include "img_search.h"
+#include "regex_search.h"
+#include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
+
+extern "C" {
+void search_init();
+}
+
+void 
+search_init()
+{
+	regex_factory *fac;
+	printf("init function !!! \n");
+	fac = new regex_factory;
+	factory_register(fac);
+}
+
 regex_search::regex_search(const char *name, char *descr)
 		: img_search(name, descr)
 {
