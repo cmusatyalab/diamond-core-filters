@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include <math.h>
 #include <assert.h>
-
 #include "face.h"
 #include "common_consts.h"
 #include "filter_api.h"
@@ -41,6 +40,69 @@ if(!(exp)) {								\
   pass = -1;								\
   goto done;								\
 }
+
+
+int
+f_init_img2rgb(int numarg, char **args, int blob_len, void *blob, void **data)
+{
+
+	assert(numarg == 0);
+	*data = NULL;
+	return (0);
+}
+
+int
+f_fini_img2rgb(void *data)
+{
+	return (0);
+}
+
+/*
+ * filter eval function to create an RGB_IMAGE attribute
+ */
+
+int
+f_eval_img2rgb(lf_obj_handle_t ohandle, int numout,
+               lf_obj_handle_t * ohandles, void *user_data)
+{
+	RGBImage       *img;
+	int             err = 0, pass = 1;
+	lf_fhandle_t    fhandle = 0;
+
+	lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: enter");
+
+
+	/* XXX rahul   put some decoder here to figure out the file type */
+
+	img = get_rgb_img(ohandle);
+	if (img == NULL) {
+		return(0);
+	}
+
+	/*
+	 * save some attribs 
+	 */
+#ifdef	XXX
+	lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int),
+	              (char *) &headerlen);
+#endif
+
+	lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &img->height);
+	lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &img->width);
+
+	/*
+	 * save img as an attribute 
+	 */
+	err = lf_write_attr(fhandle, ohandle, RGB_IMAGE, img->nbytes, (char *) img);
+	ASSERT(!err);
+done:
+	if (img)
+		lf_free_buffer(fhandle, (char *) img);
+	lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: done");
+	return pass;
+}
+
+
 
 int
 f_init_attr2rgb(int numarg, char **args, int blob_len, void *blob, void **data)
@@ -95,5 +157,7 @@ done:
 	lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: done");
 	return pass;
 }
+
+
 
 

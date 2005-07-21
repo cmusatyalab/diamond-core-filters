@@ -70,62 +70,6 @@ if(!(exp)) {								\
   goto done;								\
 }
 
-int
-f_init_pnm2rgb(int numarg, char **args, int blob_len, void *blob, void **data)
-{
-
-	assert(numarg == 0);
-	*data = NULL;
-	return (0);
-}
-
-int
-f_fini_pnm2rgb(void *data)
-{
-	return (0);
-}
-
-/*
- * filter eval function to create an RGB_IMAGE attribute
- */
-
-int
-f_eval_pnm2rgb(lf_obj_handle_t ohandle, int numout,
-               lf_obj_handle_t * ohandles, void *user_data)
-{
-	RGBImage       *img;
-	int             err = 0, pass = 1;
-	lf_fhandle_t    fhandle = 0;
-
-	lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: enter");
-
-	img = get_rgb_img(ohandle);
-	if (img == NULL) {
-		return(0);
-	}
-
-	/*
-	 * save some attribs 
-	 */
-#ifdef	XXX
-	lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int),
-	              (char *) &headerlen);
-#endif
-
-	lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &img->height);
-	lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &img->width);
-
-	/*
-	 * save img as an attribute 
-	 */
-	err = lf_write_attr(fhandle, ohandle, RGB_IMAGE, img->nbytes, (char *) img);
-	ASSERT(!err);
-done:
-	if (img)
-		lf_free_buffer(fhandle, (char *) img);
-	lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: done");
-	return pass;
-}
 
 
 /*
