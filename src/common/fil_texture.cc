@@ -20,7 +20,6 @@
 #include <stdio.h>
 #include "face.h"
 #include "filter_api.h"
-#include "fil_file.h"
 #include "fil_texture.h"
 #include "fil_tools.h"
 #include "texture_tools.h"
@@ -148,15 +147,6 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 
 	lf_log(LOGL_TRACE, "f_texture_detect: enter");
 
-#ifdef	OLD
-
-	rgb_img = (RGBImage*)ft_read_alloc_attr(ohandle, RGB_IMAGE);
-	if (rgb_img == NULL) {
-		rgb_img = get_rgb_img(ohandle);
-	}
-	ASSERT(rgb_img);
-#else
-
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
 	assert(err == 0);
 	if (rgb_img == NULL) {
@@ -164,8 +154,6 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 		rgb_img = get_rgb_img(ohandle);
 	}
 	ASSERT(rgb_img);
-
-#endif
 
 
 	if (targs->num_channels == 1) {

@@ -25,7 +25,6 @@
 #include "face.h"
 #include "common_consts.h"
 #include "filter_api.h"
-#include "fil_file.h"
 #include "fil_image_tools.h"
 #include "rgb.h"
 #include "histo.h"

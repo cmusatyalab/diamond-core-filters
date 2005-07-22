@@ -22,8 +22,6 @@
 #include <ctype.h>
 
 #include "filter_api.h"
-#include "fil_file.h"
-//#include "fil_image_tools.h"
 #include "face.h"
 #include "rgb.h"
 #include "fil_data2ii.h"
@@ -31,123 +29,6 @@
 #include "fil_assert.h"
 
 #define MAXCOLS 1281
-
-/*
- * read byte-data from file, and fill in sumarr, sumsqarr. col1, row1 are 0
- * (excl sum) 
- */
-int
-read_sum_data(ffile_t * file,
-              u_int32_t * sumarr,
-              float *sumsqarr,
-              size_t iiwidth, size_t iiheight, image_type_t imgtype)
-{
-	int             err = 0;
-	off_t           bytes;
-	char           *fdata;
-	size_t          nb;
-	size_t          row,
-	col;
-	u_int32_t       colsum[MAXCOLS];    /* keep a column total */
-	float           colsumsq[MAXCOLS];
-	u_int32_t      *sumarr_end = sumarr + (iiwidth * iiheight);
-	int             isRGBA;
-
-	ASSERTX(err = 1, iiwidth < MAXCOLS);
-
-	switch (imgtype) {
-			/*
-			 * case IMAGE_PPM: 
-			 */
-			/*
-			 * isRGBA = 1; 
-			 */
-			/*
-			 * break; 
-			 */
-		case IMAGE_PGM:
-			isRGBA = 0;
-			break;
-		default:
-			/*
-			 * unknown type 
-			 */
-			return 1;               /* error */
-	}
-
-	for (col = 0; col < iiwidth; col++) {
-		colsum[col] = 0;
-		colsumsq[col] = 0;
-	}
-
-	for (col = 0; col < iiwidth; col++) {
-		sumarr[col] = 0;
-		sumsqarr[col] = 0;
-	}
-	for (row = 0; row < iiheight; row++) {
-		sumarr[row * iiwidth] = 0;
-		sumsqarr[row * iiwidth] = 0;
-	}
-
-	row = 1;                    /* excl */
-	col = 1;                    /* excl */
-	sumarr += 1 + iiwidth;      /* excl */
-	sumsqarr += 1 + iiwidth;    /* excl */
-	bytes = (iiwidth - 1) * (iiheight - 1); /* excl */
-	if (isRGBA) {
-		bytes *= 4;
-	}
-
-	while (!err && bytes) {
-		nb = ff_read(file, &fdata, bytes);
-		if (!nb) {
-			err = 1;
-			break;
-		}
-		bytes -= nb;
-		while (nb) {
-			int             value;
-
-			if (isRGBA) {
-				value = *((unsigned char *) fdata + 0);
-				value += *((unsigned char *) fdata + 1);
-				value += *((unsigned char *) fdata + 2);
-				fdata += 4;
-				nb -= 4;
-			} else {            /* greyscale */
-				value = *((unsigned char *) fdata);
-				fdata++;
-				nb--;
-			}
-
-
-			colsum[col] += value;
-			colsumsq[col] += value * value;
-			*sumarr = colsum[col] + (col ? *(sumarr - 1) : 0);
-			*sumsqarr = colsumsq[col] + (col ? *(sumsqarr - 1) : 0);
-			// fprintf(stderr, " %f", *sumsqarr); /* XXX */
-			sumarr++;
-			ASSERTX(err = 1, sumarr <= sumarr_end);
-			sumsqarr++;
-			col++;
-			ASSERTX(err = 1, col <= iiwidth);
-			if (col == iiwidth) {
-				sumarr++;       /* excl */
-				sumsqarr++;     /* excl */
-				col = 1;        /* excl */
-				row++;
-				ASSERTX(err = 1, row <= iiheight);
-				// fprintf(stderr, "\n");//XXX
-			}
-		}
-	}
-	ASSERTX(err = 1, sumarr == sumarr_end + 1);
-done:
-	return err;
-}
-
-
-
 
 
 int
@@ -265,7 +146,6 @@ f_eval_integrate(lf_obj_handle_t ohandle, void *fdata)
 {
 	ii_image_t     *img = NULL;
 	ii2_image_t    *img2 = NULL;
-	// ffile_t file;
 	int             err = 0,
 	                      pass = 1;
 	off_t           bytes;
@@ -324,8 +204,6 @@ f_eval_integrate(lf_obj_handle_t ohandle, void *fdata)
 	/*
 	 * make ii 
 	 */
-	// err = read_sum_data(&file, img->data, img2->data, width+1, height+1,
-	// magic);
 	rgb_integrate(rgbimg, img->data, img2->data, width + 1, height + 1);
 	FILTER_ASSERT(!err, "read data");
 	// ff_close(&file);

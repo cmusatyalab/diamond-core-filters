@@ -27,7 +27,6 @@
 #include "face.h"
 #include "common_consts.h"
 #include "filter_api.h"
-#include "fil_file.h"
 #include "fil_image_tools.h"
 #include "rgb.h"
 #include "histo.h"
@@ -50,17 +49,6 @@ typedef struct
 hpass_data_t;
 
 
-/* call to read the cycle counter */
-#define rdtscll(val) __asm__ __volatile__("rdtsc" : "=A" (val))
-
-static unsigned long long
-read_cycle()
-{
-	unsigned long long      foo;
-	rdtscll(foo);
-	return(foo);
-}
-
 
 #define ASSERT(exp)							\
 if(!(exp)) {								\
@@ -81,9 +69,7 @@ if(!(exp)) {								\
 static int
 patch_spec_read_args(histo_config_t * hconfig, int argc, char **args)
 {
-	int             i,
-	j,
-	err;
+	int             i, j;
 	patch_t        *patch;
 	double          sum;
 	int             pass = 1;
@@ -98,7 +84,6 @@ patch_spec_read_args(histo_config_t * hconfig, int argc, char **args)
 	for (i = 0; i < hconfig->num_patches; i++) {
 		patch = (patch_t *)malloc(sizeof(*patch));
 		ASSERT(patch);
-		ASSERT(!err);
 		histo_clear(&patch->histo);
 
 		argc -= nbins;
@@ -114,12 +99,6 @@ patch_spec_read_args(histo_config_t * hconfig, int argc, char **args)
 		 * any errors should be close to 1.0 
 		 */
 		assert(fabs(sum - 1.0) < 0.001);
-
-		// argc -= 4; ASSERT(argc >= 0);
-		// patch->histo.weight = atof(*args++);
-		// patch->threshold = atof(*args++);
-		// patch->minx = atoi(*args++);
-		// patch->miny = atoi(*args++);
 		TAILQ_INSERT_TAIL(&hconfig->patchlist, patch, link);
 	}
 
