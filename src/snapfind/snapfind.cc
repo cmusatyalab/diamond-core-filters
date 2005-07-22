@@ -575,7 +575,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	if (cur_thumbnail->img) { /* cleanup */
 		gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport),
 		                     cur_thumbnail->gimage);
-		lf_free_buffer((char *)cur_thumbnail->img); /* XXX */
+		free(cur_thumbnail->img); /* XXX */
 		ih_drop_ref(cur_thumbnail->hooks);
 	}
 	gtk_frame_set_label(GTK_FRAME(cur_thumbnail->frame), "");

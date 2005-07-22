@@ -305,8 +305,8 @@ f_eval_integrate(lf_obj_handle_t ohandle, void *fdata)
 	 * create image to hold the integral image 
 	 */
 	bytes = sizeof(ii_image_t) + sizeof(u_int32_t) * (width + 1) * (height + 1);
-	err = lf_alloc_buffer(bytes, (char **) &img);
-	FILTER_ASSERT(!err, "alloc");
+	img = (ii_image_t *)malloc(bytes);
+	assert(img != NULL);
 	img->nbytes = bytes;
 	img->width = width + 1;
 	img->height = height + 1;
@@ -315,8 +315,8 @@ f_eval_integrate(lf_obj_handle_t ohandle, void *fdata)
 	 * create image to hold the squared-integral image 
 	 */
 	bytes = sizeof(ii2_image_t) + sizeof(float) * (width + 1) * (height + 1);
-	err = lf_alloc_buffer(bytes, (char **) &img2);
-	FILTER_ASSERT(!err, "alloc");
+	img2 = (ii2_image_t *)malloc(bytes);
+	assert(img2 != NULL);
 	img2->nbytes = bytes;
 	img2->width = width + 1;
 	img2->height = height + 1;

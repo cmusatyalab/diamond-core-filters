@@ -37,10 +37,10 @@ ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name)
 		return NULL;
 	}
 
-	err = lf_alloc_buffer(bsize, (char **) &ptr);
-	if (err) {
+	ptr = (char *)malloc(bsize);
+	if (ptr == NULL ) {
 		fprintf(stderr, "alloc error\n");
-		return NULL;
+		return (NULL);
 	}
 
 	err = lf_read_attr(ohandle, name, &bsize, (char *) ptr);
@@ -52,11 +52,11 @@ ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name)
 	return ptr;
 }
 
+/* XXX remove ??? */
 void
 ft_free(char *ptr)
 {
-	int             err;
-	err = lf_free_buffer(ptr);
+	free(ptr);
 	// assert(err == 0);
 }
 

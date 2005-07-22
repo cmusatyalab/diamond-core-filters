@@ -45,17 +45,13 @@ f_fini_get_rgb_ipl_image(void *fdata)
 
 
 int
-f_get_rgba_ipl_Image(lf_obj_handle_t ohandle, int numout,
-                     lf_obj_handle_t * ohandles, int numarg, void *fdata)
+f_get_rgba_ipl_Image(lf_obj_handle_t ohandle, int numarg, void *fdata)
 {
 	IplImage       *img;
 	RGBImage       *tmp_img;
-	int             err = 0,
-	                      pass = 0;
+	int             err = 0, pass = 0;
 	ffile_t         file;
-	int             width,
-	height,
-	headerlen;
+	int             width, height, headerlen;
 	image_type_t    img_type = IMAGE_PPM;
 	off_t           bytes;
 
@@ -76,7 +72,9 @@ f_get_rgba_ipl_Image(lf_obj_handle_t ohandle, int numout,
 	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &width);
 
 	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
-	err = lf_alloc_buffer(bytes, (char **) &tmp_img);
+
+	tmp_img = (RGBImage *) malloc(bytes);
+	assert(tmp_img != NULL);
 
 	tmp_img->width = width;
 	tmp_img->height = height;
@@ -154,7 +152,8 @@ f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, void *fdatap)
 	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &width);
 
 	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
-	err = lf_alloc_buffer(bytes, (char **) &tmp_img);
+	tmp_img = (RGBImage *) malloc(bytes);
+	assert(tmp_img != NULL);
 
 	tmp_img->nbytes = bytes;
 	tmp_img->type = img_type;
@@ -181,7 +180,7 @@ f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, void *fdatap)
 done:
 
 	if (tmp_img) {
-		lf_free_buffer((char *) tmp_img);
+		malloc(tmp_img);
 	}
 	/*
 	 * releasing the cvimage causes wierd things to happen if we read it

@@ -73,8 +73,7 @@ f_synth(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
 		for (i = 0; i < blen; i++) {
 			compute_val(data[i], loop);
 		}
-		err = lf_free_buffer(data);
-		assert(err == 0);
+		free(data);	
 
 		err = lf_next_block(ohandle, 1, &blen, &data);
 	}

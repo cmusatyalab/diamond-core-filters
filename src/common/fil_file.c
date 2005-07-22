@@ -33,7 +33,7 @@ void
 ff_close(ffile_t * fh)
 {
 	if (fh->buf) {
-		lf_free_buffer(fh->buf);
+		free(fh->buf);
 	}
 }
 
@@ -75,7 +75,7 @@ ff_read(ffile_t * fh, char **data, size_t size)
 
 	if (fh->pos >= fh->len) {
 		if (fh->buf) {
-			lf_free_buffer(fh->buf);
+			free(fh->buf);
 			fh->buf = NULL;
 		}
 		err = ff_get_block(fh, size);   /* if err, rest works */

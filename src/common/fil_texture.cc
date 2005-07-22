@@ -100,9 +100,8 @@ f_init_texture_detect(int numarg, char **args, int blob_len,
 	texture_args_t*	targs;
 	int				err;
 
-
-	err = lf_alloc_buffer(sizeof(*targs), (char **)&targs);
-	assert(!err);
+	targs = (texture_args_t *)malloc(sizeof(*targs));
+	assert(targs);
 
 	err = read_texture_args(targs, numarg, args);
 	assert(err);
@@ -122,7 +121,7 @@ f_fini_texture_detect(void *f_datap)
 		free(targs->sample_values[i]);
 	}
 	free(targs->sample_values);
-	lf_free_buffer((char*)targs);
+	free(targs);
 	return(0);
 }
 

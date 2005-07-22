@@ -402,8 +402,7 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, void *fdata)
 	off_t           bsize;
 	search_param_t  param;
 	int             err = 0;
-	region_t       *in_bbox_list,
-	*out_bbox_list;
+	region_t       *in_bbox_list, *out_bbox_list;
 	overlap_state_t *ostate = (overlap_state_t *) fdata;
 
 	/*
@@ -422,10 +421,11 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, void *fdata)
 	 * allocate arrays 
 	 */
 	bsize = count * sizeof(region_t);
-	err = lf_alloc_buffer(bsize, (char **) &in_bbox_list);
-	assert(!err);
-	err = lf_alloc_buffer(bsize, (char **) &out_bbox_list);
-	assert(!err);
+	in_bbox_list = (region_t *)malloc(bsize);
+	assert(in_bbox_list);
+	
+	out_bbox_list = (region_t *)malloc(bsize);
+	assert(out_bbox_list);
 
 	/*
 	 * foreach 'param in attribs 
@@ -446,11 +446,10 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, void *fdata)
 		write_param(ohandle, FACE_BBOX_FMT, &param, i);
 	}
 
-	lf_free_buffer((char *) in_bbox_list);
-	lf_free_buffer((char *) out_bbox_list);
+	free(in_bbox_list);
+	free(out_bbox_list);
 
-	err =
-	    lf_write_attr(ohandle, NUM_FACE, sizeof(int),
+	err = lf_write_attr(ohandle, NUM_FACE, sizeof(int),
 	                  (char *) &count);
 	assert(!err);
 

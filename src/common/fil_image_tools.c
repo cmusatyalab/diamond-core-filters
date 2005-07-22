@@ -201,8 +201,8 @@ get_rgb_img(lf_obj_handle_t ohandle)
 	 * create image to hold the data 
 	 */
 	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
-	err = lf_alloc_buffer(bytes, (char **) &img);
-	assert(!err);
+
+	img = (RGBImage *)malloc(bytes);
 	assert(img);
 	img->nbytes = bytes;
 	img->height = height;
@@ -258,8 +258,8 @@ get_attr_rgb_img(lf_obj_handle_t ohandle, char *attr_name)
 		return NULL;
 	}
 
-	err = lf_alloc_buffer(bsize, (char **) &image_buf);
-	if (err) {
+	image_buf = (char *)malloc(bsize);
+	if (image_buf == NULL) {
 		return NULL;
 	}
 
@@ -280,7 +280,7 @@ get_attr_rgb_img(lf_obj_handle_t ohandle, char *attr_name)
 
 	rgb = convert_ipl_to_rgb(image);
 	cvReleaseImage(&image);
-	lf_free_buffer(image_buf);
+	free(image_buf);
 
 	return (rgb);
 }

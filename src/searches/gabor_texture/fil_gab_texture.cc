@@ -111,11 +111,10 @@ f_init_gab_texture(int numarg, char **args, int blob_len,
                    void *blob, void **f_datap)
 {
 	gtexture_args_t*	data;
-	int				err;
+	int			err;
 
-
-	err = lf_alloc_buffer(sizeof(*data), (char **)&data);
-	assert(!err);
+	data = (gtexture_args_t *) malloc(sizeof(*data));
+	assert(data != NULL);
 
 	err = read_texture_args(data, numarg, args);
 	assert(err == 0);
@@ -248,7 +247,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	}
 
 	if (rgb_alloc) {
-		lf_free_buffer((char*)rgb_img);
+		free(rgb_img);
 	}
 
 	free(gii_img);

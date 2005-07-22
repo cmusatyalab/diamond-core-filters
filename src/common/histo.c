@@ -703,8 +703,8 @@ histo_lessen(Histo * h1, const Histo * h2)
 
 #define ASSERT(exp)							\
 if(!(exp)) {								\
-  lf_log(0, LOGL_ERR, "Assertion %s failed at ", #exp);		\
-  lf_log(0, LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
+  lf_log(LOGL_ERR, "Assertion %s failed at ", #exp);		\
+  lf_log(LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
   return;								\
 }
 
@@ -778,8 +778,7 @@ histo_get_ii(histo_config_t *hconfig, RGBImage *img)
 	nbytes = ii_width * ii_height * sizeof(Histo) + sizeof(HistoII);
 
 
-	err = lf_alloc_buffer(nbytes, (char **) &ii);
-	assert(!err);
+	ii = (HistoII *)malloc(nbytes);
 	assert(ii);
 	ii->nbytes = nbytes;
 	ii->width = ii_width;

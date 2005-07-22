@@ -96,7 +96,7 @@ patch_spec_read_args(histo_config_t * hconfig, int argc, char **args)
 
 	TAILQ_INIT(&hconfig->patchlist);
 	for (i = 0; i < hconfig->num_patches; i++) {
-		err = lf_alloc_buffer(sizeof(patch_t), (char **) &patch);
+		patch = (patch_t *)malloc(sizeof(*patch));
 		ASSERT(patch);
 		ASSERT(!err);
 		histo_clear(&patch->histo);
@@ -175,8 +175,7 @@ f_init_histo_detect(int numarg, char **args, int blob_len,
 	/*
 	 * filter initialization
 	 */
-	err = lf_alloc_buffer(sizeof(*hconfig), (char **) &hconfig);
-	assert(!err);
+	hconfig = (histo_config_t *)malloc(sizeof(*hconfig));
 	assert(hconfig);
 
 	assert(numarg > 6);
@@ -215,9 +214,9 @@ f_fini_histo_detect(void *data)
 
 	while ((patch = TAILQ_FIRST(&hconfig->patchlist))) {
 		TAILQ_REMOVE(&hconfig->patchlist, patch, link);
-		lf_free_buffer((char *) patch);
+		free(patch);
 	}
-	lf_free_buffer((char *) hconfig);
+	free(hconfig);
 
 	return (0);
 }
@@ -466,8 +465,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	nbytes = width * height * sizeof(Histo) + sizeof(HistoII);
 
 
-	err = lf_alloc_buffer(nbytes, (char **) &ii);
-	ASSERT(!err);
+	ii = (HistoII *) malloc(nbytes); 
 	ASSERT(ii);
 	ii->nbytes = nbytes;
 	ii->width = width;
@@ -482,10 +480,11 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	ASSERT(!err);
 done:
 	if (img_alloc) {
-		lf_free_buffer((char *) img);
+		free(img);
 	}
-	if (ii)
-		lf_free_buffer((char *) ii);
+	if (ii) {
+		free(ii);
+	}
 	lf_log(LOGL_TRACE, "f_hintegrate: done");
 	return pass;
 }

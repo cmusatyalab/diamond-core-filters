@@ -95,7 +95,7 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 	ASSERT(!err);
 done:
 	if (img)
-		lf_free_buffer((char *) img);
+		free(img);
 	lf_log(LOGL_TRACE, "f_pnm2rgb: done");
 	return pass;
 }
@@ -149,7 +149,7 @@ f_eval_attr2rgb(lf_obj_handle_t ohandle, void *user_data)
 	ASSERT(!err);
 done:
 	if (img)
-		lf_free_buffer((char *) img);
+		free(img);
 	lf_log(LOGL_TRACE, "f_pnm2rgb: done");
 	return pass;
 }
