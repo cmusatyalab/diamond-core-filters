@@ -183,7 +183,6 @@ get_rgb_img(lf_obj_handle_t ohandle)
 {
 	RGBImage       *img = NULL;
 	int             err = 0;
-	lf_fhandle_t    fhandle = 0;
 	int             width, height, headerlen;
 	off_t           bytes;
 	image_type_t    magic;
@@ -194,7 +193,7 @@ get_rgb_img(lf_obj_handle_t ohandle)
 	/*
 	 * read the header and figure out the dimensions 
 	 */
-	ff_open(fhandle, ohandle, &file);
+	ff_open(ohandle, &file);
 	err = pnm_file_read_header(&file, &width, &height, &magic, &headerlen);
 	assert(!err);
 
@@ -202,7 +201,7 @@ get_rgb_img(lf_obj_handle_t ohandle)
 	 * create image to hold the data 
 	 */
 	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
-	err = lf_alloc_buffer(fhandle, bytes, (char **) &img);
+	err = lf_alloc_buffer(bytes, (char **) &img);
 	assert(!err);
 	assert(img);
 	img->nbytes = bytes;
@@ -243,7 +242,6 @@ RGBImage       *
 get_attr_rgb_img(lf_obj_handle_t ohandle, char *attr_name)
 {
 	int             err = 0;
-	lf_fhandle_t    fhandle = 0;
 	char           *image_buf;
 	off_t           bsize;
 	IplImage       *srcimage;
@@ -255,17 +253,17 @@ get_attr_rgb_img(lf_obj_handle_t ohandle, char *attr_name)
 	 */
 
 	bsize = 0;
-	err = lf_read_attr(fhandle, ohandle, attr_name, &bsize, (char *) NULL);
+	err = lf_read_attr(ohandle, attr_name, &bsize, (char *) NULL);
 	if (err != ENOMEM) {
 		return NULL;
 	}
 
-	err = lf_alloc_buffer(fhandle, bsize, (char **) &image_buf);
+	err = lf_alloc_buffer(bsize, (char **) &image_buf);
 	if (err) {
 		return NULL;
 	}
 
-	err = lf_read_attr(fhandle, ohandle, attr_name, &bsize,
+	err = lf_read_attr( ohandle, attr_name, &bsize,
 	                   (char *) image_buf);
 	if (err) {
 		return NULL;
@@ -282,7 +280,7 @@ get_attr_rgb_img(lf_obj_handle_t ohandle, char *attr_name)
 
 	rgb = convert_ipl_to_rgb(image);
 	cvReleaseImage(&image);
-	lf_free_buffer(fhandle, image_buf);
+	lf_free_buffer(image_buf);
 
 	return (rgb);
 }

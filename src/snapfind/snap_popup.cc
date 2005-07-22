@@ -55,11 +55,6 @@
 /* XXX fix this */
 static search_set *sset;
 
-/* XXX fix this */
-static lf_fhandle_t 	fhandle = 0;
-
-
-
 /*
  * global state used for highlighting (running filters locally)
  */
@@ -119,14 +114,14 @@ pb_from_img(RGBImage *img)
  */
 region_t
 draw_bounding_box(RGBImage *img, int scale,
-                  lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
+                  ls_obj_handle_t ohandle,
                   RGBPixel color, RGBPixel mask, char *fmt, int i)
 {
 	search_param_t 	param;
 	int 		err;
 	bbox_t		bbox;
 
-	err = read_param(fhandle, ohandle, fmt, &param, i);
+	err = read_param(ohandle, fmt, &param, i);
 
 	bbox.min_x = param.bbox.xmin;
 	bbox.min_y = param.bbox.ymin;
@@ -212,7 +207,7 @@ cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
 
 
 static GtkWidget *
-describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
+describe_hbbox(ls_obj_handle_t ohandle, int i,
                GtkWidget **button)
 {
 	search_param_t 	param;
@@ -220,7 +215,7 @@ describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
 
 	GUI_THREAD_CHECK();
 
-	err = read_param(fhandle, ohandle, HISTO_BBOX_FMT, &param, i);
+	err = read_param(ohandle, HISTO_BBOX_FMT, &param, i);
 	if (err) {
 		printf("XXX failed to read parameter <%s> \n", HISTO_BBOX_FMT);
 		/* 		label = gtk_label_new("ERR"); */
@@ -282,7 +277,7 @@ draw_hbbox_func(GtkWidget *widget, void *ptr)
 		//color = clearColor;
 	}
 
-	region = draw_bounding_box(popup_window.layers[RES_LAYER], 1, fhandle,
+	region = draw_bounding_box(popup_window.layers[RES_LAYER], 1,
 	                           popup_window.hooks->ohandle,
 	                           color, mask, HISTO_BBOX_FMT, i);
 
@@ -307,7 +302,7 @@ draw_face_func(GtkWidget *widget, void *ptr)
 	}
 
 	for(int i=0; i<num_faces; i++) {
-		region = draw_bounding_box(popup_window.layers[RES_LAYER], 1, fhandle,
+		region = draw_bounding_box(popup_window.layers[RES_LAYER], 1, 
 		                           popup_window.hooks->ohandle,
 		                           color, mask, FACE_BBOX_FMT, i);
 		/* refresh */
@@ -418,7 +413,7 @@ image_highlight_main(void *ptr)
 
 	pthread_mutex_lock(&highlight_info.mutex);
 	highlight_info.thread_running = 0;
-	ih_drop_ref(popup_window.hooks, fhandle);
+	ih_drop_ref(popup_window.hooks);
 	pthread_mutex_unlock(&highlight_info.mutex);
 
 	pthread_exit(NULL);
@@ -451,7 +446,7 @@ kill_highlight_thread(int run)
 		//assert(!err);
 		if(!err) {
 			/* should do this in a cleanup function XXX */
-			ih_drop_ref(popup_window.hooks, fhandle);
+			ih_drop_ref(popup_window.hooks);
 			highlight_info.thread_running = 0;
 			/* child should not be inside gui, since we
 			 * are in a callback here, and presumable own
@@ -1070,7 +1065,7 @@ cb_popup_window_close(GtkWidget *window)
 	kill_highlight_thread(0);
 	sset->un_register_update_fn(popup_update_searches);
 	popup_window.window = NULL;
-	ih_drop_ref(popup_window.hooks, fhandle);
+	ih_drop_ref(popup_window.hooks);
 	popup_window.hooks = NULL;
 
 	GUI_CALLBACK_LEAVE();
@@ -1194,7 +1189,7 @@ do_img_popup(GtkWidget *widget, search_set *set
 		kill_highlight_thread(0);
 		gtk_container_remove(GTK_CONTAINER(popup_window.image_area),
 		                     popup_window.scroll);
-		ih_drop_ref(popup_window.hooks, fhandle);
+		ih_drop_ref(popup_window.hooks);
 		gdk_window_raise(GTK_WIDGET(popup_window.window)->window);
 	}
 
@@ -1275,7 +1270,7 @@ do_img_popup(GtkWidget *widget, search_set *set
 
 		for(int i=0; i<thumb->nboxes; i++) {
 			GtkWidget *widget;
-			widget = describe_hbbox(fhandle, popup_window.hooks->ohandle,
+			widget = describe_hbbox(popup_window.hooks->ohandle,
 			                        i, &button);
 			gtk_box_pack_start(GTK_BOX(popup_window.histo_cb_area), widget,
 			                   FALSE, FALSE, 0);

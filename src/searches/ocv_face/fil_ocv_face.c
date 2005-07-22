@@ -63,7 +63,6 @@ f_init_opencv_fdetect(int numarg, char **args, int blob_len, void *blob_data,
 {
 
 	opencv_fdetect_t *fconfig;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	CvHaarClassifierCascade *cascade;
 
 
@@ -82,7 +81,7 @@ f_init_opencv_fdetect(int numarg, char **args, int blob_len, void *blob_data,
 	fconfig->support = atoi(args[6]);
 
 	if (fconfig->scale_mult <= 1) {
-		lf_log(fhandle, LOGL_TRACE,
+		lf_log(LOGL_TRACE,
 		       "scale multiplier must be > 1; got %f\n", fconfig->scale_mult);
 		exit(1);
 	}
@@ -113,26 +112,24 @@ f_fini_opencv_fdetect(void *fdata)
 
 
 int
-f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
-                      lf_obj_handle_t * ohandles, void *fdata)
+f_eval_opencv_fdetect(lf_obj_handle_t ohandle, void *fdata)
 {
 	int             pass = 0;
 	RGBImage *		img;
 	search_param_t  param;
 	opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
 	int             err;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	bbox_list_t	    blist;
 	int				i;
 	bbox_t *		cur_box;
 	off_t			len;
 
-	lf_log(fhandle, LOGL_TRACE, "f_eval_opencv_fdetect: enter\n");
+	lf_log(LOGL_TRACE, "f_eval_opencv_fdetect: enter\n");
 
 	/*
 	  * get the img
 	  */
-	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
 	assert(err == 0);
 
 
@@ -147,7 +144,7 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
 		param.bbox.ymin = cur_box->min_y;
 		param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
 		param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
-		write_param(fhandle, ohandle, FACE_BBOX_FMT, &param, i);
+		write_param(ohandle, FACE_BBOX_FMT, &param, i);
 		TAILQ_REMOVE(&blist, cur_box, link);
 		free(cur_box);
 		i++;
@@ -156,13 +153,13 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * save 'pass' in attribs 
 	 */
-	err = lf_write_attr(fhandle, ohandle, NUM_FACE, sizeof(int),
+	err = lf_write_attr(ohandle, NUM_FACE, sizeof(int),
 	                    (char *) &pass);
 	assert(!err);
-	lf_log(fhandle, LOGL_TRACE, "found %d faces\n", pass);
+	lf_log(LOGL_TRACE, "found %d faces\n", pass);
 
 
-	lf_log(fhandle, LOGL_TRACE, "f_eval_opencv_fdetect: done\n");
+	lf_log(LOGL_TRACE, "f_eval_opencv_fdetect: done\n");
 	return pass;
 }
 
@@ -175,10 +172,9 @@ f_init_vj_detect(int numarg, char **args, int blob_len, void *blob_data,
 {
 
 	fconfig_fdetect_t *fconfig;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 
 	if (numarg != 9) {
-		lf_log(fhandle, LOGL_TRACE, "bad args in fdetect\n");
+		lf_log( LOGL_TRACE, "bad args in fdetect\n");
 		assert(0);
 		return (EINVAL);
 	}
@@ -206,7 +202,7 @@ f_init_vj_detect(int numarg, char **args, int blob_len, void *blob_data,
 	}
 
 	if (fconfig->scale_mult <= 1) {
-		lf_log(fhandle, LOGL_TRACE,
+		lf_log(LOGL_TRACE,
 		       "scale multiplier must be > 1; got %f\n", fconfig->scale_mult);
 		exit(1);
 	}
@@ -234,8 +230,7 @@ f_fini_vj_detect(void *fdata)
  */
 
 int
-f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
-                 lf_obj_handle_t * ohandles, void *fdata)
+f_eval_vj_detect(lf_obj_handle_t ohandle, void *fdata)
 {
 	int             pass = 0;
 	ii_image_t     *ii;
@@ -245,7 +240,6 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 	int             count;
 	off_t           bsize;
 	int             err;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	double          last_scale = 0.0;
 	bbox_list_t		blist;
 	double          xsiz,
@@ -254,7 +248,7 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 	height;     /* size of image px */
 	static int      inited = 0;
 
-	lf_log(fhandle, LOGL_TRACE, "f_detect: enter\n");
+	lf_log(LOGL_TRACE, "f_detect: enter\n");
 
 	if (!inited) {
 		init_classifier();
@@ -267,19 +261,19 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * get the ii 
 	 */
-	ii = (ii_image_t *) ft_read_alloc_attr(fhandle, ohandle, II_DATA);
+	ii = (ii_image_t *) ft_read_alloc_attr(ohandle, II_DATA);
 	assert(ii);
-	ii2 = (ii2_image_t *) ft_read_alloc_attr(fhandle, ohandle, II_SQ_DATA);
+	ii2 = (ii2_image_t *) ft_read_alloc_attr(ohandle, II_SQ_DATA);
 	assert(ii2);
 
 	/*
 	 * get width, height 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(fhandle, ohandle, ROWS, &bsize, (char *) &height);
+	err = lf_read_attr(ohandle, ROWS, &bsize, (char *) &height);
 	assert(!err);
 	bsize = sizeof(int);
-	err = lf_read_attr(fhandle, ohandle, COLS, &bsize, (char *) &width);
+	err = lf_read_attr(ohandle, COLS, &bsize, (char *) &width);
 	assert(!err);
 
 
@@ -288,7 +282,7 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 	 * get count 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(fhandle, ohandle, NUM_FACE, &bsize, (char *) &count);
+	err = lf_read_attr(ohandle, NUM_FACE, &bsize, (char *) &count);
 	if (err)
 		count = 0;              /* XXX */
 
@@ -298,7 +292,7 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 		 * foreach 'param in attribs 
 		 */
 		for (i = 0; i < count; i++) {
-			read_param(fhandle, ohandle, FACE_BBOX_FMT, &param, i);
+			read_param(ohandle, FACE_BBOX_FMT, &param, i);
 			/*
 			 * We keep track of the last scale we made to the table
 			 * if it is not what we needed then we scale it now.  Ideally
@@ -314,7 +308,7 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 				/*
 				 * ok to potentially overwrite since we just read this anyway 
 				 */
-				write_param(fhandle, ohandle, FACE_BBOX_FMT, &param, pass);
+				write_param(ohandle, FACE_BBOX_FMT, &param, pass);
 				pass++;
 			}
 		}
@@ -335,7 +329,7 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 			param.bbox.ymin = cur_box->min_y;
 			param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
 			param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
-			write_param(fhandle, ohandle, FACE_BBOX_FMT, &param, i);
+			write_param(ohandle, FACE_BBOX_FMT, &param, i);
 			TAILQ_REMOVE(&blist, cur_box, link);
 			free(cur_box);
 			i++;
@@ -345,15 +339,15 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * save 'pass in attribs 
 	 */
-	err = lf_write_attr(fhandle, ohandle, NUM_FACE, sizeof(int),
+	err = lf_write_attr(ohandle, NUM_FACE, sizeof(int),
 	                    (char *) &pass);
 	assert(!err);
-	lf_log(fhandle, LOGL_TRACE, "found %d faces\n", pass);
+	lf_log(LOGL_TRACE, "found %d faces\n", pass);
 	/*
 	 * save some stats 
 	 */
 	if (ii) {
-		ft_free(fhandle, (char *) ii);
+		ft_free((char *) ii);
 	}
 
 	/*
@@ -363,14 +357,14 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, int numout,
 	 * don't need the ii2 now because we saved the variance in the param
 	 * struct. 
 	 */
-	ft_free(fhandle, (char *) ii2);
+	ft_free((char *) ii2);
 	ii2 = NULL;
-	err = lf_write_attr(fhandle, ohandle, II_SQ_DATA, sizeof(char *), (char *) &ii2);   /* pseudo
+	err = lf_write_attr(ohandle, II_SQ_DATA, sizeof(char *), (char *) &ii2);   /* pseudo
 		                                                                                         * delete 
 		                                                                                         */
 	assert(!err);
 
-	lf_log(fhandle, LOGL_TRACE, "f_detect: done\n");
+	lf_log(LOGL_TRACE, "f_detect: done\n");
 	return pass;
 }
 
@@ -401,15 +395,13 @@ f_fini_bbox_merge(void *fdata)
 
 
 int
-f_eval_bbox_merge(lf_obj_handle_t ohandle, int numout,
-                  lf_obj_handle_t * ohandles, void *fdata)
+f_eval_bbox_merge(lf_obj_handle_t ohandle, void *fdata)
 {
 	int             count,
 	i;
 	off_t           bsize;
 	search_param_t  param;
 	int             err = 0;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	region_t       *in_bbox_list,
 	*out_bbox_list;
 	overlap_state_t *ostate = (overlap_state_t *) fdata;
@@ -418,28 +410,28 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, int numout,
 	 * get count 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(fhandle, ohandle, NUM_FACE, &bsize, (char *) &count);
+	err = lf_read_attr(ohandle, NUM_FACE, &bsize, (char *) &count);
 	if (err) {
 		printf("Failed to read num face \n");
 		count = 0;              /* XXX */
 	}
 
-	lf_log(fhandle, LOGL_TRACE, "bbox_merge: incount = %d\n", count);
+	lf_log(LOGL_TRACE, "bbox_merge: incount = %d\n", count);
 
 	/*
 	 * allocate arrays 
 	 */
 	bsize = count * sizeof(region_t);
-	err = lf_alloc_buffer(fhandle, bsize, (char **) &in_bbox_list);
+	err = lf_alloc_buffer(bsize, (char **) &in_bbox_list);
 	assert(!err);
-	err = lf_alloc_buffer(fhandle, bsize, (char **) &out_bbox_list);
+	err = lf_alloc_buffer(bsize, (char **) &out_bbox_list);
 	assert(!err);
 
 	/*
 	 * foreach 'param in attribs 
 	 */
 	for (i = 0; i < count; i++) {
-		read_param(fhandle, ohandle, FACE_BBOX_FMT, &param, i);
+		read_param(ohandle, FACE_BBOX_FMT, &param, i);
 		in_bbox_list[i] = param.bbox;
 		assert(param.bbox.xmin >= 0);
 	}
@@ -451,18 +443,18 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, int numout,
 	for (i = 0; i < count; i++) {
 		param.bbox = out_bbox_list[i];
 		assert(param.bbox.xmin >= 0);
-		write_param(fhandle, ohandle, FACE_BBOX_FMT, &param, i);
+		write_param(ohandle, FACE_BBOX_FMT, &param, i);
 	}
 
-	lf_free_buffer(fhandle, (char *) in_bbox_list);
-	lf_free_buffer(fhandle, (char *) out_bbox_list);
+	lf_free_buffer((char *) in_bbox_list);
+	lf_free_buffer((char *) out_bbox_list);
 
 	err =
-	    lf_write_attr(fhandle, ohandle, NUM_FACE, sizeof(int),
+	    lf_write_attr(ohandle, NUM_FACE, sizeof(int),
 	                  (char *) &count);
 	assert(!err);
 
-	lf_log(fhandle, LOGL_TRACE, "bbox_merge: outcount = %d\n", count);
+	lf_log(LOGL_TRACE, "bbox_merge: outcount = %d\n", count);
 
 	return count;
 }

@@ -73,18 +73,18 @@ ih_get_ref(image_hooks_t * ptr)
 }
 
 void
-ih_drop_ref(image_hooks_t * ptr, lf_fhandle_t fhandle)
+ih_drop_ref(image_hooks_t * ptr)
 {
 
 	pthread_mutex_lock(&ih_mutex);
 	assert(ptr->refcount > 0);
 	ptr->refcount--;
 	if (ptr->refcount == 0) {
-		ft_free(fhandle, (char *) ptr->img);
+		ft_free((char *) ptr->img);
 		if (ptr->histo_ii) {
-			ft_free(fhandle, (char *) ptr->histo_ii);
+			ft_free((char *) ptr->histo_ii);
 		}
-		ls_release_object(fhandle, ptr->ohandle);
+		ls_release_object(NULL, ptr->ohandle);
 		free(ptr);
 	}
 	pthread_mutex_unlock(&ih_mutex);

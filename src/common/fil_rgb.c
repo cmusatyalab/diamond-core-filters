@@ -35,8 +35,8 @@
 
 #define ASSERT(exp)							\
 if(!(exp)) {								\
-  lf_log(fhandle, LOGL_ERR, "Assertion %s failed at ", #exp);		\
-  lf_log(fhandle, LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
+  lf_log(LOGL_ERR, "Assertion %s failed at ", #exp);		\
+  lf_log(LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
   pass = -1;								\
   goto done;								\
 }
@@ -62,14 +62,12 @@ f_fini_img2rgb(void *data)
  */
 
 int
-f_eval_img2rgb(lf_obj_handle_t ohandle, int numout,
-               lf_obj_handle_t * ohandles, void *user_data)
+f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 {
 	RGBImage       *img;
 	int             err = 0, pass = 1;
-	lf_fhandle_t    fhandle = 0;
 
-	lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: enter");
+	lf_log(LOGL_TRACE, "f_pnm2rgb: enter");
 
 
 	/* XXX rahul   put some decoder here to figure out the file type */
@@ -83,22 +81,22 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, int numout,
 	 * save some attribs 
 	 */
 #ifdef	XXX
-	lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int),
+	lf_write_attr(ohandle, IMG_HEADERLEN, sizeof(int),
 	              (char *) &headerlen);
 #endif
 
-	lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &img->height);
-	lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &img->width);
+	lf_write_attr(ohandle, ROWS, sizeof(int), (char *) &img->height);
+	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &img->width);
 
 	/*
 	 * save img as an attribute 
 	 */
-	err = lf_write_attr(fhandle, ohandle, RGB_IMAGE, img->nbytes, (char *) img);
+	err = lf_write_attr(ohandle, RGB_IMAGE, img->nbytes, (char *) img);
 	ASSERT(!err);
 done:
 	if (img)
-		lf_free_buffer(fhandle, (char *) img);
-	lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: done");
+		lf_free_buffer((char *) img);
+	lf_log(LOGL_TRACE, "f_pnm2rgb: done");
 	return pass;
 }
 
@@ -124,14 +122,12 @@ f_fini_attr2rgb(void *data)
  */
 
 int
-f_eval_attr2rgb(lf_obj_handle_t ohandle, int numout,
-                lf_obj_handle_t * ohandles, void *user_data)
+f_eval_attr2rgb(lf_obj_handle_t ohandle, void *user_data)
 {
 	RGBImage       *img;
 	int             err = 0, pass = 1;
-	lf_fhandle_t    fhandle = 0;
 
-	lf_log(fhandle, LOGL_TRACE, "f_eval_attr2rgb: enter");
+	lf_log(LOGL_TRACE, "f_eval_attr2rgb: enter");
 
 
 	img = get_attr_rgb_img(ohandle, "DATA0");
@@ -142,19 +138,19 @@ f_eval_attr2rgb(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * save some attribs 
 	 */
-	lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &img->height);
-	lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &img->width);
+	lf_write_attr(ohandle, ROWS, sizeof(int), (char *) &img->height);
+	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &img->width);
 
 	/*
 	 * save img as an attribute 
 	 */
 	err =
-	    lf_write_attr(fhandle, ohandle, RGB_IMAGE, img->nbytes, (char *) img);
+	    lf_write_attr(ohandle, RGB_IMAGE, img->nbytes, (char *) img);
 	ASSERT(!err);
 done:
 	if (img)
-		lf_free_buffer(fhandle, (char *) img);
-	lf_log(fhandle, LOGL_TRACE, "f_pnm2rgb: done");
+		lf_free_buffer((char *) img);
+	lf_log(LOGL_TRACE, "f_pnm2rgb: done");
 	return pass;
 }
 

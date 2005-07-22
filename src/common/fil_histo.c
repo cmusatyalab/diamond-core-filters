@@ -64,8 +64,8 @@ read_cycle()
 
 #define ASSERT(exp)							\
 if(!(exp)) {								\
-  lf_log(fhandle, LOGL_ERR, "Assertion %s failed at ", #exp);		\
-  lf_log(fhandle, LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
+  lf_log(LOGL_ERR, "Assertion %s failed at ", #exp);		\
+  lf_log(LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
   pass = -1;								\
   goto done;								\
 }
@@ -79,8 +79,7 @@ if(!(exp)) {								\
  * read in volatile state from args. also see patch_spec_write_args 
  */
 static int
-patch_spec_read_args(lf_fhandle_t fhandle, histo_config_t * hconfig,
-                     int argc, char **args)
+patch_spec_read_args(histo_config_t * hconfig, int argc, char **args)
 {
 	int             i,
 	j,
@@ -97,7 +96,7 @@ patch_spec_read_args(lf_fhandle_t fhandle, histo_config_t * hconfig,
 
 	TAILQ_INIT(&hconfig->patchlist);
 	for (i = 0; i < hconfig->num_patches; i++) {
-		err = lf_alloc_buffer(fhandle, sizeof(patch_t), (char **) &patch);
+		err = lf_alloc_buffer(sizeof(patch_t), (char **) &patch);
 		ASSERT(patch);
 		ASSERT(!err);
 		histo_clear(&patch->histo);
@@ -133,7 +132,6 @@ done:
 
 typedef struct write_notify_context_t
 {
-	lf_fhandle_t    fhandle;
 	lf_obj_handle_t ohandle;
 
 }
@@ -156,9 +154,9 @@ write_notify_f(void *cont, search_param_t * param)
 {
 	write_notify_context_t *context = (write_notify_context_t *) cont;
 
-	write_param(context->fhandle, context->ohandle, HISTO_BBOX_FMT, param,
+	write_param(context->ohandle, HISTO_BBOX_FMT, param,
 	            param->id);
-	lf_log(context->fhandle, LOGL_TRACE, "found histo match");
+	lf_log(LOGL_TRACE, "found histo match");
 }
 
 
@@ -172,13 +170,12 @@ f_init_histo_detect(int numarg, char **args, int blob_len,
                     void *blob, void **data)
 {
 	histo_config_t *hconfig;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	int             err;
 
 	/*
 	 * filter initialization
 	 */
-	err = lf_alloc_buffer(fhandle, sizeof(*hconfig), (char **) &hconfig);
+	err = lf_alloc_buffer(sizeof(*hconfig), (char **) &hconfig);
 	assert(!err);
 	assert(hconfig);
 
@@ -200,7 +197,7 @@ f_init_histo_detect(int numarg, char **args, int blob_len,
 	/*
 	 * read the histogram patches in 
 	 */
-	err = patch_spec_read_args(fhandle, hconfig, numarg - 11, args + 11);
+	err = patch_spec_read_args(hconfig, numarg - 11, args + 11);
 	assert(err);
 
 	/*
@@ -214,29 +211,26 @@ int
 f_fini_histo_detect(void *data)
 {
 	patch_t        *patch;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	histo_config_t *hconfig = (histo_config_t *) data;
 
 	while ((patch = TAILQ_FIRST(&hconfig->patchlist))) {
 		TAILQ_REMOVE(&hconfig->patchlist, patch, link);
-		lf_free_buffer(fhandle, (char *) patch);
+		lf_free_buffer((char *) patch);
 	}
-	lf_free_buffer(fhandle, (char *) hconfig);
+	lf_free_buffer((char *) hconfig);
 
 	return (0);
 }
 
 
 int
-f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
-                    lf_obj_handle_t * ohandles, void *f_data)
+f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             pass = 0;
 	int             err;
 	RGBImage       *img = NULL;
 	off_t           bsize;
 	bbox_list_t		blist;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	histo_config_t *hconfig = (histo_config_t *) f_data;
 	int             nhisto;
 	float           min_simularity;
@@ -248,19 +242,19 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	off_t			len;
 
 
-	lf_log(fhandle, LOGL_TRACE, "f_histo_detect: enter");
+	lf_log(LOGL_TRACE, "f_histo_detect: enter");
 
 	/*
 	 * get the img 
 	 */
-	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
 	if (err != 0) {
 		img_alloc = 1;
 		img = get_rgb_img(ohandle);
 	}
 	ASSERT(img->type == IMAGE_PPM);
 
-	err = lf_ref_attr(fhandle, ohandle, HISTO_II, &len, (char **)&ii);
+	err = lf_ref_attr(ohandle, HISTO_II, &len, (char **)&ii);
 	if (err != 0) {
 		ii_alloc = 1;
 		ii = histo_get_ii(hconfig, img);
@@ -270,7 +264,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	 * get nhisto 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *) &nhisto);
+	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, (char *) &nhisto);
 	if (err) {
 		nhisto = 0;             /* XXX */
 	}
@@ -280,7 +274,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	 * scan the image
 	 */
 	write_notify_context_t context;
-	context.fhandle = fhandle;
 	context.ohandle = ohandle;
 
 	TAILQ_INIT(&blist);
@@ -314,7 +307,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 	 * save some stats 
 	 */
 	nhisto += pass;
-	err = lf_write_attr(fhandle, ohandle, NUM_HISTO, sizeof(int),
+	err = lf_write_attr(ohandle, NUM_HISTO, sizeof(int),
 	                    (char *) &nhisto);
 	ASSERT(!err);
 
@@ -329,11 +322,11 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, int numout,
 
 done:
 	if (ii_alloc) {
-		ft_free(fhandle, (char *) ii);
+		ft_free((char *) ii);
 	}
 
 	if (img_alloc) {
-		ft_free(fhandle, (char *) img);
+		ft_free((char *) img);
 	}
 
 	return rv;
@@ -372,11 +365,9 @@ f_fini_hpass(void *data)
 
 
 int
-f_eval_hpass(lf_obj_handle_t ohandle, int numout,
-             lf_obj_handle_t * ohandles, void *f_data)
+f_eval_hpass(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             nhisto;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	int             err,
 	pass;
 	off_t           bsize;
@@ -388,7 +379,7 @@ f_eval_hpass(lf_obj_handle_t ohandle, int numout,
 	 * get nhisto 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *) &nhisto);
+	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, (char *) &nhisto);
 	ASSERT(!err);
 
 	pass = (nhisto >= fstate->num_hist);
@@ -435,14 +426,12 @@ f_fini_hintegrate(void *data)
 
 
 int
-f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
-                  lf_obj_handle_t * ohandles, void *f_data)
+f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             pass = 1;
 	RGBImage       *img = NULL;
 	HistoII        *ii = NULL;
 	int             err;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	size_t          nbytes;
 	hintegrate_data_t *fstate = (hintegrate_data_t *) f_data;
 	int             width,
@@ -453,16 +442,16 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
 
 	assert(f_data != NULL);
 	// printf("f_data: %p \n", f_data);
-	lf_log(fhandle, LOGL_TRACE, "f_hintegrate: start");
+	lf_log(LOGL_TRACE, "f_hintegrate: start");
 
 
 	/*
 	 * get the img 
 	 */
-	err = lf_ref_attr(fhandle, ihandle, RGB_IMAGE, &len, (char**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
 	if (err != 0) {
 		img_alloc = 1;
-		img = get_rgb_img(ihandle);
+		img = get_rgb_img(ohandle);
 	}
 
 	ASSERT(img);
@@ -477,7 +466,7 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
 	nbytes = width * height * sizeof(Histo) + sizeof(HistoII);
 
 
-	err = lf_alloc_buffer(fhandle, nbytes, (char **) &ii);
+	err = lf_alloc_buffer(nbytes, (char **) &ii);
 	ASSERT(!err);
 	ASSERT(ii);
 	ii->nbytes = nbytes;
@@ -488,16 +477,16 @@ f_eval_hintegrate(lf_obj_handle_t ihandle, int numout,
 	histo_compute_ii(img, ii, fstate->scale, fstate->scale, fstate->type);
 
 
-	err = lf_write_attr(fhandle, ohandles[0], HISTO_II, ii->nbytes,
+	err = lf_write_attr(ohandle, HISTO_II, ii->nbytes,
 	                    (char *) ii);
 	ASSERT(!err);
 done:
 	if (img_alloc) {
-		lf_free_buffer(fhandle, (char *) img);
+		lf_free_buffer((char *) img);
 	}
 	if (ii)
-		lf_free_buffer(fhandle, (char *) ii);
-	lf_log(fhandle, LOGL_TRACE, "f_hintegrate: done");
+		lf_free_buffer((char *) ii);
+	lf_log(LOGL_TRACE, "f_hintegrate: done");
 	return pass;
 }
 

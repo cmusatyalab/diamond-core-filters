@@ -52,7 +52,6 @@ f_get_rgba_ipl_Image(lf_obj_handle_t ohandle, int numout,
 	RGBImage       *tmp_img;
 	int             err = 0,
 	                      pass = 0;
-	lf_fhandle_t    fhandle = 0;
 	ffile_t         file;
 	int             width,
 	height,
@@ -63,7 +62,7 @@ f_get_rgba_ipl_Image(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * read the header and figure out the dimensions 
 	 */
-	ff_open(fhandle, ohandle, &file);
+	ff_open(ohandle, &file);
 	err = pnm_file_read_header(&file, &width, &height, &img_type, &headerlen);
 	FILTER_ASSERT(!err, "read header");
 	fprintf(stderr, "got image: width=%d, height=%d\n", width, height);
@@ -71,13 +70,13 @@ f_get_rgba_ipl_Image(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * save some attribs 
 	 */
-	lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int),
+	lf_write_attr(ohandle, IMG_HEADERLEN, sizeof(int),
 	              (char *) &headerlen);
-	lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &height);
-	lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &width);
+	lf_write_attr(ohandle, ROWS, sizeof(int), (char *) &height);
+	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &width);
 
 	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
-	err = lf_alloc_buffer(fhandle, bytes, (char **) &tmp_img);
+	err = lf_alloc_buffer(bytes, (char **) &tmp_img);
 
 	tmp_img->width = width;
 	tmp_img->height = height;
@@ -94,7 +93,7 @@ f_get_rgba_ipl_Image(lf_obj_handle_t ohandle, int numout,
 	memcpy(img->imageData, tmp_img->data, img->imageSize);
 	FILTER_ASSERT(!err, "read data");
 
-	lf_write_attr(fhandle, ohandle, RGBA_IPL_IMAGE, sizeof(char *),
+	lf_write_attr(ohandle, RGBA_IPL_IMAGE, sizeof(char *),
 	              (char *) img);
 
 	pass = 1;
@@ -126,15 +125,13 @@ f_fini_get_gray_ipl_image(void *fdatap)
 
 
 int
-f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, int numout,
-                          lf_obj_handle_t * ohandles, void *fdatap)
+f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, void *fdatap)
 {
 	IplImage       *gray_img = NULL;
 	RGBImage       *tmp_img = NULL;
 	ffile_t         file;
 	int             err = 0,
 	                      pass = 0;
-	lf_fhandle_t    fhandle = 0;
 	int             width,
 	height,
 	headerlen;
@@ -144,20 +141,20 @@ f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * read the header and figure out the dimensions 
 	 */
-	ff_open(fhandle, ohandle, &file);
+	ff_open(ohandle, &file);
 	err = pnm_file_read_header(&file, &width, &height, &img_type, &headerlen);
 	FILTER_ASSERT(!err, "read header");
 
 	/*
 	 * save some attribs 
 	 */
-	lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int),
+	lf_write_attr(ohandle, IMG_HEADERLEN, sizeof(int),
 	              (char *) &headerlen);
-	lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &height);
-	lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &width);
+	lf_write_attr(ohandle, ROWS, sizeof(int), (char *) &height);
+	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &width);
 
 	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
-	err = lf_alloc_buffer(fhandle, bytes, (char **) &tmp_img);
+	err = lf_alloc_buffer(bytes, (char **) &tmp_img);
 
 	tmp_img->nbytes = bytes;
 	tmp_img->type = img_type;
@@ -168,14 +165,14 @@ f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, int numout,
 	FILTER_ASSERT(!err, "pnm_file_read_data");
 
 	err =
-	    lf_write_attr(fhandle, ohandle, RGB_IMAGE, tmp_img->nbytes,
+	    lf_write_attr(ohandle, RGB_IMAGE, tmp_img->nbytes,
 	                  (char *) tmp_img);
 	ASSERTX(pass = 0, !err);
 
 	gray_img = get_gray_ipl_image(tmp_img);
 
 	err =
-	    lf_write_attr(fhandle, ohandle, GRAY_IPL_IMAGE, gray_img->nSize,
+	    lf_write_attr(ohandle, GRAY_IPL_IMAGE, gray_img->nSize,
 	                  (char *) gray_img);
 	ASSERTX(pass = 0, !err);
 
@@ -184,7 +181,7 @@ f_eval_get_gray_ipl_image(lf_obj_handle_t ohandle, int numout,
 done:
 
 	if (tmp_img) {
-		lf_free_buffer(fhandle, (char *) tmp_img);
+		lf_free_buffer((char *) tmp_img);
 	}
 	/*
 	 * releasing the cvimage causes wierd things to happen if we read it

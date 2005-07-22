@@ -229,13 +229,12 @@ dump_state()
 void
 dump_id(ls_obj_handle_t handle)
 {
-	lf_fhandle_t    fhandle = 0;
 	off_t           size;
 	int             err;
 	obj_id_t        obj_id;
 
 	size = sizeof(obj_id);
-	err = lf_read_attr(fhandle, handle, "MY_OID", &size, (char *) &obj_id);
+	err = lf_read_attr(handle, "MY_OID", &size, (char *) &obj_id);
 	if (err) {
 		fprintf(stdout, "OID Unknown ");
 	} else {
@@ -248,15 +247,13 @@ dump_id(ls_obj_handle_t handle)
 void
 dump_name(ls_obj_handle_t handle)
 {
-	lf_fhandle_t    fhandle = 0;
 	off_t           size;
 	int             err;
 	int             i;
 	char            big_buffer[MAX_NAME];
 
 	size = MAX_NAME;
-	err = lf_read_attr(fhandle, handle, DISPLAY_NAME, &size,
-	                   (char *) big_buffer);
+	err = lf_read_attr(handle, DISPLAY_NAME, &size, (char *) big_buffer);
 	if (err) {
 		fprintf(stdout, "name: Unknown ");
 	} else {
@@ -272,7 +269,6 @@ dump_name(ls_obj_handle_t handle)
 void
 dump_matches(ls_obj_handle_t handle)
 {
-	lf_fhandle_t    fhandle = 0;
 	off_t           size;
 	int             err;
 	char            big_buffer[MAX_NAME];
@@ -283,7 +279,7 @@ dump_matches(ls_obj_handle_t handle)
 	double          sum = 0.0;
 
 	size = sizeof(num_histo);
-	err = lf_read_attr(fhandle, handle, NUM_HISTO, &size,
+	err = lf_read_attr(handle, NUM_HISTO, &size,
 	                   (char *) &num_histo);
 	if (err) {
 		return;
@@ -293,7 +289,7 @@ dump_matches(ls_obj_handle_t handle)
 
 		sprintf(big_buffer, HISTO_BBOX_FMT, i);
 		size = sizeof(param);
-		err = lf_read_attr(fhandle, handle, big_buffer, &size,
+		err = lf_read_attr(handle, big_buffer, &size,
 		                   (char *) &param);
 
 		if (!err) {

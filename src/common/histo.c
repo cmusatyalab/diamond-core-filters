@@ -763,7 +763,6 @@ histo_get_ii(histo_config_t *hconfig, RGBImage *img)
 	int             nbytes;
 	int		gcd;
 	int		err;
-	void *		fhandle = 0;
 	HistoII *	ii;
 
 	/* XXX do better on gcd for scalebits */
@@ -779,7 +778,7 @@ histo_get_ii(histo_config_t *hconfig, RGBImage *img)
 	nbytes = ii_width * ii_height * sizeof(Histo) + sizeof(HistoII);
 
 
-	err = lf_alloc_buffer(fhandle, nbytes, (char **) &ii);
+	err = lf_alloc_buffer(nbytes, (char **) &ii);
 	assert(!err);
 	assert(ii);
 	ii->nbytes = nbytes;

@@ -22,9 +22,7 @@
 
 #include "filter_api.h"
 
-typedef struct ffile
-{
-	lf_fhandle_t fhandle;
+typedef struct ffile {
 	lf_obj_handle_t obj_handle;
 
 	off_t len;		/* size of buf */
@@ -32,11 +30,10 @@ typedef struct ffile
 	off_t pos;
 
 	int type;			/* hack; tracks image_type_t */
-}
-ffile_t;
+} ffile_t;
 
 
-void ff_open(lf_fhandle_t fhandle, lf_obj_handle_t obj_handle, ffile_t *);
+void ff_open(lf_obj_handle_t obj_handle, ffile_t *);
 void ff_close(ffile_t *);
 
 size_t ff_read(ffile_t *, char **data, size_t size);

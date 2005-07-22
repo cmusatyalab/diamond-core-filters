@@ -131,8 +131,6 @@ static struct {
 /* the search entries for this search */
 search_set *	snap_searchset;
 
-static lf_fhandle_t fhandle = 0;	/* XXX */
-
 #define		MAX_SEARCHES	64	/* XXX */
 
 /**********************************************************************/
@@ -222,7 +220,7 @@ static pthread_mutex_t	thumb_mutex = PTHREAD_MUTEX_INITIALIZER;
  */
 
 extern region_t draw_bounding_box(RGBImage *img, int scale,
-	                                  lf_fhandle_t fhandle, ls_obj_handle_t ohandle,
+	                                   ls_obj_handle_t ohandle,
 	                                  RGBPixel color, RGBPixel mask, char *fmt, int i);
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
 
@@ -491,7 +489,6 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	RGBImage        *rgbimg, *scaledimg;
 	char            name[MAX_NAME];
 	off_t		bsize;
-	lf_fhandle_t	fhandle = 0; /* XXX */
 	int		err;
 	int		num_face, num_histo;
 
@@ -509,9 +506,9 @@ display_thumbnail(ls_obj_handle_t ohandle)
 
 	/* get path XXX */
 	bsize = MAX_NAME;
-	err = lf_read_attr(fhandle, ohandle, DISPLAY_NAME, &bsize, name);
+	err = lf_read_attr(ohandle, DISPLAY_NAME, &bsize, name);
 	if(err) {
-		err = lf_read_attr(fhandle, ohandle, OBJ_PATH, &bsize, name);
+		err = lf_read_attr(ohandle, OBJ_PATH, &bsize, name);
 	}
 	if (err) {
 		sprintf(name, "%s", "uknown");
@@ -521,7 +518,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 
 
 	/* get the img */
-	rgbimg = (RGBImage*)ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
+	rgbimg = (RGBImage*)ft_read_alloc_attr(ohandle, RGB_IMAGE);
 
 	if (rgbimg == NULL) {
 		//rgbimg = get_attr_rgb_img(ohandle, "DATA0");
@@ -532,12 +529,12 @@ display_thumbnail(ls_obj_handle_t ohandle)
 
 	/* figure out bboxes to highlight */
 	bsize = sizeof(num_histo);
-	err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
+	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
 	if (err) {
 		num_histo = 0;
 	}
 	bsize = sizeof(num_face);
-	err = lf_read_attr(fhandle, ohandle, NUM_FACE, &bsize, (char *)&num_face);
+	err = lf_read_attr(ohandle, NUM_FACE, &bsize, (char *)&num_face);
 	if (err) {
 		num_face = 0;
 	}
@@ -548,11 +545,11 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	assert(scaledimg);
 
 	for(int i=0; i<num_histo; i++) {
-		draw_bounding_box(scaledimg, scale, fhandle, ohandle,
+		draw_bounding_box(scaledimg, scale, ohandle,
 		                  green, colorMask, HISTO_BBOX_FMT, i);
 	}
 	for(int i=0; i<num_face; i++) {
-		draw_bounding_box(scaledimg, scale, fhandle, ohandle,
+		draw_bounding_box(scaledimg, scale, ohandle,
 		                  red, colorMask, FACE_BBOX_FMT, i);
 	}
 
@@ -578,10 +575,8 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	if (cur_thumbnail->img) { /* cleanup */
 		gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport),
 		                     cur_thumbnail->gimage);
-		lf_free_buffer(fhandle, (char *)cur_thumbnail->img); /* XXX */
-		//lf_free_buffer(fhandle, (char *)cur_thumbnail->fullimage); /* XXX */
-		ih_drop_ref(cur_thumbnail->hooks, fhandle);
-		//ls_release_object(fhandle, cur_thumbnail->ohandle);
+		lf_free_buffer((char *)cur_thumbnail->img); /* XXX */
+		ih_drop_ref(cur_thumbnail->hooks);
 	}
 	gtk_frame_set_label(GTK_FRAME(cur_thumbnail->frame), "");
 	cur_thumbnail->marked = 0;
@@ -636,7 +631,7 @@ clear_thumbnails()
 			gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport),
 			                     cur_thumbnail->gimage);
 			free(cur_thumbnail->img); /* XXX */
-			ih_drop_ref(cur_thumbnail->hooks, fhandle);
+			ih_drop_ref(cur_thumbnail->hooks);
 			cur_thumbnail->img = NULL;
 		}
 

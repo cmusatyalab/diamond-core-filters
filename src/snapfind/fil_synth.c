@@ -50,7 +50,6 @@ f_synth(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
         int numarg, char **args, int blob_len, void *blob_data)
 {
 	int             err = 0;
-	lf_fhandle_t    fhandle = 0;
 	off_t           blen;
 	double          thresh;
 	;
@@ -60,7 +59,7 @@ f_synth(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
 	int             ran;
 	int             i;
 
-	lf_log(fhandle, LOGL_TRACE, "\nf_synth: enter\n");
+	lf_log(LOGL_TRACE, "\nf_synth: enter\n");
 
 	if (numarg != 2) {
 		exit(1);
@@ -69,15 +68,15 @@ f_synth(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
 	loop = atoi(args[1]);
 
 
-	err = lf_next_block(fhandle, ohandle, 1, &blen, &data);
+	err = lf_next_block(ohandle, 1, &blen, &data);
 	while (err == 0) {
 		for (i = 0; i < blen; i++) {
 			compute_val(data[i], loop);
 		}
-		err = lf_free_buffer(fhandle, data);
+		err = lf_free_buffer(data);
 		assert(err == 0);
 
-		err = lf_next_block(fhandle, ohandle, 1, &blen, &data);
+		err = lf_next_block(ohandle, 1, &blen, &data);
 	}
 
 

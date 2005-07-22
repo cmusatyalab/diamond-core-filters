@@ -19,7 +19,6 @@
 
 typedef struct write_notify_context_t
 {
-	lf_fhandle_t 	fhandle;
 	lf_obj_handle_t ohandle;
 }
 write_notify_context_t;

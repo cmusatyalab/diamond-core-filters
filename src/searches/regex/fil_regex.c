@@ -94,15 +94,13 @@ f_fini_regex(void *fdata)
 /*
  */
 int
-f_eval_regex(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
-             void *fdata)
+f_eval_regex(lf_obj_handle_t ohandle, void *fdata)
 {
 	int             pass = 0;   /* if we decided to pass */
 	int             termpass[MAX_REGEX];
 	int             i,
 	j;
 	fdata_regex_t  *fconfig = (fdata_regex_t *) fdata;
-	lf_fhandle_t    fhandle = 0;    /* XXX */
 	int             err;
 
 	assert(fconfig->num_regexs < MAX_REGEX);
@@ -114,7 +112,7 @@ f_eval_regex(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
 		char            buf[BUFSIZ];
 		off_t           bsize = BUFSIZ;
 
-		err = lf_read_attr(fhandle, ohandle, fconfig->attr_names[i],
+		err = lf_read_attr(ohandle, fconfig->attr_names[i],
 		                   &bsize, (char *) buf);
 
 		for (j = 0; !err && j < fconfig->num_regexs; j++) {
@@ -127,7 +125,7 @@ f_eval_regex(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t * ohandles,
 					 * add an attribute to say we passed this regex (for fun) 
 					 */
 					sprintf(buf, "regex_%s", fconfig->regex_names[j]);
-					err = lf_write_attr(fhandle, ohandle, buf, sizeof(int),
+					err = lf_write_attr(ohandle, buf, sizeof(int),
 					                    (char *) &val);
 					assert(!err);
 				}

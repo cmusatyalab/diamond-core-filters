@@ -20,8 +20,7 @@
 #include "fil_tools.h"
 
 char           *
-ft_read_alloc_attr(lf_fhandle_t fhandle, lf_obj_handle_t ohandle,
-                   const char *name)
+ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name)
 {
 	int             err;
 	char           *ptr;
@@ -32,19 +31,19 @@ ft_read_alloc_attr(lf_fhandle_t fhandle, lf_obj_handle_t ohandle,
 	 */
 
 	bsize = 0;
-	err = lf_read_attr(fhandle, ohandle, name, &bsize, (char *) NULL);
+	err = lf_read_attr(ohandle, name, &bsize, (char *) NULL);
 	if (err != ENOMEM) {
 		// fprintf(stderr, "attribute lookup error: %s\n", name);
 		return NULL;
 	}
 
-	err = lf_alloc_buffer(fhandle, bsize, (char **) &ptr);
+	err = lf_alloc_buffer(bsize, (char **) &ptr);
 	if (err) {
 		fprintf(stderr, "alloc error\n");
 		return NULL;
 	}
 
-	err = lf_read_attr(fhandle, ohandle, name, &bsize, (char *) ptr);
+	err = lf_read_attr(ohandle, name, &bsize, (char *) ptr);
 	if (err) {
 		fprintf(stderr, "attribute read error: %s\n", name);
 		return NULL;
@@ -54,10 +53,10 @@ ft_read_alloc_attr(lf_fhandle_t fhandle, lf_obj_handle_t ohandle,
 }
 
 void
-ft_free(lf_fhandle_t fhandle, char *ptr)
+ft_free(char *ptr)
 {
 	int             err;
-	err = lf_free_buffer(fhandle, ptr);
+	err = lf_free_buffer(ptr);
 	// assert(err == 0);
 }
 
@@ -81,7 +80,7 @@ done:
 
 
 int
-write_param(lf_fhandle_t fhandle, lf_obj_handle_t ohandle, char *fmt,
+write_param(lf_obj_handle_t ohandle, char *fmt,
             search_param_t * param, int i)
 {
 	off_t           bsize;
@@ -90,19 +89,19 @@ write_param(lf_fhandle_t fhandle, lf_obj_handle_t ohandle, char *fmt,
 
 #ifdef VERBOSE
 
-	lf_log(fhandle, LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
+	lf_log(LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
 	       param->bbox.xmin, param->bbox.ymin, param->scale);
 #endif
 
 	sprintf(buf, fmt, i);
 	bsize = sizeof(search_param_t);
-	err = lf_write_attr(fhandle, ohandle, buf, bsize, (char *) param);
+	err = lf_write_attr(ohandle, buf, bsize, (char *) param);
 
 	return err;
 }
 
 int
-read_param(lf_fhandle_t fhandle, lf_obj_handle_t ohandle, char *fmt,
+read_param(lf_obj_handle_t ohandle, char *fmt,
            search_param_t * param, int i)
 {
 	off_t           bsize;
@@ -111,7 +110,7 @@ read_param(lf_fhandle_t fhandle, lf_obj_handle_t ohandle, char *fmt,
 
 	sprintf(buf, fmt, i);
 	bsize = sizeof(search_param_t);
-	err = lf_read_attr(fhandle, ohandle, buf, &bsize, (char *) param);
+	err = lf_read_attr(ohandle, buf, &bsize, (char *) param);
 
 	return err;
 }

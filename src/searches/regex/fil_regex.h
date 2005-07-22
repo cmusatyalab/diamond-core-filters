@@ -31,11 +31,10 @@ extern "C"
 {
 #endif
 
-	int f_init_regex(int numarg, char **args, int blob_len, void *blob,
+int f_init_regex(int numarg, char **args, int blob_len, void *blob,
 	                 void **fdatap);
-	int f_fini_regex(void *fdata);
-	int f_eval_regex(lf_obj_handle_t ohandle, int numout, lf_obj_handle_t *ohandles,
-	                 void *fdata);
+int f_fini_regex(void *fdata);
+int f_eval_regex(lf_obj_handle_t ohandle, void *fdata);
 
 #ifdef __cplusplus
 }

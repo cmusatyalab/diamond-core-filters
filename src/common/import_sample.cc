@@ -182,15 +182,14 @@ cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
 
 
 static GtkWidget *
-describe_hbbox(lf_fhandle_t fhandle, ls_obj_handle_t ohandle, int i,
-               GtkWidget **button)
+describe_hbbox(ls_obj_handle_t ohandle, int i, GtkWidget **button)
 {
 	search_param_t 	param;
 	int 		err;
 
 	GUI_THREAD_CHECK();
 
-	err = read_param(fhandle, ohandle, HISTO_BBOX_FMT, &param, i);
+	err = read_param(ohandle, HISTO_BBOX_FMT, &param, i);
 	if (err) {
 		printf("XXX failed to read parameter <%s> \n", HISTO_BBOX_FMT);
 	} else {
@@ -330,7 +329,6 @@ image_highlight_main(void *ptr)
 
 	pthread_mutex_lock(&highlight_info.mutex);
 	highlight_info.thread_running = 0;
-	// XXX ih_drop_ref(import_window.hooks, fhandle);
 	pthread_mutex_unlock(&highlight_info.mutex);
 
 	pthread_exit(NULL);

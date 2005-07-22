@@ -261,28 +261,26 @@ f_fini_integrate(void *fdata)
 }
 
 int
-f_eval_integrate(lf_obj_handle_t ohandle, int numout,
-                 lf_obj_handle_t * ohandles, void *fdata)
+f_eval_integrate(lf_obj_handle_t ohandle, void *fdata)
 {
 	ii_image_t     *img = NULL;
 	ii2_image_t    *img2 = NULL;
 	// ffile_t file;
 	int             err = 0,
 	                      pass = 1;
-	lf_fhandle_t    fhandle = 0;
 	off_t           bytes;
 	int             width,
 	height,
 	headerlen;
 	// image_type_t magic;
 
-	lf_log(fhandle, LOGL_TRACE, "\nf_integrate: enter\n");
+	lf_log(LOGL_TRACE, "\nf_integrate: enter\n");
 
 	/*
 	 * get image 
 	 */
 	RGBImage       *rgbimg =
-	    (RGBImage *) ft_read_alloc_attr(fhandle, ohandle, RGB_IMAGE);
+	    (RGBImage *) ft_read_alloc_attr(ohandle, RGB_IMAGE);
 	FILTER_ASSERT(rgbimg, "error getting RGB_IMAGE");
 	ASSERTX(pass = 0, rgbimg);  /* XXX */
 	width = rgbimg->width;
@@ -292,22 +290,22 @@ f_eval_integrate(lf_obj_handle_t ohandle, int numout,
 	 * read the header and figure out the dimensions 
 	 */
 
-	lf_log(fhandle, LOGL_TRACE, "got image: width=%d, height=%d\n", width,
+	lf_log(LOGL_TRACE, "got image: width=%d, height=%d\n", width,
 	       height);
 
 	/*
 	 * save some attribs 
 	 */
-	lf_write_attr(fhandle, ohandle, IMG_HEADERLEN, sizeof(int),
+	lf_write_attr(ohandle, IMG_HEADERLEN, sizeof(int),
 	              (char *) &headerlen);
-	lf_write_attr(fhandle, ohandle, ROWS, sizeof(int), (char *) &height);
-	lf_write_attr(fhandle, ohandle, COLS, sizeof(int), (char *) &width);
+	lf_write_attr(ohandle, ROWS, sizeof(int), (char *) &height);
+	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &width);
 
 	/*
 	 * create image to hold the integral image 
 	 */
 	bytes = sizeof(ii_image_t) + sizeof(u_int32_t) * (width + 1) * (height + 1);
-	err = lf_alloc_buffer(fhandle, bytes, (char **) &img);
+	err = lf_alloc_buffer(bytes, (char **) &img);
 	FILTER_ASSERT(!err, "alloc");
 	img->nbytes = bytes;
 	img->width = width + 1;
@@ -317,7 +315,7 @@ f_eval_integrate(lf_obj_handle_t ohandle, int numout,
 	 * create image to hold the squared-integral image 
 	 */
 	bytes = sizeof(ii2_image_t) + sizeof(float) * (width + 1) * (height + 1);
-	err = lf_alloc_buffer(fhandle, bytes, (char **) &img2);
+	err = lf_alloc_buffer(bytes, (char **) &img2);
 	FILTER_ASSERT(!err, "alloc");
 	img2->nbytes = bytes;
 	img2->width = width + 1;
@@ -335,23 +333,23 @@ f_eval_integrate(lf_obj_handle_t ohandle, int numout,
 	/*
 	 * save img as an attribute? 
 	 */
-	err = lf_write_attr(fhandle, ohandle, II_DATA, img->nbytes, (char *) img);
+	err = lf_write_attr(ohandle, II_DATA, img->nbytes, (char *) img);
 	FILTER_ASSERT(!err, "write_attr");
-	err = lf_write_attr(fhandle, ohandle, II_SQ_DATA, img2->nbytes,
+	err = lf_write_attr(ohandle, II_SQ_DATA, img2->nbytes,
 	                    (char *) img2);
 	FILTER_ASSERT(!err, "write_attr");
 
 
 done:
 	if (rgbimg) {
-		ft_free(fhandle, (char *) rgbimg);
+		ft_free((char *) rgbimg);
 	}
 	if (img) {
-		ft_free(fhandle, (char *) img);
+		ft_free((char *) img);
 	}
 	if (img2) {
-		ft_free(fhandle, (char *) img2);
+		ft_free((char *) img2);
 	}
-	lf_log(fhandle, LOGL_TRACE, "f_integrate: done\n");
+	lf_log(LOGL_TRACE, "f_integrate: done\n");
 	return pass;
 }

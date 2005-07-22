@@ -31,8 +31,7 @@
 
 
 static int
-read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
-                  int argc, char **args)
+read_texture_args(gtexture_args_t *data, int argc, char **args)
 {
 	int	i,j;
 	float *	respv;
@@ -78,7 +77,7 @@ read_texture_args(lf_fhandle_t fhandle, gtexture_args_t *data,
 
                                                                                 
 static int
-write_param(lf_fhandle_t fhandle, lf_obj_handle_t ohandle, char *fmt,
+write_param(lf_obj_handle_t ohandle, char *fmt,
             search_param_t * param, int i)
 {
         off_t           bsize;
@@ -87,13 +86,13 @@ write_param(lf_fhandle_t fhandle, lf_obj_handle_t ohandle, char *fmt,
                                                                                 
 #ifdef VERBOSE
                                                                                 
-        lf_log(fhandle, LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
+        lf_log(LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
                param->bbox.xmin, param->bbox.ymin, param->scale);
 #endif
                                                                                 
         sprintf(buf, fmt, i);
         bsize = sizeof(search_param_t);
-        err = lf_write_attr(fhandle, ohandle, buf, bsize, (char *) param);
+        err = lf_write_attr(ohandle, buf, bsize, (char *) param);
                                                                                 
         return err;
 }
@@ -103,7 +102,7 @@ static void
 write_notify_f(void *cont, search_param_t *param)
 {
 	write_notify_context_t *context = (write_notify_context_t *)cont;
-	write_param(context->fhandle, context->ohandle, GAB_BBOX_FMT, param, param->id);
+	write_param(context->ohandle, GAB_BBOX_FMT, param, param->id);
 }
 
 
@@ -112,14 +111,13 @@ f_init_gab_texture(int numarg, char **args, int blob_len,
                    void *blob, void **f_datap)
 {
 	gtexture_args_t*	data;
-	lf_fhandle_t 	fhandle = 0; /* XXX */
 	int				err;
 
 
-	err = lf_alloc_buffer(fhandle, sizeof(*data), (char **)&data);
+	err = lf_alloc_buffer(sizeof(*data), (char **)&data);
 	assert(!err);
 
-	err = read_texture_args(fhandle, data, numarg, args);
+	err = read_texture_args(data, numarg, args);
 	assert(err == 0);
 
 	*f_datap = data;
@@ -148,8 +146,7 @@ f_fini_gab_texture(void *f_datap)
 #define RGB_IMAGE  "_rgb_image.rgbimage"
 
 int
-f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
-                   lf_obj_handle_t *ohandles, void *f_datap)
+f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 {
 	int		pass = 0;
 	int		err;
@@ -157,7 +154,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 	off_t 		bsize;
 	off_t 		len;
 	float			min_simularity;
-	lf_fhandle_t 	fhandle = 0; /* XXX */
 	gtexture_args_t  *targs = (gtexture_args_t *)f_datap;
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
@@ -167,9 +163,9 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 	search_param_t param;
 	int ntexture;
 
-	lf_log(fhandle, LOGL_TRACE, "f_texture_detect: enter");
+	lf_log(LOGL_TRACE, "f_texture_detect: enter");
 
-	err = lf_ref_attr(fhandle, ohandle, RGB_IMAGE, &len, (char**)&rgb_img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&rgb_img);
 	assert(err == 0);
 	if (rgb_img == NULL) {
 		rgb_alloc = 1;
@@ -197,17 +193,17 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 		/* increase num_histo counter (for boxes in app)*/
 		int num_histo = 0;
 		bsize = sizeof(int);
-		err = lf_read_attr(fhandle, ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
+		err = lf_read_attr(ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
 		if (err)
 			num_histo=0;
 
 		/* increase the ntexture counter */
 		bsize = sizeof(int);
-		err = lf_read_attr(fhandle, ohandle, NUM_TEXTURE, &bsize, (char *)&ntexture);
+		err = lf_read_attr(ohandle, NUM_TEXTURE, &bsize, (char *)&ntexture);
 		if(err)
 			ntexture = 0;
 		ntexture= ntexture+pass;
-		err = lf_write_attr(fhandle, ohandle, NUM_TEXTURE, sizeof(int), (char *)&ntexture);
+		err = lf_write_attr(ohandle, NUM_TEXTURE, sizeof(int), (char *)&ntexture);
 		assert(!err);
 
 
@@ -230,7 +226,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 			param.name[PARAM_NAME_MAX] = '\0';
 			param.id = i;
 			write_notify_context_t context;
-			context.fhandle = fhandle;
 			context.ohandle = ohandle;
 			write_notify_f(&context, &param);
 			TAILQ_REMOVE(&blist, cur_box, link);
@@ -240,7 +235,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 
 		/* write out the update number of matches, XXX clean this up soon */
 		num_histo = num_histo+pass;
-		err = lf_write_attr(fhandle, ohandle, NUM_HISTO, sizeof(int), (char *)&num_histo);
+		err = lf_write_attr(ohandle, NUM_HISTO, sizeof(int), (char *)&num_histo);
 		assert(!err);
 
 		if (min_simularity == 2.0) {
@@ -253,14 +248,14 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, int numout,
 	}
 
 	if (rgb_alloc) {
-		lf_free_buffer(fhandle, (char*)rgb_img);
+		lf_free_buffer((char*)rgb_img);
 	}
 
 	free(gii_img);
 
 	char buf[BUFSIZ];
 	sprintf(buf, "_texture_detect.int");
-	lf_write_attr(fhandle, ohandle, buf, sizeof(int), (char *)&pass);
+	lf_write_attr(ohandle, buf, sizeof(int), (char *)&pass);
 
 	return pass;
 }

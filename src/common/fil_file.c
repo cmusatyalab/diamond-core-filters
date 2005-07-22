@@ -20,9 +20,8 @@
 
 
 void
-ff_open(lf_fhandle_t fhandle, lf_obj_handle_t obj_handle, ffile_t * fh)
+ff_open(lf_obj_handle_t obj_handle, ffile_t * fh)
 {
-	fh->fhandle = fhandle;
 	fh->obj_handle = obj_handle;
 	fh->len = 0;
 	fh->buf = NULL;
@@ -34,7 +33,7 @@ void
 ff_close(ffile_t * fh)
 {
 	if (fh->buf) {
-		lf_free_buffer(fh->fhandle, fh->buf);
+		lf_free_buffer(fh->buf);
 	}
 }
 
@@ -54,7 +53,7 @@ ff_get_block(ffile_t * fh, size_t size)
 {
 	int             err;
 	fh->len = max(size, BLOCKSIZE);
-	err = lf_next_block(fh->fhandle, fh->obj_handle, 1, &fh->len, &fh->buf);
+	err = lf_next_block(fh->obj_handle, 1, &fh->len, &fh->buf);
 	/*
 	 * assert(!err && "lf_next_block"); 
 	 */
@@ -76,7 +75,7 @@ ff_read(ffile_t * fh, char **data, size_t size)
 
 	if (fh->pos >= fh->len) {
 		if (fh->buf) {
-			lf_free_buffer(fh->fhandle, fh->buf);
+			lf_free_buffer(fh->buf);
 			fh->buf = NULL;
 		}
 		err = ff_get_block(fh, size);   /* if err, rest works */
