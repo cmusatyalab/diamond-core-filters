@@ -161,9 +161,6 @@ read_data(lf_obj_handle_t ohandle, ffile_t * file, void *data, int width,
 		rowp += width;
 	}
 	png_read_image(png_ptr, row_pointers);
-
-
-
 }
 
 
