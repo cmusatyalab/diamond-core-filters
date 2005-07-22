@@ -286,7 +286,9 @@ pnm_parse_header(char *buf, size_t buflen,
 		*magic = IMAGE_PPM;
 	} else {
 		*magic = IMAGE_UNKNOWN;
-		assert(0 && "bad header");
+		/* XXXX */
+		fprintf(stderr, "pnm_parse_hdear: unknown type %c%c \n",
+			buf[0], buf[1]);
 		return 1;
 	}
 	// fprintf(stderr, "read_header: got pgm file\n");

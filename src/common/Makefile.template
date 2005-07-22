@@ -16,18 +16,18 @@ COMMON_HEADERS = rgb.h image_tools.h common_consts.h img_search.h
 COMMON_HEADERS += image_common.h texture_tools.h fil_tools.h 
 COMMON_HEADERS += face_tools.h fil_data2ii.h facedet.h filter_api.h
 COMMON_HEADERS += face.h fil_histo.h histo.h gtk_image_tools.h
-COMMON_HEADERS += fil_texture.h face_data.h fil_file.h fil_assert.h
+COMMON_HEADERS += fil_texture.h face_data.h fil_assert.h
 COMMON_HEADERS += fil_image_tools.h fil_face.h merge_faces.h
 COMMON_HEADERS += import_sample.h face_consts.h gui_thread.h face_image.h
 COMMON_HEADERS += search_support.h search_set.h display_img.h
 
 
 COMMON_SHARED_SRCS = image_tools.c histo.c face_tools.c texture_tools.c
-COMMON_SHARED_SRCS += facedet.c  fil_data2ii.c fil_tools.c fil_file.c
+COMMON_SHARED_SRCS += facedet.c  fil_data2ii.c fil_tools.c 
 COMMON_SHARED_SRCS += merge_faces.c  rgb.c fil_image_tools.c  
 
 COMMON_SHARED_OBJS = image_tools.o histo.o face_tools.o texture_tools.o
-COMMON_SHARED_OBJS += facedet.o  fil_data2ii.o fil_tools.o fil_file.o
+COMMON_SHARED_OBJS += facedet.o  fil_data2ii.o fil_tools.o 
 COMMON_SHARED_OBJS += merge_faces.o  rgb.o fil_image_tools.o 
 
 COMMON_SEARCHLET_SRCS = fil_histo.c fil_texture.cc fil_face.c

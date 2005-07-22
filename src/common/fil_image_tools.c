@@ -85,6 +85,10 @@ get_rgb_img(lf_obj_handle_t ohandle)
 
 	err = pnm_parse_header(obj_data, data_len, &width, &height, &magic, 
 		&headerlen);
+	if (err) {
+		return(NULL);
+	}
+			
 
 	printf("hlen %d \n", headerlen);
 	/*
