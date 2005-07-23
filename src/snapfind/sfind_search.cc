@@ -153,6 +153,12 @@ do_search(gid_list_t * main_region, char *fspec)
 		exit(1);
 	}
 
+	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_ocv_face.so");
+	if (err) {
+		printf("Failed to set searchlet on err %d \n", err);
+		exit(1);
+	}
+
 	/*
 	 * Go ahead and start the search.
 	 */

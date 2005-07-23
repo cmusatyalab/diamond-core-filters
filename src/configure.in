@@ -76,6 +76,7 @@ AC_CONFIG_FILES([Makefile
                  searches/Makefile
                  searches/regex/Makefile
                  searches/gabor_texture/Makefile
+                 searches/ocv_face/Makefile
 		 target/Makefile
 		 target/bin/Makefile
 		 target/lib/Makefile

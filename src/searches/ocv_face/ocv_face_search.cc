@@ -39,8 +39,12 @@
 
 #define	SEARCH_NAME	"ocv_face_search"
 
+extern "C" {
+	void search_init();
+}
+
 void
-ocv_face_init()
+search_init()
 {
 	ocv_face_factory *fac;
 
@@ -360,7 +364,7 @@ ocv_face_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "MERIT  10  # some relative cost \n");
 	fprintf(ostream, "\n");
 
-        ifac = find_factory("rgb_image");
+        ifac = find_support_factory("rgb_image");
         assert(ifac != NULL);
         rgb = ifac->create("RGB image");
         (this->get_parent())->add_dep(rgb);

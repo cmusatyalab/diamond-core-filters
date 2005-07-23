@@ -1987,7 +1987,6 @@ main(int argc, char *argv[])
 	/* XXX for now */
 	rgb_histo_init();
 	vj_face_init();
-	ocv_face_init();
 	texture_init();
 	rgb_image_init();
 
@@ -2007,6 +2006,17 @@ main(int argc, char *argv[])
 	void *handle;
 	search_init_t fp;
 	handle = dlopen("./gabor_texture_search.so", RTLD_GLOBAL|RTLD_NOW);
+	fp = (search_init_t) dlsym(handle, "search_init");
+	if (fp == NULL) {
+		printf("Failed to find search_init\n");
+	} else {
+		(*fp)();	
+	}
+	}
+	{
+	void *handle;
+	search_init_t fp;
+	handle = dlopen("./opencv_face_search.so", RTLD_GLOBAL|RTLD_NOW);
 	fp = (search_init_t) dlsym(handle, "search_init");
 	if (fp == NULL) {
 		printf("Failed to find search_init\n");

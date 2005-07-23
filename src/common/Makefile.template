@@ -43,7 +43,7 @@ COMMON_APP_SRCS += window_search.cc example_search.cc
 COMMON_APP_SRCS += rgb_histo_search.cc rgb_img.cc 
 COMMON_APP_SRCS += ii_img.cc face_image.c 
 COMMON_APP_SRCS += gtk_image_tools.c histo_ii.cc search_support.cc
-COMMON_APP_SRCS += import_sample.cc ocv_face_search.cc gui_thread.c
+COMMON_APP_SRCS += import_sample.cc gui_thread.c
 COMMON_APP_SRCS += display_img.cc 
                             
 COMMON_APP_OBJS = img_search.o search_set.o
@@ -52,7 +52,7 @@ COMMON_APP_OBJS += window_search.o example_search.o
 COMMON_APP_OBJS += rgb_histo_search.o rgb_img.o
 COMMON_APP_OBJS += ii_img.o face_image.o
 COMMON_APP_OBJS += gtk_image_tools.o  histo_ii.o search_support.o
-COMMON_APP_OBJS += import_sample.o ocv_face_search.o gui_thread.o
+COMMON_APP_OBJS += import_sample.o  gui_thread.o
 COMMON_APP_OBJS += display_img.o 
  
 COMMON_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_APP_SRCS) $(COMMON_HEADERS)

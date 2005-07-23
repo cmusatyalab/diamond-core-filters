@@ -35,6 +35,10 @@ INCDIR += -I${DIAMOND_INC_PATH}
 INCDIR += -I$(ROOTDIR)/common
 INCDIR += -I$(ROOTDIR)/snapfind
 INCDIR += -I$(SDIR)
+INCDIR += -I/usr/local/include/opencv
+
+
+
 
 # include the shared source files
 VPATH += $(ROOTDIR)/common
