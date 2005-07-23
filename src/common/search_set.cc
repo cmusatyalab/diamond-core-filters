@@ -26,6 +26,7 @@
 #include "image_tools.h"
 #include "img_search.h"
 #include "search_set.h"
+#include "factory.h"
 
 search_set::search_set()
 {
@@ -195,6 +196,7 @@ search_set::build_filter_spec(char *tmp_file)
 	int         fd;
 	img_search *		srch;
 	img_search *		rgb;
+	img_factory *		ifac;
 	search_iter_t		iter;
 
 	/* XXX who frees this ?? */
@@ -227,8 +229,9 @@ search_set::build_filter_spec(char *tmp_file)
 	/* clear the dependancies */
 	clear_deps();
 
-	/* we always do rgb, XXX should we ??*/
-	rgb = new rgb_img("RGB image", "RGB image");
+     	ifac = find_support_factory("rgb_image");
+        assert(ifac != NULL);
+        rgb = ifac->create("RGB image");
 	add_dep(rgb);
 
 	reset_search_iter(&iter);

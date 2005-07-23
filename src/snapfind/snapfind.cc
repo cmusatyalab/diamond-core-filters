@@ -70,6 +70,7 @@
 #include "fil_image_tools.h"
 #include "search_set.h"
 #include "read_config.h"
+#include "rgb_img.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -1849,6 +1850,7 @@ void vj_face_init();
 void ocv_face_init();
 void texture_init();
 void gabor_texture_init();
+void rgb_image_init();
 typedef void (*search_init_t)();
 
 int
@@ -1987,6 +1989,8 @@ main(int argc, char *argv[])
 	vj_face_init();
 	ocv_face_init();
 	texture_init();
+	rgb_image_init();
+
 
 	{
 	void *handle;

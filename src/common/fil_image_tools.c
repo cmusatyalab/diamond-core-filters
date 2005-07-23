@@ -89,8 +89,6 @@ get_rgb_img(lf_obj_handle_t ohandle)
 		return(NULL);
 	}
 			
-
-	printf("hlen %d \n", headerlen);
 	/*
 	 * create image to hold the data 
 	 */

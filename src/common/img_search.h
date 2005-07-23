@@ -76,7 +76,7 @@ public:
 	virtual img_search *create(const char *name) = 0;
 	virtual int 	is_example() = 0;
 	const char * get_description() {
-		return(fa_name);
+		return(fa_descr);
 	}
 	const char * get_name() {
 		return(fa_name);
@@ -206,22 +206,6 @@ private:
 	GtkWidget *	build_patch_table();
 	void 		update_display();
 	GtkWidget *	patch_table;
-};
-
-
-class rgb_img: public img_search {
-public:
-	rgb_img(const char *name, char *descr);
-	~rgb_img(void);
-
-	void	save_edits();
-	void	edit_search();
-	void 	write_fspec(FILE* stream);
-	void	write_config(FILE* stream, const char *data_dir);
-	virtual	int	handle_config(int num_conf, char **datav);
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
-
-private:
 };
 
 

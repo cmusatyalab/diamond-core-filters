@@ -367,6 +367,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	Histo 	hgram;
 	example_patch_t	*cur_patch;
 	img_search	*	rgb;
+	img_factory *	 ifac;
 	int		i = 0;
 
 	save_edits();
@@ -423,8 +424,10 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	rgb = new histo_ii("Histo II", "Histo II");
 	(this->get_parent())->add_dep(rgb);
 
-	rgb = new rgb_img("RGB image", "RGB image");
-	(this->get_parent())->add_dep(rgb);
+        ifac = find_support_factory("rgb_image");
+        assert(ifac != NULL);
+        rgb = ifac->create("RGB image");
+        (this->get_parent())->add_dep(rgb);
 }
 
 

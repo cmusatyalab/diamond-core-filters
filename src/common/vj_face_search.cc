@@ -419,6 +419,8 @@ void
 vj_face_search::write_fspec(FILE *ostream)
 {
 	img_search *	ss;
+	img_search *	rgb;
+	img_factory *	ifac;
 	save_edits();
 	/*
 		 * First we write the header section that corrspons
@@ -472,8 +474,10 @@ vj_face_search::write_fspec(FILE *ostream)
 		fprintf(ostream, "ARG  %f  # overlap val   \n", overlap_val);
 	}
 
-	ss = new rgb_img("RGB image", "RGB image");
-	(this->get_parent())->add_dep(ss);
+        ifac = find_support_factory("rgb_image");
+        assert(ifac != NULL);
+        rgb = ifac->create("RGB image");
+        (this->get_parent())->add_dep(rgb);
 }
 
 

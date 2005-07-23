@@ -15,8 +15,25 @@
 
 
 static factory_map_t * fmap = NULL;
+static factory_map_t * support_fmap = NULL;
 
 void add_new_search_type(img_factory *fact);
+
+
+void
+factory_register_support(img_factory *factory)
+{
+	factory_map_t *new_map;
+
+	new_map = (factory_map_t *)malloc(sizeof(*new_map));
+	assert(new_map != NULL);
+
+    printf("fac_reg: <%s> \n", factory->get_description());
+
+	new_map->fm_factory = factory;
+	new_map->fm_next = support_fmap;
+	support_fmap = new_map;
+}
 
 
 void
@@ -39,11 +56,25 @@ factory_register(img_factory *factory)
 }
 
 img_factory *
+find_support_factory(const char *name)
+{
+	factory_map_t *cur_map;
+
+	for (cur_map = support_fmap; cur_map != NULL; cur_map = cur_map->fm_next) {
+		    printf("fac_find: test <%s> \n", cur_map->fm_factory->get_description());
+
+		if (strcmp(name, cur_map->fm_factory->get_description()) == 0) {
+			return(cur_map->fm_factory);
+		}
+	}
+	return(NULL);
+}
+
+img_factory *
 find_factory(const char *name)
 {
 	factory_map_t *cur_map;
 
-	cur_map = fmap;
 	for (cur_map = fmap; cur_map != NULL; cur_map = cur_map->fm_next) {
 		if (strcmp(name, cur_map->fm_factory->get_description()) == 0) {
 			return(cur_map->fm_factory);

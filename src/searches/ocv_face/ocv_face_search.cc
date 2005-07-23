@@ -326,7 +326,8 @@ ocv_face_search::save_edits()
 void
 ocv_face_search::write_fspec(FILE *ostream)
 {
-	img_search *	ss;
+	img_search *	rgb;
+	img_factory *	ifac;
 	save_edits();
 	/*
 		 * First we write the header section that corrspons
@@ -359,8 +360,10 @@ ocv_face_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "MERIT  10  # some relative cost \n");
 	fprintf(ostream, "\n");
 
-	ss = new rgb_img("RGB image", "RGB image");
-	(this->get_parent())->add_dep(ss);
+        ifac = find_factory("rgb_image");
+        assert(ifac != NULL);
+        rgb = ifac->create("RGB image");
+        (this->get_parent())->add_dep(rgb);
 }
 
 

@@ -21,10 +21,10 @@
 #include <string.h>
 #include "queue.h"
 #include "rgb.h"
-//#include "histo.h"
 #include "img_search.h"
 #include "search_set.h"
 #include "histo.h"
+#include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
 
@@ -85,6 +85,7 @@ void
 histo_ii::write_fspec(FILE *ostream)
 {
 	img_search *	rgb;
+	img_factory *	ifac;
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER  HISTO_II  # name \n");
@@ -97,8 +98,10 @@ histo_ii::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  4  # dependancies \n");
 	fprintf(ostream, "ARG  %d  # dependancies \n", HISTO_INTERPOLATED);
 
-	rgb = new rgb_img("RGB image", "RGB image");
-	(this->get_parent())->add_dep(rgb);
+        ifac = find_support_factory("rgb_image");
+        assert(ifac != NULL);
+        rgb = ifac->create("RGB image");
+        (this->get_parent())->add_dep(rgb);
 }
 
 void

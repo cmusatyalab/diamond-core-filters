@@ -22,8 +22,24 @@
 #include "queue.h"
 #include "rgb.h"
 #include "img_search.h"
+#include "rgb_img.h"
+#include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
+
+void
+rgb_image_init()
+{
+        rgb_img_factory *fac;
+        printf("rgb init \n");
+
+        fac = new rgb_img_factory;
+
+        factory_register_support(fac);
+
+}
+
+
 
 rgb_img::rgb_img(const char *name, char *descr)
 		: img_search(name, descr)
