@@ -26,15 +26,35 @@
 #include <opencv/cvaux.h>
 
 #include "filter_api.h"
-#include "fil_face.h"
-#include "face.h"
-#include "face_tools.h"
-#include "facedet.h"
-#include "merge_faces.h"
-#include "fil_tools.h"
-#include "fil_image_tools.h"
+#include "fil_ocv_face.h"
+#include "rgb.h"
 #include "image_common.h"
+#include "opencv_face.h"
+#include "opencv_face_tools.h"
 
+
+
+/* XXX move this?? */
+static int
+write_param(lf_obj_handle_t ohandle, char *fmt,
+            search_param_t * param, int i)
+{
+        off_t           bsize;
+        char            buf[BUFSIZ];
+        int             err;
+
+#ifdef VERBOSE
+
+        lf_log(LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
+               param->bbox.xmin, param->bbox.ymin, param->scale);
+#endif
+
+        sprintf(buf, fmt, i);
+        bsize = sizeof(search_param_t);
+        err = lf_write_attr(ohandle, buf, bsize, (char *) param);
+
+        return err;
+}
 
 int
 f_init_opencv_fdetect(int numarg, char **args, int blob_len, void *blob_data,

@@ -12,19 +12,22 @@
  */
 
 
+#ifndef	_FIL_OCV_FACE_H_
+#define	_FIL_OCV_FACE_H_ 1
 
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 int f_eval_opencv_fdetect(lf_obj_handle_t ohandle, void *fdata);
 
 int f_fini_opencv_fdetect(void *fdata);
 
 int f_init_opencv_fdetect(int numarg, char **args, int blob_len, 
-	void *blob_data, void **fdatap)
+	void *blob_data, void **fdatap);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif	/* !_FIL_OCV_FACE_H_ */

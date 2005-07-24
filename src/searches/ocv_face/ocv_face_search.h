@@ -17,8 +17,6 @@
 #include <gtk/gtk.h>
 #include "image_common.h"
 #include "common_consts.h"
-#include "texture_tools.h"
-#include "histo.h"
 #include "img_search.h"
 
 

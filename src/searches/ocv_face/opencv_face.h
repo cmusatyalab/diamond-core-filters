@@ -12,8 +12,8 @@
  */
 
 
-#ifndef _FACE_H_
-#define _FACE_H_
+#ifndef _OPENCV_FACE_H_
+#define _OPENCV_FACE_H_
 
 #include <sys/types.h>
 #include <opencv/cv.h>
@@ -23,46 +23,10 @@
 /* image dimension */
 typedef int32_t dim_t;
 
-/*
- * bounding box of region to consider
- */
-typedef struct region {
-	dim_t xmin, ymin;
-	dim_t xsiz, ysiz;
-} region_t;
-
-typedef enum param_type_t {
-    PARAM_UNKNOWN = 0,
-    PARAM_FACE,
-    PARAM_HISTO,
-    PARAM_TEXTURE
-} param_type_t;
-
-
-/*
- * attributes passed to the test function
- */
-#define PARAM_NAME_MAX 15
-typedef struct search_param {
-	param_type_t type;
-	int lev1, lev2;		/* range of tests to apply (face) */
-	region_t bbox;		/* bounding box */
-	double scale;		/* (face) */
-	union {
-		double img_var;	/* (face) */
-		double distance; /* (histo) */
-	};
-	char name[PARAM_NAME_MAX+1];
-	int id;
-} search_param_t;
-
 
 /*
  * some more attributes
  */
-
-//#define NUM_BBOXES "_num_bboxes.int"
-//#define BBOX_FMT   "_bbox%d.search_param"
 
 #define NUM_HISTO        "_nhisto_passed.int"
 #define NUM_FACE         "_nface_passed.int"
@@ -90,6 +54,45 @@ typedef struct search_param {
 #define CONTENT_TYPE "Content-Type"
 #define PARENT_OIT "Parent-OID"
 
+typedef enum param_type_t {
+    PARAM_UNKNOWN = 0,
+    PARAM_FACE,
+    PARAM_HISTO,
+    PARAM_TEXTURE
+} param_type_t;
+
+/*
+ * bounding box of region to consider
+ */
+typedef struct region
+{
+        dim_t xmin, ymin;
+        dim_t xsiz, ysiz;
+}
+region_t;
+
+
+
+
+/*
+ * attributes passed to the test function
+ */
+#define PARAM_NAME_MAX 15
+typedef struct search_param
+{
+        param_type_t type;
+        int lev1, lev2;         /* range of tests to apply (face) */
+        region_t bbox;          /* bounding box */
+        double scale;           /* (face) */
+        union {
+                double img_var; /* (face) */
+                double distance; /* (histo) */
+        };
+        char name[PARAM_NAME_MAX+1];
+        int id;
+} search_param_t;
+
+
 
 /*
  * Structure we use to keep track of the state
@@ -105,10 +108,4 @@ typedef struct opencv_fdetect {
 	CvHidHaarClassifierCascade	*haar_cascade;
 } opencv_fdetect_t;
 
-
-
-#define FILTER_TYPE_COLOR 0
-#define FILTER_TYPE_TEXTURE 1
-#define FILTER_TYPE_ARENA 2
-
-#endif /*  _FACE_H_ */
+#endif /*  ! _OPENCV_FACE_H_ */
