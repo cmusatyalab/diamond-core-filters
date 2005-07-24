@@ -30,8 +30,10 @@ typedef struct {
 
 typedef enum image_type_t {
     IMAGE_UNKNOWN = 0,
+    IMAGE_PBM,
     IMAGE_PGM,
-    IMAGE_PPM
+    IMAGE_PPM,
+    IMAGE_TIFF
 } image_type_t;
 
 

@@ -15,13 +15,43 @@
 #include <stdio.h>
 #include <opencv/cv.h>
 #include <limits.h>
+#include <string.h>		// for memcmp
 
+#include "rgb.h"		// for image_type_h
 #include "fil_image_tools.h"
 #include "fil_assert.h"
 
 
+/*
+ * Given a ffile_t, examines the first 8 bytes to try to guess
+ * whether it is a TIFF, PNM, etc.  Doesn't "read" the file per se.
+ */
+image_type_t
+determine_image_type(const u_char* buf) {
+  const u_char pbm_ascii[2]	= "P1";
+  const u_char pbm_raw[2]	= "P4";
+  const u_char pgm_ascii[2]	= "P2";
+  const u_char pgm_raw[2] 	= "P5";
+  const u_char ppm_ascii[2]	= "P3";
+  const u_char ppm_raw[2]	= "P6";
+  const u_char tiff_big_endian[4] = { 0x4d, 0x4d, 0x00, 0x2a };
+  const u_char tiff_lit_endian[4] = { 0x49, 0x49, 0x2a, 0x00 };
+
+  image_type_t type = IMAGE_UNKNOWN;
+  if	  (0 == memcmp(buf, pbm_ascii, 2))	 { type = IMAGE_PBM; }
+  else if (0 == memcmp(buf, pbm_raw, 2))	 { type = IMAGE_PBM; }
+  else if (0 == memcmp(buf, pgm_ascii, 2))	 { type = IMAGE_PGM; }
+  else if (0 == memcmp(buf, pgm_raw, 2))	 { type = IMAGE_PGM; }
+  else if (0 == memcmp(buf, ppm_ascii, 2))	 { type = IMAGE_PPM; }
+  else if (0 == memcmp(buf, ppm_raw, 2))	 { type = IMAGE_PPM; }
+  else if (0 == memcmp(buf, tiff_big_endian, 4)) { type = IMAGE_TIFF; }
+  else if (0 == memcmp(buf, tiff_lit_endian, 4)) { type = IMAGE_TIFF; }
+
+  return type;
+}
+
 int
-ppm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
+pbm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
 {
 	int             pixels;
 	int		i;
@@ -31,13 +61,18 @@ ppm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
 	pixels =  img->width * img->height;
 
 	/* verify we have enough data */
-	assert((pixels * 3) <= dlen);
+	assert((pixels / 8) <= dlen);
 
-	for (i=0; i < pixels; i++) {
-	    	img->data[i].r = *buf++;
-	    	img->data[i].g = *buf++;
-	    	img->data[i].b = *buf++;
-	    	img->data[i].a = 255;
+	for (i=0; i < pixels; i+=8) {
+	  int j;
+	  for (j=0; j<8; j++) {
+	    int bit = 255 * ((*buf >> (7-j)) & 0x1);
+	    img->data[i+j].r = bit;
+	    img->data[i+j].g = bit;
+	    img->data[i+j].b = bit;
+	    img->data[i+j].a = 255;
+	  }
+	  buf++;
 	}
 	return (0);
 }
@@ -64,10 +99,102 @@ pgm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
 	return (0);
 }
 
+int
+ppm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
+{
+	int             pixels;
+	int		i;
+
+	assert(sizeof(RGBPixel) >= 4);
+
+	pixels =  img->width * img->height;
+
+	/* verify we have enough data */
+	assert((pixels * 3) <= dlen);
+
+	for (i=0; i < pixels; i++) {
+	    	img->data[i].r = *buf++;
+	    	img->data[i].g = *buf++;
+	    	img->data[i].b = *buf++;
+	    	img->data[i].a = 255;
+	}
+	return (0);
+}
+
+RGBImage*
+get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type) {
+  assert(buf);
+  assert((type==IMAGE_PBM) || (type==IMAGE_PGM) || (type==IMAGE_PPM));
+
+  int err, width, height, headerlen;
+  image_type_t magic;
+  err = pnm_parse_header(buf, size, &width, &height, &magic, &headerlen);
+  if (err) { return NULL; }
+  assert(type == magic);	// paranoia :-)
+
+  RGBImage* rgbimg = rgbimg_blank_image(width, height);
+  rgb->type = magic;
+  switch (rgb->type) {
+    case IMAGE_PBM:
+      err = pbm_read_data( (size - headerlen), &buf[headerlen], rgb);
+      break;
+    case IMAGE_PGM:
+      err = pgm_read_data( (size - headerlen), &buf[headerlen], rgb);
+      break;
+    case IMAGE_PPM:
+      err = ppm_read_data( (size - headerlen), &buf[headerlen], rgb);
+      break;
+    default:
+      assert( 0 && "PNM format not PBM/PGM/PPM");
+      // TODO: need to exit more cleanly -- file not closed.
+      break;
+  }
+  assert(err==0);
+
+  // TODO
+}
+
+RGBImage*
+get_rgb_from_tiff(u_char* buf, off_t size) {
+  assert(buf);
+
+  MyTIFF mytiffstruct;
+  MyTIFF* tp = &mytiffstruct;
+  tp->offset	= 0;
+  tp->buf	= buf;
+  tp->bytes	= size;
+
+  return convertTIFFtoRGBImage(tp);
+}
+
+RGBImage*
+get_rgb_img(lf_obj_handle_t ohandle) {
+  int		err = 0;
+  char *	obj_data;
+  off_t		data_len;
+  image_type_t	magic;
+  int		width, height, headerlen;
+  off_t		bytes;
+
+  RGBImage*	img = NULL;
+
+  err = lf_next_block(ohandle, INT_MAX, &data_len, &obj_data);
+  assert(!err);
+  magic = determine_image_type(obj_data);
+
+  if ( (magic==IMAGE_PBM) || (magic==IMAGE_PGM) || (magic==IMAGE_PPM)) {
+    img = get_rgb_from_pnm(obj_data, data_len);
+  } else if (magic == IMAGE_TIFF) {
+    img = get_rgb_from_tiff(obj_data, data_len);
+  }
+
+  return img;
+}
+
 
 
 RGBImage       *
-get_rgb_img(lf_obj_handle_t ohandle)
+old_get_rgb_img(lf_obj_handle_t ohandle)
 {
 	RGBImage       *img = NULL;
 	int             err = 0;

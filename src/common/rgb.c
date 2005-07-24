@@ -103,7 +103,7 @@ rgbimg_blank_image(int width, int height)
 	img->nbytes = bytes;
 	img->height = height;
 	img->width = width;
-	img->type = IMAGE_PPM;
+	img->type = IMAGE_UNKNOWN;
 
 	return img;
 }
