@@ -34,7 +34,7 @@ INSTALLDIR_INCLUDE=${INSTALLBASE}/include
 INCDIR += -I${DIAMOND_INC_PATH}
 INCDIR += -I$(ROOTDIR)/common
 INCDIR += -I$(ROOTDIR)/snapfind
-INCDIR += -I$(SDIR)
+INCDIR += -I$(SRCDIR)
 INCDIR += -I/usr/local/include/opencv
 
 
@@ -43,7 +43,6 @@ INCDIR += -I/usr/local/include/opencv
 # include the shared source files
 VPATH += $(ROOTDIR)/common
 
-vpath %.h $(VPATH)
 vpath %.h $(VPATH)
 
 LIBDIR += -L${DIAMOND_LIB_PATH}
@@ -186,7 +185,7 @@ endif
 
 copyheader:
 	@for entry in ${SHARED_HEADERS}; do \
-		cp -fuv ${VPATH}/$${entry} ${BUILD_INC_PATH}; \
+		cp -fuv ${SRCDIR}/$${entry} ${BUILD_INC_PATH}; \
 	done
                                                                                 
 copybin:

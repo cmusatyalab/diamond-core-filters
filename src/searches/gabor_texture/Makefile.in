@@ -13,7 +13,7 @@
 
 ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
-SDIR = @srcdir@
+SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
 INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
