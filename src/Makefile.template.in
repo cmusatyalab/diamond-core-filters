@@ -12,11 +12,6 @@
 #
 
 
-DIAMOND_INSTALL = /usr/local/diamond
-DIAMOND_LIB_PATH = $(DIAMOND_INSTALL)/lib
-DIAMOND_INC_PATH = $(DIAMOND_INSTALL)/include
-DIAMOND_BIN_PATH = $(DIAMOND_INSTALL)/bin
-
 #
 # Where the headers, libraries, and binaries should be placed during
 # the build process.

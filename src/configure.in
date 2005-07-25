@@ -71,7 +71,7 @@ AC_SUBST(OBJROOT)
 
 
 AC_SUBST(BUILDROOT)
-AC_ARG_WITH(buildroot, [--with-buildroot=DIR set target build hierach to DIR],
+AC_ARG_WITH(buildroot, [--with-buildroot=DIR set target build hierachy to DIR],
     [ BUILDROOT="`(cd ${withval} ; pwd)`"],
     [ BUILDROOT=${OBJROOT}/target]
     ) 
