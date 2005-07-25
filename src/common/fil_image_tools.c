@@ -173,8 +173,6 @@ get_rgb_img(lf_obj_handle_t ohandle) {
   char *	obj_data;
   off_t		data_len;
   image_type_t	magic;
-  int		headerlen;
-  off_t		bytes;
 
   RGBImage*	img = NULL;
 

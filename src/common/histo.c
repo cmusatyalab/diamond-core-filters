@@ -762,7 +762,6 @@ histo_get_ii(histo_config_t *hconfig, RGBImage *img)
 	int             scalebits;
 	int             nbytes;
 	int		gcd;
-	int		err;
 	HistoII *	ii;
 
 	/* XXX do better on gcd for scalebits */
