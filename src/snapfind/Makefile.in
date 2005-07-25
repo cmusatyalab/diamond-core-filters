@@ -16,13 +16,11 @@ VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
+GTK_LDFLAGS = @GTK_LDFLAGS@
+GTK_CPPFLAGS = @GTK_CPPFLAGS@
 
-# 
-# Set the include paths.  
-# XXX configure should set ...
-INCDIR += -I/usr/local/include/opencv
-INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I` 
-
+# use the GTK values when building this code
+CPPFLAGS += ${GTK_CPPFLAGS}
 
 # 
 # Set the libraries and the library paths we will need
@@ -82,9 +80,6 @@ SHARED_BIN += snap_searchlet.so snapfind
 
 include ${ROOTDIR}/Makefile.template
 
-# XXX
-# turns on unsafe fp optimizations; we don't require strict IEEE
-CFLAGS += -ffast-math -malign-double
 
 ifeq ($(OSTYPE),linux)
 DYNAMIC = -rdynamic
@@ -111,7 +106,8 @@ libssearch.a: $(SEARCHLET_OBJS)
 	$(AR) r $@ $(SEARCHLET_OBJS)
 
 snapfind: $(SNAPFIND_OBJS)
-	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
+	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LIBDIR) $(GTK_LDFLAGS) 
+	#$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
 
 search:	search.c
 	$(CC) $(CFLAGS) $(DYNAMIC) -o $@ $< $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`

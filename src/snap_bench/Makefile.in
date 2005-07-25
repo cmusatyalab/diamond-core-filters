@@ -18,10 +18,6 @@ SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
 
-INCDIR += -I../shared_source/common
-INCDIR += -I/usr/local/include/opencv
-
-
 # to build these files.
 LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -ltools -llog

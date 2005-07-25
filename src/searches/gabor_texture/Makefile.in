@@ -16,7 +16,7 @@ VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
-INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
+CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
                                                                                 
 include $(ROOTDIR)/common/Makefile.template
 

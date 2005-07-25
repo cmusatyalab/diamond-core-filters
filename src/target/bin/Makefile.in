@@ -31,4 +31,3 @@ CLEAN_OTHERS += ${INSTALL_BIN}
                                                                                 
 include $(ROOTDIR)/Makefile.template
 
-

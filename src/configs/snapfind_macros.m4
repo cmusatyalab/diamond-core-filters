@@ -18,5 +18,3 @@ AC_DEFUN(SNAPFIND_OPTION_LIBRARY,
       LDFLAGS="${LDFLAGS} -L${pfx}"]) 
     ])
                                                                                  
-
-

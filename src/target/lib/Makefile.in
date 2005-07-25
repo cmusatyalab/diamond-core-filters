@@ -16,7 +16,6 @@ SRCDIR = @srcdir@
 VPATH = @srcdir@
 OBJROOT = @OBJROOT@
 
-
 SUBDIRS = 
 
 CLEAN_OTHERS += *.a

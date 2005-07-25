@@ -6,10 +6,16 @@ AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
 AC_CONFIG_SRCDIR([common/gtk_image_tools.h])
 AC_CONFIG_HEADER([config.h])
 
-# Checks for programs.
+# Checks for the standard compile programs 
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_LEX
+AC_PROG_AWK
+
+
+# Add some cflags of our choosing
+CFLAGS="${CFLAGS} -Wall -D_REENTRANT -D_THREAD_SAFE -ffast-math"
+
 
 #
 # Load snapfind macros
@@ -20,22 +26,28 @@ sinclude(configs/snapfind_macros.m4)
 
 SNAPFIND_OPTIONS_SYS(diamond)
 
-#LDFLAGS="${LDFLAGS} -L/home/larry/build_cmu/diamond/src/target/lib"
-
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lcvaux':
 
-# Look for the variouse diamond libraries that we need
+# Look for the various diamond libraries that we need
 # XXX replace mains with real functions 
-AC_CHECK_LIB([dconfig], [main], , [AC_MSG_ERROR(Missing libdconfig)])
-AC_CHECK_LIB([dctl], [dctl_read_char], , [AC_MSG_ERROR(Missing libdctl)])
-AC_CHECK_LIB([filter], [main], , [AC_MSG_ERROR(Missing libfilter)])
-AC_CHECK_LIB([searchlet], [main], , [AC_MSG_ERROR(Missing libsearchlet)])
-AC_CHECK_LIB([odisk], [main], , [AC_MSG_ERROR(Missing libodisk)])
-AC_CHECK_LIB([filterexec], [main], , [AC_MSG_ERROR(Missing libfilterexec)])
-AC_CHECK_LIB([hstub], [main], , [AC_MSG_ERROR(Missing hstub)])
-AC_CHECK_LIB([log], [main], , [AC_MSG_ERROR(Missing log)])
-AC_CHECK_LIB([tools], [main], , [AC_MSG_ERROR(Missing libtools)])
+AC_CHECK_LIB([dconfig], [main], , 
+	[AC_MSG_ERROR(Missing libdconfig: try using --with-diamond option)])
+AC_CHECK_LIB([dctl], [dctl_read_char], , 
+	[AC_MSG_ERROR(Missing libdctl: try using --with-diamond option)])
+AC_CHECK_LIB([filter], [main], ,
+	[AC_MSG_ERROR(Missing libfilter: try using --with-diamond option)])
+AC_CHECK_LIB([searchlet], [main], , 
+	[AC_MSG_ERROR(Missing libsearchlet: try using --with-diamond option)])
+AC_CHECK_LIB([odisk], [main], , 
+	[AC_MSG_ERROR(Missing libodisk: try using --with-diamond option)])
+AC_CHECK_LIB([filterexec], [main], , 
+	[AC_MSG_ERROR(Missing libfilterexec: try using --with-diamond option)])
+AC_CHECK_LIB([hstub], [main], , 
+	[AC_MSG_ERROR(Missing libhstub: try using --with-diamond option)])
+AC_CHECK_LIB([log], [main], , 
+	[AC_MSG_ERROR(Missing liblog: try using --with-diamond option)])
+AC_CHECK_LIB([tools], [main], , 
+	[AC_MSG_ERROR(Missing libtools: try using --with-diamond option)])
 
 
 # deal with the cv stuff
@@ -43,6 +55,8 @@ AC_CHECK_LIB([cvaux], [main])
 AC_CHECK_LIB([opencv], [main])
 
 
+# standard system libraries.
+# XXX make this fail
 AC_CHECK_LIB([dl], [main])
 AC_CHECK_LIB([fl], [main])
 AC_CHECK_LIB([m], [main])
@@ -55,6 +69,18 @@ AC_CHECK_LIB([wvlt], [main])
 OBJROOT=`pwd`
 AC_SUBST(OBJROOT)
 
+
+AC_SUBST(BUILDROOT)
+AC_ARG_WITH(buildroot, [--with-buildroot=DIR set target build hierach to DIR],
+    [ BUILDROOT="`(cd ${withval} ; pwd)`"],
+    [ BUILDROOT=${OBJROOT}/target]
+    ) 
+
+
+GTK_CPPFLAGS=`pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
+GTK_LDFLAGS=`pkg-config gtk+-2.0 gthread-2.0 --libs`
+AC_SUBST(GTK_CPPFLAGS)
+AC_SUBST(GTK_LDFLAGS)
 
 # Checks for header files.
 AC_HEADER_STDC

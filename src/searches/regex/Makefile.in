@@ -16,8 +16,8 @@ VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
-INCDIR += -I/usr/local/include/opencv
-INCDIR += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
+CPPFLAGS += -I/usr/local/include/opencv
+CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
                                                                                 
 include $(ROOTDIR)/common/Makefile.template
 
