@@ -21,6 +21,7 @@
 #include "fil_image_tools.h"
 #include "fil_assert.h"
 
+#include "readtiff.h"
 
 /*
  * Given a ffile_t, examines the first 8 bytes to try to guess
@@ -132,7 +133,7 @@ get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type) {
   if (err) { return NULL; }
   assert(type == magic);	// paranoia :-)
 
-  RGBImage* rgbimg = rgbimg_blank_image(width, height);
+  RGBImage* rgb = rgbimg_blank_image(width, height);
   rgb->type = magic;
   switch (rgb->type) {
     case IMAGE_PBM:
@@ -151,20 +152,19 @@ get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type) {
   }
   assert(err==0);
 
-  // TODO
+  return rgb;
 }
 
 RGBImage*
 get_rgb_from_tiff(u_char* buf, off_t size) {
   assert(buf);
 
-  MyTIFF mytiffstruct;
-  MyTIFF* tp = &mytiffstruct;
-  tp->offset	= 0;
-  tp->buf	= buf;
-  tp->bytes	= size;
+  MyTIFF mytiff;
+  mytiff.offset	= 0;
+  mytiff.buf	= buf;
+  mytiff.bytes	= size;
 
-  return convertTIFFtoRGBImage(tp);
+  return convertTIFFtoRGBImage(&mytiff);
 }
 
 RGBImage*
@@ -173,7 +173,7 @@ get_rgb_img(lf_obj_handle_t ohandle) {
   char *	obj_data;
   off_t		data_len;
   image_type_t	magic;
-  int		width, height, headerlen;
+  int		headerlen;
   off_t		bytes;
 
   RGBImage*	img = NULL;
@@ -183,7 +183,7 @@ get_rgb_img(lf_obj_handle_t ohandle) {
   magic = determine_image_type(obj_data);
 
   if ( (magic==IMAGE_PBM) || (magic==IMAGE_PGM) || (magic==IMAGE_PPM)) {
-    img = get_rgb_from_pnm(obj_data, data_len);
+    img = get_rgb_from_pnm(obj_data, data_len, magic);
   } else if (magic == IMAGE_TIFF) {
     img = get_rgb_from_tiff(obj_data, data_len);
   }

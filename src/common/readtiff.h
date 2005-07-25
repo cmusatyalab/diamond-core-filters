@@ -14,7 +14,9 @@
 #ifndef _READTIFF_H_
 #define _READTIFF_H_
 
+#include <tiffio.h>	// for toff_t
 #include "rgb.h"	// for RGBImage
+
 
 // Before calling TIFFClientOpen() we need to initialize
 // the MyTiff structure.
