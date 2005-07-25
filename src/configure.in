@@ -9,42 +9,47 @@ AC_CONFIG_HEADER([config.h])
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_LN_S
+AC_PROG_LEX
+
+#
+# Load snapfind macros
+#
+#AC_CONFIG_AUX_DIR(configs)
+sinclude(configs/snapfind_macros.m4)
+
+
+SNAPFIND_OPTIONS_SYS(diamond)
+
+#LDFLAGS="${LDFLAGS} -L/home/larry/build_cmu/diamond/src/target/lib"
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lcvaux':
+
+# Look for the variouse diamond libraries that we need
+# XXX replace mains with real functions 
+AC_CHECK_LIB([dconfig], [main], , [AC_MSG_ERROR(Missing libdconfig)])
+AC_CHECK_LIB([dctl], [dctl_read_char], , [AC_MSG_ERROR(Missing libdctl)])
+AC_CHECK_LIB([filter], [main], , [AC_MSG_ERROR(Missing libfilter)])
+AC_CHECK_LIB([searchlet], [main], , [AC_MSG_ERROR(Missing libsearchlet)])
+AC_CHECK_LIB([odisk], [main], , [AC_MSG_ERROR(Missing libodisk)])
+AC_CHECK_LIB([filterexec], [main], , [AC_MSG_ERROR(Missing libfilterexec)])
+AC_CHECK_LIB([hstub], [main], , [AC_MSG_ERROR(Missing hstub)])
+AC_CHECK_LIB([log], [main], , [AC_MSG_ERROR(Missing log)])
+AC_CHECK_LIB([tools], [main], , [AC_MSG_ERROR(Missing libtools)])
+
+
+# deal with the cv stuff
 AC_CHECK_LIB([cvaux], [main])
-# FIXME: Replace `main' with a function in `-ldconfig':
-AC_CHECK_LIB([dconfig], [main])
-# FIXME: Replace `main' with a function in `-ldctl':
-AC_CHECK_LIB([dctl], [dctl_read_char])
-# FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main])
-# FIXME: Replace `main' with a function in `-lfilter':
-AC_CHECK_LIB([filter], [main])
-# FIXME: Replace `main' with a function in `-lfilterexec':
-AC_CHECK_LIB([filterexec], [main])
-# FIXME: Replace `main' with a function in `-lfl':
-AC_CHECK_LIB([fl], [main])
-# FIXME: Replace `main' with a function in `-lhstub':
-AC_CHECK_LIB([hstub], [main])
-# FIXME: Replace `main' with a function in `-llog':
-AC_CHECK_LIB([log], [main])
-# FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main])
-# FIXME: Replace `main' with a function in `-lodisk':
-AC_CHECK_LIB([odisk], [main])
-# FIXME: Replace `main' with a function in `-lopencv':
 AC_CHECK_LIB([opencv], [main])
-# FIXME: Replace `main' with a function in `-lpthread':
+
+
+AC_CHECK_LIB([dl], [main])
+AC_CHECK_LIB([fl], [main])
+AC_CHECK_LIB([m], [main])
 AC_CHECK_LIB([pthread], [main])
-# FIXME: Replace `main' with a function in `-lsearchlet':
-AC_CHECK_LIB([searchlet], [main])
-# FIXME: Replace `main' with a function in `-lssl':
 AC_CHECK_LIB([ssl], [main])
-# FIXME: Replace `main' with a function in `-ltools':
-AC_CHECK_LIB([tools], [main])
-# FIXME: Replace `main' with a function in `-lwvlt':
+
+# XXXX
 AC_CHECK_LIB([wvlt], [main])
 
 OBJROOT=`pwd`
@@ -71,6 +76,7 @@ AC_FUNC_STAT
 AC_CHECK_FUNCS([getcwd gethostbyaddr gettimeofday inet_ntoa memset mkdir pow regcomp rint sqrt strdup strerror strtol])
 
 AC_CONFIG_FILES([Makefile
+		 Makefile.template
                  snap_bench/Makefile
                  snapfind/Makefile
                  searches/Makefile
