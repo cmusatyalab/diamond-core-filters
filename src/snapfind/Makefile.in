@@ -31,7 +31,7 @@ LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -lopencv   -lcvaux -llog -lssl
+LIBS += -lopencv   -lcvaux -llog -lssl -ltiff
 
 include $(ROOTDIR)/common/Makefile.template
 
@@ -40,7 +40,7 @@ SEARCHLET_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_SHARED_SRCS)
 
 SEARCHLET_OBJS = $(COMMON_SEARCHLET_OBJS) $(COMMON_SHARED_OBJS)
 
-SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv
+SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv -ltiff -ljpeg
 
 SEARCHLET_LIBDIR += 
 

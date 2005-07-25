@@ -17,7 +17,7 @@ AC_CHECK_LIB([cvaux], [main])
 # FIXME: Replace `main' with a function in `-ldconfig':
 AC_CHECK_LIB([dconfig], [main])
 # FIXME: Replace `main' with a function in `-ldctl':
-AC_CHECK_LIB([dctl], [main])
+AC_CHECK_LIB([dctl], [dctl_read_char])
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main])
 # FIXME: Replace `main' with a function in `-lfilter':
