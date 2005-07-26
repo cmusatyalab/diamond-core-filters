@@ -1,6 +1,6 @@
 #!/bin/sh
 
-RELEASE_NAME=snapfind-0.9.0-rc1
+RELEASE_NAME=snapfind-0.9.0-rc2
 #
 # Make sure we have cleaned the source tree
 #
