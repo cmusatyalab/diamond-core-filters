@@ -1,58 +1,57 @@
 Building SnapFind
 -----------------
 
-Before starting you need to have built and install opencv 0.95.  Snapfind
+Before starting you need to have built and install opencv 0.9.5.  Snapfind
 requires that you build opencv with static libraries.  This can be done
 at opencv configuration time by: 
 
   	./configure --enable-static=yes
 
-To build snapfind you must set the environment variable SNAPFIND_ROOT
-to point to the top of the source tree (this should be the directory 
-that contains this Intall file).
 
-Then build the system by typing "make".
+Once this is installed you also need to have built the diamond
+system.  This does not need to be install but you must specify
+it's path to the configure script (if building from CVS run
+autoconf at the top of the source tree to generate the configure).
 
-Assuming the build completes correctly, the binary should be located
-in the snapfind directory.  The program is called snapfind.
+Then run configure 
+
+	./configure --with-diamond=/somepath
+
+where /somepath is the top of the diamond build directory 
+("somedir/diamond/target" if using the build tree).
+Once configure successfully builds, then build SnapFind 
+using "make" at the top level.  If all goes well
+the system should build.  The libraries, includes, and binaries
+will be places in target/{lib,include,bin}. 
 
 
 Running Snapfind
 ----------------
-
-To run snapfind you must have two configurations files.  The first
+To run SnapFind you must have two configurations files.  The first
 is called "gid_map" and the second is called "name_map".  The name_map
 groups logical collections of files into one or more group numbers. 
 Snapfind allows the user to select the groups id to search.  There must be
 at least 1 collection defined.  The gid_map file is used to map
-the each group to 1 or more diamond backends.  If running standalone
-this should map the group to localhost, if running across a distributed set
-of machines, each group will list 1 or more machines.
+the each group to 1 or more diamond back-ends (IP addresses).  
+If running standalone this should map the group to localhost, 
+if running across a distributed set of machines, each group will 
+list 1 or more machines that hold some of the data belonging to
+that group.
 
-The default locations of these files is in /usr/local/diamond/etc but
-this can be over-ridden by environmental values.
+There files are usually in ${HOME}/.diamond but can be in
+other places (see diamond documentation).
 
-If you are running in standalone mode (disk and app are on the same
-machine) do the following.  
-
-	1) copy name_map and gid_map from config to /usr/local/diamond/etc
-	2) cd snapfind
-	3) run snapfind by "./snapfind".
-
-Note, currently you need to run snapfind in the directory it is built so it
-find all the shared files it needs.
+To run SnapFind, you need to cd to target/bin in the build
+tree and run SnapFind from there (due to current limitations in
+the loading).
 
 Running a null search will return and display all the images.
 
 To load or save a search is a little tricky.  Searches are named by
 the directory not a single config file.  So if you click load search
-you will need to go into the directory of the search and click ok.
+you will need to go into the directory of the search and click OK.
 There is a sample_search in the directory called "sample_search" under
-snapfind.
+SnapFind.
 	
 
-
-
-
-- Build Snapfind.
 
