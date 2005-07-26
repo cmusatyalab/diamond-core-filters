@@ -31,7 +31,7 @@ LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
 LIBS += -lhstub -ldctl -ldconfig
 LIBS += -lopencv   -lcvaux -llog -lssl -ltiff
 
-CVLIBS += -Wl,-static -lcvaux -lopencv -Wl,all_shared 
+CVLIBS += -Wl,-static -lcvaux -lopencv -Wl,-call_shared 
 
 include $(ROOTDIR)/common/Makefile.template
 
@@ -108,7 +108,7 @@ libssearch.a: $(SEARCHLET_OBJS)
 	$(AR) r $@ $(SEARCHLET_OBJS)
 
 snapfind: $(SNAPFIND_OBJS)
-	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) -static $(LIBS) $(LIBDIR) $(GTK_LDFLAGS) ${CVLIBS}
+	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LIBDIR) $(GTK_LDFLAGS) ${CVLIBS}
 	#$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
 
 search:	search.c
