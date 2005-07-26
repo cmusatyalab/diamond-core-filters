@@ -1,12 +1,12 @@
 #!/bin/sh
 
-RELEASE_NAME=snapfind-0.8.0
+RELEASE_NAME=snapfind-0.9.0-rc1
 #
 # Make sure we have cleaned the source tree
 #
 pushd ../src
-export SNAPFIND_ROOT=`pwd`
-make clean
+make distclean
+autoconf
 popd
 
 #
@@ -22,12 +22,15 @@ cp -r ../src /tmp/"$RELEASE_NAME"/
 # remove the CVS directories
 find /tmp/"$RELEASE_NAME" -name CVS -exec rm -rf {} \;
 
+pushd /tmp/"$RELEASE_NAME"
+rm -rf autom4te.cache
+popd
+
+
 # generate the tar file
 
 pushd /tmp
-tar -cf /tmp/"$RELEASE_NAME".tar "$RELEASE_NAME"
+tar -czf /tmp/"$RELEASE_NAME".tgz "$RELEASE_NAME"
 
 popd
-cp /tmp/"$RELEASE_NAME".tar .
-
-gzip "$RELEASE_NAME".tar 
+cp /tmp/"$RELEASE_NAME".tgz .
