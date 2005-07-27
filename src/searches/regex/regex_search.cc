@@ -34,7 +34,7 @@ void
 search_init()
 {
 	regex_factory *fac;
-	printf("init function !!! \n");
+	// XXX printf("init function !!! \n");
 	fac = new regex_factory;
 	factory_register(fac);
 }

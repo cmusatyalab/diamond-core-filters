@@ -44,7 +44,7 @@ void
 vj_face_init()
 {
 	vj_face_factory *fac;
-	printf("vj_face init \n");
+	// XXX printf("vj_face init \n");
 
 	fac = new vj_face_factory;
 

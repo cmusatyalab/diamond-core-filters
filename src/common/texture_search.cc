@@ -36,7 +36,7 @@ void
 texture_init()
 {
 	texture_factory *fac;
-	printf("texture init \n");
+	// XXX printf("texture init \n");
 
 	fac = new texture_factory;
 

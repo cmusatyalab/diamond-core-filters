@@ -39,7 +39,7 @@ void
 rgb_histo_init()
 {
 	rgb_histo_factory *fac;
-	printf("histo init \n");
+	// XXX printf("histo init \n");
 
 	fac = new rgb_histo_factory;
 

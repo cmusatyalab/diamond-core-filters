@@ -28,8 +28,6 @@ factory_register_support(img_factory *factory)
 	new_map = (factory_map_t *)malloc(sizeof(*new_map));
 	assert(new_map != NULL);
 
-    printf("fac_reg: <%s> \n", factory->get_description());
-
 	new_map->fm_factory = factory;
 	new_map->fm_next = support_fmap;
 	support_fmap = new_map;
@@ -61,7 +59,6 @@ find_support_factory(const char *name)
 	factory_map_t *cur_map;
 
 	for (cur_map = support_fmap; cur_map != NULL; cur_map = cur_map->fm_next) {
-		    printf("fac_find: test <%s> \n", cur_map->fm_factory->get_description());
 
 		if (strcmp(name, cur_map->fm_factory->get_description()) == 0) {
 			return(cur_map->fm_factory);

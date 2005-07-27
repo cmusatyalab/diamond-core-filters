@@ -918,7 +918,7 @@ make_highlight_table()
 	img_search *	csearch;
 	search_iter_t	iter;
 
-	GUI_THREAD_CHECK();
+	// XXX GUI_THREAD_CHECK();
 
 	popup_window.hl_table = gtk_table_new(sset->get_search_count()+2, 3, FALSE);
 	gtk_table_set_row_spacings(GTK_TABLE(popup_window.hl_table), 2);

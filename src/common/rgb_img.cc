@@ -31,7 +31,7 @@ void
 rgb_image_init()
 {
         rgb_img_factory *fac;
-        printf("rgb init \n");
+        // XXX printf("rgb init \n");
 
         fac = new rgb_img_factory;
 
