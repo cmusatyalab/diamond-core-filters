@@ -15,12 +15,17 @@ ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
+CVCPPFLAGS = @CVCPPFLAGS@
+CVLDFLAGS = @CVLDFLAGS@
 
 GTK_LDFLAGS = @GTK_LDFLAGS@
 GTK_CPPFLAGS = @GTK_CPPFLAGS@
 
 # use the GTK values when building this code
 CPPFLAGS += ${GTK_CPPFLAGS}
+CPPFLAGS += ${CVCPPFLAGS}
+
+LDFLAGS += ${CVLDFLAGS}
 
 # 
 # Set the libraries and the library paths we will need

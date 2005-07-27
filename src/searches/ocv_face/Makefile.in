@@ -15,9 +15,15 @@ ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
+CVCPPFLAGS = @CVCPPFLAGS@
+CVLDFLAGS = @CVLDFLAGS@
+
+
 
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
-                                                                                
+
+CPPFLAGS += ${CVCPPFLAGS}                                                                                
+LDFLAGS += ${CVLDFLAGS}                                                                                
 include $(ROOTDIR)/common/Makefile.template
 
 # objects used to build the searchlet(s)

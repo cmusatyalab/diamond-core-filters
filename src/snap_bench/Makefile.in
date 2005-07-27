@@ -16,6 +16,14 @@ ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
+CVCPPFLAGS = @CVCPPFLAGS@
+CVLDFLAGS = @CVLDFLAGS@
+
+
+CPPFLAGS += ${CVCPPFLAGS}
+LDFLAGS += ${CVLDFLAGS}
+
+#
 
 
 # to build these files.

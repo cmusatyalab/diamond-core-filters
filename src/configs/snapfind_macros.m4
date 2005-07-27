@@ -1,3 +1,14 @@
+AC_SUBST(CVCPPFLAGS)
+AC_SUBST(CVLDFLAGS)
+
+AC_ARG_WITH(opencv-build, 
+    [--with-opencv-build=DIR - root of open cv build tree],
+    [ pfx="`(cd ${withval} ; pwd)`"
+      CVCPPFLAGS="-I${pfx}/cv/include -I${pfx}/cvaux/include/cvaux"
+      CVLDFLAGS="-L${pfx}/cv/src/.libs -L${pfx}/cvaux/src/.libs/"
+    ]
+)
+
 AC_DEFUN(SNAPFIND_OPTIONS_SYS,
   [AC_ARG_WITH($1,
     [  --with-$1=DIR    $1 was installed in DIR],
@@ -17,4 +28,4 @@ AC_DEFUN(SNAPFIND_OPTION_LIBRARY,
     [ pfx="`(cd ${withval} ; pwd)`"
       LDFLAGS="${LDFLAGS} -L${pfx}"]) 
     ])
-                                                                                 
+

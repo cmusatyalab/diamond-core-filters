@@ -15,6 +15,10 @@ ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
+CVCPPFLAGS = @CVCPPFLAGS@
+CVLDFLAGS = @CVLDFLAGS@
+
+
 
 CPPFLAGS += -I/usr/local/include/opencv
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
