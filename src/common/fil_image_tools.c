@@ -110,6 +110,10 @@ ppm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
 
 	pixels =  img->width * img->height;
 
+	if (dlen < (pixels * 3)) {
+		return (EINVAL);
+	}
+
 	/* verify we have enough data */
 	assert((pixels * 3) <= dlen);
 
@@ -123,14 +127,17 @@ ppm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
 }
 
 RGBImage*
-get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type) {
+get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type) 
+{
   assert(buf);
   assert((type==IMAGE_PBM) || (type==IMAGE_PGM) || (type==IMAGE_PPM));
 
   int err, width, height, headerlen;
   image_type_t magic;
   err = pnm_parse_header(buf, size, &width, &height, &magic, &headerlen);
-  if (err) { return NULL; }
+  if (err) { 
+	return NULL; 
+   }
   assert(type == magic);	// paranoia :-)
 
   RGBImage* rgb = rgbimg_blank_image(width, height);
@@ -138,22 +145,35 @@ get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type) {
   switch (rgb->type) {
     case IMAGE_PBM:
       err = pbm_read_data( (size - headerlen), &buf[headerlen], rgb);
+      if (err) {
+	lf_log(LOGL_ERR, "get_rgb_from_pnm: invalid pbm image");
+      }
       break;
     case IMAGE_PGM:
       err = pgm_read_data( (size - headerlen), &buf[headerlen], rgb);
+      if (err) {
+	lf_log(LOGL_ERR, "get_rgb_from_pnm: invalid pgm image");
+      }
       break;
     case IMAGE_PPM:
       err = ppm_read_data( (size - headerlen), &buf[headerlen], rgb);
+      if (err) {
+	lf_log(LOGL_ERR, "get_rgb_from_pnm: invalid ppm image");
+      }
       break;
     default:
-      assert( 0 && "PNM format not PBM/PGM/PPM");
-      // TODO: need to exit more cleanly -- file not closed.
+      err = EINVAL;
+      lf_log(LOGL_ERR, "get_rgb_from_pnm: uknown type");
       break;
   }
-  assert(err==0);
+  if (err) {
+	release_rgb_image(rgb);
+	return(NULL);
+  }
 
   return rgb;
 }
+
 
 RGBImage*
 get_rgb_from_tiff(u_char* buf, off_t size) {
@@ -190,67 +210,6 @@ get_rgb_img(lf_obj_handle_t ohandle) {
 }
 
 
-
-RGBImage       *
-old_get_rgb_img(lf_obj_handle_t ohandle)
-{
-	RGBImage       *img = NULL;
-	int             err = 0;
-	int             width, height, headerlen;
-	off_t           bytes;
-	image_type_t    magic;
-	char *		obj_data;
-	off_t		data_len;
-
-	/*
-	 * read the header and figure out the dimensions 
-	 */
-	err = lf_next_block(ohandle, INT_MAX, &data_len, &obj_data);
-	assert(!err);
-
-	err = pnm_parse_header(obj_data, data_len, &width, &height, &magic, 
-		&headerlen);
-	if (err) {
-		return(NULL);
-	}
-			
-	/*
-	 * create image to hold the data 
-	 */
-	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
-	img = (RGBImage *)malloc(bytes);
-	assert(img);
-	img->nbytes = bytes;
-	img->height = height;
-	img->width = width;
-	img->type = magic;
-
-	/*
-	 * read the data into img 
-	 */
-	/*
-	 * this should be elsewhere... 
-	 */
-	switch (img->type) {
-		case IMAGE_PPM:
-			err = ppm_read_data((data_len - headerlen), 
-				&obj_data[headerlen], img);
-			assert(!err);
-			break;
-		case IMAGE_PGM:
-			err = pgm_read_data((data_len - headerlen),
-				&obj_data[headerlen], img);
-			assert(!err);
-			break;
-		default:
-			assert(0 && "unsupported image format");
-			/*
-			 * should close file as well XXX 
-			 */
-	}
-	return (img);
-
-}
 
 RGBImage       *
 get_attr_rgb_img(lf_obj_handle_t ohandle, char *attr_name)
