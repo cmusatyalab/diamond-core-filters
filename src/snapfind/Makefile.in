@@ -34,7 +34,7 @@ LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -lopencv   -lcvaux -llog -lssl -ltiff
+LIBS += -llog -lssl -ltiff -lz
 
 CVLIBS += -Wl,-static -lcvaux -lopencv -Wl,-call_shared 
 
@@ -45,7 +45,7 @@ SEARCHLET_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_SHARED_SRCS)
 
 SEARCHLET_OBJS = $(COMMON_SEARCHLET_OBJS) $(COMMON_SHARED_OBJS)
 
-SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv -ltiff -ljpeg
+SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv -ltiff -ljpeg -lz
 
 SEARCHLET_LIBDIR += 
 

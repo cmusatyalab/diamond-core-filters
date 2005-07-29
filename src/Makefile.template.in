@@ -34,11 +34,6 @@ CPPFLAGS += -I/usr/local/include/opencv
 CPPFLAGS += -I${ROOTDIR}/snapfind -I${ROOTDIR}/common
 
 
-#XXX INCDIR += -I$(ROOTDIR)/common
-#XXX INCDIR += -I${DIAMOND_INC_PATH}
-#XXX INCDIR += -I$(ROOTDIR)/snapfind
-#XXX INCDIR += -I$(SRCDIR)
-#XXX INCDIR += -I/usr/local/include/opencv
 
 
 # from the configure script
