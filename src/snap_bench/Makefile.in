@@ -42,7 +42,7 @@ SRCS = snap_bench.c
 TARGETS = snap_bench 
 
 
-include $(ROOTDIR)/Makefile.template
+include $(OBJROOT)/Makefile.template
 
 #
 #

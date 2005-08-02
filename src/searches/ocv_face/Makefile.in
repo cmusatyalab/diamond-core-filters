@@ -49,7 +49,7 @@ TARGETS = fil_ocv_face.so opencv_face_search.so
 
 SHARED_BIN += fil_ocv_face.so opencv_face_search.so
 
-include ${ROOTDIR}/Makefile.template
+include ${OBJROOT}/Makefile.template
                                                                                 
 fil_ocv_face.so: $(FILTER_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)

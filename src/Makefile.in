@@ -19,6 +19,6 @@ XLIB = @LIBS@
 
 SUBDIRS = snapfind snap_bench searches
 
-include $(ROOTDIR)/Makefile.template
+include $(OBJROOT)/Makefile.template
 
 

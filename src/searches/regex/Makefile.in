@@ -48,7 +48,7 @@ TARGETS = fil_regex.so regex_search.so
 
 SHARED_BIN = fil_regex.so regex_search.so
 
-include ${ROOTDIR}/Makefile.template
+include ${OBJROOT}/Makefile.template
                                                                                 
 fil_regex.so: $(FILTER_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)

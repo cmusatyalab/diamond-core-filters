@@ -45,7 +45,7 @@ TARGETS = fil_gabor_texture.so gabor_texture_search.so
 
 SHARED_BIN += fil_gabor_texture.so gabor_texture_search.so
 
-include ${ROOTDIR}/Makefile.template
+include ${OBJROOT}/Makefile.template
                                                                                 
 fil_gabor_texture.so: $(FILTER_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)
