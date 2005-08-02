@@ -146,7 +146,7 @@ write_notify_f(void *cont, search_param_t * param)
  */
 int
 f_init_histo_detect(int numarg, char **args, int blob_len,
-                    void *blob, void **data)
+                    void *blob, const char *fname, void **data)
 {
 	histo_config_t *hconfig;
 	int             err;
@@ -225,14 +225,14 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	/*
 	 * get the img 
 	 */
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
 	if (err != 0) {
 		img_alloc = 1;
 		img = get_rgb_img(ohandle);
 	}
 	ASSERT(img->type == IMAGE_PPM);
 
-	err = lf_ref_attr(ohandle, HISTO_II, &len, (char **)&ii);
+	err = lf_ref_attr(ohandle, HISTO_II, &len, (void **)&ii);
 	if (err != 0) {
 		ii_alloc = 1;
 		ii = histo_get_ii(hconfig, img);
@@ -312,7 +312,8 @@ done:
 
 
 int
-f_init_hpass(int numarg, char **args, int blob_len, void *blob, void **data)
+f_init_hpass(int numarg, char **args, int blob_len, void *blob, 
+		const char *fname, void **data)
 {
 	hpass_data_t   *fstate;
 
@@ -369,7 +370,7 @@ done:
 
 int
 f_init_hintegrate(int numarg, char **args, int blob_len, void *blob,
-                  void **data)
+		const char *fname, void **data)
 {
 	hintegrate_data_t *fstate;
 
@@ -426,7 +427,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	/*
 	 * get the img 
 	 */
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
 	if (err != 0) {
 		img_alloc = 1;
 		img = get_rgb_img(ohandle);

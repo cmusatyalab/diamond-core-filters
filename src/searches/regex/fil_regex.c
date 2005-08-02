@@ -27,7 +27,7 @@
 
 int
 f_init_regex(int argc, char **args, int blob_len, void *blob_data,
-             void **fdatap)
+             const char *fname, void **fdatap)
 {
 	int             i;
 	fdata_regex_t  *fconfig;

@@ -108,7 +108,7 @@ write_notify_f(void *cont, search_param_t *param)
 
 int
 f_init_gab_texture(int numarg, char **args, int blob_len,
-                   void *blob, void **f_datap)
+                   void *blob, const char *fname, void **f_datap)
 {
 	gtexture_args_t*	data;
 	int			err;
@@ -164,7 +164,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 
 	lf_log(LOGL_TRACE, "f_texture_detect: enter");
 
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&rgb_img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&rgb_img);
 	assert(err == 0);
 	if (rgb_img == NULL) {
 		rgb_alloc = 1;

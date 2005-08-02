@@ -32,7 +32,7 @@ extern "C"
 #endif
 
 int f_init_regex(int numarg, char **args, int blob_len, void *blob,
-	                 void **fdatap);
+		const char *fname, void **fdatap);
 int f_fini_regex(void *fdata);
 int f_eval_regex(lf_obj_handle_t ohandle, void *fdata);
 

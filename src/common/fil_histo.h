@@ -30,26 +30,26 @@ extern "C"
 
 
 int f_init_pnm2rgb(int numarg, char **args, int blob_len, void *blob,
-	                   void **data);
+		const char *fname, void **data);
 int f_fini_pnm2rgb(void *data);
 int f_eval_pnm2rgb(lf_obj_handle_t ihandle, void *user_data);
 
 
 
 int f_init_histo_detect(int numarg, char **args, int blob_len, void *blob,
-	                        void **data);
+			const char *fname, void **data);
 int f_fini_histo_detect(void *data);
 int f_eval_histo_detect(lf_obj_handle_t ihandle, void *user_data);
 
 
 int f_init_hpass(int numarg, char **args, int blob_len, void *blob,
-	                 void **data);
+			const char *fname, void **data);
 int f_fini_hpass(void *data);
 int f_eval_hpass(lf_obj_handle_t ihandle, void *user_data);
 
 
 int f_init_hintegrate(int numarg, char **args, int blob_len, void *blob,
-	                      void **data);
+	                      const char *fname, void **data);
 int f_fini_hintegrate(void *data);
 int f_eval_hintegrate(lf_obj_handle_t ihandle, void *user_data);
 

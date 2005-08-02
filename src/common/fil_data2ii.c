@@ -128,7 +128,7 @@ print_ii(ii_image_t * ii)
 
 int
 f_init_integrate(int numarg, char **args, int blob_len, void *blob_data,
-                 void **fdatap)
+                 const char *fname, void **fdatap)
 {
 
 	*fdatap = NULL;

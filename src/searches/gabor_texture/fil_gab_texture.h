@@ -29,10 +29,10 @@ write_notify_context_t;
 extern "C"
 {
 #endif
-	int f_init_gab_texture(int numarg, char **args, int blob_len, void *blob,
-	                       void **data);
-	int f_fini_gab_texture(void *data);
-	int f_eval_gab_texture(lf_obj_handle_t ihandle, int numout,
+int f_init_gab_texture(int numarg, char **args, int blob_len, void *blob,
+			const char *fname, void **data);
+int f_fini_gab_texture(void *data);
+int f_eval_gab_texture(lf_obj_handle_t ihandle, int numout,
 	                       lf_obj_handle_t *ohandles, void *user_data);
 
 

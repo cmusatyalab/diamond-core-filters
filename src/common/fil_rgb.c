@@ -42,7 +42,8 @@ if(!(exp)) {								\
 
 
 int
-f_init_img2rgb(int numarg, char **args, int blob_len, void *blob, void **data)
+f_init_img2rgb(int numarg, char **args, int blob_len, void *blob, 
+		const char *fname, void **data)
 {
 
 	assert(numarg == 0);
@@ -102,7 +103,8 @@ done:
 
 
 int
-f_init_attr2rgb(int numarg, char **args, int blob_len, void *blob, void **data)
+f_init_attr2rgb(int numarg, char **args, int blob_len, void *blob, 
+		const char *fname, void **data)
 {
 
 	assert(numarg == 0);

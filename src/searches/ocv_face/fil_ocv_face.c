@@ -58,7 +58,7 @@ write_param(lf_obj_handle_t ohandle, char *fmt,
 
 int
 f_init_opencv_fdetect(int numarg, char **args, int blob_len, void *blob_data,
-                      void **fdatap)
+ 			const char *fname, void **fdatap)
 {
 
 	opencv_fdetect_t *fconfig;

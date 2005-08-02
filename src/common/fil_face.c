@@ -57,118 +57,11 @@ process_region(ii_image_t * ii, int lev1, int lev2, region_t * bboxp,
 	return found;
 }
 
-int
-f_init_opencv_fdetect(int numarg, char **args, int blob_len, void *blob_data,
-                      void **fdatap)
-{
-
-	opencv_fdetect_t *fconfig;
-	CvHaarClassifierCascade *cascade;
-
-
-	fconfig = (opencv_fdetect_t *) malloc(sizeof(*fconfig));
-	assert(fconfig != NULL);
-
-	fconfig->name = strdup(args[0]);
-	assert(fconfig->name != NULL);
-	fconfig->scale_mult = atof(args[1]);
-	fconfig->xsize = atoi(args[2]);
-	fconfig->ysize = atoi(args[3]);
-	fconfig->stride = atoi(args[4]);
-	/*
-	 * XXX skip 5 for now ?? 
-	 */
-	fconfig->support = atoi(args[6]);
-
-	if (fconfig->scale_mult <= 1) {
-		lf_log(LOGL_TRACE,
-		       "scale multiplier must be > 1; got %f\n", fconfig->scale_mult);
-		exit(1);
-	}
-
-	cascade = cvLoadHaarClassifierCascade("<default_face_cascade>",
-	                                      cvSize(fconfig->xsize, fconfig->ysize));
-	/* XXX check args */
-	fconfig->haar_cascade = cvCreateHidHaarClassifierCascade(
-	                            cascade, 0, 0, 0, 1);
-	cvReleaseHaarClassifierCascade(&cascade);
-
-	*fdatap = fconfig;
-	return (0);
-}
-
-
-int
-f_fini_opencv_fdetect(void *fdata)
-{
-	opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
-
-
-	cvReleaseHidHaarClassifierCascade(&fconfig->haar_cascade);
-	free(fconfig->name);
-	free(fconfig);
-	return (0);
-}
-
-
-int
-f_eval_opencv_fdetect(lf_obj_handle_t ohandle, void *fdata)
-{
-	int             pass = 0;
-	RGBImage *		img;
-	search_param_t  param;
-	opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
-	int             err;
-	bbox_list_t	    blist;
-	int				i;
-	bbox_t *		cur_box;
-	off_t			len;
-
-	lf_log(LOGL_TRACE, "f_eval_opencv_fdetect: enter\n");
-
-	/*
-	  * get the img
-	  */
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
-	assert(err == 0);
-
-
-	TAILQ_INIT(&blist);
-	pass = opencv_face_scan(img, &blist, fconfig);
-
-	i = 0;
-	while (!(TAILQ_EMPTY(&blist))) {
-		cur_box = TAILQ_FIRST(&blist);
-		param.type = PARAM_FACE;
-		param.bbox.xmin = cur_box->min_x;
-		param.bbox.ymin = cur_box->min_y;
-		param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
-		param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
-		write_param(ohandle, FACE_BBOX_FMT, &param, i);
-		TAILQ_REMOVE(&blist, cur_box, link);
-		free(cur_box);
-		i++;
-	}
-
-	/*
-	 * save 'pass' in attribs 
-	 */
-	err = lf_write_attr(ohandle, NUM_FACE, sizeof(int),
-	                    (char *) &pass);
-	assert(!err);
-	lf_log(LOGL_TRACE, "found %d faces\n", pass);
-
-
-	lf_log(LOGL_TRACE, "f_eval_opencv_fdetect: done\n");
-	return pass;
-}
-
-
 
 
 int
 f_init_vj_detect(int numarg, char **args, int blob_len, void *blob_data,
-                 void **fdatap)
+		const char *fname, void **fdatap)
 {
 
 	fconfig_fdetect_t *fconfig;
@@ -373,7 +266,7 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, void *fdata)
 
 int
 f_init_bbox_merge(int numarg, char **args, int blob_len, void *blob,
-                  void **fdatap)
+                  const char *fname, void **fdatap)
 {
 	overlap_state_t *ostate;
 

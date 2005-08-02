@@ -21,12 +21,12 @@ extern "C"
 
 int f_eval_detect(lf_obj_handle_t ohandle, void *fdata);
 int f_init_detect(int numarg, char **args, int blob_len, void *blob,
-		  void **fdatap);
+		const char *fname, void **fdatap);
 int f_fini_detect(void *fdatap);
 
 
 int f_init_bbox_merge(int numarg, char **args, int blob_len, void *blob,
-		      void **fdatap);
+		const char *fname, void **fdatap);
 int f_fini_bbox_merge(void *fdata);
 int f_eval_bbox_merge(lf_obj_handle_t ohandle, void *fdata);
 

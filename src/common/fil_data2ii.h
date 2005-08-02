@@ -19,7 +19,7 @@ extern "C"
 #endif
 
 int f_init_integrate(int numarg, char **args, int blob_len, void *blob,
-		     void **fdatap);
+		     const char *fname, void **fdatap);
 int f_fini_integrate(void *fdatap);
 int f_eval_integrate(lf_obj_handle_t ohandle, void *fdata);
 

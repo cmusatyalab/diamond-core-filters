@@ -94,11 +94,12 @@ write_notify_f(void *cont, search_param_t *param)
 
 int
 f_init_texture_detect(int numarg, char **args, int blob_len,
-                      void *blob, void **f_datap)
+                      void *blob, const char *filt_name, void **f_datap)
 {
 	texture_args_t*	targs;
 	int				err;
 
+	printf("f_init_texture_detect: fname %s \n", filt_name);
 	targs = (texture_args_t *)malloc(sizeof(*targs));
 	assert(targs);
 
@@ -147,7 +148,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 
 	lf_log(LOGL_TRACE, "f_texture_detect: enter");
 
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
 	assert(err == 0);
 	if (rgb_img == NULL) {
 		rgb_alloc = 1;
@@ -264,8 +265,8 @@ tpass_data_t;
 
 
 int
-f_init_tpass(int numarg, char **args, int blob_len, void *blob,
-             void **f_datap)
+f_init_tpass(int numarg, char **args, int blob_len, void *blob, 
+	const char *filt_name, void **f_datap)
 {
 	tpass_data_t *  fstate;
 
