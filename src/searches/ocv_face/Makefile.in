@@ -28,13 +28,16 @@ include $(ROOTDIR)/common/Makefile.template
 
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_ocv_face.c opencv_face_tools.c
+
 FILTER_LIB_OBJS =  fil_ocv_face.o opencv_face_tools.o
-FILTER_LIB_LIBS += -lm -Wl,-static 
 
 SEARCH_LIB_SRCS = ocv_face_search.cc  opencv_face_tools.c
+
 SEARCH_LIB_OBJS =  ocv_face_search.o opencv_face_tools.o
+
 SEARCH_LIB_LIBS += 
 
+SEARCHLET_LIBS += -Wl,-static -lm -lcvaux -lopencv 
 #
 # All the source files that are needed for depend.
 #
@@ -52,7 +55,7 @@ SHARED_BIN += fil_ocv_face.so opencv_face_search.so
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_ocv_face.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR)
                                                                                 
 opencv_face_search.so: $(SEARCH_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS)
