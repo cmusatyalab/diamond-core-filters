@@ -22,7 +22,6 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
-#include <opencv/cv.h>
 #include <opencv/cvaux.h>
 
 #include "filter_api.h"
@@ -128,7 +127,7 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, void *fdata)
 	/*
 	  * get the img
 	  */
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (char**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
 	assert(err == 0);
 
 

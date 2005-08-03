@@ -1,11 +1,11 @@
 AC_SUBST(CVCPPFLAGS)
 AC_SUBST(CVLDFLAGS)
 
-AC_ARG_WITH(opencv-build, 
-    [--with-opencv-build=DIR - root of open cv build tree],
+AC_ARG_WITH(opencv, 
+    [--with-opencv=DIR - root of opencv install dir],
     [ pfx="`(cd ${withval} ; pwd)`"
-      CVCPPFLAGS="-I${pfx}/cv/include -I${pfx}/cvaux/include/cvaux"
-      CVLDFLAGS="-L${pfx}/cv/src/.libs -L${pfx}/cvaux/src/.libs/"
+      CVCPPFLAGS="-I${pfx}/include/ -I${pfx}/include/opencv/"
+      CVLDFLAGS="-L${pfx}/lib/"
     ]
 )
 

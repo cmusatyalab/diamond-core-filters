@@ -7,17 +7,27 @@ at opencv configuration time by:
 
   	./configure --enable-static=yes
 
+If you want to install opencv in a non-default place, you need to specify
+the option --prefix=<dir> also at configure.  This is a common option if
+you don't have root access on the machine.  In this case to configure opencv
+you should use:
 
-Once this is installed you also need to have built the diamond
-system.  This does not need to be install but you must specify
-it's path to the configure script (if building from CVS run
-autoconf at the top of the source tree to generate the configure).
+	./configure --enable-static=yes --prefix=<writiable path>
+
+After it configures, then run "make" and "make install".  NOTE: Compiling
+snapfind with opencv in a non-standard location will generate many warning
+messages from the opencv include files.  Please ignore this.
+
+You also need a built diamond system.  Diamond does not need to be installed,
+but you must specify the path when configuring snapfind.  (If you 
+are building from CVS run autoconf at the top of the source tree to 
+generate the configure script).
 
 Then run configure 
 
-	./configure --with-diamond=/somepath
+	./configure --with-diamond=<somepath>  --with-opencv=<opencv install path>
 
-where /somepath is the top of the diamond build directory 
+where somepath is the top of the diamond build directory 
 ("somedir/diamond/target" if using the build tree).
 Once configure successfully builds, then build SnapFind 
 using "make" at the top level.  If all goes well

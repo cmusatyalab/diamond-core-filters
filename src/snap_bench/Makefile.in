@@ -23,8 +23,6 @@ CVLDFLAGS = @CVLDFLAGS@
 CPPFLAGS += ${CVCPPFLAGS}
 LDFLAGS += ${CVLDFLAGS}
 
-#
-
 
 # to build these files.
 LIBS += -ldl -lfl -lpthread -lm
