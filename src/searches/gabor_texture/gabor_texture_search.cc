@@ -14,12 +14,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <pthread.h>
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
-#include "image_tools.h"
-#include "texture_tools.h"
+#include "image_common.h"
+//#include "texture_tools.h"
 #include "search_set.h"
 #include "gabor.h"
 #include "gabor_priv.h"
@@ -71,7 +72,6 @@ gabor_texture_search::gabor_texture_search(const char *name, char *descr)
 	/* disble scale control in the window search */
 	set_scale_control(0);
 
-	distance_metric = TEXTURE_DIST_PAIRWISE;
 }
 
 

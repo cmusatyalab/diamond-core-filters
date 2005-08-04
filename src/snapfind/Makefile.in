@@ -107,14 +107,15 @@ clean-targets:	clean-experiments
 default: $(TARGETS)
 
 snap_searchlet.so: $(SEARCHLET_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCHLET_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR)
+	$(CPLUSPLUS) $(CFLAGS_SO) $(LDFLAGS) -o $@ -shared -static $(SEARCHLET_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR)
 
 libssearch.a: $(SEARCHLET_OBJS)
 	$(AR) r $@ $(SEARCHLET_OBJS)
 
+
 snapfind: $(SNAPFIND_OBJS)
-	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LIBDIR) $(GTK_LDFLAGS) ${CVLIBS}
-	#$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
+	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LDFLAGS) $(GTK_LDFLAGS) ${CVLIBS}
+
 
 search:	search.c
 	$(CC) $(CFLAGS) $(DYNAMIC) -o $@ $< $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`

@@ -81,7 +81,6 @@ private:
 	float			min_freq;
 	float			max_freq;
 
-	texture_dist_t	distance_metric;
 	GtkWidget *		distance_menu;
 
 	GtkObject *	sim_adj;

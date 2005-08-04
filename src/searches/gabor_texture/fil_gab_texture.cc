@@ -17,11 +17,15 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 #include "rgb.h"
 #include "filter_api.h"
 #include "fil_gab_texture.h"
-#include "texture_tools.h"
-#include "image_tools.h"
+//#include "texture_tools.h"
+//#include "image_tools.h"
+#include "image_common.h"
 #include "gabor_priv.h"
 #include "gabor_tools.h"
 #include "gabor.h"

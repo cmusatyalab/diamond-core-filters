@@ -46,7 +46,7 @@ include $(OBJROOT)/Makefile.template
 #
 
 snap_bench: $(OBJS)
-	$(CPLUSPLUS) $(CFLAGS) -o snap_bench -rdynamic $(OBJS) $(LIBDIR) $(LIBS)
+	$(CPLUSPLUS) $(CFLAGS) $(LDFLAGS) -o snap_bench -rdynamic $(OBJS) $(LIBDIR) $(LIBS)
 
 
 
