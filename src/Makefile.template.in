@@ -44,8 +44,7 @@ CFLAGS += @CFLAGS@
 VPATH += $(ROOTDIR)/common
 vpath %.h $(VPATH)
 
-#LIBDIR += -L${DIAMOND_LIB_PATH}
-LIBDIR += @LDFLAGS@
+LDFLAGS += @LDFLAGS@
 
 # general flags
 CFLAGS += -O2

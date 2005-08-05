@@ -15,7 +15,6 @@ VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
-XLIB = @LIBS@
 
 SUBDIRS = snapfind snap_bench searches
 

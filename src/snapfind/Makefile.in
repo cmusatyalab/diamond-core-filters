@@ -118,16 +118,16 @@ snapfind: $(SNAPFIND_OBJS)
 
 
 search:	search.c
-	$(CC) $(CFLAGS) $(DYNAMIC) -o $@ $< $(LIBDIR) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
+	$(CC) $(CFLAGS) $(DYNAMIC) -o $@ $< $(LDFLAGS) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
 
 profile: profile.o $(SEARCHLET_OBJS)
-	$(CC) $(CFLAGS) -o profile profile.o $(SEARCHLET_OBJS) $(LIBS) $(LIBDIR) -lfilterexec -ltools -lodisk
+	$(CC) $(CFLAGS) -o profile profile.o $(SEARCHLET_OBJS) $(LIBS) $(LDFLAGS) -lfilterexec -ltools -lodisk
 
 foo: foo.o rgb_histo_search.o snap_search.o window_search.o example_search.o
 	$(CC) $(CFLAGS) -o foo foo.o rgb_histo_search.o snap_search.o window_search.o example_search.o
 
 
-#	$(CC) $(CFLAGS) -o $@ $< $(SEARCHLET_OBJS) $(LIBS) $(LIBDIR) -lfilterexec -ltools -lodisk
+#	$(CC) $(CFLAGS) -o $@ $< $(SEARCHLET_OBJS) $(LIBS) $(LDFLAGS) -lfilterexec -ltools -lodisk
 
 wavelet-test:	wavelet.o rgb.o
 	$(CC) $(CFLAGS) -o wavelet-test wavelet.o rgb.o -static -lwvlt -lm
