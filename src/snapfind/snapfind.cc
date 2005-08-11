@@ -1285,7 +1285,7 @@ create_image_info(GtkWidget *container_box, image_info_t *img_info)
 
 	sprintf(data, "%-60s:", " ");
 	img_info->dev_label = gtk_label_new(data);
-	gtk_box_pack_start(GTK_BOX(box), img_info->name_label, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(box), img_info->dev_label, TRUE, TRUE, 0);
 
 	/*
 	 * Place holder and blank spot for the number of bounding
