@@ -41,6 +41,7 @@
 #endif
 
 #include "filter_api.h"
+#include "sys_attr.h"
 #include "common_consts.h"
 #include "searchlet_api.h"
 #include "gui_thread.h"
@@ -177,6 +178,7 @@ typedef struct
 	GtkWidget *	info_box2;
 	GtkWidget *	name_tag;
 	GtkWidget *	name_label;
+	GtkWidget *	dev_label;
 	GtkWidget *	count_tag;
 	GtkWidget *	count_label;
 
@@ -297,6 +299,9 @@ clear_image_info(image_info_t *img_info)
 
 	sprintf(data, "%-60s", " ");
 	gtk_label_set_text(GTK_LABEL(img_info->name_label), data);
+	
+	sprintf(data, "%-60s", " ");
+	gtk_label_set_text(GTK_LABEL(img_info->dev_label), data);
 
 	sprintf(data, "%-3s", " ");
 	gtk_label_set_text(GTK_LABEL(img_info->count_label), data);
@@ -307,7 +312,7 @@ clear_image_info(image_info_t *img_info)
 
 
 static void
-write_image_info(image_info_t *img_info, char *name, int count)
+write_image_info(image_info_t *img_info, char *name, char *device, int count)
 {
 	char	txt[BUFSIZ];
 
@@ -315,6 +320,9 @@ write_image_info(image_info_t *img_info, char *name, int count)
 
 	sprintf(txt, "%-60s", name);
 	gtk_label_set_text(GTK_LABEL(img_info->name_label), txt);
+
+	sprintf(txt, "%-60s", device);
+	gtk_label_set_text(GTK_LABEL(img_info->dev_label), txt);
 
 	sprintf(txt, "%-3d", count);
 	gtk_label_set_text(GTK_LABEL(img_info->count_label), txt);
@@ -488,7 +496,8 @@ static void
 display_thumbnail(ls_obj_handle_t ohandle)
 {
 	RGBImage        *rgbimg, *scaledimg;
-	char            name[MAX_NAME];
+	char            name[COMMON_MAX_NAME];
+	char            device[COMMON_MAX_NAME];
 	off_t		bsize;
 	int		err;
 	int		num_face, num_histo;
@@ -505,17 +514,27 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	assert(image_controls.cur_op == CNTRL_NEXT ||
 	       image_controls.cur_op == CNTRL_ELEV);
 
-	/* get path XXX */
-	bsize = MAX_NAME;
+	/* get path */
+	bsize = COMMON_MAX_NAME;
 	err = lf_read_attr(ohandle, DISPLAY_NAME, &bsize, name);
 	if(err) {
 		err = lf_read_attr(ohandle, OBJ_PATH, &bsize, name);
 	}
 	if (err) {
-		sprintf(name, "%s", "uknown");
+		sprintf(name, "%s", "unknown");
 		bsize = strlen(name);
 	}
 	name[bsize] = '\0';	/* terminate string */
+
+	bsize = COMMON_MAX_NAME;
+	err = lf_read_attr(ohandle, DEVICE_NAME, &bsize, device);
+	if (err) {
+		sprintf(name, "%s", "unknown");
+		bsize = strlen(device);
+	}
+	/* make sure string is terminated - can be a object bug not app */
+	device[bsize] = '\0';
+
 
 
 	/* get the img */
@@ -584,6 +603,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	cur_thumbnail->img = scaledimg;
 	cur_thumbnail->gimage = image;
 	strcpy(cur_thumbnail->name, name);
+	strcpy(cur_thumbnail->device, device);
 	cur_thumbnail->nboxes = num_histo;
 	cur_thumbnail->nfaces = num_face;
 	cur_thumbnail->hooks = ih_new_ref(rgbimg, (HistoII*)NULL, ohandle);
@@ -1233,44 +1253,39 @@ cb_toggle_dump_attributes( gpointer   callback_data,
 static void
 create_image_info(GtkWidget *container_box, image_info_t *img_info)
 {
-
 	char		data[BUFSIZ];
+	GtkWidget *	box;
+	GtkWidget *	label;
 
 	GUI_THREAD_CHECK();
 
 	/*
-	 * Now create another region that has the controls
-	 * that manipulate the current image being displayed.
+	 * Now create another region that display info about
+	 * the current image.
 	 */
 
 	img_info->parent_box = container_box;
-	img_info->info_box1 = gtk_hbox_new (FALSE, 0);
-	gtk_container_set_border_width(GTK_CONTAINER(img_info->info_box1), 10);
+	img_info->info_box1 = gtk_vbox_new(FALSE, 10);
 
 	GtkWidget *frame;
 	frame = gtk_frame_new("Image Info");
 	gtk_container_add(GTK_CONTAINER(frame), img_info->info_box1);
-	gtk_widget_show(frame);
 
 	gtk_box_pack_start(GTK_BOX(img_info->parent_box),
 	                   frame, TRUE, TRUE, 0);
-	gtk_widget_show(img_info->info_box1);
 
 
-	/*
-	 * image name
-	 */
-	img_info->name_tag = gtk_label_new("Name:");
-	gtk_box_pack_start (GTK_BOX(img_info->info_box1),
-	                    img_info->name_tag, FALSE, FALSE, 0);
-	gtk_widget_show(img_info->name_tag);
+	/* info about the device */
+	box = gtk_hbox_new(FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(img_info->info_box1),
+	                   box, TRUE, TRUE, 10);
 
+	label = gtk_label_new("Device:");
+	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
 
 	sprintf(data, "%-60s:", " ");
-	img_info->name_label = gtk_label_new(data);
-	gtk_box_pack_start (GTK_BOX(img_info->info_box1),
-	                    img_info->name_label, TRUE, TRUE, 0);
-	gtk_widget_show(img_info->name_label);
+	img_info->dev_label = gtk_label_new(data);
+	gtk_box_pack_start(GTK_BOX(box), img_info->name_label, TRUE, TRUE, 0);
 
 	/*
 	 * Place holder and blank spot for the number of bounding
@@ -1278,14 +1293,29 @@ create_image_info(GtkWidget *container_box, image_info_t *img_info)
 	 */
 	sprintf(data, "%-3s", " ");
 	img_info->count_label = gtk_label_new(data);
-	gtk_box_pack_end (GTK_BOX(img_info->info_box1),
-	                  img_info->count_label, FALSE, FALSE, 0);
-	gtk_widget_show(img_info->count_label);
+	gtk_box_pack_end (GTK_BOX(box), img_info->count_label, FALSE, FALSE, 0);
 
-	img_info->count_tag = gtk_label_new("Num Scenes:");
-	gtk_box_pack_end(GTK_BOX(img_info->info_box1),
-	                 img_info->count_tag, FALSE, FALSE, 0);
-	gtk_widget_show(img_info->count_tag);
+	img_info->count_tag = gtk_label_new("Num Matches:");
+	gtk_box_pack_end(GTK_BOX(box), img_info->count_tag, FALSE, FALSE, 0);
+
+	/*
+	 * image name info
+	 */
+
+	box = gtk_hbox_new(FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(img_info->info_box1),
+	                   box, TRUE, TRUE, 0);
+
+	img_info->name_tag = gtk_label_new("Name:");
+	gtk_box_pack_start(GTK_BOX(box), img_info->name_tag, FALSE, FALSE, 0);
+
+
+	sprintf(data, "%-60s:", " ");
+	img_info->name_label = gtk_label_new(data);
+	gtk_box_pack_start (GTK_BOX(box), img_info->name_label, TRUE, TRUE, 0);
+
+
+	gtk_widget_show_all(frame);
 }
 
 
@@ -1323,7 +1353,8 @@ cb_img_info(GtkWidget *widget, gpointer data)
 	//fprintf(stderr, "thumb=%p\n", thumb);
 
 	if(thumb->img) {
-		write_image_info(&image_information, thumb->name, thumb->nboxes);
+		write_image_info(&image_information, thumb->name,
+		thumb->device, thumb->nboxes);
 	}
 	GUI_CALLBACK_LEAVE();
 }

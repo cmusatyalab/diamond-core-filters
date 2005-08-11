@@ -46,8 +46,7 @@ typedef enum param_type_t {
  * attributes passed to the test function
  */
 #define PARAM_NAME_MAX 15
-typedef struct search_param
-{
+typedef struct search_param {
 	param_type_t type;
 	int lev1, lev2;		/* range of tests to apply (face) */
 	region_t bbox;		/* bounding box */
@@ -90,7 +89,6 @@ search_param_t;
 #define GRAY_IPL_IMAGE "_gray_image.ipl_image"
 
 
-#define DISPLAY_NAME "Display-Name"
 #define KEYWORDS "Keywords"
 #define CONTENT_TYPE "Content-Type"
 #define PARENT_OIT "Parent-OID"
