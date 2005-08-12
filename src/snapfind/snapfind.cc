@@ -43,7 +43,7 @@
 #include "lib_filter.h"
 #include "lib_log.h"
 #include "sys_attr.h"
-#include "common_consts.h"
+#include "snapfind_consts.h"
 #include "searchlet_api.h"
 #include "gui_thread.h"
 

@@ -18,7 +18,7 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
-#include "common_consts.h"
+#include "snapfind_consts.h"
 #include "lib_results.h"
 #include "image_tools.h"
 #include "img_search.h"

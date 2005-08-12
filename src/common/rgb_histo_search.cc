@@ -19,7 +19,7 @@
 #include <gtk/gtk.h>
 #include <assert.h>
 #include "queue.h"
-#include "common_consts.h"
+#include "snapfind_consts.h"
 #include "rgb.h"
 #include "lib_results.h"
 #include "histo.h"

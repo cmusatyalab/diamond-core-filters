@@ -18,6 +18,7 @@
  * thread and the main application. (face_search.c and facemain.c)  */
 
 #include "ring.h"
+#include "snapfind_consts.h"
 #include "face_consts.h"
 
 /*

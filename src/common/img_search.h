@@ -15,7 +15,7 @@
 #define	_IMG_SEARCH_H_	1
 
 #include <gtk/gtk.h>
-#include "common_consts.h"
+#include "snapfind_consts.h"
 
 
 /* forward declaration to we can get a pointer */

@@ -36,7 +36,6 @@
 #include "graph_win.h"
 
 
-#define	MAX_DEVICES	24
 
 // #define SUMMARY_FONT_NAME "helvetica 14"
 
@@ -128,7 +127,7 @@ stats_main(void *data)
 {
 	ls_search_handle_t shandle;
 	int             num_dev;
-	ls_dev_handle_t dev_list[MAX_DEVICES];
+	ls_dev_handle_t dev_list[SF_MAX_DEVICES];
 	int             i, err, len, id;
 	dev_stats_t    *dstats;
 	double			time = 0.0;
@@ -144,7 +143,7 @@ stats_main(void *data)
 
 	shandle = (ls_search_handle_t *) data;
 
-	dstats = (dev_stats_t *) malloc(DEV_STATS_SIZE(MAX_FILT));
+	dstats = (dev_stats_t *) malloc(DEV_STATS_SIZE(SF_MAX_FILTERS));
 	assert(dstats);
 
 	while (1) {
@@ -154,7 +153,7 @@ stats_main(void *data)
 		/*
 			 * Get a list of the devices.
 			 */
-		num_dev = MAX_DEVICES;
+		num_dev = SF_MAX_DEVICES;
 		err = ls_get_dev_list(shandle, dev_list, &num_dev);
 		if (err != 0) {
 			printf("ls_get_dev_list: %d ", err);
@@ -170,7 +169,7 @@ stats_main(void *data)
 		}
 
 		for (i = 0; i < num_dev; i++) {
-			len = DEV_STATS_SIZE(MAX_FILT);
+			len = DEV_STATS_SIZE(SF_MAX_FILTERS);
 			err = ls_get_dev_stats(shandle, dev_list[i], dstats, &len);
 			// dump_stats(dstats);
 			if (err) {

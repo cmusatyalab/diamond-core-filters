@@ -16,7 +16,7 @@
 
 #include <gtk/gtk.h>
 #include "img_search.h"
-#include "common_consts.h"
+#include "snapfind_consts.h"
 
 
 class rgb_img: public img_search {

@@ -10,7 +10,7 @@
  *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
-
+#ifdef	XXX
 
 
 /* the number of filter stages in the face detector. we'd like more
@@ -47,3 +47,4 @@
 /* dimension of a patch (assume square) */
 #define MIN_TEXTURE_SIZE 32
 #define STD_COLOR_SIZE   16
+#endif

@@ -41,7 +41,6 @@
 #include "lib_odisk.h"
 
 
-#define	MAX_DEVICES	24
 
 static pthread_t       stats_thread;
 static int             thread_close;
@@ -118,7 +117,7 @@ set_for_each_device(ls_search_handle_t shandle, char *rem_string,
                     int len, char *val)
 {
 	int             num_dev;
-	ls_dev_handle_t dev_list[MAX_DEVICES];
+	ls_dev_handle_t dev_list[SF_MAX_DEVICES];
 	int             i, err;
 	char	    big_buf[MAX_BUF];
 	char *	   delim;
@@ -128,7 +127,7 @@ set_for_each_device(ls_search_handle_t shandle, char *rem_string,
 	/*
 	    	 * Get a list of the devices.
 	    	 */
-	num_dev = MAX_DEVICES;
+	num_dev = SF_MAX_DEVICES;
 	err = ls_get_dev_list(shandle, dev_list, &num_dev);
 	if (err != 0) {
 		printf("ls_get_dev_list: %d ", err);

@@ -18,7 +18,7 @@
 #include <vector>
 
 #include <gtk/gtk.h>
-#include "common_consts.h"
+#include "snapfind_consts.h"
 #include "texture_tools.h"
 #include "histo.h"
 

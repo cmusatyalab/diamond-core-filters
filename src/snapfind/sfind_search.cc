@@ -39,10 +39,6 @@
 
 extern pthread_mutex_t ring_mutex;
 /*
- * XXX 
- */
-#define	MAX_DEVICES		32
-/*
  * this need to be global because we share it with the main
  * GUI.  XXX hack, do it right later.
  */
@@ -110,24 +106,24 @@ do_search(gid_list_t * main_region, char *fspec)
 		}
 	}
 
-	filter_name = (char *) malloc(MAX_PATH);
+	filter_name = (char *) malloc(SF_MAX_PATH);
 	if (filter_name == NULL) {
 		exit(1);                /* XXX */
 	}
-	dir_name = (char *) malloc(MAX_PATH);
+	dir_name = (char *) malloc(SF_MAX_PATH);
 	if (dir_name == NULL) {
 		exit(1);                /* XXX */
 	}
 
-	res = getcwd(dir_name, MAX_PATH);
+	res = getcwd(dir_name, SF_MAX_PATH);
 	if (res == NULL) {
 		exit(1);
 	}
 
-	len = snprintf(filter_name, MAX_PATH, "%s/%s", dir_name,
+	len = snprintf(filter_name, SF_MAX_PATH, "%s/%s", dir_name,
 	               SEARCHLET_OBJ_NAME);
-	if (len >= MAX_PATH) {
-		fprintf(stderr, "MAX_PATH is too small, please extend \n");
+	if (len >= SF_MAX_PATH) {
+		fprintf(stderr, "SF_MAX_PATH is too small, please extend \n");
 		assert(0);
 	}
 
@@ -247,15 +243,15 @@ void
 update_stats()
 {
 	int             num_dev;
-	ls_dev_handle_t dev_list[MAX_DEVICES];
+	ls_dev_handle_t dev_list[SF_MAX_DEVICES];
 	int             i, err, len;
 	dev_stats_t    *dstats;
 	int             tobj = 0, sobj = 0, dobj = 0;
 
-	dstats = (dev_stats_t *) malloc(DEV_STATS_SIZE(MAX_FILT));
+	dstats = (dev_stats_t *) malloc(DEV_STATS_SIZE(SF_MAX_FILTERS));
 	assert(dstats);
 
-	num_dev = MAX_DEVICES;
+	num_dev = SF_MAX_DEVICES;
 
 	err = ls_get_dev_list(shandle, dev_list, &num_dev);
 	if (err != 0) {
@@ -264,7 +260,7 @@ update_stats()
 	}
 
 	for (i = 0; i < num_dev; i++) {
-		len = DEV_STATS_SIZE(MAX_FILT);
+		len = DEV_STATS_SIZE(SF_MAX_FILTERS);
 		err = ls_get_dev_stats(shandle, dev_list[i], dstats, &len);
 		if (err) {
 			printf("Failed to get dev stats \n");

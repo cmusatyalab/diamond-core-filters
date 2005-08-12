@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include "queue.h"
-#include "common_consts.h"
+#include "snapfind_consts.h"
 #include "rgb.h"
 #include "lib_results.h"
 #include "image_tools.h"

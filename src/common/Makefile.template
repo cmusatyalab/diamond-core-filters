@@ -12,7 +12,7 @@
 #
 
 
-COMMON_HEADERS = rgb.h image_tools.h common_consts.h img_search.h
+COMMON_HEADERS = rgb.h image_tools.h img_search.h
 COMMON_HEADERS +=  texture_tools.h fil_tools.h 
 COMMON_HEADERS += filter_api.h
 COMMON_HEADERS += fil_histo.h histo.h gtk_image_tools.h

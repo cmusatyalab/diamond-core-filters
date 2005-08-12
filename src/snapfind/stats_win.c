@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "searchlet_api.h"
+#include "snapfind_consts.h"
 #include "face_consts.h"
 #include "gui_thread.h"
 #include "rtimer.h"
@@ -32,8 +33,6 @@
 #include "ring.h"
 #include "sfind_search.h"
 
-
-#define	MAX_DEVICES	24
 
 // #define SUMMARY_FONT_NAME "helvetica 14"
 
@@ -86,7 +85,7 @@ typedef struct filter_page
 	LIST_ENTRY(filter_page) fp_link;
 	char           *fp_name;
 	GtkWidget      *fp_table;
-	filt_data_t     fp_data[MAX_DEVICES];
+	filt_data_t     fp_data[SF_MAX_DEVICES];
 }
 filter_page_t;
 
@@ -107,15 +106,14 @@ typedef struct device_progress
 	GtkWidget      *drop_label;
 	GtkWidget      *nproc_text;
 	GtkWidget      *nproc_label;
-
-	filt_data_t     filt_stats[MAX_FILT];
+	filt_data_t     filt_stats[SF_MAX_FILTERS];
 }
 device_progress_t;
 
 
 
 
-device_progress_t devinfo[MAX_DEVICES];
+device_progress_t devinfo[SF_MAX_DEVICES];
 
 
 
@@ -476,7 +474,7 @@ new_dev_status(ls_search_handle_t shandle, int dev,
 	set_summary_attr(dstatus->nproc_label);
 
 
-	for (i = 0; i < MAX_FILT; i++) {
+	for (i = 0; i < SF_MAX_FILTERS; i++) {
 		init_filt_data(&dstatus->filt_stats[i]);
 	}
 }
@@ -665,7 +663,7 @@ stats_main(void *data)
 {
 	ls_search_handle_t shandle;
 	int             num_dev;
-	ls_dev_handle_t dev_list[MAX_DEVICES];
+	ls_dev_handle_t dev_list[SF_MAX_DEVICES];
 	int             i,
 	err,
 	len;
@@ -674,12 +672,12 @@ stats_main(void *data)
 
 	shandle = (ls_search_handle_t *) data;
 
-	dstats = (dev_stats_t *) malloc(DEV_STATS_SIZE(MAX_FILT));
+	dstats = (dev_stats_t *) malloc(DEV_STATS_SIZE(SF_MAX_FILTERS));
 	assert(dstats);
 	/*
 	 * Get a list of the devices.
 	 */
-	num_dev = MAX_DEVICES;
+	num_dev = SF_MAX_DEVICES;
 	err = ls_get_dev_list(shandle, dev_list, &num_dev);
 	if (err != 0) {
 		printf("ls_get_dev_list: %d ", err);
@@ -696,7 +694,7 @@ stats_main(void *data)
 	/*
 	 * get the first copy of the stats to build the list 
 	 */
-	len = DEV_STATS_SIZE(MAX_FILT);
+	len = DEV_STATS_SIZE(SF_MAX_FILTERS);
 	err = ls_get_dev_stats(shandle, dev_list[0], dstats, &len);
 	if (err) {
 		/*
@@ -728,7 +726,7 @@ stats_main(void *data)
 		}
 
 		for (i = 0; i < num_dev; i++) {
-			len = DEV_STATS_SIZE(MAX_FILT);
+			len = DEV_STATS_SIZE(SF_MAX_FILTERS);
 			err = ls_get_dev_stats(shandle, dev_list[i], dstats, &len);
 			// dump_stats(dstats);
 			if (err) {

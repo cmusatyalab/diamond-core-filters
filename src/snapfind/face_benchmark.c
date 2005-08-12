@@ -133,8 +133,6 @@ load_searchlet(char *obj_file, char *spec_file)
 	return (0);
 }
 
-#define	MAX_DEVS	24
-#define	MAX_FILTS	24
 
 void
 dump_dev_stats(dev_stats_t * dev_stats, int stat_len)
@@ -170,23 +168,23 @@ dump_state()
 	int             err,
 	i;
 	int             dev_count;
-	ls_dev_handle_t dev_list[MAX_DEVS];
+	ls_dev_handle_t dev_list[SF_MAX_DEVICES];
 	dev_stats_t    *dev_stats;
 	int             stat_len;
 
 
-	dev_count = MAX_DEVS;
+	dev_count = SF_MAX_DEVICES;
 	err = ls_get_dev_list(shandle, dev_list, &dev_count);
 	if (err) {
 		fprintf(stderr, "Failed to get device list %d \n", err);
 		exit(1);
 	}
 
-	dev_stats = (dev_stats_t *) malloc(DEV_STATS_SIZE(MAX_FILTS));
+	dev_stats = (dev_stats_t *) malloc(DEV_STATS_SIZE(SF_MAX_FILTERS));
 	assert(dev_stats != NULL);
 
 	for (i = 0; i < dev_count; i++) {
-		stat_len = DEV_STATS_SIZE(MAX_FILTS);
+		stat_len = DEV_STATS_SIZE(SF_MAX_FILTERS);
 		err = ls_get_dev_stats(shandle, dev_list[i], dev_stats, &stat_len);
 		if (err) {
 			fprintf(stderr, "Failed to get device list %d \n", err);

@@ -22,9 +22,9 @@ OBJROOT = @OBJROOT@
 SRCS = $(LIBSRCS)
 OBJS = $(LIBOBJS) 
 
-SHARED_HEADERS = common_consts.h face_consts.h  rgb.h img_search.h search_set.h
+SHARED_HEADERS = face_consts.h  rgb.h img_search.h search_set.h
 SHARED_HEADERS += image_tools.h texture_tools.h fil_tools.h merge_faces.h 
-SHARED_HEADERS += fil_image_tools.h fil_assert.h
+SHARED_HEADERS += fil_image_tools.h fil_assert.h snapfind_consts.h
 
 # Compilation Targets
 #

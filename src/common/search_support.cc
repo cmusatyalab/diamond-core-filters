@@ -57,12 +57,8 @@
 #include "texture_tools.h"
 #include "img_search.h"
 #include "search_support.h"
-#define MAX_SELECT	64
 #include "import_sample.h"
 #include "search_set.h"
-
-/* XXXX fix this */
-#define MAX_SEARCHES    64
 
 
 int

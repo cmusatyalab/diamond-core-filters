@@ -15,7 +15,6 @@
 #define	_VJ_FACE_SEARCH_H_	1
 
 #include <gtk/gtk.h>
-#include "common_consts.h"
 #include "img_search.h"
 
 

@@ -11,6 +11,8 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+#ifndef	_FIL_REGEX_H_
+#define	_FIL_REGEX_H_	1
 
 
 typedef struct {
@@ -35,3 +37,5 @@ int f_eval_regex(lf_obj_handle_t ohandle, void *fdata);
 #ifdef __cplusplus
 }
 #endif
+
+#endif	/* !_FIL_REGEX_H_ */

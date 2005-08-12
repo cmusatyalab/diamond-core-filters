@@ -23,7 +23,7 @@
 
 #include "lib_results.h"
 #include "image_tools.h"
-#include "common_consts.h"
+#include "snapfind_consts.h"
 
 /*
  * note: should make these functions localized 

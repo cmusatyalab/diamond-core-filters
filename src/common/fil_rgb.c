@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <assert.h>
-#include "common_consts.h"
+#include "snapfind_consts.h"
 #include "lib_results.h"
 #include "filter_api.h"
 #include "fil_image_tools.h"

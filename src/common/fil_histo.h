@@ -15,7 +15,7 @@
 #define _FIL_HISTO_H_
 
 #include "filter_api.h"
-#include "common_consts.h"
+#include "snapfind_consts.h"
 #include "histo.h"
 #include "queue.h"
 

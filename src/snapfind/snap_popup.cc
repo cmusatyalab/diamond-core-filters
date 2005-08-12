@@ -1204,7 +1204,7 @@ do_img_popup(GtkWidget *widget, search_set *set
 	//gtk_object_set_user_data(GTK_OBJECT(popup_window.window), thumb->fullimage);
 
 
-	char buf[MAX_NAME];
+	char buf[SF_MAX_NAME];
 	sprintf(buf, "Image: %s", thumb->name);
 	gtk_window_set_title(GTK_WINDOW(popup_window.window), buf);
 

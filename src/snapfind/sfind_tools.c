@@ -27,7 +27,7 @@
 #include <opencv/cv.h>
 
 #include "queue.h"
-#include "common_consts.h"
+#include "snapfind_consts.h"
 #include "ring.h"
 #include "rtimer.h"
 

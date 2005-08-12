@@ -21,6 +21,7 @@
 #include <string.h>
 #include "lib_filter.h"
 #include "lib_log.h"
+#include "regex_priv.h"
 #include "fil_regex.h"
 #include "face_consts.h"
 
