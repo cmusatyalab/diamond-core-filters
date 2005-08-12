@@ -1,0 +1,59 @@
+#
+#       SnapFind (Release 0.9)
+#       An interactive image search application
+#
+#      Copyright (c) 2002-2005, Intel Corporation
+#      All Rights Reserved
+#
+#  This software is distributed under the terms of the Eclipse Public
+#  License, Version 1.0 which can be found in the file named LICENSE.
+#  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+#  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+#
+
+ROOTDIR = @top_srcdir@
+VPATH = @srcdir@
+SRCDIR = @srcdir@
+OBJROOT = @OBJROOT@
+CVCPPFLAGS = @CVCPPFLAGS@
+CVLDFLAGS = @CVLDFLAGS@
+
+CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
+
+include $(ROOTDIR)/common/Makefile.template
+
+# objects used to build the searchlet(s)
+FILTER_LIB_SRCS = fil_vj_face.c  vj_face_tools.c facedet.c fil_data2ii.c
+
+FILTER_LIB_OBJS =  fil_vj_face.o  vj_face_tools.o facedet.o fil_data2ii.o
+
+SEARCH_LIB_SRCS = vj_face_search.cc   vj_face_tools.c facedet.c fil_data2ii.c
+
+SEARCH_LIB_OBJS =  vj_face_search.o vj_face_tools.o facedet.o fil_data2ii.o
+
+SEARCH_LIB_LIBS += 
+
+SEARCHLET_LIBS += -Wl,-static -lm 
+#
+# All the source files that are needed for depend.
+#
+SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+
+#
+# Other objects to cleanup
+CLEAN_OTHERS += 
+
+TARGETS = fil_vj_face.so vj_face_search.so
+
+SHARED_BIN += fil_vj_face.so vj_face_search.so
+
+include ${OBJROOT}/Makefile.template
+                                                                                
+fil_vj_face.so: $(FILTER_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(LDFLAGS)
+                                                                                
+vj_face_search.so: $(SEARCH_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS)
+
+default: $(TARGETS)
