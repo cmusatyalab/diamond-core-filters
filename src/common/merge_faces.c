@@ -19,7 +19,7 @@
 #include <stdlib.h>             // for calloc
 #include <stdio.h>              // for fprintf
 
-#include "face.h"
+#include "lib_results.h"
 #include "merge_faces.h"
 
 #ifndef MAX

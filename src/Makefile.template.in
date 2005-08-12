@@ -28,12 +28,7 @@ INSTALLDIR_LIB=${INSTALLBASE}/lib
 INSTALLDIR_INCLUDE=${INSTALLBASE}/include
 
 CPPFLAGS += @CPPFLAGS@
-CPPFLAGS += -I${BUILD_INC_PATH}
-# XXX fix
-#CPPFLAGS += -I/usr/local/include/opencv
-CPPFLAGS += -I${ROOTDIR}/snapfind -I${ROOTDIR}/common
-
-
+CPPFLAGS += -I${BUILD_INC_PATH} -I.
 
 
 # from the configure script
@@ -45,6 +40,7 @@ VPATH += $(ROOTDIR)/common
 vpath %.h $(VPATH)
 
 LDFLAGS += @LDFLAGS@
+LDFLAGS += -L${BUILD_LIB_PATH}
 
 # general flags
 CFLAGS += -O2

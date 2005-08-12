@@ -18,13 +18,11 @@
 #include <pthread.h>
 #include <gtk/gtk.h>
 #include "queue.h"
+#include "lib_results.h"
 #include "rgb.h"
-#include "image_common.h"
-//#include "texture_tools.h"
 #include "search_set.h"
 #include "gabor.h"
 #include "gabor_priv.h"
-#include "read_config.h"
 #include "gabor_texture_search.h"
 #include "rtimer.h"
 #include "factory.h"

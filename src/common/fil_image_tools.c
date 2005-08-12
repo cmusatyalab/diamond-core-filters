@@ -18,6 +18,7 @@
 #include <string.h>		// for memcmp
 
 #include "rgb.h"		// for image_type_h
+#include "lib_results.h"
 #include "fil_image_tools.h"
 #include "fil_assert.h"
 

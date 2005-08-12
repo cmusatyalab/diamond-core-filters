@@ -12,19 +12,15 @@
  */
 
 
-#include "filter_api.h"
 
-
-typedef struct
-{
+typedef struct {
 	int			num_attrs;
 	int			num_regexs;
 	char **		attr_names;
 	char **		regex_names;
 	regex_t	*	regs;
 
-}
-fdata_regex_t;
+} fdata_regex_t;
 
 #ifdef __cplusplus
 extern "C"

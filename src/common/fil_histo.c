@@ -24,7 +24,7 @@
 #include <math.h>
 #include <assert.h>
 
-#include "face.h"
+#include "lib_results.h"
 #include "common_consts.h"
 #include "filter_api.h"
 #include "fil_image_tools.h"

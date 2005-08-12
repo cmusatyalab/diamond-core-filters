@@ -20,12 +20,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdint.h>
+#include "lib_filter.h"
+#include "lib_log.h"
 #include "rgb.h"
-#include "filter_api.h"
+#include "lib_results.h"
 #include "fil_gab_texture.h"
-//#include "texture_tools.h"
-//#include "image_tools.h"
-#include "image_common.h"
 #include "gabor_priv.h"
 #include "gabor_tools.h"
 #include "gabor.h"

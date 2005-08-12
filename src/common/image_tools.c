@@ -21,6 +21,7 @@
 #include <opencv/cv.h>
 #include <gtk/gtk.h>
 
+#include "lib_results.h"
 #include "image_tools.h"
 #include "common_consts.h"
 

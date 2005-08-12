@@ -40,12 +40,14 @@
 #include <gnugetopt/getopt.h>
 #endif
 
-#include "filter_api.h"
+#include "lib_filter.h"
+#include "lib_log.h"
 #include "sys_attr.h"
 #include "common_consts.h"
 #include "searchlet_api.h"
 #include "gui_thread.h"
 
+#include "lib_results.h"
 #include "queue.h"
 #include "ring.h"
 #include "rtimer.h"
@@ -53,8 +55,8 @@
 
 #include "face_search.h"
 #include "face_image.h"
+#include "lib_results.h"
 #include "rgb.h"
-#include "face.h"
 #include "fil_tools.h"
 #include "image_tools.h"
 #include "face_widgets.h"
@@ -1875,14 +1877,38 @@ set_export_threshold(char *arg)
 	return 0;
 }
 
+typedef void (*search_init_t)();
+
+static void
+load_library(char *libname)
+{
+	void *handle;
+	char *	err;
+
+	search_init_t fp;
+
+	handle = dlopen(libname, RTLD_NOW);
+	if (handle == NULL) {
+		printf("failed to open <%s>\n", libname);
+		err = dlerror();
+		printf("err: %s \n", err);
+	} else {
+		fp = (search_init_t) dlsym(handle, "search_init");
+		if (fp == NULL) {
+			printf("Failed to find search_init\n");
+		} else {
+			(*fp)();	
+		}
+	}
+}
+
 /* XXX fix */
 void rgb_histo_init();
-void vj_face_init();
-void ocv_face_init();
 void texture_init();
 void gabor_texture_init();
 void rgb_image_init();
-typedef void (*search_init_t)();
+
+
 
 int
 main(int argc, char *argv[])
@@ -2017,44 +2043,16 @@ main(int argc, char *argv[])
 
 	/* XXX for now */
 	rgb_histo_init();
-	vj_face_init();
 	texture_init();
 	rgb_image_init();
 
 
-	{
-	void *handle;
-	search_init_t fp;
-	handle = dlopen("./regex_search.so", RTLD_GLOBAL|RTLD_NOW);
-	fp = (search_init_t) dlsym(handle, "search_init");
-	if (fp == NULL) {
-		printf("Failed to find search_init\n");
-	} else {
-		(*fp)();	
-	}
-	}
-	{
-	void *handle;
-	search_init_t fp;
-	handle = dlopen("./gabor_texture_search.so", RTLD_GLOBAL|RTLD_NOW);
-	fp = (search_init_t) dlsym(handle, "search_init");
-	if (fp == NULL) {
-		printf("Failed to find search_init\n");
-	} else {
-		(*fp)();	
-	}
-	}
-	{
-	void *handle;
-	search_init_t fp;
-	handle = dlopen("./opencv_face_search.so", RTLD_GLOBAL|RTLD_NOW);
-	fp = (search_init_t) dlsym(handle, "search_init");
-	if (fp == NULL) {
-		printf("Failed to find search_init\n");
-	} else {
-		(*fp)();	
-	}
-	}
+
+	load_library("./regex_search.so");
+	load_library("./gabor_texture_search.so");
+	load_library("./opencv_face_search.so");
+	load_library("./vj_face_search.so");
+
 	/*
 	 * Start the main loop processing for the GUI.
 	 */

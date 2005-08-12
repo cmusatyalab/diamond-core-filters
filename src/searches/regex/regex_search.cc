@@ -20,6 +20,7 @@
 #include <string.h>
 #include <errno.h>
 #include "queue.h"
+#include "lib_results.h"
 #include "rgb.h"
 #include "regex_search.h"
 #include "factory.h"

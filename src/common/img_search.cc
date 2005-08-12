@@ -31,6 +31,7 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
+#include "lib_results.h"
 #include "img_search.h"
 
 img_search::img_search(const char *name, char *descr)

@@ -32,10 +32,9 @@
 #include "rtimer.h"
 
 // #include "face_search.h"
+#include "lib_results.h"
 #include "face_image.h"
-#include "fil_face.h"
 #include "rgb.h"
-#include "face.h"
 #include "fil_tools.h"
 #include "gui_thread.h"
 #include "image_tools.h"

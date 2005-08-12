@@ -14,6 +14,7 @@
 #ifndef	_OPENCV_FACE_TOOLS_H_
 #define	_OPENCV_FACE_TOOLS_H_ 1
 
+#include "rgb.h"
 #include "opencv_face.h"
 
 #ifdef __cplusplus

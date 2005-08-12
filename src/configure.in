@@ -103,12 +103,17 @@ AC_CHECK_FUNCS([getcwd gethostbyaddr gettimeofday inet_ntoa memset mkdir pow reg
 
 AC_CONFIG_FILES([Makefile
 		Makefile.template
+		common/Makefile
 		snap_bench/Makefile
 		snapfind/Makefile
 		searches/Makefile
 		searches/regex/Makefile
 		searches/gabor_texture/Makefile
 		searches/ocv_face/Makefile
+		searches/vj_face/Makefile
+		lib/Makefile
+		lib/libresults/Makefile
+		lib/libsfgtk/Makefile
 		target/Makefile
 		target/bin/Makefile
 		target/lib/Makefile

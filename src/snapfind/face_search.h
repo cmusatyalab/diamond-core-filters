@@ -19,7 +19,6 @@
 
 #include "ring.h"
 #include "face_consts.h"
-#include "face.h"
 
 /*
  * inherited from topo.h  -- cleanup!

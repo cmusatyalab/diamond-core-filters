@@ -21,7 +21,6 @@
 #include "common_consts.h"
 #include "rgb.h"
 #include "histo.h"
-#include "image_common.h"
 #include "image_tools.h"
 
 

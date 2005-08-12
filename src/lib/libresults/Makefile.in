@@ -1,6 +1,6 @@
 #
-#       SnapFind (Release 0.9)
-#       An interactive image search application
+#      Diamond (Release 1.0)
+#      A system for interactive brute-force search
 #
 #      Copyright (c) 2002-2005, Intel Corporation
 #      All Rights Reserved
@@ -10,14 +10,32 @@
 #  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
+
 ROOTDIR = @top_srcdir@
-VPATH = @srcdir@
 SRCDIR = @srcdir@
+VPATH = @srcdir@
 OBJROOT = @OBJROOT@
 
 
-SUBDIRS = regex gabor_texture ocv_face vj_face
 
-include $(OBJROOT)/Makefile.template
+LIBSRCS += lib_results.c 
+
+LIBOBJS += lib_results.o
+
+LIBS += 
+
+
+SRCS = $(LIBSRCS)
+OBJS = $(LIBOBJS) 
+
+SHARED_HEADERS = lib_results.h 
+
+# Compilation Targets
+#
+
+
+TARGETS = libresults.a 
+
+include $(OBJROOT)/Makefile.template 
 
 

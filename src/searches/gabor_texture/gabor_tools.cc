@@ -15,13 +15,13 @@
 #include <math.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdint.h>
 #include <string.h>
+#include "lib_filter.h"
+#include "lib_log.h"
+#include "lib_results.h"
 #include "rgb.h"
-#include "filter_api.h"
-#include "image_common.h"
 #include "gabor_tools.h"
-//#include "texture_tools.h"
-//#include "fil_gab_texture.h"
 #include "gabor.h"
 
 

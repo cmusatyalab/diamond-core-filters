@@ -36,10 +36,10 @@
 #include "rtimer.h"
 #include "sf_consts.h"
 
+#include "lib_results.h"
 #include "face_search.h"
 #include "face_image.h"
 #include "rgb.h"
-#include "face.h"
 #include "fil_tools.h"
 #include "image_tools.h"
 #include "face_widgets.h"

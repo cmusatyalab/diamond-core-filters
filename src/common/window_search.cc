@@ -19,6 +19,7 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
+#include "lib_results.h"
 #include "img_search.h"
 
 /* tokens for the config file */

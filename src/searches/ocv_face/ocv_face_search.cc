@@ -20,12 +20,12 @@
 #include <opencv/cvaux.h>
 #include "queue.h"
 #include "rgb.h"
+#include "lib_results.h"
 #include "common_consts.h"
 #include "img_search.h"
 #include "ocv_face_search.h"
 #include "opencv_face_tools.h"
 #include "search_set.h"
-#include "read_config.h"
 #include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64

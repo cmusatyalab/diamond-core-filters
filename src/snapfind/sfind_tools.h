@@ -15,11 +15,9 @@
 #define	_SFIND_TOOLS_H_
 
 #include "rgb.h"
-#include "face.h"
 
 #include "searchlet_api.h"
 #include "filter_api.h"
-#include "image_common.h"
 #include "fil_tools.h"
 
 #ifdef __cplusplus

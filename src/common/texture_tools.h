@@ -16,7 +16,6 @@
 
 #include <opencv/cv.h>
 #include "queue.h"
-#include "image_common.h"
 
 // Code to support texture filters
 // Derek Hoiem 2003.05.21

@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "lib_results.h"
 #include "fil_tools.h"
 #include "fil_histo.h"
 #include "histo.h"

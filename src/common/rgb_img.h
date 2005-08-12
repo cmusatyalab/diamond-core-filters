@@ -15,7 +15,6 @@
 #define	_RGB_IMG_H_	1
 
 #include <gtk/gtk.h>
-#include "image_common.h"
 #include "img_search.h"
 #include "common_consts.h"
 

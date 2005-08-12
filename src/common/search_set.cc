@@ -23,7 +23,9 @@
 #include <assert.h>
 #include "queue.h"
 #include "rgb.h"
+#include "lib_results.h"
 #include "image_tools.h"
+#include "lib_results.h"
 #include "img_search.h"
 #include "search_set.h"
 #include "factory.h"

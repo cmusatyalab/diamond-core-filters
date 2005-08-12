@@ -15,9 +15,6 @@
 #ifndef _FIL_TOOLS_H_
 #define _FIL_TOOLS_H_
 
-#include "filter_api.h"
-#include "face.h"
-
 #ifdef __cplusplus
 extern "C"
 {

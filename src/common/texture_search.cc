@@ -18,6 +18,7 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
+#include "lib_results.h"
 #include "image_tools.h"
 #include "texture_tools.h"
 #include "img_search.h"

@@ -32,8 +32,9 @@
 
 #include "lib_searchlet.h"
 #include "lib_filter.h"
+#include "lib_log.h"
+#include "lib_results.h"
 #include "ring.h"
-#include "face.h"               /* XXX hack */
 
 
 #define	MAX_PATH	128

@@ -24,6 +24,7 @@ GTK_CPPFLAGS = @GTK_CPPFLAGS@
 # use the GTK values when building this code
 CPPFLAGS += ${GTK_CPPFLAGS}
 CPPFLAGS += ${CVCPPFLAGS}
+CPPFLAGS += -I../common
 
 LDFLAGS += ${CVLDFLAGS}
 
@@ -34,7 +35,7 @@ LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -llog -lssl -ltiff -lz
+LIBS += -llog -lssl -ltiff -lz -lsfgtk
 
 CVLIBS += -Wl,-static -lcvaux -lopencv -Wl,-call_shared 
 
@@ -84,6 +85,8 @@ CLEAN_OTHERS += read_config.cc $(COMMON_SRCS)
 TARGETS = $(COMMON_HEADERS) snapfind snap_searchlet.so
 
 SHARED_BIN += snap_searchlet.so snapfind 
+
+SHARED_HEADERS +=  factory.h
 
 include ${OBJROOT}/Makefile.template
 

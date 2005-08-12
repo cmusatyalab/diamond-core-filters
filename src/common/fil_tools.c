@@ -14,7 +14,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
+#include "lib_results.h"
 #include "fil_assert.h"
 #include "filter_api.h"
 #include "fil_tools.h"

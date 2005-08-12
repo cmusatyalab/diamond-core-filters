@@ -15,9 +15,7 @@
 #define _HISTO_H_	1
 
 #include "queue.h"
-#include "image_common.h"
 #include "rgb.h"
-#include "face.h"
 
 // Code to support basic color histograms
 // Rahul Sukthankar 2003.02.20

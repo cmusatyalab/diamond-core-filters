@@ -24,12 +24,13 @@
 #include <assert.h>
 #include <opencv/cvaux.h>
 
-#include "filter_api.h"
+#include "lib_filter.h"
+#include "lib_log.h"
 #include "fil_ocv_face.h"
 #include "rgb.h"
-#include "image_common.h"
 #include "opencv_face.h"
 #include "opencv_face_tools.h"
+#include "lib_results.h"
 
 
 

@@ -15,7 +15,6 @@
 #define	_GTK_IMAGE_TOOLS_H_	1
 
 #include <stdint.h>
-#include "face.h"
 #include "rgb.h"
 #include <opencv/cv.h>
 #include <gtk/gtk.h>

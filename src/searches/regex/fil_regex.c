@@ -14,11 +14,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <regex.h>
 #include <assert.h>
 #include <string.h>
-#include "filter_api.h"
+#include "lib_filter.h"
+#include "lib_log.h"
 #include "fil_regex.h"
 #include "face_consts.h"
 

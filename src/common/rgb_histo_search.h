@@ -15,7 +15,6 @@
 #define	_RGB_HISTO_SEARCH_H_	1
 
 #include <gtk/gtk.h>
-#include "image_common.h"
 #include "common_consts.h"
 #include "texture_tools.h"
 #include "histo.h"

@@ -13,48 +13,48 @@
 
 
 COMMON_HEADERS = rgb.h image_tools.h common_consts.h img_search.h
-COMMON_HEADERS += image_common.h texture_tools.h fil_tools.h 
-COMMON_HEADERS += face_tools.h fil_data2ii.h facedet.h filter_api.h
-COMMON_HEADERS += face.h fil_histo.h histo.h gtk_image_tools.h
-COMMON_HEADERS += fil_texture.h face_data.h fil_assert.h
-COMMON_HEADERS += fil_image_tools.h fil_face.h merge_faces.h
-COMMON_HEADERS += import_sample.h face_consts.h gui_thread.h face_image.h
+COMMON_HEADERS +=  texture_tools.h fil_tools.h 
+COMMON_HEADERS += filter_api.h
+COMMON_HEADERS += fil_histo.h histo.h gtk_image_tools.h
+COMMON_HEADERS += fil_texture.h fil_assert.h
+COMMON_HEADERS += fil_image_tools.h merge_faces.h
+COMMON_HEADERS += import_sample.h face_consts.h face_image.h
 COMMON_HEADERS += search_support.h search_set.h display_img.h
 COMMON_HEADERS += readtiff.h
 
-COMMON_SHARED_SRCS = image_tools.c histo.c face_tools.c texture_tools.c
-COMMON_SHARED_SRCS += facedet.c  fil_data2ii.c fil_tools.c 
+COMMON_SHARED_SRCS = image_tools.c histo.c texture_tools.c
+COMMON_SHARED_SRCS += fil_tools.c 
 COMMON_SHARED_SRCS += merge_faces.c  rgb.c fil_image_tools.c  
 COMMON_SHARED_SRCS += readtiff.c
 
-COMMON_SHARED_OBJS = image_tools.o histo.o face_tools.o texture_tools.o
-COMMON_SHARED_OBJS += facedet.o  fil_data2ii.o fil_tools.o 
+COMMON_SHARED_OBJS = image_tools.o histo.o texture_tools.o
+COMMON_SHARED_OBJS += fil_tools.o 
 COMMON_SHARED_OBJS += merge_faces.o  rgb.o fil_image_tools.o 
 COMMON_SHARED_OBJS += readtiff.o
 
-COMMON_SEARCHLET_SRCS = fil_histo.c fil_texture.cc fil_face.c
+COMMON_SEARCHLET_SRCS = fil_histo.c fil_texture.cc 
 COMMON_SEARCHLET_SRCS += fil_rgb.c 
 
-COMMON_SEARCHLET_OBJS = fil_histo.o fil_texture.o fil_face.o
+COMMON_SEARCHLET_OBJS = fil_histo.o fil_texture.o 
 COMMON_SEARCHLET_OBJS += fil_rgb.o
 
       
 COMMON_APP_SRCS = img_search.cc search_set.cc
-COMMON_APP_SRCS += texture_search.cc vj_face_search.cc
+COMMON_APP_SRCS += texture_search.cc 
 COMMON_APP_SRCS += window_search.cc example_search.cc 
 COMMON_APP_SRCS += rgb_histo_search.cc rgb_img.cc 
 COMMON_APP_SRCS += ii_img.cc face_image.c 
 COMMON_APP_SRCS += gtk_image_tools.c histo_ii.cc search_support.cc
-COMMON_APP_SRCS += import_sample.cc gui_thread.c
+COMMON_APP_SRCS += import_sample.cc 
 COMMON_APP_SRCS += display_img.cc 
                             
 COMMON_APP_OBJS = img_search.o search_set.o
-COMMON_APP_OBJS += texture_search.o vj_face_search.o
+COMMON_APP_OBJS += texture_search.o 
 COMMON_APP_OBJS += window_search.o example_search.o
 COMMON_APP_OBJS += rgb_histo_search.o rgb_img.o
 COMMON_APP_OBJS += ii_img.o face_image.o
 COMMON_APP_OBJS += gtk_image_tools.o  histo_ii.o search_support.o
-COMMON_APP_OBJS += import_sample.o  gui_thread.o
+COMMON_APP_OBJS += import_sample.o 
 COMMON_APP_OBJS += display_img.o 
  
 COMMON_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_APP_SRCS) $(COMMON_HEADERS)

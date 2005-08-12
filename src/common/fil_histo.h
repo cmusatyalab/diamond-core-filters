@@ -18,8 +18,6 @@
 #include "common_consts.h"
 #include "histo.h"
 #include "queue.h"
-#include "face.h"
-#include "image_common.h"
 
 
 

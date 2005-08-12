@@ -30,6 +30,8 @@
 #include "rtimer.h"
 #include "queue.h"
 #include "ring.h"
+#include "lib_results.h"
+
 #include "sfind_search.h"
 #include "graph_win.h"
 

@@ -13,11 +13,11 @@
 
 
 #include <opencv/cv.h>
-#include "texture_tools.h"
-#include "face.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include "lib_results.h"
+#include "texture_tools.h"
 
 // Code to support texture filters
 // Derek Hoiem 2003.05.21

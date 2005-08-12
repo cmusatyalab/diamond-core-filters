@@ -14,14 +14,11 @@
 #ifndef	_FIL_GABOR_TEXTURE_H_
 #define	_FIL_GABOR_TEXTURE_H_	1
 
-#include "filter_api.h"
 #include "gabor.h"
 
-typedef struct write_notify_context_t
-{
+typedef struct write_notify_context_t {
 	lf_obj_handle_t ohandle;
-}
-write_notify_context_t;
+} write_notify_context_t;
 
 
 

@@ -23,9 +23,7 @@
 #endif
 #include <assert.h>
 #include <stdint.h>
-// #include "lib_searchlet.h"
-// #include "lib_filter.h"
-// #include "face_tools.h"
+#include "lib_results.h"
 #include "face_image.h"
 #include "rgb.h"
 
