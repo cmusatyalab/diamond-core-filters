@@ -41,7 +41,7 @@
 #include "histo.h"
 #include "sfind_tools.h"
 #include "texture_tools.h"
-#include "facedet.h"
+//#include "facedet.h"
 
 /*
  ********************************************************************** */
