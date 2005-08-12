@@ -19,7 +19,6 @@
 
 #include "ring.h"
 #include "snapfind_consts.h"
-#include "face_consts.h"
 
 /*
  * inherited from topo.h  -- cleanup!

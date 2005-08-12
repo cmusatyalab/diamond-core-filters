@@ -25,7 +25,6 @@
 #include <string.h>
 
 #include "searchlet_api.h"
-#include "face_consts.h"
 #include "gui_thread.h"
 #include "rtimer.h"
 #include "queue.h"

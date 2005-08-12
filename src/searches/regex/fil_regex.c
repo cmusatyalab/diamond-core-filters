@@ -23,7 +23,6 @@
 #include "lib_log.h"
 #include "regex_priv.h"
 #include "fil_regex.h"
-#include "face_consts.h"
 
 // #define VERBOSE 1
 

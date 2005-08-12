@@ -25,7 +25,6 @@
 #include "image_tools.h"
 #include "gtk_image_tools.h"
 #include "img_search.h"
-#include "face_consts.h"
 #include "import_sample.h"
 
 /* tokens for the config file */

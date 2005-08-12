@@ -18,7 +18,7 @@ COMMON_HEADERS += filter_api.h
 COMMON_HEADERS += fil_histo.h histo.h gtk_image_tools.h
 COMMON_HEADERS += fil_texture.h fil_assert.h
 COMMON_HEADERS += fil_image_tools.h merge_faces.h
-COMMON_HEADERS += import_sample.h face_consts.h face_image.h
+COMMON_HEADERS += import_sample.h face_image.h
 COMMON_HEADERS += search_support.h search_set.h display_img.h
 COMMON_HEADERS += readtiff.h
 

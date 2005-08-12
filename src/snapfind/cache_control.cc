@@ -28,7 +28,6 @@
 
 
 #include "searchlet_api.h"
-#include "face_consts.h"
 #include "lib_results.h"
 #include "gui_thread.h"
 #include "rtimer.h"
