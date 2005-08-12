@@ -12,16 +12,22 @@
 #
 
 ROOTDIR = @top_srcdir@
-VPATH = @srcdir@
 SRCDIR = @srcdir@
+VPATH = @srcdir@
 OBJROOT = @OBJROOT@
 
 SUBDIRS = 
 
-CLEAN_OTHERS += *.h
+# list of everything in the directory
+ALLFILES = $(wildcard *)
 
-INSTALL_HEADERS = $(wildcard *.h)
+# items we know that we don't want to include
+EXCLUDES = CVS Makefile Makefile.in
 
--include $(OBJROOT)/Makefile.template
-
+# The reduced set
+INSTALL_BIN = $(filter-out $(EXCLUDES), $(ALLFILES))
+                                                                                
+CLEAN_OTHERS += ${INSTALL_BIN}
+                                                                                
+include $(OBJROOT)/Makefile.template
 
