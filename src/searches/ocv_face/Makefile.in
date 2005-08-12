@@ -34,7 +34,7 @@ SEARCH_LIB_SRCS = ocv_face_search.cc  opencv_face_tools.c
 
 SEARCH_LIB_OBJS =  ocv_face_search.o opencv_face_tools.o
 
-SEARCH_LIB_LIBS += 
+SEARCH_LIB_LIBS += -lm -lcvaux -lopencv 
 
 SEARCHLET_LIBS += -Wl,-static -lm -lcvaux -lopencv 
 #
@@ -57,6 +57,6 @@ fil_ocv_face.so: $(FILTER_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(LDFLAGS)
                                                                                 
 opencv_face_search.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(LDFLAGS)
 
 default: $(TARGETS)

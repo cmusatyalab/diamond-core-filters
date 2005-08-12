@@ -16,7 +16,7 @@ SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
 
-SUBDIRS = common lib snapfind snap_bench searches
+SUBDIRS = common lib snapfind snap_bench searches target
 
 include $(OBJROOT)/Makefile.template
 
