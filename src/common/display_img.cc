@@ -14,6 +14,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <gtk/gtk.h>
 #include <math.h>
 #include <sys/time.h>
@@ -27,8 +28,8 @@
 #include <signal.h>
 #include <getopt.h>
 
-#include "filter_api.h"
 #include "lib_searchlet.h"
+#include "lib_filter.h"
 
 #include "gui_thread.h"
 

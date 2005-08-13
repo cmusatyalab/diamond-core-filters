@@ -27,7 +27,7 @@
 #include <signal.h>
 #include <getopt.h>
 
-#include "filter_api.h"
+#include "lib_filter.h"
 #include "searchlet_api.h"
 #include "gui_thread.h"
 

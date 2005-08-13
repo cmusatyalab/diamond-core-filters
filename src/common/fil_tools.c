@@ -15,10 +15,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "lib_results.h"
+#include "lib_filter.h"
 #include "fil_assert.h"
-#include "filter_api.h"
 #include "fil_tools.h"
 
 char           *

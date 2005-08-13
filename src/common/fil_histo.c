@@ -19,14 +19,15 @@
 
 #include <limits.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
 #include <assert.h>
 
 #include "lib_results.h"
+#include "lib_filter.h"
 #include "snapfind_consts.h"
-#include "filter_api.h"
 #include "fil_image_tools.h"
 #include "rgb.h"
 #include "histo.h"

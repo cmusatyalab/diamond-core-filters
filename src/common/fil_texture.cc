@@ -18,8 +18,9 @@
 
 #include <opencv/cv.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "lib_results.h"
-#include "filter_api.h"
+#include "lib_filter.h"
 #include "fil_texture.h"
 #include "fil_tools.h"
 #include "texture_tools.h"

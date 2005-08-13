@@ -24,7 +24,7 @@
 #include <assert.h>
 #include "snapfind_consts.h"
 #include "lib_results.h"
-#include "filter_api.h"
+#include "lib_filter.h"
 #include "fil_image_tools.h"
 #include "rgb.h"
 #include "histo.h"

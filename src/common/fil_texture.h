@@ -14,13 +14,12 @@
 #ifndef	_FIL_TEXTURE_H_
 #define	_FIL_TEXTURE_H_	1
 
-#include "filter_api.h"
+#include <stdint.h>
+#include "lib_filter.h"
 
-typedef struct write_notify_context_t
-{
+typedef struct write_notify_context_t {
 	lf_obj_handle_t ohandle;
-}
-write_notify_context_t;
+} write_notify_context_t;
 
 
 
