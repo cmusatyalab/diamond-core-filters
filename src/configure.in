@@ -111,6 +111,7 @@ AC_CONFIG_FILES([Makefile
 		searches/vj_face/Makefile
 		searches/rgbimg/Makefile
 		lib/Makefile
+		lib/libsfimage/Makefile
 		lib/libresults/Makefile
 		lib/libsfgtk/Makefile
 		target/Makefile

@@ -19,12 +19,13 @@
 #include "queue.h"
 #include "rgb.h"
 #include "lib_results.h"
-#include "image_tools.h"
+#include "lib_sfimage.h"
 #include "texture_tools.h"
 #include "img_search.h"
 #include "dog_texture_search.h"
 #include "search_set.h"
 #include "read_config.h"
+#include "opencv_image.h"
 #include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64

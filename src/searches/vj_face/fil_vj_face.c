@@ -28,12 +28,12 @@
 #include "lib_log.h"
 #include "rgb.h"
 #include "lib_results.h"
+#include "lib_sfimage.h"
 #include "fil_tools.h"
 #include "fil_vj_face.h"
 #include "vj_face_tools.h"
 #include "facedet.h"
 #include "merge_faces.h"
-#include "fil_image_tools.h"
 
 typedef struct {
 	double          over_thresh;

@@ -40,7 +40,7 @@ VPATH += $(ROOTDIR)/common
 vpath %.h $(VPATH)
 
 LDFLAGS += @LDFLAGS@
-LDFLAGS += -L${BUILD_LIB_PATH}
+LDFLAGS += -L${BUILD_LIB_PATH} 
 
 # general flags
 CFLAGS += -O2

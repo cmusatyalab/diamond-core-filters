@@ -34,7 +34,7 @@ SEARCH_LIB_OBJS =  rgb_img.o
 
 SEARCH_LIB_LIBS += -lm 
 
-SEARCHLET_LIBS += -Wl,-static -lm 
+SEARCHLET_LIBS += -Wl,-static -lm  -lsfimage -ltiff
 #
 # All the source files that are needed for depend.
 #
@@ -54,7 +54,7 @@ include ${OBJROOT}/Makefile.template
 fil_rgb.so: $(FILTER_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(LDFLAGS)
                                                                                 
-opencv_face_search.so: $(SEARCH_LIB_OBJS)
+rgb_img.so: $(SEARCH_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(LDFLAGS)
 
 default: $(TARGETS)

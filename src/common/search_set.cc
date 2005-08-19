@@ -24,7 +24,7 @@
 #include "queue.h"
 #include "rgb.h"
 #include "lib_results.h"
-#include "image_tools.h"
+#include "lib_sfimage.h"
 #include "lib_results.h"
 #include "img_search.h"
 #include "search_set.h"

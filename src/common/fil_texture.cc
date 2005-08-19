@@ -20,11 +20,12 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "lib_results.h"
+#include "lib_sfimage.h"
 #include "lib_filter.h"
 #include "fil_texture.h"
 #include "fil_tools.h"
 #include "texture_tools.h"
-#include "image_tools.h"
+#include "opencv_image.h"
 
 #define VERBOSE 1
 

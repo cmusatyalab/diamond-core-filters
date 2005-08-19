@@ -31,6 +31,7 @@
 #include "opencv_face.h"
 #include "opencv_face_tools.h"
 #include "lib_results.h"
+#include "lib_sfimage.h"
 
 
 

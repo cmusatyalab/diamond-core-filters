@@ -22,7 +22,7 @@
 #include "snapfind_consts.h"
 #include "rgb.h"
 #include "lib_results.h"
-#include "image_tools.h"
+#include "lib_sfimage.h"
 #include "gtk_image_tools.h"
 #include "img_search.h"
 #include "import_sample.h"

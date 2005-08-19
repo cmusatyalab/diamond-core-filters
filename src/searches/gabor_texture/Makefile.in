@@ -25,7 +25,8 @@ include $(ROOTDIR)/common/Makefile.template
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_gab_texture.cc gabor_tools.cc gabor.cc
 FILTER_LIB_OBJS = fil_gab_texture.o  gabor_tools.o gabor.o
-FILTER_LIB_LIBS += -lm -Wl,-static 
+
+SEARCHLET_LIBS += -lm -Wl,-static  -lsfimage -ltiff
 
 SEARCH_LIB_SRCS = gabor_texture_search.cc gabor_tools.cc gabor.cc
 SEARCH_LIB_OBJS =  gabor_texture_search.o gabor_tools.o gabor.o
@@ -48,9 +49,9 @@ SHARED_BIN += fil_gabor_texture.so gabor_texture_search.so
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_gabor_texture.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(LDFLAGS)
                                                                                 
 gabor_texture_search.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(LDFLAGS)
 
 default: $(TARGETS)

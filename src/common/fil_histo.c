@@ -26,9 +26,9 @@
 #include <assert.h>
 
 #include "lib_results.h"
+#include "lib_sfimage.h"
 #include "lib_filter.h"
 #include "snapfind_consts.h"
-#include "fil_image_tools.h"
 #include "rgb.h"
 #include "histo.h"
 #include "fil_histo.h"

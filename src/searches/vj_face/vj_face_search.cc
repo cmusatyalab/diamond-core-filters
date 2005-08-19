@@ -15,12 +15,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "rgb.h"
 #include "snapfind_consts.h"
 #include "lib_results.h"
-#include "image_tools.h"
+#include "lib_sfimage.h"
 #include "img_search.h"
 #include "vj_face_search.h"
 #include "facedet.h"

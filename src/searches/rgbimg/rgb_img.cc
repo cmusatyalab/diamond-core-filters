@@ -20,8 +20,8 @@
 #include <errno.h>
 #include <string.h>
 #include "queue.h"
-#include "rgb.h"
 #include "lib_results.h"
+#include "lib_sfimage.h"
 #include "img_search.h"
 #include "rgb_img.h"
 #include "factory.h"

@@ -48,17 +48,16 @@
 #include "gui_thread.h"
 
 #include "lib_results.h"
+#include "lib_sfimage.h"
 #include "queue.h"
 #include "ring.h"
 #include "rtimer.h"
 #include "sf_consts.h"
 
 #include "face_search.h"
-#include "face_image.h"
 #include "lib_results.h"
 #include "rgb.h"
 #include "fil_tools.h"
-#include "image_tools.h"
 #include "face_widgets.h"
 #include "texture_tools.h"
 #include "img_search.h"
@@ -70,7 +69,6 @@
 #include "snapfind.h"
 #include "import_sample.h"
 #include "gtk_image_tools.h"
-#include "fil_image_tools.h"
 #include "search_set.h"
 #include "read_config.h"
 

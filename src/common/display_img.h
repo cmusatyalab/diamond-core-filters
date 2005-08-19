@@ -15,9 +15,6 @@
 #define _DISPLAY_IMG_H_	1
 
 
-
-#define	MAX_SELECT	24
-
 /*
  * state required to support popup window to show fullsize img
  */

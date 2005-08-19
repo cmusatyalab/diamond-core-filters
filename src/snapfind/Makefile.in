@@ -35,7 +35,7 @@ LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
 LIBS += -lhstub -ldctl -ldconfig
-LIBS += -llog -lssl -ltiff -lz -lsfgtk
+LIBS += -llog -lssl -ltiff -lz -lsfgtk -lsfimage -ltiff
 
 CVLIBS += -Wl,-static -lcvaux -lopencv -Wl,-call_shared 
 
@@ -43,10 +43,12 @@ include $(ROOTDIR)/common/Makefile.template
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_SHARED_SRCS)
+SEARCHLET_SRCS += opencv_image.c
 
 SEARCHLET_OBJS = $(COMMON_SEARCHLET_OBJS) $(COMMON_SHARED_OBJS)
+SEARCHLET_OBJS += opencv_image.o
 
-SEARCHLET_LIBS += -lm -Wl,-static -lcvaux -lopencv -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -lm -lsfimage -Wl,-static -lcvaux -lopencv -ltiff -ljpeg -lz
 
 SEARCHLET_LIBDIR += 
 
@@ -54,15 +56,15 @@ SEARCHLET_LIBDIR +=
 SNAPFIND_SRCS = $(COMMON_APP_SRCS) $(COMMON_SHARED_SRCS)
 SNAPFIND_SRCS += snapfind.cc sfind_search.cc
 SNAPFIND_SRCS +=  read_config.cc  stats_win.c
-SNAPFIND_SRCS += progress_win.cc rgb.c   
+SNAPFIND_SRCS += progress_win.cc    
 SNAPFIND_SRCS += snap_popup.cc graph_win.cc cache_control.cc
-SNAPFIND_SRCS += sfind_tools.c   factory.cc
+SNAPFIND_SRCS += sfind_tools.c   factory.cc opencv_image.c
 
 SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
 SNAPFIND_OBJS += progress_win.o snap_popup.o  stats_win.o
 SNAPFIND_OBJS += fil_histo.o graph_win.o cache_control.o
-SNAPFIND_OBJS += sfind_tools.o  factory.o
+SNAPFIND_OBJS += sfind_tools.o  factory.o opencv_image.o
 
 DEBUG_SRCS = face.c
 DEBUG_OBJS = face.o

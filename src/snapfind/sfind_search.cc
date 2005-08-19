@@ -30,11 +30,11 @@
 
 #include "searchlet_api.h"
 #include "lib_results.h"
+#include "lib_sfimage.h"
 #include "sf_consts.h"
 #include "ring.h"
 #include "face_search.h"
 #include "search_set.h"
-#include "image_tools.h"
 #include "sfind_search.h"
 
 extern pthread_mutex_t ring_mutex;

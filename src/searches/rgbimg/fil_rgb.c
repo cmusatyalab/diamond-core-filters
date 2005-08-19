@@ -25,7 +25,7 @@
 #include "snapfind_consts.h"
 #include "lib_results.h"
 #include "lib_filter.h"
-#include "fil_image_tools.h"
+#include "lib_sfimage.h"
 #include "rgb.h"
 
 

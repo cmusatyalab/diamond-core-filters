@@ -31,11 +31,11 @@
 #include "ring.h"
 #include "rtimer.h"
 #include "lib_results.h"
+#include "lib_sfimage.h"
 
 #include "fil_tools.h"
 #include "vj_face_tools.h"
 #include "rgb.h"
-#include "image_tools.h"
 #include "texture_tools.h"
 #include "facedet.h"
 

@@ -36,7 +36,7 @@ SEARCH_LIB_OBJS =  ocv_face_search.o opencv_face_tools.o
 
 SEARCH_LIB_LIBS += -lm -lcvaux -lopencv 
 
-SEARCHLET_LIBS += -Wl,-static -lm -lcvaux -lopencv 
+SEARCHLET_LIBS += -Wl,-static -lm -lcvaux -lopencv  -lsfimage -ltiff
 #
 # All the source files that are needed for depend.
 #

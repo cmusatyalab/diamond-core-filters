@@ -33,7 +33,7 @@ SEARCH_LIB_OBJS =  vj_face_search.o vj_face_tools.o facedet.o fil_data2ii.o
 
 SEARCH_LIB_LIBS += 
 
-SEARCHLET_LIBS += -Wl,-static -lm 
+SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -ltiff
 #
 # All the source files that are needed for depend.
 #
