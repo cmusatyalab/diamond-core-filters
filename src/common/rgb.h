@@ -52,7 +52,7 @@ typedef struct {
 } RGBImage;
 
 
-typedef struct FGImage{
+typedef struct FGImage {
 	image_type_t type;
 	size_t nelements;		/* size of this var size struct */
 	int width;
@@ -64,43 +64,16 @@ typedef struct FGImage{
 
 /* some colors/masks */
 
-static const RGBPixel red =
-    {
-        255, 0, 0, 255
-    };
-static const RGBPixel green =
-    {
-        32, 255, 32, 255
-    };
-static const RGBPixel blue =
-    {
-        32, 32, 255, 255
-    };
-static const RGBPixel clearColor =
-    {
-        0, 0, 0, 0
-    };
-static const RGBPixel colorMask =
-    {
-        1, 1, 1, 1
-    };
-static const RGBPixel clearMask =
-    {
-        0, 0, 0, 0
-    };
+static const RGBPixel red = { 255, 0, 0, 255 };
+static const RGBPixel green = { 32, 255, 32, 255 };
+static const RGBPixel blue = { 32, 32, 255, 255 };
+static const RGBPixel clearColor = { 0, 0, 0, 0 };
+static const RGBPixel colorMask = { 1, 1, 1, 1 };
+static const RGBPixel clearMask = { 0, 0, 0, 0 };
 
-static const RGBPixel hilit =
-    {
-        255, 255, 255, 128
-    };
-static const RGBPixel hilitRed =
-    {
-        255, 0, 0, 32
-    };
-static const RGBPixel hilitMask =
-    {
-        1, 1, 1, 1
-    };
+static const RGBPixel hilit = { 255, 255, 255, 128 };
+static const RGBPixel hilitRed = { 255, 0, 0, 32 };
+static const RGBPixel hilitMask = { 1, 1, 1, 1 };
 
 
 #ifdef __cplusplus
@@ -110,24 +83,24 @@ extern "C"
 
 
 
-	/* make a new image the same size as src */
-	RGBImage *rgbimg_new(RGBImage *srcimg);
+/* make a new image the same size as src */
+RGBImage *rgbimg_new(RGBImage *srcimg);
 
-	/* make a new image duplicating src */
-	RGBImage *rgbimg_dup(RGBImage *srcimg);
+/* make a new image duplicating src */
+RGBImage *rgbimg_dup(RGBImage *srcimg);
 
-	/* wipe image clean */
-	void rgbimg_clear(RGBImage *img);
+/* wipe image clean */
+void rgbimg_clear(RGBImage *img);
 
 
-	RGBImage *create_rgb_subimage(RGBImage *old, int xoff, int yoff, int xsize,
-	                              int ysize);
-	void release_rgb_image(RGBImage *);
+RGBImage *create_rgb_subimage(RGBImage *old, int xoff, int yoff, int xsize,
+			      int ysize);
+void release_rgb_image(RGBImage *);
 
-	RGBImage * get_rgb_img(lf_obj_handle_t ohandle);
-	FGImage_t * rgb_to_fgimage(RGBImage *);
+RGBImage * get_rgb_img(lf_obj_handle_t ohandle);
+FGImage_t * rgb_to_fgimage(RGBImage *);
 
-	RGBImage * rgbimg_blank_image(int width, int height);
+RGBImage * rgbimg_blank_image(int width, int height);
 
 
 #ifdef __cplusplus

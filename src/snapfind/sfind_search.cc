@@ -154,6 +154,14 @@ do_search(gid_list_t * main_region, char *fspec)
 		printf("Failed to set searchlet on err %d \n", err);
 		exit(1);
 	}
+	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_rgb.so");
+	if (err) {
+		printf("Failed to set searchlet on err %d \n", err);
+	}
+	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_vj_face.so");
+	if (err) {
+		printf("Failed to set searchlet on err %d \n", err);
+	}
 
 	/*
 	 * Go ahead and start the search.

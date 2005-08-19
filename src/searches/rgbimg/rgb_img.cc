@@ -26,10 +26,14 @@
 #include "rgb_img.h"
 #include "factory.h"
 
-#define	MAX_DISPLAY_NAME	64
+
+extern "C" {
+        void search_init();
+}
+                                                                                
 
 void
-rgb_image_init()
+search_init()
 {
         rgb_img_factory *fac;
         // XXX printf("rgb init \n");
@@ -102,17 +106,10 @@ rgb_img::write_fspec(FILE *ostream)
 	fprintf(ostream, "FILTER  RGB  # convert file to rgb \n");
 	fprintf(ostream, "THRESHOLD  1  # this will always pass \n");
 	fprintf(ostream, "MERIT  500  # run this early hint \n");
-#ifndef	DATA_IN_ATTRS
 
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_img2rgb  # eval function \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_img2rgb  # init function \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_img2rgb  # fini function \n");
-#else
-
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_attr2rgb  # eval function \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_attr2rgb  # init function \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_attr2rgb  # fini function \n");
-#endif
 }
 
 void

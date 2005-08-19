@@ -143,11 +143,8 @@ rgb_to_fgimage(RGBImage *orig)
 {
 	FGImage_t *	img;
 	int		i;
-	
 
 	img = create_fgimage(orig->width, orig->height);
-	
-
 	for (i=0; i < (orig->width * orig->height); i++) {
 		img->data[i] = ((float)(orig->data[i].r + orig->data[i].b + 
 			orig->data[i].g))/3.0;

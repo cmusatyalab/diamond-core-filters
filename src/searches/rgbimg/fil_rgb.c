@@ -27,8 +27,6 @@
 #include "lib_filter.h"
 #include "fil_image_tools.h"
 #include "rgb.h"
-#include "histo.h"
-#include "fil_histo.h"
 
 
 
@@ -99,62 +97,4 @@ done:
 	lf_log(LOGL_TRACE, "f_pnm2rgb: done");
 	return pass;
 }
-
-
-
-int
-f_init_attr2rgb(int numarg, char **args, int blob_len, void *blob, 
-		const char *fname, void **data)
-{
-
-	assert(numarg == 0);
-	*data = NULL;
-	return (0);
-}
-
-int
-f_fini_attr2rgb(void *data)
-{
-	return (0);
-}
-
-/*
- * filter eval function to create an RGB_IMAGE attribute
- */
-
-int
-f_eval_attr2rgb(lf_obj_handle_t ohandle, void *user_data)
-{
-	RGBImage       *img;
-	int             err = 0, pass = 1;
-
-	lf_log(LOGL_TRACE, "f_eval_attr2rgb: enter");
-
-
-	img = get_attr_rgb_img(ohandle, "DATA0");
-	if (img == NULL) {
-		return(0);
-	}
-
-	/*
-	 * save some attribs 
-	 */
-	lf_write_attr(ohandle, ROWS, sizeof(int), (char *) &img->height);
-	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &img->width);
-
-	/*
-	 * save img as an attribute 
-	 */
-	err =
-	    lf_write_attr(ohandle, RGB_IMAGE, img->nbytes, (char *) img);
-	ASSERT(!err);
-done:
-	if (img)
-		free(img);
-	lf_log(LOGL_TRACE, "f_pnm2rgb: done");
-	return pass;
-}
-
-
-
 

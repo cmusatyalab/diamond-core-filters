@@ -73,7 +73,6 @@
 #include "fil_image_tools.h"
 #include "search_set.h"
 #include "read_config.h"
-#include "rgb_img.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -2044,7 +2043,6 @@ main(int argc, char *argv[])
 	/* XXX for now */
 	rgb_histo_init();
 	texture_init();
-	rgb_image_init();
 
 
 
@@ -2052,6 +2050,7 @@ main(int argc, char *argv[])
 	load_library("./gabor_texture_search.so");
 	load_library("./opencv_face_search.so");
 	load_library("./vj_face_search.so");
+	load_library("./rgb_img.so");
 
 	/*
 	 * Start the main loop processing for the GUI.

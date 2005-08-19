@@ -32,16 +32,14 @@ COMMON_SHARED_OBJS += merge_faces.o  rgb.o fil_image_tools.o
 COMMON_SHARED_OBJS += readtiff.o
 
 COMMON_SEARCHLET_SRCS = fil_histo.c fil_texture.cc 
-COMMON_SEARCHLET_SRCS += fil_rgb.c 
 
 COMMON_SEARCHLET_OBJS = fil_histo.o fil_texture.o 
-COMMON_SEARCHLET_OBJS += fil_rgb.o
 
       
 COMMON_APP_SRCS = img_search.cc search_set.cc
 COMMON_APP_SRCS += texture_search.cc 
 COMMON_APP_SRCS += window_search.cc example_search.cc 
-COMMON_APP_SRCS += rgb_histo_search.cc rgb_img.cc 
+COMMON_APP_SRCS += rgb_histo_search.cc 
 COMMON_APP_SRCS += ii_img.cc face_image.c 
 COMMON_APP_SRCS += gtk_image_tools.c histo_ii.cc search_support.cc
 COMMON_APP_SRCS += import_sample.cc 
@@ -50,7 +48,7 @@ COMMON_APP_SRCS += display_img.cc
 COMMON_APP_OBJS = img_search.o search_set.o
 COMMON_APP_OBJS += texture_search.o 
 COMMON_APP_OBJS += window_search.o example_search.o
-COMMON_APP_OBJS += rgb_histo_search.o rgb_img.o
+COMMON_APP_OBJS += rgb_histo_search.o 
 COMMON_APP_OBJS += ii_img.o face_image.o
 COMMON_APP_OBJS += gtk_image_tools.o  histo_ii.o search_support.o
 COMMON_APP_OBJS += import_sample.o 

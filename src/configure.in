@@ -109,6 +109,7 @@ AC_CONFIG_FILES([Makefile
 		searches/gabor_texture/Makefile
 		searches/ocv_face/Makefile
 		searches/vj_face/Makefile
+		searches/rgbimg/Makefile
 		lib/Makefile
 		lib/libresults/Makefile
 		lib/libsfgtk/Makefile

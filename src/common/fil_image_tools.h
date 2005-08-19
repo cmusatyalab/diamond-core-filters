@@ -23,9 +23,6 @@ extern  "C"
 {
 #endif
 
-RGBImage       *get_attr_rgb_img(lf_obj_handle_t ohandle, char *name);
-
-
 RGBImage       *get_rgb_img(lf_obj_handle_t ohandle);
 
 #ifdef __cplusplus

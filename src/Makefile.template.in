@@ -74,7 +74,7 @@ CLEAN_OTHERS += gmon.out core.* *.core
 #
 # Objects to remove during "distclean".  For now just the .depend
 #
-DIST_OBJS += .depend
+DIST_OBJS += .depend Makefile 
 
 %.o: %.S
 	${CPP} $(filter -I% -D%, ${CPPFLAGS} ${CFLAGS}) $< | \
