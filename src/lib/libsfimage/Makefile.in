@@ -15,8 +15,27 @@ ROOTDIR = @top_srcdir@
 SRCDIR = @srcdir@
 VPATH = @srcdir@
 OBJROOT = @OBJROOT@
+CVCPPFLAGS = @CVCPPFLAGS@
+CVLDFLAGS = @CVLDFLAGS@
+                                                                                
 
-SUBDIRS =  libresults libsfimage libsfgtk
+LIBSRCS += fil_image_tools.c image_draw.c image_tools.c
+LIBSRCS += readtiff.c rgb.c
 
-include $(OBJROOT)/Makefile.template
+LIBOBJS += fil_image_tools.o image_draw.o image_tools.o
+LIBOBJS += readtiff.o rgb.o
+
+SRCS = $(LIBSRCS)
+OBJS = $(LIBOBJS) 
+
+SHARED_HEADERS = rgb.h lib_sfimage.h
+
+# Compilation Targets
+#
+
+
+TARGETS = libsfimage.a 
+
+include $(OBJROOT)/Makefile.template 
+
 
