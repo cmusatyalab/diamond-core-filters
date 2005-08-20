@@ -22,7 +22,7 @@ OBJROOT = @OBJROOT@
 SRCS = $(LIBSRCS)
 OBJS = $(LIBOBJS) 
 
-SHARED_HEADERS += snapfind_consts.h fil_tools.h merge_faces.h 
+SHARED_HEADERS += snapfind_consts.h
 
 # Compilation Targets
 #
