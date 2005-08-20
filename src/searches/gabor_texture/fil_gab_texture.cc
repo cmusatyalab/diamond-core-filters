@@ -80,27 +80,6 @@ read_texture_args(gtexture_args_t *data, int argc, char **args)
 }
 
                                                                                 
-static int
-write_param(lf_obj_handle_t ohandle, char *fmt,
-            search_param_t * param, int i)
-{
-        off_t           bsize;
-        char            buf[BUFSIZ];
-        int             err;
-                                                                                
-#ifdef VERBOSE
-                                                                                
-        lf_log(LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
-               param->bbox.xmin, param->bbox.ymin, param->scale);
-#endif
-                                                                                
-        sprintf(buf, fmt, i);
-        bsize = sizeof(search_param_t);
-        err = lf_write_attr(ohandle, buf, bsize, (char *) param);
-                                                                                
-        return err;
-}
-
 
 static void
 write_notify_f(void *cont, search_param_t *param)

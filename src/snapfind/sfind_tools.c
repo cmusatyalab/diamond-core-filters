@@ -32,7 +32,6 @@
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include "rgb.h"
-#include "fil_tools.h"
 #include "gui_thread.h"
 #include "sfind_tools.h"
 

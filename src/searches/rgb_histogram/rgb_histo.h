@@ -81,53 +81,63 @@ typedef struct histo_config
 histo_config_t;
 
 
+#define II_PROBE(ii,x,y)                        \
+(assert((x) >= 0), assert((y) >= 0),           \
+ assert((x) < (ii)->width),                     \
+ assert((y) < (ii)->height),                    \
+ (ii)->data[(y) * ((ii)->width) + (x)])
+
+
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	void histo_clear(Histo* h);
+void histo_clear(Histo* h);
 
-	/* return the histogram using the ii */
-	void normalize_histo(Histo *hist);
-	/* compute a histogram from part of an image */
-	void histo_fill_from_subimage(Histo* h, const RGBImage* i, int xstart,
-	                              int ystart, int xsize, int ysize, histo_type_t type);
+/* return the histogram using the ii */
+void normalize_histo(Histo *hist);
+/* compute a histogram from part of an image */
+void histo_fill_from_subimage(Histo* h, const RGBImage* i, int xstart,
+			      int ystart, int xsize, int ysize, histo_type_t type);
 
-	/* incremental computation of histogram; subimage moved from oldx,y to xstart,y. */
-	void histo_update_subimage(Histo* h, const RGBImage* i, int oldx, int oldy,
+/* incremental computation of histogram; subimage moved from oldx,y to xstart,y. */
+void histo_update_subimage(Histo* h, const RGBImage* i, int oldx, int oldy,
 	                           int xstart, int ystart, int xsize, int ysize, histo_type_t type);
 
-	/* Returns the distance between two histogram distributions */
-	float histo_distance(const Histo* h1, const Histo* h2);
+/* Returns the distance between two histogram distributions */
+float histo_distance(const Histo* h1, const Histo* h2);
 
-	/* returns true if the distance between two histograms is less than d */
-	int histo_distance_lt(const Histo* h1, const Histo* h2, float d);
+/* returns true if the distance between two histograms is less than d */
+int histo_distance_lt(const Histo* h1, const Histo* h2, float d);
 
-	/* h1 += h2 */
-	void histo_accum(Histo *h1, const Histo *h2);
-	/* h1 -= h2 */
-	void histo_lessen(Histo *h1, const Histo *h2);
+/* h1 += h2 */
+void histo_accum(Histo *h1, const Histo *h2);
+/* h1 -= h2 */
+void histo_lessen(Histo *h1, const Histo *h2);
 
-	/*
-	 * compute an integral image in histo space with x,y stride of dx,
-	 * dy. only fills in the data field 
-	 */
-	void histo_compute_ii(const RGBImage *img, HistoII *ii, const int dx, const int dy, histo_type_t type);
+/*
+ * compute an integral image in histo space with x,y stride of dx,
+ * dy. only fills in the data field 
+ */
+void histo_compute_ii(const RGBImage *img, HistoII *ii, const int dx, const int dy, histo_type_t type);
 
-	HistoII * histo_get_ii(histo_config_t *hconfig, RGBImage *img);
+HistoII * histo_get_ii(histo_config_t *hconfig, RGBImage *img);
 
-	/* return the histogram using the ii */
-	void histo_get_histo(HistoII *ii, int x, int y, int xsize, int ysize, Histo *h);
-
-
-	void histo_print_ii(HistoII *ii);
+/* return the histogram using the ii */
+void histo_get_histo(HistoII *ii, int x, int y, int xsize, int ysize, Histo *h);
 
 
-	int histo_scan_image(char *filtername, RGBImage *img,
-	                     HistoII *ii,
-	                     histo_config_t *fsp,
-	                     int pthreshold, bbox_list_t *blist);
+void histo_print_ii(HistoII *ii);
+
+
+int histo_scan_image(char *filtername, RGBImage *img,
+		     HistoII *ii,
+		     histo_config_t *fsp,
+		     int pthreshold, bbox_list_t *blist);
+
+int log2_int(int x);
 
 
 

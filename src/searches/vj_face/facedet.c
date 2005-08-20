@@ -49,6 +49,17 @@ int             test_region(IImage * ii,
                             int xoffset, int yoffset, double scale, double m);
 
 
+u_int32_t
+ii_probe(ii_image_t * ii, dim_t x, dim_t y)
+{
+        u_int32_t       value;
+
+        value = ii->data[y * ii->width + x];
+        return value;
+}
+
+
+
 
 // Reads from data.h
 //

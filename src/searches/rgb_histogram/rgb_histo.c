@@ -19,7 +19,6 @@
 #include "lib_filter.h"
 #include "lib_log.h"
 #include "lib_results.h"
-#include "fil_tools.h"
 #include "fil_rgb_histo.h"
 #include "rgb_histo.h"
 
@@ -67,6 +66,40 @@ static int	done_init = 0;
 
 /*
  ********************************************************************** */
+
+
+int
+log2_int(int x)
+{
+        int             logval = 0;
+
+        /*
+         * garbage in, garbage out
+         */
+
+        switch (x) {
+                case 4:
+                        logval = 2;
+                        break;
+                case 8:
+                        logval = 3;
+                        break;
+                case 16:
+                        logval = 4;
+                        break;
+                case 32:
+                        logval = 5;
+                        break;
+                default:
+                        while (x > 1) {
+                                // assert((x & 1) == 0);
+                                x >>= 1;
+                                logval++;
+                        }
+        }
+
+        return logval;
+}
 
 
 /*
@@ -1130,4 +1163,6 @@ old_histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 
 	return pass;
 }
+
+
 #endif

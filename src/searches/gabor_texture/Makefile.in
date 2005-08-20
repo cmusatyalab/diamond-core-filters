@@ -20,17 +20,15 @@ CVLDFLAGS = @CVLDFLAGS@
 
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
                                                                                 
-include $(ROOTDIR)/common/Makefile.template
-
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_gab_texture.cc gabor_tools.cc gabor.cc
 FILTER_LIB_OBJS = fil_gab_texture.o  gabor_tools.o gabor.o
 
-SEARCHLET_LIBS += -lm -Wl,-static  -lsfimage -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -lm -Wl,-static  -lsfimage -ltiff -ljpeg -lz -lresults
 
 SEARCH_LIB_SRCS = gabor_texture_search.cc gabor_tools.cc gabor.cc
 SEARCH_LIB_OBJS =  gabor_texture_search.o gabor_tools.o gabor.o
-SEARCH_LIB_LIBS += 
+SEARCH_LIB_LIBS +=  -lresults
 
 #
 # All the source files that are needed for depend.

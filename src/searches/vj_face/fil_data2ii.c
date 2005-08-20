@@ -23,12 +23,12 @@
 #include <ctype.h>
 #include <assert.h>
 
+#include "lib_filter.h"
 #include "lib_results.h"
 #include "rgb.h"
-#include "lib_filter.h"
 #include "lib_log.h"
 #include "fil_data2ii.h"
-#include "fil_tools.h"
+#include "facedet.h"
 
 #define MAXCOLS 1281
 

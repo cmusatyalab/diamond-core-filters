@@ -51,7 +51,6 @@
 
 #include "lib_results.h"
 #include "rgb.h"
-#include "fil_tools.h"
 #include "lib_sfimage.h"
 #include "img_search.h"
 #include "search_support.h"

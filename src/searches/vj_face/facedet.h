@@ -19,7 +19,6 @@
 #ifndef FACEDET_H
 #define FACEDET_H
 
-#include "fil_tools.h"
 
 // Recall that a feature consists of sums & differences of boxes
 // defined over an integral image.  A corner is an index into an
@@ -56,6 +55,34 @@ typedef struct {
 	const Feature* features;	// List of Features
 	double threshold;	// Region passes level if it exceeds threshold
 } Level;
+
+
+/*
+ * integral image
+ */
+typedef struct ii_image {
+        size_t    nbytes;       /* size of variable struct */
+        dim_t     width, height;
+        u_int32_t data[0];      /* variable size struct. width*height
+                                         * elements of data follows. */
+} ii_image_t;
+
+
+#define II_PROBE(ii,x,y)                        \
+(assert((x) >= 0), assert((y) >= 0),           \
+ assert((x) < (ii)->width),                     \
+ assert((y) < (ii)->height),                    \
+ (ii)->data[(y) * ((ii)->width) + (x)])
+
+typedef struct ii2_image {
+        size_t    nbytes;       /* size of variable struct */
+        dim_t     width, height;
+        float    data[0];       /* variable size struct. width*height
+                                 * elements of data follows. */
+} ii2_image_t;
+
+
+
 
 
 /*

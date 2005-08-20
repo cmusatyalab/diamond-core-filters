@@ -33,10 +33,9 @@
 #include "lib_results.h"
 #include "lib_sfimage.h"
 
-#include "fil_tools.h"
+#include "facedet.h"
 #include "vj_face_tools.h"
 #include "rgb.h"
-#include "facedet.h"
 
 
 #define compute_sum(ii,x,y,xsiz,ysiz) (			\

@@ -57,7 +57,6 @@
 #include "face_search.h"
 #include "lib_results.h"
 #include "rgb.h"
-#include "fil_tools.h"
 #include "face_widgets.h"
 #include "img_search.h"
 #include "sfind_search.h"

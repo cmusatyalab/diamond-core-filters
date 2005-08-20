@@ -29,10 +29,9 @@
 #include "rgb.h"
 #include "lib_results.h"
 #include "lib_sfimage.h"
-#include "fil_tools.h"
+#include "facedet.h"
 #include "fil_vj_face.h"
 #include "vj_face_tools.h"
-#include "facedet.h"
 #include "merge_faces.h"
 
 typedef struct {

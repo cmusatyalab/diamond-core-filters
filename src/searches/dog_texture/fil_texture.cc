@@ -23,7 +23,6 @@
 #include "lib_sfimage.h"
 #include "lib_filter.h"
 #include "fil_texture.h"
-#include "fil_tools.h"
 #include "texture_tools.h"
 #include "lib_ocvimage.h"
 

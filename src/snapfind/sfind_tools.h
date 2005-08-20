@@ -17,7 +17,6 @@
 #include "rgb.h"
 
 #include "searchlet_api.h"
-#include "fil_tools.h"
 
 #ifdef __cplusplus
 extern "C"
