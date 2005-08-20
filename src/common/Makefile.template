@@ -17,8 +17,6 @@ COMMON_HEADERS +=  fil_tools.h
 COMMON_HEADERS += fil_histo.h histo.h gtk_image_tools.h
 COMMON_HEADERS += fil_assert.h
 COMMON_HEADERS += merge_faces.h
-COMMON_HEADERS += import_sample.h 
-COMMON_HEADERS += search_support.h search_set.h display_img.h
 
 COMMON_SHARED_SRCS = histo.c 
 COMMON_SHARED_SRCS += fil_tools.c 
@@ -32,21 +30,13 @@ COMMON_SEARCHLET_SRCS = fil_histo.c
 COMMON_SEARCHLET_OBJS = fil_histo.o 
 
       
-COMMON_APP_SRCS = img_search.cc search_set.cc
-COMMON_APP_SRCS += window_search.cc example_search.cc 
 COMMON_APP_SRCS += rgb_histo_search.cc 
 COMMON_APP_SRCS += ii_img.cc 
-COMMON_APP_SRCS += gtk_image_tools.c histo_ii.cc search_support.cc
-COMMON_APP_SRCS += import_sample.cc 
-COMMON_APP_SRCS += display_img.cc 
+COMMON_APP_SRCS += histo_ii.cc
                             
-COMMON_APP_OBJS = img_search.o search_set.o
-COMMON_APP_OBJS += window_search.o example_search.o
 COMMON_APP_OBJS += rgb_histo_search.o 
 COMMON_APP_OBJS += ii_img.o 
-COMMON_APP_OBJS += gtk_image_tools.o  histo_ii.o search_support.o
-COMMON_APP_OBJS += import_sample.o 
-COMMON_APP_OBJS += display_img.o 
+COMMON_APP_OBJS += histo_ii.o 
  
 COMMON_SRCS = $(COMMON_SEARCHLET_SRCS) $(COMMON_APP_SRCS) $(COMMON_HEADERS)
 COMMON_SRCS += $(COMMON_SHARED_SRCS)                            
