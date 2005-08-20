@@ -36,7 +36,6 @@
 #include "fil_tools.h"
 #include "vj_face_tools.h"
 #include "rgb.h"
-#include "texture_tools.h"
 #include "facedet.h"
 
 

@@ -25,18 +25,22 @@ CPPFLAGS += ${CVCPPFLAGS}
 LDFLAGS += ${CVLDFLAGS}
 
 
+
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_ocv_face.c opencv_face_tools.c
+FILTER_LIB_SRCS = fil_texture.cc texture_tools.c
 
-FILTER_LIB_OBJS =  fil_ocv_face.o opencv_face_tools.o
-
-SEARCH_LIB_SRCS = ocv_face_search.cc  opencv_face_tools.c
-
-SEARCH_LIB_OBJS =  ocv_face_search.o opencv_face_tools.o
-
-SEARCH_LIB_LIBS += -lm -lcvaux -locvimage -lopencv 
+FILTER_LIB_OBJS = fil_texture.o texture_tools.o
 
 SEARCHLET_LIBS += -Wl,-static -lm -locvimage -lcvaux -lopencv  -lsfimage -ltiff
+
+
+SEARCH_LIB_SRCS = dog_texture_search.cc  texture_tools.c
+
+SEARCH_LIB_OBJS = dog_texture_search.o  texture_tools.o
+
+
+SEARCH_LIB_LIBS += -lm -lcvaux -lopencv  -locvimage
+
 #
 # All the source files that are needed for depend.
 #
@@ -47,16 +51,16 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_ocv_face.so opencv_face_search.so
+TARGETS = fil_dog_texture.so dog_texture_search.so
 
-SHARED_BIN += fil_ocv_face.so opencv_face_search.so
+SHARED_BIN += fil_dog_texture.so dog_texture_search.so
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_ocv_face.so: $(FILTER_LIB_OBJS)
+fil_dog_texture.so: $(FILTER_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(LDFLAGS)
                                                                                 
-opencv_face_search.so: $(SEARCH_LIB_OBJS)
+dog_texture_search.so: $(SEARCH_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(LDFLAGS)
 
 default: $(TARGETS)
