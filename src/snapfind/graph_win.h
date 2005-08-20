@@ -19,7 +19,7 @@
 
 #include <gtk/gtk.h>
 #include "snapfind_consts.h"
-#include "histo.h"
+#include "rgb.h"
 
 using	namespace	std;
 

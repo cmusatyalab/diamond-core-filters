@@ -23,6 +23,7 @@
 #include "rgb.h"
 #include "lib_results.h"
 #include "img_search.h"
+#include "vj_face_search.h"
 #include "factory.h"
 #include "search_set.h"
 

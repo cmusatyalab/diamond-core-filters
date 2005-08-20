@@ -20,7 +20,6 @@ CVLDFLAGS = @CVLDFLAGS@
 
 
 
-CPPFLAGS += -I/usr/local/include/opencv
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
                                                                                 
 include $(ROOTDIR)/common/Makefile.template
@@ -28,7 +27,7 @@ include $(ROOTDIR)/common/Makefile.template
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_regex.c
 FILTER_LIB_OBJS = fil_regex.o 
-FILTER_LIB_LIBS += -lm -Wl,-static -lcvaux -lopencv
+FILTER_LIB_LIBS += -lm 
 
 SEARCH_LIB_SRCS = regex_search.cc
 SEARCH_LIB_OBJS =  regex_search.o 

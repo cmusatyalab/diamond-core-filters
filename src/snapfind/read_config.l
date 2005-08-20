@@ -8,7 +8,6 @@
 #include <gtk/gtk.h>
 #include "queue.h"
 #include "lib_results.h"
-#include "fil_histo.h"
 #include "img_search.h"
 #include "search_support.h"
 #include "search_set.h"

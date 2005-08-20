@@ -66,18 +66,6 @@ similar_bbox(region_t * bb1, region_t * bb2)
 
 	assert(u_area >= i_area);   // sanity check that union >= intersection
 
-	// integer arithmetic version of saying
-	// (i_area/u_area) should be >= 80%
-#if 0
-
-	fprintf(stderr, "merge_faces: i_area=%d u_area=%d ratio=%f... ",
-	        i_area, u_area, 100.0 * i_area / (double) u_area);
-	if (4 * i_area >= 3 * u_area) {
-		fprintf(stderr, " MERGE!\n");
-	} else {
-		fprintf(stderr, " leave\n");
-	}
-#endif
 	ovlap = (double) i_area / (double) u_area;
 
 	return (ovlap);
@@ -189,6 +177,5 @@ merge_boxes(region_t in_bbox_list[], region_t out_bbox_list[], int num,
 	free(cluster_ids);
 	cluster_ids = NULL;
 
-	// fprintf(stderr, "merge_faces: oid=%d\n", oid);
 	return oid;
 }

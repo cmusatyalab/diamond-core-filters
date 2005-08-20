@@ -81,6 +81,34 @@ public:
 
 
 
+class ii_img: public img_search {
+public:
+        ii_img(const char *name, char *descr);
+        ~ii_img(void);
+
+        void    save_edits();
+        void    edit_search();
+        void    write_fspec(FILE* stream);
+        void    write_config(FILE* stream, const char *data_dir);
+        virtual int     handle_config(int num_conf, char **datav);
+        virtual void    region_match(RGBImage *img, bbox_list_t *blist);
+private:
+};
+
+class ii_img_factory: public img_factory {
+public:
+	ii_img_factory() {
+		set_name("II Image");
+		set_description("ii_iamge");
+	}
+	img_search *create(const char *name) {
+		return new ii_img(name, "II Image");
+	}
+	int is_example() {
+		return(0);
+	}
+};
+
 
 
 #ifdef __cplusplus

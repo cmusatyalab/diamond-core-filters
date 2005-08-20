@@ -65,7 +65,7 @@ SNAPFIND_SRCS += search_set.cc
 SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
 SNAPFIND_OBJS += progress_win.o snap_popup.o  stats_win.o
-SNAPFIND_OBJS += fil_histo.o graph_win.o cache_control.o
+SNAPFIND_OBJS += graph_win.o cache_control.o
 SNAPFIND_OBJS += sfind_tools.o  factory.o example_search.o
 SNAPFIND_OBJS += gtk_image_tools.o import_sample.o display_img.o
 SNAPFIND_OBJS += window_search.o img_search.o search_support.o
@@ -128,17 +128,7 @@ snapfind: $(SNAPFIND_OBJS)
 	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LDFLAGS) $(GTK_LDFLAGS) ${CVLIBS}
 
 
-search:	search.c
-	$(CC) $(CFLAGS) $(DYNAMIC) -o $@ $< $(LDFLAGS) `pkg-config gtk+-2.0 gthread-2.0 --cflags --libs`
 
-profile: profile.o $(SEARCHLET_OBJS)
-	$(CC) $(CFLAGS) -o profile profile.o $(SEARCHLET_OBJS) $(LIBS) $(LDFLAGS) -lfilterexec -ltools -lodisk
-
-foo: foo.o rgb_histo_search.o snap_search.o window_search.o example_search.o
-	$(CC) $(CFLAGS) -o foo foo.o rgb_histo_search.o snap_search.o window_search.o example_search.o
-
-
-#	$(CC) $(CFLAGS) -o $@ $< $(SEARCHLET_OBJS) $(LIBS) $(LDFLAGS) -lfilterexec -ltools -lodisk
 
 wavelet-test:	wavelet.o rgb.o
 	$(CC) $(CFLAGS) -o wavelet-test wavelet.o rgb.o -static -lwvlt -lm

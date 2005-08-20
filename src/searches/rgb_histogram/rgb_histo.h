@@ -17,10 +17,6 @@
 #include "queue.h"
 #include "rgb.h"
 
-// Code to support basic color histograms
-// Rahul Sukthankar 2003.02.20
-
-
 #define HISTO_SCALE  	1.5
 
 

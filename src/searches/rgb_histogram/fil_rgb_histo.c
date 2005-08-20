@@ -30,8 +30,8 @@
 #include "lib_filter.h"
 #include "snapfind_consts.h"
 #include "rgb.h"
-#include "histo.h"
-#include "fil_histo.h"
+#include "rgb_histo.h"
+#include "fil_rgb_histo.h"
 #include "fil_tools.h"
 
 /* #define VERBOSE 1 */

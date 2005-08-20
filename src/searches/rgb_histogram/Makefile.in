@@ -18,26 +18,23 @@ OBJROOT = @OBJROOT@
 CVCPPFLAGS = @CVCPPFLAGS@
 CVLDFLAGS = @CVLDFLAGS@
 
-
-
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
-CPPFLAGS += ${CVCPPFLAGS}
-LDFLAGS += ${CVLDFLAGS}
 
+include $(ROOTDIR)/common/Makefile.template
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_ocv_face.c opencv_face_tools.c
+FILTER_LIB_SRCS = fil_rgb_histo.c rgb_histo.c 
 
-FILTER_LIB_OBJS =  fil_ocv_face.o opencv_face_tools.o
+FILTER_LIB_OBJS =  fil_rgb_histo.o rgb_histo.o
 
-SEARCH_LIB_SRCS = ocv_face_search.cc  opencv_face_tools.c
+SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -ltiff -ljpeg -lz
 
-SEARCH_LIB_OBJS =  ocv_face_search.o opencv_face_tools.o
+SEARCH_LIB_SRCS = rgb_histo.c rgb_histo_search.cc histo_ii.cc
 
-SEARCH_LIB_LIBS += -lm -lcvaux -locvimage -lopencv 
+SEARCH_LIB_OBJS = rgb_histo.o rgb_histo_search.o histo_ii.o
 
-SEARCHLET_LIBS += -Wl,-static -lm -locvimage -lcvaux -lopencv  -lsfimage 
-SEARCHLET_LIBS += -ltiff -ljpeg -lz
+SEARCH_LIB_LIBS += 
+
 #
 # All the source files that are needed for depend.
 #
@@ -48,16 +45,16 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_ocv_face.so opencv_face_search.so
+TARGETS = fil_rgb_histo.so rgb_histo_search.so
 
-SHARED_BIN += fil_ocv_face.so opencv_face_search.so
+SHARED_BIN += fil_rgb_histo.so rgb_histo_search.so
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_ocv_face.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(LDFLAGS)
+fil_rgb_histo.so: $(FILTER_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(LDFLAGS)
                                                                                 
-opencv_face_search.so: $(SEARCH_LIB_OBJS)
+rgb_histo_search.so: $(SEARCH_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(LDFLAGS)
 
 default: $(TARGETS)

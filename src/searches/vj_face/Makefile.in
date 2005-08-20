@@ -27,13 +27,16 @@ FILTER_LIB_SRCS = fil_vj_face.c  vj_face_tools.c facedet.c fil_data2ii.c
 
 FILTER_LIB_OBJS =  fil_vj_face.o  vj_face_tools.o facedet.o fil_data2ii.o
 
+SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -ltiff -ljpeg -lz
+
 SEARCH_LIB_SRCS = vj_face_search.cc   vj_face_tools.c facedet.c fil_data2ii.c
+SEARCH_LIB_SRCS += ii_img.cc
 
 SEARCH_LIB_OBJS =  vj_face_search.o vj_face_tools.o facedet.o fil_data2ii.o
+SEARCH_LIB_OBJS +=  ii_img.o
 
 SEARCH_LIB_LIBS += 
 
-SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -ltiff
 #
 # All the source files that are needed for depend.
 #

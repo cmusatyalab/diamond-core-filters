@@ -26,7 +26,7 @@ include $(ROOTDIR)/common/Makefile.template
 FILTER_LIB_SRCS = fil_gab_texture.cc gabor_tools.cc gabor.cc
 FILTER_LIB_OBJS = fil_gab_texture.o  gabor_tools.o gabor.o
 
-SEARCHLET_LIBS += -lm -Wl,-static  -lsfimage -ltiff
+SEARCHLET_LIBS += -lm -Wl,-static  -lsfimage -ltiff -ljpeg -lz
 
 SEARCH_LIB_SRCS = gabor_texture_search.cc gabor_tools.cc gabor.cc
 SEARCH_LIB_OBJS =  gabor_texture_search.o gabor_tools.o gabor.o

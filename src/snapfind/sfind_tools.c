@@ -34,7 +34,6 @@
 #include "rgb.h"
 #include "fil_tools.h"
 #include "gui_thread.h"
-#include "histo.h"
 #include "sfind_tools.h"
 
 /*
@@ -44,14 +43,13 @@ static pthread_mutex_t ih_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 image_hooks_t  *
-ih_new_ref(RGBImage * img, HistoII * histo_ii, ls_obj_handle_t ohandle)
+ih_new_ref(RGBImage * img, ls_obj_handle_t ohandle)
 {
 	image_hooks_t  *ptr = (image_hooks_t *) calloc(1, sizeof(image_hooks_t));
 	assert(ptr);
 	ptr->refcount = 1;
 
 	ptr->img = img;
-	ptr->histo_ii = histo_ii;
 	ptr->ohandle = ohandle;
 
 	return ptr;
@@ -74,9 +72,6 @@ ih_drop_ref(image_hooks_t * ptr)
 	ptr->refcount--;
 	if (ptr->refcount == 0) {
 		ft_free((char *) ptr->img);
-		if (ptr->histo_ii) {
-			ft_free((char *) ptr->histo_ii);
-		}
 		ls_release_object(NULL, ptr->ohandle);
 		free(ptr);
 	}

@@ -45,7 +45,6 @@
 #include "img_search.h"
 #include "sfind_search.h"
 #include "search_support.h"
-#include "histo.h"
 #include "sfind_tools.h"
 #include "snap_popup.h"
 #include "snapfind.h"

@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include "lib_filter.h"
 #include "snapfind_consts.h"
-#include "histo.h"
+#include "rgb_histo.h"
 #include "queue.h"
 
 

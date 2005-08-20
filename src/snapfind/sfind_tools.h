@@ -30,12 +30,11 @@ extern "C"
 typedef struct image_hooks_t {
 	int		refcount;
 	RGBImage        *img;
-	HistoII         *histo_ii;
 	ls_obj_handle_t ohandle;
 }
 image_hooks_t;
 
-image_hooks_t *ih_new_ref(RGBImage *img, HistoII *histo_ii, ls_obj_handle_t ohandle);
+image_hooks_t *ih_new_ref(RGBImage *img, ls_obj_handle_t ohandle);
 void ih_get_ref(image_hooks_t *ptr);
 void ih_drop_ref(image_hooks_t *ptr);
 

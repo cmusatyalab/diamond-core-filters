@@ -61,7 +61,6 @@
 #include "face_widgets.h"
 #include "img_search.h"
 #include "sfind_search.h"
-#include "histo.h"
 #include "sfind_tools.h"
 #include "snap_popup.h"
 #include "search_support.h"
@@ -604,7 +603,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	strcpy(cur_thumbnail->device, device);
 	cur_thumbnail->nboxes = num_histo;
 	cur_thumbnail->nfaces = num_face;
-	cur_thumbnail->hooks = ih_new_ref(rgbimg, (HistoII*)NULL, ohandle);
+	cur_thumbnail->hooks = ih_new_ref(rgbimg, ohandle);
 
 	gtk_container_add(GTK_CONTAINER(cur_thumbnail->viewport), image);
 	gtk_widget_show_now(image);
@@ -1898,8 +1897,6 @@ load_library(char *libname)
 	}
 }
 
-/* XXX fix */
-void rgb_histo_init();
 
 int
 main(int argc, char *argv[])
@@ -1928,9 +1925,11 @@ main(int argc, char *argv[])
 
 	GUI_THREAD_INIT();
 	gtk_init(&argc, &argv);
-	gtk_rc_parse("gtkrc");
 	gdk_rgb_init();
+	gtk_rc_parse("gtkrc");
 	printf("Starting main\n");
+
+
 
 	while((c = getopt_long(argc, argv, optstring, long_opt, &option_index)) != -1) {
 		switch(c) {
@@ -2032,10 +2031,6 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* XXX for now */
-	rgb_histo_init();
-
-
 
 	/* XXX do this dynamically */
 	load_library("./regex_search.so");
@@ -2044,6 +2039,7 @@ main(int argc, char *argv[])
 	load_library("./vj_face_search.so");
 	load_library("./rgb_img.so");
 	load_library("./dog_texture_search.so");
+	load_library("./rgb_histo_search.so");
 
 	/*
 	 * Start the main loop processing for the GUI.

@@ -15,6 +15,7 @@
 #define	_IMG_SEARCH_H_	1
 
 #include <gtk/gtk.h>
+#include "rgb.h"
 #include "snapfind_consts.h"
 
 
@@ -205,37 +206,6 @@ private:
 	GtkWidget *	build_patch_table();
 	void 		update_display();
 	GtkWidget *	patch_table;
-};
-
-
-class ii_img: public img_search {
-public:
-	ii_img(const char *name, char *descr);
-	~ii_img(void);
-
-	void	save_edits();
-	void	edit_search();
-	void 	write_fspec(FILE* stream);
-	void	write_config(FILE* stream, const char *data_dir);
-	virtual	int	handle_config(int num_conf, char **datav);
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
-private:
-};
-
-
-class histo_ii: public img_search {
-public:
-	histo_ii(const char *name, char *descr);
-	~histo_ii(void);
-
-	void	save_edits();
-	void	edit_search();
-	void 	write_fspec(FILE* stream);
-	void	write_config(FILE* stream, const char *data_dir);
-	virtual	int	handle_config(int num_conf, char **datav);
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
-
-private:
 };
 
 

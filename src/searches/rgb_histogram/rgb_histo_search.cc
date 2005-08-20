@@ -22,12 +22,11 @@
 #include "snapfind_consts.h"
 #include "rgb.h"
 #include "lib_results.h"
-#include "histo.h"
+#include "rgb_histo.h"
 #include "rgb_histo_search.h"
 #include "img_search.h"
-#include "fil_histo.h"
+#include "fil_rgb_histo.h"
 #include "search_set.h"
-#include "read_config.h"
 #include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
@@ -35,17 +34,28 @@
 /* These are the tokens used in the config files */
 #define	METRIC_ID	"METRIC"
 
+extern "C" {
+	void search_init();
+}
+
+/*
+ * Here we register the factories for both the rgb_histo and the histo_ii
+ */
 void
-rgb_histo_init()
+search_init()
 {
 	rgb_histo_factory *fac;
-	// XXX printf("histo init \n");
+	histo_ii_factory *iifac;
 
 	fac = new rgb_histo_factory;
 
 	factory_register(fac);
 
+	iifac = new histo_ii_factory;
+	factory_register_support(iifac);
 }
+
+
 
 rgb_histo_search::rgb_histo_search(const char *name, char *descr)
 		: example_search(name, descr)
@@ -366,7 +376,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 {
 	Histo 	hgram;
 	example_patch_t	*cur_patch;
-	img_search	*	rgb;
+	img_search	*	img_srch;
 	img_factory *	 ifac;
 	int		i = 0;
 
@@ -421,13 +431,16 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "MERIT 200  # some merit \n");
 	fprintf(ostream, "\n");
 
-	rgb = new histo_ii("Histo II", "Histo II");
-	(this->get_parent())->add_dep(rgb);
+        ifac = find_support_factory("histo_ii");
+        assert(ifac != NULL);
+        img_srch = ifac->create("Histo II");
+        (this->get_parent())->add_dep(img_srch);
+
 
         ifac = find_support_factory("rgb_image");
         assert(ifac != NULL);
-        rgb = ifac->create("RGB image");
-        (this->get_parent())->add_dep(rgb);
+        img_srch = ifac->create("RGB image");
+        (this->get_parent())->add_dep(img_srch);
 }
 
 

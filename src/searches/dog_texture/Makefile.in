@@ -31,7 +31,8 @@ FILTER_LIB_SRCS = fil_texture.cc texture_tools.c
 
 FILTER_LIB_OBJS = fil_texture.o texture_tools.o
 
-SEARCHLET_LIBS += -Wl,-static -lm -locvimage -lcvaux -lopencv  -lsfimage -ltiff
+SEARCHLET_LIBS += -lm -locvimage -lcvaux -lopencv  -lsfimage 
+SEARCHLET_LIBS += -ltiff -ljpeg -lz
 
 
 SEARCH_LIB_SRCS = dog_texture_search.cc  texture_tools.c

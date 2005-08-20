@@ -24,8 +24,9 @@
 #include "lib_results.h"
 #include "img_search.h"
 #include "search_set.h"
-#include "histo.h"
+#include "rgb_histo.h"
 #include "factory.h"
+#include "rgb_histo_search.h"
 
 #define	MAX_DISPLAY_NAME	64
 

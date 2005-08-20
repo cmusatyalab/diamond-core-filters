@@ -49,9 +49,13 @@ void
 search_init()
 {
 	vj_face_factory *fac;
+	ii_img_factory *iifac;
 
 	fac = new vj_face_factory;
-	factory_register( fac);
+	factory_register(fac);
+
+	iifac = new ii_img_factory;
+	factory_register_support(iifac);
 }
 
 
@@ -462,8 +466,11 @@ vj_face_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "MERIT  10  # some relative cost \n");
 	fprintf(ostream, "\n");
 
-	ss = new ii_img("II image", "II image");
-	(this->get_parent())->add_dep(ss);
+        ifac = find_support_factory("ii_image");
+        assert(ifac != NULL);
+        ss = ifac->create("II image");
+        (this->get_parent())->add_dep(ss);
+
 
 	if (do_merge) {
 		fprintf(ostream, "\n");

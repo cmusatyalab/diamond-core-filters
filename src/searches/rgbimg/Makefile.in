@@ -34,7 +34,7 @@ SEARCH_LIB_OBJS =  rgb_img.o
 
 SEARCH_LIB_LIBS += -lm 
 
-SEARCHLET_LIBS += -Wl,-static -lm  -lsfimage -ltiff
+SEARCHLET_LIBS += -Wl,-static -lm  -lsfimage -ltiff -ljpeg -lz
 #
 # All the source files that are needed for depend.
 #

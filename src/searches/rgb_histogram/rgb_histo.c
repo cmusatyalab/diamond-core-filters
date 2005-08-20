@@ -20,8 +20,8 @@
 #include "lib_log.h"
 #include "lib_results.h"
 #include "fil_tools.h"
-#include "fil_histo.h"
-#include "histo.h"
+#include "fil_rgb_histo.h"
+#include "rgb_histo.h"
 
 /*
  ********************************************************************** */
