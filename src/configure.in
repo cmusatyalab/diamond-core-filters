@@ -110,10 +110,12 @@ AC_CONFIG_FILES([Makefile
 		searches/ocv_face/Makefile
 		searches/vj_face/Makefile
 		searches/rgbimg/Makefile
+		searches/dog_texture/Makefile
 		lib/Makefile
 		lib/libsfimage/Makefile
 		lib/libresults/Makefile
 		lib/libsfgtk/Makefile
+		lib/libocvimage/Makefile
 		target/Makefile
 		target/bin/Makefile
 		target/lib/Makefile

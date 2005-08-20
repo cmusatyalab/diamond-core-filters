@@ -11,13 +11,13 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	_OPENCV_IMAGE_H_
-#define	_OPENCV_IMAGE_H_	1
+#ifndef	_LIB_OCVIMAGE_H_
+#define	_LIB_OCVIMAGE_H_	1
 
 #include <stdint.h>
 #include <errno.h>
-#include "rgb.h"
 #include <opencv/cv.h>
+#include "rgb.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -39,4 +39,4 @@ RGBImage * convert_ipl_to_rgb(IplImage * ipl);
 #ifdef __cplusplus
 }
 #endif
-#endif                          /* ! _OPENCV_IMAGE_H_ */
+#endif                          /* ! _LIB_OCVIMAGE_H_ */

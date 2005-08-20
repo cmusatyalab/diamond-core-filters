@@ -11,30 +11,29 @@
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
 
-ROOTDIR = ../..
-SRCDIR = .
+ROOTDIR = @top_srcdir@
+SRCDIR = @srcdir@
+VPATH = @srcdir@
+OBJROOT = @OBJROOT@
+CVCPPFLAGS = @CVCPPFLAGS@
+CVLDFLAGS = @CVLDFLAGS@
 
-OBJROOT = /home/larry/new_build/snapfind/src
-CVCPPFLAGS = -I/usr/local/include/ -I/usr/local/include/opencv/
-CVLDFLAGS = -L/usr/local/lib/
-                                                                                
+CPPFLAGS += $(CVCPPFLAGS)                                                                                
 
-LIBSRCS += fil_image_tools.c image_draw.c image_tools.c
-LIBSRCS += readtiff.c rgb.c
+LIBSRCS += lib_ocvimage.c 
 
-LIBOBJS += fil_image_tools.o image_draw.o image_tools.o
-LIBOBJS += readtiff.o rgb.o
+LIBOBJS += lib_ocvimage.o
 
 SRCS = $(LIBSRCS)
 OBJS = $(LIBOBJS) 
 
-SHARED_HEADERS = rgb.h lib_sfimage.h
+SHARED_HEADERS = lib_ocvimage.h
 
 # Compilation Targets
 #
 
 
-TARGETS = libsfimage.a 
+TARGETS = libocvimage.a 
 
 include $(OBJROOT)/Makefile.template 
 

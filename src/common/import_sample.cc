@@ -41,7 +41,6 @@
 #include "rgb.h"
 #include "fil_tools.h"
 #include "lib_sfimage.h"
-#include "texture_tools.h"
 #include "img_search.h"
 #include "search_support.h"
 #include "gtk_image_tools.h"

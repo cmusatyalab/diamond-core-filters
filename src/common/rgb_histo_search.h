@@ -16,7 +16,6 @@
 
 #include <gtk/gtk.h>
 #include "snapfind_consts.h"
-#include "texture_tools.h"
 #include "histo.h"
 #include "img_search.h"
 

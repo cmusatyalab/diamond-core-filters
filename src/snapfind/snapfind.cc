@@ -59,7 +59,6 @@
 #include "rgb.h"
 #include "fil_tools.h"
 #include "face_widgets.h"
-#include "texture_tools.h"
 #include "img_search.h"
 #include "sfind_search.h"
 #include "histo.h"
@@ -1901,11 +1900,6 @@ load_library(char *libname)
 
 /* XXX fix */
 void rgb_histo_init();
-void texture_init();
-void gabor_texture_init();
-void rgb_image_init();
-
-
 
 int
 main(int argc, char *argv[])
@@ -2040,15 +2034,16 @@ main(int argc, char *argv[])
 
 	/* XXX for now */
 	rgb_histo_init();
-	texture_init();
 
 
 
+	/* XXX do this dynamically */
 	load_library("./regex_search.so");
 	load_library("./gabor_texture_search.so");
 	load_library("./opencv_face_search.so");
 	load_library("./vj_face_search.so");
 	load_library("./rgb_img.so");
+	load_library("./dog_texture_search.so");
 
 	/*
 	 * Start the main loop processing for the GUI.

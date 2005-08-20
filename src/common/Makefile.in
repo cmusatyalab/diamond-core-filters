@@ -23,7 +23,7 @@ SRCS = $(LIBSRCS)
 OBJS = $(LIBOBJS) 
 
 SHARED_HEADERS = img_search.h search_set.h
-SHARED_HEADERS += texture_tools.h fil_tools.h merge_faces.h 
+SHARED_HEADERS += fil_tools.h merge_faces.h 
 SHARED_HEADERS += fil_assert.h snapfind_consts.h
 
 # Compilation Targets

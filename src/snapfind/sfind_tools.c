@@ -24,14 +24,11 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include <opencv/cv.h>
 
 #include "queue.h"
 #include "snapfind_consts.h"
 #include "ring.h"
 #include "rtimer.h"
-
-// #include "face_search.h"
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include "rgb.h"
@@ -39,8 +36,6 @@
 #include "gui_thread.h"
 #include "histo.h"
 #include "sfind_tools.h"
-#include "texture_tools.h"
-//#include "facedet.h"
 
 /*
  ********************************************************************** */
