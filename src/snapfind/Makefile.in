@@ -80,7 +80,6 @@ DEBUG_OBJS = face.o
 SRCS = $(SNAPFIND_SRCS) $(SEARCHLET_SRCS) $(DEBUG_SRCS)
 OBJS = $(SNAPFIND_OBJS) $(SEARCHLET_OBJS) $(DEBUG_OBJS)
 
-SHARED_HEADERS = img_search.h
 
 #
 # Compilation Targets
@@ -95,7 +94,7 @@ TARGETS =  snapfind snap_searchlet.so
 
 SHARED_BIN += snap_searchlet.so snapfind 
 
-SHARED_HEADERS +=  factory.h
+SHARED_HEADERS = img_search.h search_set.h factory.h
 
 include ${OBJROOT}/Makefile.template
 
