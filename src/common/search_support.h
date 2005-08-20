@@ -15,9 +15,6 @@
 #define	_SEARCH_SUPPORT_H_	1
 
 #include <stdint.h>
-//#include "rgb.h"
-//#include "fil_histo.h"
-//#include <opencv/cv.h>
 
 #ifdef __cplusplus
 extern "C"

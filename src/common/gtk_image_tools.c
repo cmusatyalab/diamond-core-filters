@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include <opencv/cv.h>
 #include <gtk/gtk.h>
 
 #include "rgb.h"
