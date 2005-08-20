@@ -13,7 +13,6 @@
 
 
 COMMON_HEADERS +=  fil_tools.h 
-COMMON_HEADERS += fil_assert.h
 COMMON_HEADERS += merge_faces.h
 
 COMMON_SHARED_SRCS += fil_tools.c 
