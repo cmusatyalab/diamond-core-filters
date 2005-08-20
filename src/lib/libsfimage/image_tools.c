@@ -15,6 +15,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
 #include "lib_results.h"

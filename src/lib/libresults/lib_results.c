@@ -43,4 +43,61 @@ write_param(lf_obj_handle_t ohandle, char *fmt, search_param_t * param, int i)
 }
 
 
+int
+read_param(lf_obj_handle_t ohandle, char *fmt,
+           search_param_t * param, int i)
+{
+        off_t           bsize;
+        char            buf[BUFSIZ];
+        int             err;
+
+        sprintf(buf, fmt, i);
+        bsize = sizeof(search_param_t);
+        err = lf_read_attr(ohandle, buf, &bsize, (char *) param);
+
+        return err;
+}
+
+
+char           *
+ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name)
+{
+        int             err;
+        char           *ptr;
+        off_t           bsize;
+
+        /*
+         * assume this attr > 0 size
+         */
+
+        bsize = 0;
+        err = lf_read_attr(ohandle, name, &bsize, (char *) NULL);
+        if (err != ENOMEM) {
+                // fprintf(stderr, "attribute lookup error: %s\n", name);
+                return NULL;
+        }
+
+        ptr = (char *)malloc(bsize);
+        if (ptr == NULL ) {
+                fprintf(stderr, "alloc error\n");
+                return (NULL);
+        }
+
+        err = lf_read_attr(ohandle, name, &bsize, (char *) ptr);
+        if (err) {
+                fprintf(stderr, "attribute read error: %s\n", name);
+                return NULL;
+        }
+
+        return ptr;
+}
+
+/* XXX remove ??? */
+void
+ft_free(char *ptr)
+{
+        free(ptr);
+        // assert(err == 0);
+}
+
 

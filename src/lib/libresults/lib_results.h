@@ -16,7 +16,10 @@
 #define _LIB_RESULTS_H_	1
 
 #include <sys/types.h>
+#include <errno.h>
+#include <stdint.h>
 #include "queue.h"
+#include "lib_filter.h"
 
 /* image dimension */
 typedef int32_t dim_t;
@@ -108,5 +111,24 @@ typedef struct search_param
 #define FILTER_TYPE_COLOR 0
 #define FILTER_TYPE_TEXTURE 1
 #define FILTER_TYPE_ARENA 2
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
+int write_param(lf_obj_handle_t ohandle, char *fmt,
+                        search_param_t *param, int i);
+int read_param(lf_obj_handle_t ohandle, char *fmt,
+                       search_param_t *param, int i);
+
+
+char *ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name);
+void ft_free(char *ptr);
+
+
+#ifdef	__cplusplus
+}
+#endif
+
 
 #endif /*  _LIB_RESULTS_H_ */
