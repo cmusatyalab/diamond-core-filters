@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include <malloc.h>	// for malloc
+#include <stdlib.h>	// for malloc
 #include <string.h>	// for memcpy
 
 // For stat
