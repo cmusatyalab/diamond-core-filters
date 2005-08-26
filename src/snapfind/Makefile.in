@@ -40,7 +40,7 @@ SEARCHLET_SRCS =
 
 SEARCHLET_OBJS = 
 
-SEARCHLET_LIBS += -lm -lsfimage -Wl,-static -lcvaux -lopencv -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -lm -lsfimage -ltiff -ljpeg -lz
 
 SEARCHLET_LIBDIR += 
 

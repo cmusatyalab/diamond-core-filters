@@ -28,7 +28,7 @@ INSTALLDIR_LIB=${INSTALLBASE}/lib
 INSTALLDIR_INCLUDE=${INSTALLBASE}/include
 
 CPPFLAGS += @CPPFLAGS@
-CPPFLAGS += -I${BUILD_INC_PATH} -I.
+CPPFLAGS += -I${BUILD_INC_PATH} -I. -I${SRCDIR}
 
 
 # from the configure script
@@ -36,7 +36,7 @@ CFLAGS += @CFLAGS@
 
 
 # include the shared source files
-VPATH += $(ROOTDIR)/common
+VPATH += $(SRCDIR)
 vpath %.h $(VPATH)
 
 LDFLAGS += @LDFLAGS@
