@@ -50,7 +50,7 @@ if(!(exp)) {\
 if(!(exp)) {                                            \
   log_message(LOGT_FILT, LOGL_ERR, "Assertion %s failed at ", #exp); \
   log_message(LOGT_FILT, LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);\
-  fprintf(stderr, "ASSERT %s failed (%s, line %d)\n", #exp, __FILE__, __LINE__);\  
+  fprintf(stderr, "ASSERT %s failed (%s, line %d)\n", #exp, __FILE__, __LINE__);\
   (error_exp);  \
   goto done;    \
 }

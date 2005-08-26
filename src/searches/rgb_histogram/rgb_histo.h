@@ -81,11 +81,7 @@ typedef struct histo_config
 histo_config_t;
 
 
-#define II_PROBE(ii,x,y)                        \
-(assert((x) >= 0), assert((y) >= 0),           \
- assert((x) < (ii)->width),                     \
- assert((y) < (ii)->height),                    \
- (ii)->data[(y) * ((ii)->width) + (x)])
+#define II_PROBE(ii,x,y)	((ii)->data[(y) * ((ii)->width) + (x)])
 
 
 

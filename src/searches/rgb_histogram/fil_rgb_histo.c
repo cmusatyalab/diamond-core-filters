@@ -207,7 +207,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	int             pass = 0;
 	int             err;
 	RGBImage       *img = NULL;
-	off_t           bsize;
+	size_t           bsize;
 	bbox_list_t		blist;
 	histo_config_t *hconfig = (histo_config_t *) f_data;
 	int             nhisto;
@@ -217,7 +217,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	bbox_t *		cur_box;
 	int				i;
 	int				ii_alloc = 0, img_alloc = 0;
-	off_t			len;
+	size_t			len;
 
 
 	lf_log(LOGL_TRACE, "f_histo_detect: enter");
@@ -349,7 +349,7 @@ f_eval_hpass(lf_obj_handle_t ohandle, void *f_data)
 	int             nhisto;
 	int             err,
 	pass;
-	off_t           bsize;
+	size_t           bsize;
 	hpass_data_t   *fstate = (hpass_data_t *) f_data;
 	;
 
@@ -417,7 +417,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	height;
 	int             scalebits;
 	int				img_alloc = 0;
-	off_t			len;
+	size_t			len;
 
 	assert(f_data != NULL);
 	// printf("f_data: %p \n", f_data);
@@ -427,7 +427,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	/*
 	 * get the img 
 	 */
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void **)&img);
 	if (err != 0) {
 		img_alloc = 1;
 		img = get_rgb_img(ohandle);

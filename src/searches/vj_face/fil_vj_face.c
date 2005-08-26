@@ -129,7 +129,7 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, void *fdata)
 	search_param_t  param;
 	fconfig_fdetect_t *fconfig = (fconfig_fdetect_t *) fdata;
 	int             count;
-	off_t           bsize;
+	size_t           bsize;
 	int             err;
 	double          last_scale = 0.0;
 	bbox_list_t		blist;
@@ -290,7 +290,7 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, void *fdata)
 {
 	int             count,
 	i;
-	off_t           bsize;
+	size_t          bsize;
 	search_param_t  param;
 	int             err = 0;
 	region_t       *in_bbox_list, *out_bbox_list;

@@ -112,7 +112,7 @@ f_eval_regex(lf_obj_handle_t ohandle, void *fdata)
 
 	for (i = 0; i < fconfig->num_attrs; i++) {
 		char            buf[BUFSIZ];
-		off_t           bsize = BUFSIZ;
+		size_t           bsize = BUFSIZ;
 
 		err = lf_read_attr(ohandle, fconfig->attr_names[i],
 		                   &bsize, (char *) buf);

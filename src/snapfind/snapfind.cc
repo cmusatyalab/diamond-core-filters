@@ -494,7 +494,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	RGBImage        *rgbimg, *scaledimg;
 	char            name[COMMON_MAX_NAME];
 	char            device[COMMON_MAX_NAME];
-	off_t		bsize;
+	size_t		bsize;
 	int		err;
 	int		num_face, num_histo;
 

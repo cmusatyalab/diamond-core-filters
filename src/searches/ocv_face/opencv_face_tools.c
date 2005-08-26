@@ -36,6 +36,7 @@
 #include "rgb.h"
 #include "opencv_face.h"
 #include "lib_sfimage.h"
+#include "lib_ocvimage.h"
 
 
 #define compute_sum(ii,x,y,xsiz,ysiz) (			\

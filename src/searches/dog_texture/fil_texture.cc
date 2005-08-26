@@ -136,8 +136,8 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 	IplImage 	*img = NULL;
 	IplImage 	*dst_img = NULL;
 	RGBImage      * rgb_img = NULL;
-	off_t 		bsize;
-	off_t 		len;
+	size_t 		bsize;
+	size_t 		len;
 	float			min_simularity;
 	texture_args_t  *targs = (texture_args_t *)f_datap;
 	bbox_list_t		blist;
@@ -298,10 +298,10 @@ f_fini_tpass(void *f_datap)
 int
 f_eval_tpass(lf_obj_handle_t ohandle, void *f_data)
 {
-	int 				ntexture;
+	int 			ntexture;
 	tpass_data_t*		tdata = (tpass_data_t *)f_data;
-	int 				err, pass;
-	off_t           	bsize;
+	int 			err, pass;
+	size_t           	bsize;
 
 	/* get ntexture */
 	bsize = sizeof(int);

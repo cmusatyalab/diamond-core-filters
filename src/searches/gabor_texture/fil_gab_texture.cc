@@ -133,8 +133,8 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	int		pass = 0;
 	int		err;
 	RGBImage      * rgb_img = NULL;
-	off_t 		bsize;
-	off_t 		len;
+	size_t 		bsize;
+	size_t 		len;
 	float			min_simularity;
 	gtexture_args_t  *targs = (gtexture_args_t *)f_datap;
 	bbox_list_t		blist;
