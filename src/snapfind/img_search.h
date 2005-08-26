@@ -73,7 +73,8 @@ private:
 /* factory class for creating new image searches */
 class img_factory {
 public:
-	virtual ~img_factory();
+	img_factory() {};
+	virtual ~img_factory() {};
 	virtual img_search *create(const char *name) = 0;
 	virtual int 	is_example() = 0;
 	const char * get_description() {
@@ -210,18 +211,5 @@ private:
 };
 
 
-
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-/* this needs to be provide by someone calling this library */
-void ss_add_dep(img_search *dep);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* !_IMG_SEARCH_H_ */

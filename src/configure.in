@@ -120,6 +120,5 @@ AC_CONFIG_FILES([Makefile
 		target/Makefile
 		target/bin/Makefile
 		target/lib/Makefile
-		target/include/Makefile
-		target/etc/Makefile])
+		target/include/Makefile])
 AC_OUTPUT
