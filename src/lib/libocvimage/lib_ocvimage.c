@@ -21,6 +21,7 @@
 #include <opencv/cv.h>
 
 #include "lib_results.h"
+#include "rgb.h"
 #include "lib_sfimage.h"
 #include "snapfind_consts.h"
 
