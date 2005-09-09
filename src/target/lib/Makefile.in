@@ -18,9 +18,16 @@ OBJROOT = @OBJROOT@
 
 SUBDIRS = 
 
-CLEAN_OTHERS += *.a
-
-INSTALL_LIBS = $(wildcard *.a)
+# list of everything in the directory
+ALLFILES = $(wildcard *)
+                                                                                
+# items we know that we don't want to include
+EXCLUDES = CVS Makefile Makefile.in
+                                                                                
+# The reduced set
+INSTALL_LIB = $(filter-out $(EXCLUDES), $(ALLFILES))
+                                                                                
+CLEAN_OTHERS += ${INSTALL_LIB}
 
 -include $(OBJROOT)/Makefile.template
 
