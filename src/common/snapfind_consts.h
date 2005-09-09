@@ -17,12 +17,11 @@
 
 /* used to get buffers for computing path names */
 #define	COMMON_MAX_PATH		256
-#define SF_MAX_PATH 		COMMON_MAX_NAME
+#define SF_MAX_PATH 		COMMON_MAX_PATH
 
 #define	COMMON_MAX_NAME		128
 #define SF_MAX_NAME 		COMMON_MAX_NAME
 
-                                                                                
 /* max number of regions that can be selected in zoomed window */
 #define MAX_SELECT 32
 
@@ -34,6 +33,25 @@
 
 /* presumed max number of active devices */
 #define SF_MAX_DEVICES 	64
+
+/*
+ * some values for the configuratino information 
+ */
+
+/* name of the snapfindrc file */
+#define	SNAPFIND_RC			"snapfindrc"
+
+/* path relative to $HOME where we assume the SNAPFIND_RC is stored */
+#define	SNAPFIND_CONF_DEFAULT		".diamond/snapfind/"
+
+/* path relative to $HOME where we assume the SNAPFIND_RC is stored */
+#define	SNAPFIND_ENV_NAME		"SNAPFIND_CONF"
+
+/* 
+ * the extension that identifies plugin directories.  This must start
+ * with '.' or the matching algorithm will break.
+ */
+#define	SNAPFIND_CONF_EXTENSION		".sf_conf"
 
 
 #endif	/* ! _SNAPFIND_CONSTS_H_ */

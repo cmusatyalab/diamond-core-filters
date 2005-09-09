@@ -1,0 +1,2 @@
+GUI_LIB		./rgb_histo_search.so
+SEARCHLET_LIB	./fil_rgb_histo.so

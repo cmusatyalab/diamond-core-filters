@@ -11,30 +11,28 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	_FIL_GABOR_TEXTURE_H_
-#define	_FIL_GABOR_TEXTURE_H_	1
-
-#include "gabor.h"
-
-typedef struct write_notify_context_t {
-	lf_obj_handle_t ohandle;
-} write_notify_context_t;
-
+#ifndef _PLUGIN_H_
+#define _PLUGIN_H_	1
 
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-int f_init_gab_texture(int numarg, char **args, int blob_len, void *blob,
-			const char *fname, void **data);
-int f_fini_gab_texture(void *data);
-int f_eval_gab_texture(lf_obj_handle_t ohandle, void *user_data);
+
+/* from plugin.cc */
+void load_plugins();
+char * first_searchlet_lib(void ** cookie);
+char * next_searchlet_lib(void **cookie);
+void register_searchlet_lib(char *lib_name);
 
 
+/* from plugin_conf.l */
+void process_plugin_conf(char *dir, char *file);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* ! _FIL_GABOR_TEXTURE_H_ */
+
+#endif	/* ! _PLUGIN_H_ */

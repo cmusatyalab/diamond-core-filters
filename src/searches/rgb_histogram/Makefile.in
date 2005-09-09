@@ -26,7 +26,7 @@ FILTER_LIB_SRCS = fil_rgb_histo.c rgb_histo.c
 
 FILTER_LIB_OBJS =  fil_rgb_histo.o rgb_histo.o
 
-SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -lresults -ltiff -ljpeg -lz
 
 SEARCH_LIB_SRCS = rgb_histo.c rgb_histo_search.cc histo_ii.cc
 
@@ -46,7 +46,7 @@ CLEAN_OTHERS +=
 
 TARGETS = fil_rgb_histo.so rgb_histo_search.so
 
-SHARED_BIN += fil_rgb_histo.so rgb_histo_search.so
+SHARED_LIB += fil_rgb_histo.so rgb_histo_search.so rgb_histo.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 

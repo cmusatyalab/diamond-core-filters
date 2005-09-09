@@ -52,8 +52,8 @@ SNAPFIND_SRCS += progress_win.cc
 SNAPFIND_SRCS += snap_popup.cc graph_win.cc cache_control.cc
 SNAPFIND_SRCS += sfind_tools.c   factory.cc  example_search.cc
 SNAPFIND_SRCS += gtk_image_tools.c import_sample.cc display_img.cc
-SNAPFIND_SRCS += window_search.cc img_search.cc search_support.cc
-SNAPFIND_SRCS += search_set.cc
+SNAPFIND_SRCS += window_search.cc img_search.cc search_support.cc 
+SNAPFIND_SRCS += search_set.cc plugin.cc
 
 SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
@@ -62,7 +62,7 @@ SNAPFIND_OBJS += graph_win.o cache_control.o
 SNAPFIND_OBJS += sfind_tools.o  factory.o example_search.o
 SNAPFIND_OBJS += gtk_image_tools.o import_sample.o display_img.o
 SNAPFIND_OBJS += window_search.o img_search.o search_support.o
-SNAPFIND_OBJS += search_set.o
+SNAPFIND_OBJS += search_set.o snapfind_config.o plugin.o plugin_conf.o
 
 DEBUG_SRCS = face.c
 DEBUG_OBJS = face.o
@@ -85,7 +85,9 @@ CLEAN_OTHERS += read_config.cc
 
 TARGETS =  snapfind snap_searchlet.so
 
-SHARED_BIN += snap_searchlet.so snapfind 
+SHARED_BIN += snapfind 
+
+SHARED_LIB += snap_searchlet.so  snap_searchlet.sf_conf
 
 SHARED_HEADERS = img_search.h search_set.h factory.h
 

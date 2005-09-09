@@ -86,6 +86,8 @@ void * sfind_search_main(void *);
 char *build_filter_spec(char *file);
 void do_search(gid_list_t *main_region, char *opt_filename);
 
+
+
 #ifdef __cplusplus
 }
 #endif

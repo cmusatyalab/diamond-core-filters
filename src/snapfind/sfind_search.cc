@@ -36,6 +36,7 @@
 #include "face_search.h"
 #include "search_set.h"
 #include "sfind_search.h"
+#include "plugin.h"
 
 extern pthread_mutex_t ring_mutex;
 /*
@@ -64,7 +65,6 @@ static search_set *sset = NULL;
 void
 init_search()
 {
-
 	shandle = ls_init_search();
 	if (shandle == NULL) {
 		printf("failed to initialize:  !! \n");
@@ -95,8 +95,7 @@ do_search(gid_list_t * main_region, char *fspec)
 	int             err;
 	char           *filter_name;
 	char           *dir_name;
-	char           *res;
-	int             len;
+	void *		cookie;
 
 	if (!fspec) {
 		fspec = sset->build_filter_spec(NULL);
@@ -106,68 +105,31 @@ do_search(gid_list_t * main_region, char *fspec)
 		}
 	}
 
-	filter_name = (char *) malloc(SF_MAX_PATH);
-	if (filter_name == NULL) {
-		exit(1);                /* XXX */
-	}
 	dir_name = (char *) malloc(SF_MAX_PATH);
 	if (dir_name == NULL) {
 		exit(1);                /* XXX */
 	}
 
-	res = getcwd(dir_name, SF_MAX_PATH);
-	if (res == NULL) {
-		exit(1);
-	}
+	set_searchlist(main_region->ngids, main_region->gids);
 
-	len = snprintf(filter_name, SF_MAX_PATH, "%s/%s", dir_name,
-	               SEARCHLET_OBJ_NAME);
-	if (len >= SF_MAX_PATH) {
-		fprintf(stderr, "SF_MAX_PATH is too small, please extend \n");
+
+	filter_name = first_searchlet_lib(&cookie);
+	if (filter_name == NULL) {
+		fprintf(stderr, "No filter libraries are defined \n");
 		assert(0);
 	}
 
-	set_searchlist(main_region->ngids, main_region->gids);
 
 	err = ls_set_searchlet(shandle, DEV_ISA_IA32, filter_name, fspec);
 	if (err) {
 		printf("Failed to set searchlet on err %d \n", err);
 		exit(1);
 	}
+	free(filter_name);
 
-	/* XXX current ugly hack */
-	err = ls_add_filter_file(shandle, DEV_ISA_IA32,
-		 "./fil_gabor_texture.so");
-	if (err) {
-		printf("Failed to set searchlet on err %d \n", err);
-		exit(1);
-	}
-	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_regex.so");
-	if (err) {
-		printf("Failed to set searchlet on err %d \n", err);
-		exit(1);
-	}
-
-	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_ocv_face.so");
-	if (err) {
-		printf("Failed to set searchlet on err %d \n", err);
-		exit(1);
-	}
-	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_rgb.so");
-	if (err) {
-		printf("Failed to set searchlet on err %d \n", err);
-	}
-	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_vj_face.so");
-	if (err) {
-		printf("Failed to set searchlet on err %d \n", err);
-	}
-	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_dog_texture.so");
-	if (err) {
-		printf("Failed to set searchlet on err %d \n", err);
-	}
-	err = ls_add_filter_file(shandle, DEV_ISA_IA32, "./fil_rgb_histo.so");
-	if (err) {
-		printf("Failed to set searchlet on err %d \n", err);
+	while ((filter_name = next_searchlet_lib(&cookie)) != NULL) {
+		err = ls_add_filter_file(shandle, DEV_ISA_IA32, filter_name);
+		free(filter_name);
 	}
 
 	/*

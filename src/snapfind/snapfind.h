@@ -6,9 +6,7 @@
  *      All Rights Reserved
  *
  *  This software is distributed under the terms of the Eclipse Public
- *  License, Version 1.0 which can be found in the file named LICENSE.
- *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
- *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ *  License, Version 1.0 which can be found in the file named LICENSE.  *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
 #ifndef _SNAP_FIND_H_
@@ -43,6 +41,11 @@ extern thumbnail_t *cur_thumbnail;
 extern "C"
 {
 #endif
+
+
+/* From snapfind_config.l */
+char * sfconf_get_plugin_dir();
+
 
 #ifdef __cplusplus
 }

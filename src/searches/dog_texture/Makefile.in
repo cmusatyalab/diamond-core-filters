@@ -31,7 +31,7 @@ FILTER_LIB_SRCS = fil_texture.cc texture_tools.c
 
 FILTER_LIB_OBJS = fil_texture.o texture_tools.o
 
-SEARCHLET_LIBS += -lm -locvimage -lcvaux -lopencv  -lsfimage 
+SEARCHLET_LIBS += -lm -locvimage -lcvaux -lopencv  -lsfimage  -lresults
 SEARCHLET_LIBS += -ltiff -ljpeg -lz
 
 
@@ -54,7 +54,7 @@ CLEAN_OTHERS +=
 
 TARGETS = fil_dog_texture.so dog_texture_search.so
 
-SHARED_BIN += fil_dog_texture.so dog_texture_search.so
+SHARED_LIB += fil_dog_texture.so dog_texture_search.so dog_texture.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 

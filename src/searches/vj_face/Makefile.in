@@ -27,7 +27,7 @@ FILTER_LIB_SRCS += merge_faces.c
 FILTER_LIB_OBJS =  fil_vj_face.o  vj_face_tools.o facedet.o fil_data2ii.o
 FILTER_LIB_OBJS += merge_faces.o
 
-SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -lresults -ltiff -ljpeg -lz
 
 SEARCH_LIB_SRCS = vj_face_search.cc   vj_face_tools.c facedet.c fil_data2ii.c
 SEARCH_LIB_SRCS += ii_img.cc merge_faces.c
@@ -49,7 +49,7 @@ CLEAN_OTHERS +=
 
 TARGETS = fil_vj_face.so vj_face_search.so
 
-SHARED_BIN += fil_vj_face.so vj_face_search.so
+SHARED_LIB += fil_vj_face.so vj_face_search.so vj_face.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 

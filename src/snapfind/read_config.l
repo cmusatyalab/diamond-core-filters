@@ -1,5 +1,6 @@
 %option nounput
-%option prefix="sfconf"
+%option noyywrap
+%option prefix="searchconf"
 %{
 #include <string.h>
 #include <ctype.h>
@@ -30,7 +31,6 @@ static search_set *set = NULL;
 
 
 	
-%option noyywrap
 
 FLOAT (([0-9]*"."[0-9]+)|([0-9]+))
 FNAME (([0-9]*"."[0-9]+)|([0-9]+))
@@ -40,8 +40,8 @@ FNAME (([0-9]*"."[0-9]+)|([0-9]+))
 SEARCH[ \t]+[[:alnum:]_]+[ \t]+[[:alnum:]_]+ {new_search(eat_token(yytext));}
 [[:blank:]]
 \n	
-.*	{ new_config(yytext);}
-.					{ error(); }
+.*				{ new_config(yytext);}
+.				{ error(); }
 %%
 
 

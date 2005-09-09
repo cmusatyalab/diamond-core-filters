@@ -1,0 +1,2 @@
+GUI_LIB		./vj_face_search.so
+SEARCHLET_LIB	./fil_vj_face.so

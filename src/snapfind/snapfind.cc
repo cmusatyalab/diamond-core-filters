@@ -68,6 +68,7 @@
 #include "gtk_image_tools.h"
 #include "search_set.h"
 #include "read_config.h"
+#include "plugin.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -1871,31 +1872,6 @@ set_export_threshold(char *arg)
 	return 0;
 }
 
-typedef void (*search_init_t)();
-
-static void
-load_library(char *libname)
-{
-	void *handle;
-	char *	err;
-
-	search_init_t fp;
-
-	handle = dlopen(libname, RTLD_NOW);
-	if (handle == NULL) {
-		printf("failed to open <%s>\n", libname);
-		err = dlerror();
-		printf("err: %s \n", err);
-	} else {
-		fp = (search_init_t) dlsym(handle, "search_init");
-		if (fp == NULL) {
-			printf("Failed to find search_init\n");
-		} else {
-			(*fp)();	
-		}
-	}
-}
-
 
 int
 main(int argc, char *argv[])
@@ -2030,15 +2006,10 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-
-	/* XXX do this dynamically */
-	load_library("./regex_search.so");
-	load_library("./gabor_texture_search.so");
-	load_library("./opencv_face_search.so");
-	load_library("./vj_face_search.so");
-	load_library("./rgb_img.so");
-	load_library("./dog_texture_search.so");
-	load_library("./rgb_histo_search.so");
+	/*
+	 * Load all the plugins now.
+	 */
+	load_plugins();
 
 	/*
 	 * Start the main loop processing for the GUI.

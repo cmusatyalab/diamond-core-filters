@@ -43,7 +43,7 @@ CLEAN_OTHERS += eead_config.cc $(COMMON_SRCS)
 
 TARGETS = fil_regex.so regex_search.so
 
-SHARED_BIN = fil_regex.so regex_search.so
+SHARED_LIB = fil_regex.so regex_search.so regex.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 

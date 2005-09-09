@@ -134,7 +134,7 @@ endif
 
 
 
-TARGETS += copyheader copybin
+TARGETS += copyheader copybin copylib
 
 #  Rebuild everything, which is the program "PROG" and its 
 #	subdirectories "SUBDIRS" 
@@ -186,6 +186,10 @@ copybin:
 		cp -fuv $${entry} ${BUILD_BIN_PATH}; \
 	done
                                                                                 
+copylib:
+	@for entry in ${SHARED_LIB} ; do \
+		cp -fuv $${entry} ${BUILD_LIB_PATH}; \
+	done
 
 
 

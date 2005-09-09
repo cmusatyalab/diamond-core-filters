@@ -37,7 +37,7 @@ SEARCH_LIB_OBJS =  ocv_face_search.o opencv_face_tools.o
 SEARCH_LIB_LIBS += -lm -lcvaux -locvimage -lopencv 
 
 SEARCHLET_LIBS += -Wl,-static -lm -locvimage -lcvaux -lopencv  -lsfimage 
-SEARCHLET_LIBS += -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -lresults -ltiff -ljpeg -lz
 #
 # All the source files that are needed for depend.
 #
@@ -50,7 +50,7 @@ CLEAN_OTHERS +=
 
 TARGETS = fil_ocv_face.so opencv_face_search.so
 
-SHARED_BIN += fil_ocv_face.so opencv_face_search.so
+SHARED_LIB += fil_ocv_face.so opencv_face_search.so opencv_face.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 
