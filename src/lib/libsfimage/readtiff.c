@@ -25,9 +25,7 @@
 #include <tiffio.h>
 
 #include "rgb.h"	// for RGBImage, RGBPixel
-
-// Function to call:
-// RGBImage* convertTIFFtoRGBImage(TIFF* tif);
+#include "readtiff.h"
 
 
 // Important note:
@@ -55,16 +53,6 @@
 
 // Before calling TIFFClientOpen() we need to initialize
 // the MyTiff structure.
-
-// Pretends to be a file.
-//
-typedef struct
-{
-	u_char*	buf;	// data -- note this is in bytes
-	toff_t	offset;	// current position in file (bytes)
-	toff_t	bytes;	// number of bytes in buf
-}
-MyTIFF;
 
 // semantics analogous to read(2)
 //
