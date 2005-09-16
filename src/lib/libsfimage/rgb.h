@@ -33,7 +33,9 @@ typedef enum image_type_t {
     IMAGE_PBM,
     IMAGE_PGM,
     IMAGE_PPM,
-    IMAGE_TIFF
+    IMAGE_TIFF,
+    IMAGE_JPEG,
+    IMAGE_PNG
 } image_type_t;
 
 

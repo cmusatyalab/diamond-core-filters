@@ -19,6 +19,7 @@
 #include "rgb.h"		// for image_type_h
 #include "lib_results.h"
 #include "lib_sfimage.h"
+#include "readjpeg.h"
 #include "readtiff.h"
 #include "assert.h"
 
@@ -30,13 +31,15 @@ image_type_t
 determine_image_type(const u_char* buf)
 {
 	const u_char pbm_ascii[2]	= "P1";
-	const u_char pbm_raw[2]	= "P4";
+	const u_char pbm_raw[2]		= "P4";
 	const u_char pgm_ascii[2]	= "P2";
 	const u_char pgm_raw[2] 	= "P5";
 	const u_char ppm_ascii[2]	= "P3";
-	const u_char ppm_raw[2]	= "P6";
+	const u_char ppm_raw[2]		= "P6";
 	const u_char tiff_big_endian[4] = { 0x4d, 0x4d, 0x00, 0x2a };
 	const u_char tiff_lit_endian[4] = { 0x49, 0x49, 0x2a, 0x00 };
+	const u_char jpeg[4]		= { 0xff, 0xd8, 0xff, 0xe0 };
+	const u_char png[4]		= { 0x89, 0x50, 0x4e, 0x47 };
 
 	image_type_t type = IMAGE_UNKNOWN;
 	if	  (0 == memcmp(buf, pbm_ascii, 2))	 {
@@ -55,6 +58,10 @@ determine_image_type(const u_char* buf)
 		type = IMAGE_TIFF;
 	} else if (0 == memcmp(buf, tiff_lit_endian, 4)) {
 		type = IMAGE_TIFF;
+	} else if (0 == memcmp(buf, jpeg, 4)) {
+	  	type = IMAGE_JPEG;
+	} else if (0 == memcmp(buf, png, 4)) {
+	  	type = IMAGE_PNG;
 	}
 
 	return type;
@@ -197,26 +204,57 @@ get_rgb_from_tiff(u_char* buf, off_t size)
 }
 
 RGBImage*
+get_rgb_from_jpeg(u_char* buf, off_t size)
+{
+  	// TODO
+  	assert(buf);
+
+	MyJPEG myjpeg;
+	myjpeg.buf	= buf;
+	myjpeg.bytes	= size;
+
+	return convertJPEGtoRGBImage(&myjpeg);
+}
+
+RGBImage*
+get_rgb_from_png(u_char* buf, off_t size)
+{
+  	// TODO
+  return NULL;
+}
+
+RGBImage*
 get_rgb_img(lf_obj_handle_t ohandle)
 {
 	int		err = 0;
 	char *	obj_data;
 	off_t		data_len;
-	image_type_t	magic;
-
 	RGBImage*	img = NULL;
 
 	err = lf_next_block(ohandle, INT_MAX, &data_len, &obj_data);
 	assert(!err);
-	magic = determine_image_type(obj_data);
 
-	if ( (magic==IMAGE_PBM) || (magic==IMAGE_PGM) || (magic==IMAGE_PPM)) {
-		img = get_rgb_from_pnm(obj_data, data_len, magic);
-	} else if (magic == IMAGE_TIFF) {
-		img = get_rgb_from_tiff(obj_data, data_len);
+	image_type_t magic = determine_image_type(obj_data);
+	switch(magic) {
+	  case IMAGE_PBM:
+	  case IMAGE_PGM:
+	  case IMAGE_PPM:
+	    img = get_rgb_from_pnm(obj_data, data_len, magic);
+	    break;
+	  case IMAGE_TIFF:
+	    img = get_rgb_from_tiff(obj_data, data_len);
+	    break;
+	  case IMAGE_JPEG:
+	    img = get_rgb_from_jpeg(obj_data, data_len);
+	    break;
+	  case IMAGE_PNG:
+	    img = get_rgb_from_png(obj_data, data_len);
+	    break;
+	  default:
+	    assert(0);		// Unknown image format
+	    break;
 	}
 
 	return img;
 }
-
 
