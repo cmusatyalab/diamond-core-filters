@@ -68,8 +68,6 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 	lf_log(LOGL_TRACE, "f_pnm2rgb: enter");
 
 
-	/* XXX rahul   put some decoder here to figure out the file type */
-
 	img = get_rgb_img(ohandle);
 	if (img == NULL) {
 		return(0);
