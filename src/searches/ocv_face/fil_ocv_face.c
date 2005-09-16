@@ -46,7 +46,7 @@ write_param(lf_obj_handle_t ohandle, char *fmt,
 
 #ifdef VERBOSE
 
-        lf_log(LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
+        lf_log(LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f",
                param->bbox.xmin, param->bbox.ymin, param->scale);
 #endif
 
