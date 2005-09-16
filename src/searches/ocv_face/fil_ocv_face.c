@@ -35,28 +35,6 @@
 
 
 
-/* XXX move this?? */
-static int
-write_param(lf_obj_handle_t ohandle, char *fmt,
-            search_param_t * param, int i)
-{
-        off_t           bsize;
-        char            buf[BUFSIZ];
-        int             err;
-
-#ifdef VERBOSE
-
-        lf_log(LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f",
-               param->bbox.xmin, param->bbox.ymin, param->scale);
-#endif
-
-        sprintf(buf, fmt, i);
-        bsize = sizeof(search_param_t);
-        err = lf_write_attr(ohandle, buf, bsize, (char *) param);
-
-        return err;
-}
-
 int
 f_init_opencv_fdetect(int numarg, char **args, int blob_len, void *blob_data,
  			const char *fname, void **fdatap)
@@ -122,7 +100,7 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, void *fdata)
 	bbox_list_t	    blist;
 	int				i;
 	bbox_t *		cur_box;
-	off_t			len;
+	size_t			len;
 
 	lf_log(LOGL_TRACE, "f_eval_opencv_fdetect: enter\n");
 
