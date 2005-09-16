@@ -29,6 +29,8 @@ OBJS = $(LIBOBJS)
 
 SHARED_HEADERS = lib_ocvimage.h
 
+SHARED_LIB = libocvimage.a
+
 # Compilation Targets
 #
 

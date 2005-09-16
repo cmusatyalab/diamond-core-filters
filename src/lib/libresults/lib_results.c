@@ -28,11 +28,11 @@
 int
 write_param(lf_obj_handle_t ohandle, char *fmt, search_param_t * param, int i)
 {
-        off_t           bsize;
+        size_t           bsize;
         char            buf[BUFSIZ];
         int             err;
 
-        lf_log(LOGL_TRACE, "FOUND!!! ul=%ld,%ld; scale=%f\n",
+        lf_log(LOGL_TRACE, "Found: ul=%ld,%ld ",
                param->bbox.xmin, param->bbox.ymin, param->scale);
 
         sprintf(buf, fmt, i);
@@ -47,7 +47,7 @@ int
 read_param(lf_obj_handle_t ohandle, char *fmt,
            search_param_t * param, int i)
 {
-        off_t           bsize;
+        size_t           bsize;
         char            buf[BUFSIZ];
         int             err;
 
@@ -64,7 +64,7 @@ ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name)
 {
         int             err;
         char           *ptr;
-        off_t           bsize;
+        size_t           bsize;
 
         /*
          * assume this attr > 0 size

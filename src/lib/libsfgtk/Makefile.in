@@ -30,6 +30,7 @@ OBJS = $(LIBOBJS)
 
 SHARED_HEADERS = gui_thread.h 
 
+SHARED_LIB = libsfgtk.a
 # Compilation Targets
 #
 
