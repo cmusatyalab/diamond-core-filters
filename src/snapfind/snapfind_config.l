@@ -182,7 +182,7 @@ do_init()
 
 	yyin = sfconfig_open_config_file();
 	if (yyin == NULL) {
-		fprintf(stderr, "open_config: No snafindrc file found \n");
+		fprintf(stderr, "open_config: No snapfindrc file found \n");
 		exit(1);
 	}
 
