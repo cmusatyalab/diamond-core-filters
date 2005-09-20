@@ -89,7 +89,6 @@ get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
 		return (name_unknown);
 	}
 
-
 	hent = gethostbyaddr((char *) &dchar.dc_devid, sizeof(dchar.dc_devid),
 	                     AF_INET);
 	if (hent == NULL) {
