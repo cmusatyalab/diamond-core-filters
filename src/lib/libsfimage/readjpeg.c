@@ -28,10 +28,43 @@
 #include "rgb.h"	// for RGBImage, RGBPixel
 #include "readjpeg.h"
 
+#include "lib_filter.h"	// for lf_log(...) debugging function
+#include "lib_log.h"	// for lf_log's defines like LOGL_TRACE
+
 // Function to call:
 // RGBImage* convertJPEGtoRGBImage(TIFF* tif);
 
 
+// Following are helper routines to allow jpeglib to work with
+// data in a non-file
+
+METHODDEF(void)
+init_source (j_decompress_ptr cinfo)
+{
+  // do nothing?
+}
+
+METHODDEF(boolean)
+fill_input_buffer (j_decompress_ptr cinfo)
+{
+  return !0;
+}
+
+METHODDEF(void)
+skip_input_data (j_decompress_ptr cinfo, long num_bytes)
+{
+  if (num_bytes <= 0) { return; }
+  cinfo->src->next_input_byte += (size_t) num_bytes;
+  cinfo->src->bytes_in_buffer -= (size_t) num_bytes;
+}
+
+// we don't bother defining the resync_to_restart()
+
+METHODDEF(void)
+term_source (j_decompress_ptr cinfo)
+{
+  // no work necessary here
+}
 
 
 // --------------------------------------------------
@@ -46,6 +79,10 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
+	lf_log(LOGL_TRACE, "Entering convertJPEGtoRGBImage");
+	printf("Entering convertJPEGtoRGBImage!");
+
+
 	// XXX TODO XXX
 	// Maybe we could allocate these statically and not have
 	// to do it each time the object is called.
@@ -59,6 +96,10 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	cinfo.src = &source;
 	cinfo.src->next_input_byte = jp->buf;
 	cinfo.src->bytes_in_buffer = jp->bytes;
+	cinfo.src->init_source = init_source;
+	cinfo.src->fill_input_buffer = fill_input_buffer;
+	cinfo.src->skip_input_data = skip_input_data;
+	cinfo.src->term_source = term_source;
 
 	jpeg_read_header(&cinfo, TRUE);
 	jpeg_start_decompress(&cinfo);
@@ -109,33 +150,3 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 }
 
 
-// Following are helper routines to allow jpeglib to work with
-// data in a non-file
-
-METHODDEF(void)
-init_source (j_decompress_ptr cinfo)
-{
-  // do nothing?
-}
-
-METHODDEF(boolean)
-fill_input_buffer (j_decompress_ptr cinfo)
-{
-  return !0;
-}
-
-METHODDEF(void)
-skip_input_data (j_decompress_ptr cinfo, long num_bytes)
-{
-  if (num_bytes <= 0) { return; }
-  cinfo->src->next_input_byte += (size_t) num_bytes;
-  cinfo->src->bytes_in_buffer -= (size_t) num_bytes;
-}
-
-// we don't bother defining the resync_to_restart()
-
-METHODDEF(void)
-term_source (j_decompress_ptr cinfo)
-{
-  // no work necessary here
-}
