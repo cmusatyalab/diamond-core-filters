@@ -56,7 +56,7 @@ static snapfind_conf_t *sfconf = NULL;
 
 
 NAME	[a-zA-Z][a-zA-Z0-9_-]*
-DIRNAME	[a-zA-Z0-9_\/]+
+DIRNAME	[a-zA-Z0-9_\/\.-]+
                                                                                 
 FLOAT (([0-9]*"."[0-9]+)|([0-9]+))
 FNAME (([0-9]*"."[0-9]+)|([0-9]+))
