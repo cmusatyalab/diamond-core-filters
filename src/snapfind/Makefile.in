@@ -33,8 +33,6 @@ LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
 LIBS += -lhstub -ldctl -ldconfig
 LIBS += -llog -lssl -ltiff -lz -lsfgtk -lsfimage -ltiff -lresults
 
-
-
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = 
 
@@ -121,8 +119,6 @@ libssearch.a: $(SEARCHLET_OBJS)
 
 snapfind: $(SNAPFIND_OBJS)
 	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LDFLAGS) $(GTK_LDFLAGS) 
-
-
 
 
 wavelet-test:	wavelet.o rgb.o

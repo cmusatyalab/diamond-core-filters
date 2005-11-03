@@ -17,6 +17,7 @@ OBJROOT = @OBJROOT@
 
 
 SUBDIRS = rgbimg regex gabor_texture ocv_face vj_face dog_texture rgb_histogram
+SUBDIRS += num_attr
 
 include $(OBJROOT)/Makefile.template
 

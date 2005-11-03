@@ -147,7 +147,6 @@ img_search::handle_config(int num_conf, char **confv)
 {
 	/* XXX example search destruct */
 	int		err;
-
 	err = 1;
 	return(err);
 }

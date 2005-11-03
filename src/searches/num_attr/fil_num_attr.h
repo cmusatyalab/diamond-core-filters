@@ -16,12 +16,11 @@
 
 
 typedef struct {
-	int			num_attrs;
-	int			num_regexs;
-	char **			attr_names;
-	char **			regex_names;
-	regex_t	*		regs;
-} fdata_regex_t;
+	char *		attr_name;
+	float	 	max_value;
+	float	 	min_value;
+	int	 	drop_missing;
+} fnum_attr_t;
 
 #ifdef __cplusplus
 extern "C"

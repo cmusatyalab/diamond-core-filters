@@ -19,6 +19,8 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
+#include <values.h>
 #include "queue.h"
 #include "lib_results.h"
 #include "rgb.h"
@@ -30,6 +32,13 @@
 extern "C" {
 void search_init();
 }
+		
+	
+#define NATTR_MIN_VALUE	(MINFLOAT)
+#define NATTR_MAX_VALUE	(MAXFLOAT)
+#define NATTR_STEP	(1.0)
+#define NATTR_PAGE	(10.0)
+#define NATTR_PAGE_SIZE	(10.0)
 
 void 
 search_init()
@@ -44,8 +53,9 @@ num_attr_search::num_attr_search(const char *name, char *descr)
 {
 	edit_window = NULL;
 	attr_str = NULL;
-	min_str = NULL;
-	max_str = NULL;
+	min_value = 0.0;
+	max_value = 0.0;
+	drop_missing = 0;
 	return;
 }
 
@@ -53,12 +63,6 @@ num_attr_search::~num_attr_search()
 {
 	if (attr_str) {
 		free(attr_str);
-	}
-	if (min_str) {
-		free(min_str);
-	}
-	if (max_str) {
-		free(max_str);
 	}
 	return;
 }
@@ -97,9 +101,8 @@ num_attr_search::edit_search()
 	GtkWidget *     widget;
 	GtkWidget *     box;
 	GtkWidget *     hbox;
-	GtkWidget *     frame;
-	GtkWidget *     container;
-	char        name[MAX_DISPLAY_NAME];
+   	GtkAdjustment *	spin_adj;
+	char        	name[MAX_DISPLAY_NAME];
 
 	/* see if it already exists */
 	if (edit_window != NULL) {
@@ -133,13 +136,9 @@ num_attr_search::edit_search()
 	widget = img_search_display();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
-	frame = gtk_frame_new("Attribute Name");
-   	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 0);
-	container = gtk_vbox_new(FALSE, 10);
-	gtk_container_add(GTK_CONTAINER(frame), container);
 
 	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(container), hbox, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
 	widget = gtk_label_new("Attribute Name");
 	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
 	attr_name = gtk_entry_new();
@@ -148,29 +147,34 @@ num_attr_search::edit_search()
 		gtk_entry_set_text(GTK_ENTRY(attr_name), attr_str);
 	}
 
-	
-	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_container_add(GTK_CONTAINER(container), hbox);
+ 	hbox = gtk_hbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(box), hbox);
 	widget = gtk_label_new("Min Value");
 	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
-	min_value = gtk_entry_new();
-	gtk_entry_set_width_chars(GTK_ENTRY(min_value), 8);
-	gtk_box_pack_start(GTK_BOX(hbox), min_value, FALSE, TRUE, 0);
-	if (min_str != NULL) {
-		gtk_entry_set_text(GTK_ENTRY(max_value), min_str);
-	}
+
+   	spin_adj = (GtkAdjustment *)gtk_adjustment_new(min_value, 
+		NATTR_MIN_VALUE, NATTR_MAX_VALUE, NATTR_STEP, NATTR_PAGE,
+		NATTR_PAGE_SIZE);	
+   	min_spinner = gtk_spin_button_new(spin_adj, 1.000, 3);
+	gtk_box_pack_start(GTK_BOX(hbox), min_spinner, FALSE, TRUE, 0);
 
 
 	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_container_add(GTK_CONTAINER(container), hbox);
+	gtk_container_add(GTK_CONTAINER(box), hbox);
 	widget = gtk_label_new("Max Value");
 	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
-	max_value = gtk_entry_new();
-	gtk_entry_set_width_chars(GTK_ENTRY(max_value), 8);
-	gtk_box_pack_start(GTK_BOX(hbox), max_value, FALSE, TRUE, 0);
-	if (max_str != NULL) {
-		gtk_entry_set_text(GTK_ENTRY(max_value), max_str);
-	}
+   	spin_adj = (GtkAdjustment *)gtk_adjustment_new(max_value, 
+		NATTR_MIN_VALUE, NATTR_MAX_VALUE, NATTR_STEP, NATTR_PAGE,
+		NATTR_PAGE_SIZE);	
+   	max_spinner = gtk_spin_button_new(spin_adj, 1.000, 3);
+	gtk_box_pack_start(GTK_BOX(hbox), max_spinner, FALSE, TRUE, 0);
+
+	hbox = gtk_hbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(box), hbox);
+	dropcb = gtk_check_button_new_with_label("Drop without attribute");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(dropcb), drop_missing);
+	gtk_box_pack_start(GTK_BOX(hbox), dropcb, FALSE, TRUE, 0);
+
 
 	gtk_widget_show_all(edit_window);
 
@@ -198,20 +202,13 @@ num_attr_search::save_edits()
 	if (attr_str != NULL) {
 		free(attr_str);
 	}
-	if (min_str != NULL) {
-		free(min_str);
-	}
-	if (max_str != NULL) {
-		free(max_str);
-	}
 
 
 	attr_str = strdup(gtk_entry_get_text(GTK_ENTRY(attr_name)));
 	assert(attr_str != NULL);
-	min_str = strdup(gtk_entry_get_text(GTK_ENTRY(min_value)));
-	assert(attr_str != NULL);
-	max_str = strdup(gtk_entry_get_text(GTK_ENTRY(max_value)));
-	assert(attr_str != NULL);
+	min_value = gtk_spin_button_get_value(GTK_SPIN_BUTTON(min_spinner));
+	max_value = gtk_spin_button_get_value(GTK_SPIN_BUTTON(max_spinner));
+	drop_missing = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(dropcb));
 	return;
 }
 
@@ -238,16 +235,15 @@ num_attr_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER  %s  # dependancies \n", get_name());
-	fprintf(ostream, "THRESHOLD  1  # number of hits ?? \n");
+	fprintf(ostream, "THRESHOLD  1  # boolean \n");
 	fprintf(ostream, "MERIT  10000  	# guess at cost \n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_regex  # eval function \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_regex  # init function \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_regex  # fini function \n");
-	fprintf(ostream, "ARG  2  # number of attributes to search \n");
-	fprintf(ostream, "ARG  Keywords  # search keywords  \n");
-	fprintf(ostream, "ARG  Display-Name  # search Display-Name \n");
-	fprintf(ostream, "ARG  %s  # attribute name \n", attr_str);
-	/* XXX add mroe */
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_num_attr  # eval function \n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_num_attr  # init function \n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_num_attr  # fini function \n");
+	fprintf(ostream, "ARG  %s  # attribute to search \n", attr_str);
+	fprintf(ostream, "ARG  %f  # min value \n", min_value);
+	fprintf(ostream, "ARG  %f  # min value \n", max_value);
+	fprintf(ostream, "ARG  %d  # drop missing  \n", drop_missing);
 	fprintf(ostream, "\n");
 	fprintf(ostream, "\n");
 }
@@ -255,7 +251,6 @@ num_attr_search::write_fspec(FILE *ostream)
 void
 num_attr_search::write_config(FILE *ostream, const char *dirname)
 {
-
 	/*
 	 * This should never be an editable search, so this function should
 	 * never be called.

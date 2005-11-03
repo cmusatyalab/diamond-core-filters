@@ -32,12 +32,14 @@ public:
 
 private:
 	char *		attr_str;
-	char *		min_str;
-	char *		max_str;
+	double		min_value;	
+	double		max_value;	
+	int		drop_missing;
 	GtkWidget	*attr_name;
-	GtkWidget	*min_value;
-	GtkWidget	*max_value;
+	GtkWidget	*min_spinner;
+	GtkWidget	*max_spinner;
 	GtkWidget	*edit_window;
+	GtkWidget	*dropcb;
 };
 
 class num_attr_factory: public img_factory {
