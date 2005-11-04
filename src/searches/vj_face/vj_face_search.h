@@ -99,7 +99,7 @@ class ii_img_factory: public img_factory {
 public:
 	ii_img_factory() {
 		set_name("II Image");
-		set_description("ii_iamge");
+		set_description("ii_image");
 	}
 	img_search *create(const char *name) {
 		return new ii_img(name, "II Image");
