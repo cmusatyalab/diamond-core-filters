@@ -105,7 +105,7 @@ AC_CONFIG_FILES([Makefile
 		snap_bench/Makefile
 		snapfind/Makefile
 		searches/Makefile
-		searches/regex/Makefile
+		searches/text_attr/Makefile
 		searches/num_attr/Makefile
 		searches/gabor_texture/Makefile
 		searches/ocv_face/Makefile
