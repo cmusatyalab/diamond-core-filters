@@ -23,12 +23,12 @@ CVLDFLAGS = @CVLDFLAGS@
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
                                                                                 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_regex.c
-FILTER_LIB_OBJS = fil_regex.o 
+FILTER_LIB_SRCS = fil_text_attr.c
+FILTER_LIB_OBJS = fil_text_attr.o 
 FILTER_LIB_LIBS += -lm 
 
-SEARCH_LIB_SRCS = regex_search.cc
-SEARCH_LIB_OBJS =  regex_search.o 
+SEARCH_LIB_SRCS = text_attr_search.cc
+SEARCH_LIB_OBJS =  text_attr_search.o 
 SEARCH_LIB_LIBS += 
 
 #
@@ -41,16 +41,16 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += eead_config.cc $(COMMON_SRCS)
 
-TARGETS = fil_regex.so regex_search.so
+TARGETS = fil_text_attr.so text_attr_search.so
 
-SHARED_LIB = fil_regex.so regex_search.so regex.sf_conf
+SHARED_LIB = fil_text_attr.so text_attr_search.so text_attr.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_regex.so: $(FILTER_LIB_OBJS)
+fil_text_attr.so: $(FILTER_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)
                                                                                 
-regex_search.so: $(SEARCH_LIB_OBJS)
+text_attr_search.so: $(SEARCH_LIB_OBJS)
 	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS)
 
 cln:

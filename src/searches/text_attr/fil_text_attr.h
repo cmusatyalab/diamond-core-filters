@@ -11,31 +11,30 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	_FIL_REGEX_H_
-#define	_FIL_REGEX_H_	1
+#ifndef	_FIL_TEXT_ATTR_H_
+#define	_FIL_TEXT_ATTR_H_	1
 
 
 typedef struct {
-	int			num_attrs;
-	int			num_regexs;
-	char **		attr_names;
-	char **		regex_names;
-	regex_t	*	regs;
-
-} fdata_regex_t;
+	char *		attr_name;
+	char *		string;
+	int		exact_match;
+	int		drop_missing;	
+	regex_t		regex;
+} fdata_text_attr_t;
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-int f_init_regex(int numarg, char **args, int blob_len, void *blob,
+int f_init_text_attr(int numarg, char **args, int blob_len, void *blob,
 		const char *fname, void **fdatap);
-int f_fini_regex(void *fdata);
-int f_eval_regex(lf_obj_handle_t ohandle, void *fdata);
+int f_fini_text_attr(void *fdata);
+int f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* !_FIL_REGEX_H_ */
+#endif	/* !_FIL_TEXT_ATTR_H_ */

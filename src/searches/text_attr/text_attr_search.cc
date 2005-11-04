@@ -22,7 +22,7 @@
 #include "queue.h"
 #include "lib_results.h"
 #include "rgb.h"
-#include "regex_search.h"
+#include "text_attr_search.h"
 #include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
@@ -31,35 +31,45 @@ extern "C" {
 void search_init();
 }
 
+/*
+ * Initialization function that creates the factory and registers
+ * it with the rest of the UI.
+ */
 void 
 search_init()
 {
-	regex_factory *fac;
-	// XXX printf("init function !!! \n");
-	fac = new regex_factory;
+	text_attr_factory *fac;
+	fac = new text_attr_factory;
 	factory_register(fac);
 }
 
-regex_search::regex_search(const char *name, char *descr)
+
+
+text_attr_search::text_attr_search(const char *name, char *descr)
 		: img_search(name, descr)
 {
-	search_string = NULL;
 	edit_window = NULL;
-	string_entry = NULL;
+	search_string = NULL;
+	attr_name = NULL;
+	drop_missing = 0;
+	exact_match = 1;
 	return;
 }
 
-regex_search::~regex_search()
+text_attr_search::~text_attr_search()
 {
 	if (search_string) {
 		free(search_string);
+	}
+	if (attr_name) {
+		free(attr_name);
 	}
 	return;
 }
 
 
 int
-regex_search::handle_config(int nconf, char **data)
+text_attr_search::handle_config(int nconf, char **data)
 {
 	/* should never be called for this class */
 	assert(0);
@@ -79,18 +89,17 @@ cb_edit_done(GtkButton *item, gpointer data)
 static void
 cb_close_edit_window(GtkWidget* item, gpointer data)
 {
-	regex_search *    search;
-	search = (regex_search *)data;
+	text_attr_search *    search;
+	search = (text_attr_search *)data;
 	search->close_edit_win();
 }
 
 
 void
-regex_search::edit_search()
+text_attr_search::edit_search()
 {
 	GtkWidget *     widget;
 	GtkWidget *     box;
-	GtkWidget *     frame;
 	GtkWidget *     hbox;
 	GtkWidget *     container;
 	char        name[MAX_DISPLAY_NAME];
@@ -108,7 +117,9 @@ regex_search::edit_search()
 	gtk_window_set_title(GTK_WINDOW(edit_window), name);
 	g_signal_connect(G_OBJECT(edit_window), "destroy",
 	                 G_CALLBACK(cb_close_edit_window), this);
+
 	box = gtk_vbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(edit_window), box);
 
 	hbox = gtk_hbox_new(FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
@@ -125,23 +136,43 @@ regex_search::edit_search()
 	widget = img_search_display();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
-	/*
-	 * Create the texture parameters.
-	 */
-	frame = gtk_frame_new("Regex Search");
+
+	/* Get attribute name */
 	container = gtk_hbox_new(FALSE, 10);
-	gtk_container_add(GTK_CONTAINER(frame), container);
-
-	widget = gtk_label_new("Regex String");
+	gtk_box_pack_start(GTK_BOX(box), container, FALSE, TRUE, 0);
+	widget = gtk_label_new("Attribute Name");
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	attr_entry = gtk_entry_new();
+	gtk_box_pack_start(GTK_BOX(container), attr_entry, FALSE, TRUE, 0);
+	if (attr_name != NULL) {
+		gtk_entry_set_text(GTK_ENTRY(attr_entry), attr_name);
+	}
 
+	/* Get string */
+	container = gtk_hbox_new(FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(box), container, FALSE, TRUE, 0);
+	widget = gtk_label_new("String");
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 	string_entry = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(container), string_entry, FALSE, TRUE, 0);
-	gtk_entry_set_text(GTK_ENTRY(string_entry), search_string);
-	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 0);
+	if (search_string != NULL) {
+		gtk_entry_set_text(GTK_ENTRY(string_entry), search_string);
+	}
 
-	gtk_container_add(GTK_CONTAINER(edit_window), box);
-	//gtk_window_set_default_size(GTK_WINDOW(edit_window), 400, 500);
+
+
+    	hbox = gtk_hbox_new(FALSE, 10);
+        gtk_container_add(GTK_CONTAINER(box), hbox);
+        drop_cb = gtk_check_button_new_with_label("Drop without attribute");
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(drop_cb), drop_missing);
+        gtk_box_pack_start(GTK_BOX(hbox), drop_cb, FALSE, TRUE, 0);
+
+    	hbox = gtk_hbox_new(FALSE, 10);
+        gtk_container_add(GTK_CONTAINER(box), hbox);
+        exact_cb = gtk_check_button_new_with_label("Exact Match (not regex)");
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(exact_cb), exact_match);
+        gtk_box_pack_start(GTK_BOX(hbox), exact_cb, FALSE, TRUE, 0);
+
 	gtk_widget_show_all(edit_window);
 
 	return;
@@ -155,12 +186,8 @@ regex_search::edit_search()
  */
 
 void
-regex_search::save_edits()
+text_attr_search::save_edits()
 {
-	/*
-	 * This should never be an editable search, so this function should
-	 * never be called.
-	 */
 	if (edit_window == NULL) {
 		return;
 	}
@@ -168,14 +195,23 @@ regex_search::save_edits()
 	if (search_string != NULL) {
 		free(search_string);
 	}
+	if (attr_name != NULL) {
+		free(attr_name);
+	}
+
 	search_string = strdup(gtk_entry_get_text(GTK_ENTRY(string_entry)));
 	assert(search_string != NULL);
+	attr_name = strdup(gtk_entry_get_text(GTK_ENTRY(attr_entry)));
+	assert(attr_name != NULL);
+	
+	drop_missing = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(drop_cb));
+	exact_match = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(exact_cb));
 	return;
 }
 
 
 void
-regex_search::close_edit_win()
+text_attr_search::close_edit_win()
 {
 	save_edits();
 
@@ -191,26 +227,26 @@ regex_search::close_edit_win()
  */
 
 void
-regex_search::write_fspec(FILE *ostream)
+text_attr_search::write_fspec(FILE *ostream)
 {
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER  %s  # dependancies \n", get_name());
 	fprintf(ostream, "THRESHOLD  1  # number of hits ?? \n");
 	fprintf(ostream, "MERIT  10000  	# guess at cost \n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_regex  # eval function \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_regex  # init function \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_regex  # fini function \n");
-	fprintf(ostream, "ARG  2  # number of attributes to search \n");
-	fprintf(ostream, "ARG  Keywords  # search keywords  \n");
-	fprintf(ostream, "ARG  Display-Name  # search Display-Name \n");
-	fprintf(ostream, "ARG  %s  # Search string \n", search_string);
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_text_attr  # eval function \n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_text_attr  # init function \n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_text_attr  # fini function \n");
+	fprintf(ostream, "ARG  %s  # attributes to search \n",attr_name );
+	fprintf(ostream, "ARG  %s  # string to match \n", search_string );
+	fprintf(ostream, "ARG  %d  # exact match  \n", exact_match );
+	fprintf(ostream, "ARG  %d  # drop_missing  \n", drop_missing );
 	fprintf(ostream, "\n");
 	fprintf(ostream, "\n");
 }
 
 void
-regex_search::write_config(FILE *ostream, const char *dirname)
+text_attr_search::write_config(FILE *ostream, const char *dirname)
 {
 
 	/*
@@ -222,7 +258,7 @@ regex_search::write_config(FILE *ostream, const char *dirname)
 }
 
 void
-regex_search::region_match(RGBImage *img, bbox_list_t *blist)
+text_attr_search::region_match(RGBImage *img, bbox_list_t *blist)
 {
 	/* XXX do something useful -:) */
 	return;

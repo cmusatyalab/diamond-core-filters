@@ -11,11 +11,8 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	 _REGEX_PRIV_H_
-#define	 _REGEX_PRIV_H_ 1
-
-/* max number of regexes in search */
-#define MAX_REGEX 32
+#ifndef	 _TEXT_ATTR_PRIV_H_
+#define	 _TEXT_ATTR_PRIV_H_ 1
 
 
-#endif	/* ! _REGEX_PRIV_H_ */
+#endif	/* ! _TEXT_ATTR_PRIV_H_ */

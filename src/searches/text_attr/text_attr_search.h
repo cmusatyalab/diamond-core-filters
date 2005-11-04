@@ -11,16 +11,16 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	_REGEX_SEARCH_H
-#define	_REGEX_SEARCH_H	1
+#ifndef	_TEXT_ATTR_SEARCH_H_
+#define	_TEXT_ATTR_SEARCH_H_	1
 
 #include <gtk/gtk.h>
 #include "img_search.h"
 
-class regex_search: public img_search {
+class text_attr_search: public img_search {
 public:
-	regex_search(const char *name, char *descr);
-	~regex_search(void);
+	text_attr_search(const char *name, char *descr);
+	~text_attr_search(void);
 
 	void	save_edits();
 	void	edit_search();
@@ -31,19 +31,26 @@ public:
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
 private:
-	char *	search_string;
-	GtkWidget	*string_entry;
+	char *		attr_name;
+	char *		search_string;
+	int		drop_missing;	
+	int		exact_match;	
 	GtkWidget	*edit_window;
+	GtkWidget	*string_entry;
+	GtkWidget	*attr_entry;
+	GtkWidget	*exact_cb;
+	GtkWidget	*drop_cb;
 };
 
-class regex_factory: public img_factory {
+
+class text_attr_factory: public img_factory {
 public:
-	regex_factory() {
-		set_name("Regular expression");
-		set_description("regex");
+	text_attr_factory() {
+		set_name("Text Attributes");
+		set_description("text attributes");
 	}
 	img_search *create(const char *name) {
-		return new regex_search(name, "Regex");
+		return new text_attr_search(name, "text_attr");
 	}
 	int is_example() {
 		return(0);
@@ -56,8 +63,9 @@ extern "C"
 {
 #endif
 
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* !_REGEX_SEARCH_H */
+#endif	/* !_TEXT_ATTR_SEARCH_H_ */
