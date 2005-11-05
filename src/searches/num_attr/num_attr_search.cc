@@ -32,13 +32,24 @@
 extern "C" {
 void search_init();
 }
-		
-	
+
+/*
+ * configuration constants for setting up the 
+ * value spinner bars.
+ */ 
 #define NATTR_MIN_VALUE	(MINFLOAT)
 #define NATTR_MAX_VALUE	(MAXFLOAT)
 #define NATTR_STEP	(1.0)
 #define NATTR_PAGE	(10.0)
 #define NATTR_PAGE_SIZE	(10.0)
+
+
+/* config file tokens that we write out */
+#define	SEARCH_NAME	"numeric_attribute_search"
+#define	DROP_MISSING_ID	"DROP_MISSING"
+#define	ATTR_NAME_ID	"ATTR_NAME"
+#define	ATTR_NAME_ID	"ATTR_NAME"
+
 
 void 
 search_init()
