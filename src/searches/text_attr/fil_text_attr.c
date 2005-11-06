@@ -81,9 +81,7 @@ f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata)
 	size_t		bsize;
 	unsigned char *	buf; 
 
-
-	err = lf_ref_attr(ohandle, fconfig->attr_name, &bsize, (void **) &buf);
-
+	err = lf_ref_attr(ohandle, fconfig->attr_name, &bsize, (void **)&buf);
 	/* handle case where attributed doesn't exist */
 	if (err) {
 		if (fconfig->drop_missing) {
@@ -110,3 +108,4 @@ f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata)
 		}
 	}
 }
+

@@ -27,6 +27,15 @@
 
 #define	MAX_DISPLAY_NAME	64
 
+/* config file tokens that we write out */
+#define SEARCH_NAME     "text_attr"
+#define ATTR_NAME_ID    "ATTR_NAME"
+#define STRING_ID    	"STRING"
+#define DROP_MISSING_ID "DROP_MISSING"
+#define EXACT_MATCH_ID 	"EXACT_MATCH"
+
+
+
 extern "C" {
 void search_init();
 }
@@ -71,11 +80,33 @@ text_attr_search::~text_attr_search()
 int
 text_attr_search::handle_config(int nconf, char **data)
 {
-	/* should never be called for this class */
-	assert(0);
-	return(ENOENT);
-}
+	int	err;
 
+	if (strcmp(ATTR_NAME_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		attr_name = strdup(data[1]);
+		assert(attr_name != NULL);
+		err = 0;
+
+	} else if (strcmp(STRING_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		search_string = strdup(data[1]);
+		assert(search_string != NULL);
+		err = 0;
+	} else if (strcmp(DROP_MISSING_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		drop_missing = atoi(data[1]);
+		err = 0;
+	} else if (strcmp(EXACT_MATCH_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		exact_match = atoi(data[1]);
+		err = 0;
+	} else {
+		err = img_search::handle_config(nconf, data);
+	}
+
+	return(err);
+}
 
 
 static void
@@ -84,7 +115,6 @@ cb_edit_done(GtkButton *item, gpointer data)
 	GtkWidget * widget = (GtkWidget *)data;
 	gtk_widget_destroy(widget);
 }
-
 
 static void
 cb_close_edit_window(GtkWidget* item, gpointer data)
@@ -101,7 +131,7 @@ text_attr_search::edit_search()
 	GtkWidget *     widget;
 	GtkWidget *     box;
 	GtkWidget *     hbox;
-	GtkWidget *     container;
+	GtkWidget *     table;
 	char        name[MAX_DISPLAY_NAME];
 
 	/* see if it already exists */
@@ -136,43 +166,55 @@ text_attr_search::edit_search()
 	widget = img_search_display();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
+	/*
+ 	 * To make the layout look a little cleaner we use a table
+	 * to place all the fields.  This will make them be nicely
+	 * aligned.
+	 */
+	table = gtk_table_new(4, 2, FALSE);
+        gtk_table_set_row_spacings(GTK_TABLE(table), 2);
+        gtk_table_set_col_spacings(GTK_TABLE(table), 4);
+        gtk_container_set_border_width(GTK_CONTAINER(table), 10);
+	gtk_box_pack_start(GTK_BOX(box), table, FALSE, TRUE, 0);
 
-	/* Get attribute name */
-	container = gtk_hbox_new(FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(box), container, FALSE, TRUE, 0);
+	/* set the first row label and text entry for the attribute name */
 	widget = gtk_label_new("Attribute Name");
-	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 0, 1);
 	attr_entry = gtk_entry_new();
-	gtk_box_pack_start(GTK_BOX(container), attr_entry, FALSE, TRUE, 0);
+	gtk_table_attach_defaults(GTK_TABLE(table), attr_entry, 1, 2, 0, 1);
 	if (attr_name != NULL) {
 		gtk_entry_set_text(GTK_ENTRY(attr_entry), attr_name);
 	}
 
-	/* Get string */
-	container = gtk_hbox_new(FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(box), container, FALSE, TRUE, 0);
+	/* set the second row label and text entry for the search string */
 	widget = gtk_label_new("String");
-	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 1, 2);
 	string_entry = gtk_entry_new();
-	gtk_box_pack_start(GTK_BOX(container), string_entry, FALSE, TRUE, 0);
+	gtk_table_attach_defaults(GTK_TABLE(table), string_entry, 1, 2, 1, 2);
 	if (search_string != NULL) {
 		gtk_entry_set_text(GTK_ENTRY(string_entry), search_string);
 	}
 
-
-
-    	hbox = gtk_hbox_new(FALSE, 10);
-        gtk_container_add(GTK_CONTAINER(box), hbox);
-        drop_cb = gtk_check_button_new_with_label("Drop without attribute");
+	/* add label and checkbox to pass/drop objet without named attribute */
+	widget = gtk_label_new("Drop missing");
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 2, 3);
+        drop_cb = gtk_check_button_new();
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(drop_cb), drop_missing);
-        gtk_box_pack_start(GTK_BOX(hbox), drop_cb, FALSE, TRUE, 0);
+	gtk_table_attach_defaults(GTK_TABLE(table), drop_cb, 1, 2, 2, 3);
 
-    	hbox = gtk_hbox_new(FALSE, 10);
-        gtk_container_add(GTK_CONTAINER(box), hbox);
-        exact_cb = gtk_check_button_new_with_label("Exact Match (not regex)");
+
+	/* add label and checkbox for exact match vs regex */
+        widget = gtk_label_new("Exact Match (not regex)");
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 3, 4);
+        exact_cb = gtk_check_button_new();
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(exact_cb), exact_match);
-        gtk_box_pack_start(GTK_BOX(hbox), exact_cb, FALSE, TRUE, 0);
+	gtk_table_attach_defaults(GTK_TABLE(table), exact_cb, 1, 2, 3, 4);
 
+	/* make everything visible */
 	gtk_widget_show_all(edit_window);
 
 	return;
@@ -248,19 +290,17 @@ text_attr_search::write_fspec(FILE *ostream)
 void
 text_attr_search::write_config(FILE *ostream, const char *dirname)
 {
-
-	/*
-	 * This should never be an editable search, so this function should
-	 * never be called.
-	 */
-	// XXX fix asap assert(0);
-	return;
+ 	fprintf(ostream, "SEARCH %s %s\n", SEARCH_NAME, get_name());
+ 	fprintf(ostream, "%s %s\n", ATTR_NAME_ID, attr_name);
+ 	fprintf(ostream, "%s %s \n", STRING_ID, search_string);
+ 	fprintf(ostream, "%s %d \n", DROP_MISSING_ID, drop_missing);
+ 	fprintf(ostream, "%s %d \n", EXACT_MATCH_ID, exact_match);
 }
 
+/* Region match isn't meaninful for this search */
 void
 text_attr_search::region_match(RGBImage *img, bbox_list_t *blist)
 {
-	/* XXX do something useful -:) */
 	return;
 }
 

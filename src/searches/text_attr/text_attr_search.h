@@ -47,10 +47,10 @@ class text_attr_factory: public img_factory {
 public:
 	text_attr_factory() {
 		set_name("Text Attributes");
-		set_description("text attributes");
+		set_description("text_attr");
 	}
 	img_search *create(const char *name) {
-		return new text_attr_search(name, "text_attr");
+		return new text_attr_search(name, "Text Attributes");
 	}
 	int is_example() {
 		return(0);
