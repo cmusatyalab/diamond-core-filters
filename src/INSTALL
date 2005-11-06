@@ -1,4 +1,14 @@
-Building SnapFind
+Welcome
+-----------------
+
+In this file, ">>" indicates a line to execute. The intent is that reading through this file while executing these lines provides a reasonable way to install and build SnapFind.
+
+Notes
+-----------------
+-- SnapFind currently only supports ppm's and jpg's.
+
+
+Building SnapFind - installing OpenCV
 -----------------
 
 Before starting you need to have built and install opencv 0.9.5.  Snapfind
@@ -18,10 +28,23 @@ After it configures, then run "make" and "make install".  NOTE: Compiling
 snapfind with opencv in a non-standard location will generate many warning
 messages from the opencv include files.  Please ignore this.
 
+In summary, execute:
+>>(1) wget http://diamond.cs.cmu.edu/download/OpenCV-0.9.5.tar.gz
+>>(2) tar xvfz OpenCV-0.9.5.tar.gz
+>>(3) cd OpenCV-0.9.5
+>>(4) ./configure --enable-static=yes
+>>(5) make; make install
+
+
+
+Building SnapFind
+-----------------
+
+If you are building from CVS, run autoconf to generate the configure script.
+>>(6) cd snapfind/src; autoconf
+
 You also need a built diamond system.  Diamond does not need to be installed,
-but you must specify the path when configuring snapfind.  (If you 
-are building from CVS run autoconf at the top of the source tree to 
-generate the configure script).
+but you must specify the path when configuring snapfind.
 
 Then run configure 
 
@@ -29,11 +52,26 @@ Then run configure
 
 where somepath is the top of the diamond build directory 
 ("somedir/diamond/target" if using the build tree).
+
+Like Diamond, SnapFind allows you to build the binaries to a directory outside the source tree. In option (b) following, we're assuming you also compiled diamond into a different directory, named diamond-OBJS.
+Thus either run:
+
+>>(7a) cd snapfind/src
+>>(7a) ./configure --with-diamond=/home/you/diamond/src/target --with-opencv=/usr/local/lib
+
+OR
+
+>>(7b) cd ~; mkdir snapfind-OBJS
+>>(7b) cd snapfind-OBJS
+>>(7b) /home/you/snapfind/src/configure --with-diamond=/home/you/diamond-OBJS/target --with-opencv=/usr/local/lib
+
+
 Once configure successfully builds, then build SnapFind 
 using "make" at the top level.  If all goes well
 the system should build.  The libraries, includes, and binaries
-will be places in target/{lib,include,bin}. 
+will be placed in target/{lib,include,bin}. 
 
+>>(8) make
 
 Running Snapfind
 ----------------
@@ -51,6 +89,13 @@ that group.
 There files are usually in ${HOME}/.diamond but can be in
 other places (see diamond documentation).
 
+>>(9) See diamond documentation (diamond/src/INSTALL) for setting up configuration files
+
+One more configuration file needs to be added.
+>>(10) cd .diamond; mkdir snapfind
+>>(11) echo 'PLUGIN_DIR		/fullpath.../snapfind/src/target/lib' > snapfind/snapfindrc
+
+
 To run SnapFind, you need to cd to target/bin in the build
 tree and run SnapFind from there (due to current limitations in
 the loading).
@@ -63,5 +108,10 @@ you will need to go into the directory of the search and click OK.
 There is a sample_search in the directory called "sample_search" under
 SnapFind.
 	
+
+>>(12) Start adiskd (see diamond documentation in diamond/src/INSTALL)
+>>(11a) cd snapfind/src/target/bin; ./snapfind
+OR
+>>(11b) cd snapfind-OBJS/target/bin; ./snapfind
 
 
