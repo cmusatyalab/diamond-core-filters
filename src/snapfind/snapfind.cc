@@ -93,10 +93,6 @@ int dump_objects = 0;		/* just dump all the objects and exit (no gui) */
 GtkTooltips *tooltips = NULL;
 char *read_spec_filename = NULL;
 
-/* XXX */
-int do_display = 1;
-
-
 /* XXXX fix this */
 GtkWidget *config_table;
 
@@ -667,45 +663,43 @@ display_thread(void *data)
 
 
 	while (1) {
+		pthread_mutex_lock(&ring_mutex);
+		message = (message_t *)ring_deq(from_search_thread);
+		pthread_mutex_unlock(&ring_mutex);
 
-		if (do_display) {
-			pthread_mutex_lock(&ring_mutex);
-			message = (message_t *)ring_deq(from_search_thread);
-			pthread_mutex_unlock(&ring_mutex);
+		if (message != NULL) {
+			switch (message->type) {
 
-			if (message != NULL) {
-				switch (message->type) {
-					case NEXT_OBJECT:
-						display_thumbnail((ls_obj_handle_t)message->data);
-						break;
+			case NEXT_OBJECT:
+				display_thumbnail(
+					(ls_obj_handle_t) message->data);
+				break;
 
-					case DONE_OBJECTS:
-						/*
-							* We are done recieving objects.
-							* We need to disable the thread
-							* image controls and enable start
-							* search button.
-							*/
+			case DONE_OBJECTS:
+				/*
+				* We are done recieving objects.
+				* We need to disable the thread
+				* image controls and enable start
+				* search button.
+				*/
 
-						free(message);
-						gtk_widget_set_sensitive(gui.start_button, TRUE);
-						gtk_widget_set_sensitive(gui.stop_button, FALSE);
-						display_thread_running = 0;
-						pthread_exit(0);
-						break;
-
-					default:
-						break;
-
-				}
 				free(message);
+				gtk_widget_set_sensitive(gui.start_button, TRUE);
+				gtk_widget_set_sensitive(gui.stop_button, FALSE);
+				display_thread_running = 0;
+				pthread_exit(0);
+				break;
+
+			default:
+				break;
+
 			}
+			free(message);
+		} else {
+			timeout.tv_sec = 0;
+			timeout.tv_nsec = 100000000; /* 100 ms */
+			nanosleep(&timeout, NULL);
 		}
-
-		timeout.tv_sec = 0;
-		timeout.tv_nsec = 10000000; /* XXX 10 ms?? */
-		nanosleep(&timeout, NULL);
-
 	}
 	return 0;
 }
@@ -1042,7 +1036,8 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 
 	err = chdir(dirname);
 	if (err) {
-		show_popup_error("Load search", "Invalid search directory", gui.main_window);
+		show_popup_error("Load search", "Invalid search directory", 
+			gui.main_window);
 		goto done;
 	}
 
@@ -1100,7 +1095,7 @@ cb_load_search()
 	file_selector = gtk_file_selection_new("Dir name for search");
 	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(file_selector));
 
-	g_signal_connect(GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->ok_button),
+	g_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(file_selector)->ok_button),
 	                 "clicked", G_CALLBACK(cb_load_search_from_dir),
 	                 (gpointer) file_selector);
 
@@ -1632,38 +1627,43 @@ redo:
 }
 
 
-/* Our menu, an array of GtkItemFactoryEntry structures that defines each menu item */
-static GtkItemFactoryEntry menu_items[] = { /* XXX */
-
-            { "/_File", NULL,  NULL,           0, "<Branch>" },
-            { "/File/Load Search", NULL, G_CALLBACK(cb_load_search), 0, "<Item>" },
-            { "/File/Import Search", NULL, G_CALLBACK(cb_import_search), 0, "<Item>" },
-            { "/File/Save Search as", NULL,  G_CALLBACK(cb_save_search_as),  0, "<Item>" },
-            { "/File/Save filterspec", NULL,  G_CALLBACK(cb_save_spec_to_filename),
-              0, "<Item>" },
-            { "/File/sep1",     NULL,         NULL,           0, "<Separator>" },
-            { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 0, "<StockItem>", GTK_STOCK_QUIT },
+/* The menu at the top of the main window. */
+static GtkItemFactoryEntry menu_items[] = {
+            { "/_File", NULL,  NULL,           
+			0, "<Branch>" },
+            { "/File/Load Search", NULL, G_CALLBACK(cb_load_search), 
+			0, "<Item>" },
+            { "/File/Import Search", NULL, G_CALLBACK(cb_import_search), 
+			0, "<Item>" },
+            { "/File/Save Search as", NULL, G_CALLBACK(cb_save_search_as),  
+			0, "<Item>" },
+            { "/File/Save filterspec", NULL, 
+			G_CALLBACK(cb_save_spec_to_filename), 0, "<Item>" },
+            { "/File/sep1", NULL, NULL,	
+			0, "<Separator>" },
+            { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 
+			0, "<StockItem>", GTK_STOCK_QUIT },
 
             { "/_Searches", NULL, NULL, 0, "<Branch>"},
-            {"/Searches/New", NULL, NULL, 0, "<Branch>"},
-            //{"/Searches/New/RGB Histogram", NULL, G_CALLBACK(cb_create), RGB_HISTO_SEARCH, "<Item>" },
-            //{"/Searches/New/VJ Face Detect", NULL, G_CALLBACK(cb_create), VJ_FACE_SEARCH, "<Item>" },
-            //{"/Searches/New/OCV Face Detect", NULL, G_CALLBACK(cb_create), OCV_FACE_SEARCH, "<Item>" },
-            //{"/Searches/New/Texture", NULL, G_CALLBACK(cb_create), TEXTURE_SEARCH, "<Item>" },
-            //{"/Searches/New/Gabor Texture", NULL, G_CALLBACK(cb_create), GABOR_TEXTURE_SEARCH, "<Item>" },
-            //{"/Searches/New/Regex", NULL, G_CALLBACK(cb_create), REGEX_SEARCH, "<Item>" },
-            {"/Searches/Import Example", NULL, G_CALLBACK(cb_import), 0, "<Item>" },
+            {"/Searches/_New", "<CTRL>N", NULL, 0, "<Branch>"},
+
+            {"/Searches/Import Example", NULL, G_CALLBACK(cb_import), 
+			0, "<Item>" },
 
             { "/_View", NULL,  NULL, 0, "<Branch>" },
-            { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats), 0,"<Item>" },
-            { "/_View/Progress Window", "<CTRL>P",  G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
-            { "/_View/Cache Control", "<CTRL>C",  G_CALLBACK(cb_toggle_ccontrol), 0,"<Item>" },
-
-            { "/Options",             NULL, NULL, 0, "<Branch>" },
-            { "/Options/sep1",            NULL, NULL, 0, "<Separator>" },
-            { "/Options/Dump Attributes", NULL, G_CALLBACK(cb_toggle_dump_attributes), 0, "<CheckItem>" },
-            { "/Albums",                  NULL, NULL, 0, "<Branch>" },
-            { "/Albums/tear",             NULL, NULL, 0, "<Tearoff>" },
+            { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats),
+			0,"<Item>" },
+            { "/_View/Progress Window", "<CTRL>P", 
+			G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
+            { "/_View/Cache Control", "<CTRL>C", G_CALLBACK(cb_toggle_ccontrol),
+			 0,"<Item>" },
+            { "/Options", NULL, NULL, 0, "<Branch>" },
+            { "/Options/sep1", NULL, NULL, 0, "<Separator>" },
+            { "/Options/Dump Attributes", NULL, 
+			G_CALLBACK(cb_toggle_dump_attributes), 0, 
+			"<CheckItem>" },
+            { "/Albums", NULL, NULL, 0, "<Branch>" },
+            { "/Albums/tear", NULL, NULL, 0, "<Tearoff>" },
             { NULL, NULL, NULL }
 };
 

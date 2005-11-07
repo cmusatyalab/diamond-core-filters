@@ -300,11 +300,14 @@ search_set::build_edit_table()
 	while ((srch = get_next_search(&iter)) != NULL) {
 		row++;
 		widget = srch->get_search_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 
+			row, row+1);
 		widget = srch->get_config_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, 	
+			row, row+1);
 		widget = srch->get_edit_widget();
-		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
+		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, 
+			row, row+1);
 	}
 	gtk_widget_show(table);
 	return(table);
