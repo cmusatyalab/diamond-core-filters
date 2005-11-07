@@ -31,11 +31,11 @@ public:
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
 private:
-	char *		attr_str;
+	char *		attr_name;
 	double		min_value;	
 	double		max_value;	
 	int		drop_missing;
-	GtkWidget	*attr_name;
+	GtkWidget	*attr_entry;
 	GtkWidget	*min_spinner;
 	GtkWidget	*max_spinner;
 	GtkWidget	*edit_window;
@@ -49,7 +49,7 @@ public:
 		set_description("num_attr");
 	}
 	img_search *create(const char *name) {
-		return new num_attr_search(name, "num_attr");
+		return new num_attr_search(name, "Numeric Attribute");
 	}
 	int is_example() {
 		return(0);

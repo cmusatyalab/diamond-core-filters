@@ -64,7 +64,7 @@ f_eval_num_attr(lf_obj_handle_t ohandle, void *fdata)
 	fnum_attr_t  *	fconfig = (fnum_attr_t *) fdata;
 	int             err;
 
-	err = lf_ref_attr(ohandle, fconfig->attr_name, &dsize, (void**)&data);
+	err = lf_ref_attr(ohandle, fconfig->attr_name, &dsize, (void **) &data);
 	if (err) {
 		if (fconfig->drop_missing) {
 			return(0);

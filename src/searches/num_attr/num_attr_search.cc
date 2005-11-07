@@ -45,10 +45,11 @@ void search_init();
 
 
 /* config file tokens that we write out */
-#define	SEARCH_NAME	"numeric_attribute_search"
+#define	SEARCH_NAME	"num_attr"
 #define	DROP_MISSING_ID	"DROP_MISSING"
 #define	ATTR_NAME_ID	"ATTR_NAME"
-#define	ATTR_NAME_ID	"ATTR_NAME"
+#define	MIN_VALUE_ID	"MIN_VALUE"
+#define	MAX_VALUE_ID	"MAX_VALUE"
 
 
 void 
@@ -63,7 +64,7 @@ num_attr_search::num_attr_search(const char *name, char *descr)
 		: img_search(name, descr)
 {
 	edit_window = NULL;
-	attr_str = NULL;
+	attr_name = NULL;
 	min_value = 0.0;
 	max_value = 0.0;
 	drop_missing = 0;
@@ -72,8 +73,8 @@ num_attr_search::num_attr_search(const char *name, char *descr)
 
 num_attr_search::~num_attr_search()
 {
-	if (attr_str) {
-		free(attr_str);
+	if (attr_name) {
+		free(attr_name);
 	}
 	return;
 }
@@ -82,9 +83,31 @@ num_attr_search::~num_attr_search()
 int
 num_attr_search::handle_config(int nconf, char **data)
 {
-	/* should never be called for this class */
-	assert(0);
-	return(ENOENT);
+	int	err;
+
+
+	if (strcmp(ATTR_NAME_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		attr_name = strdup(data[1]);
+		assert(attr_name != NULL);
+		err = 0;
+	} else if (strcmp(MIN_VALUE_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		min_value = atof(data[1]);
+		err = 0;
+	} else if (strcmp(MAX_VALUE_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		max_value = atof(data[1]);
+		err = 0;
+	} else if (strcmp(DROP_MISSING_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		drop_missing = atoi(data[1]);
+		err = 0;
+	} else {
+                err = img_search::handle_config(nconf, data);
+        }
+
+        return(err);
 }
 
 
@@ -112,6 +135,7 @@ num_attr_search::edit_search()
 	GtkWidget *     widget;
 	GtkWidget *     box;
 	GtkWidget *     hbox;
+	GtkWidget *     table;
    	GtkAdjustment *	spin_adj;
 	char        	name[MAX_DISPLAY_NAME];
 
@@ -147,45 +171,55 @@ num_attr_search::edit_search()
 	widget = img_search_display();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
+        /*
+         * To make the layout look a little cleaner we use a table
+         * to place all the fields.  This will make them be nicely
+         * aligned.
+         */
+        table = gtk_table_new(4, 2, FALSE);
+        gtk_table_set_row_spacings(GTK_TABLE(table), 2);
+        gtk_table_set_col_spacings(GTK_TABLE(table), 4);
+        gtk_container_set_border_width(GTK_CONTAINER(table), 10);
+        gtk_box_pack_start(GTK_BOX(box), table, FALSE, TRUE, 0);
 
-	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
+
+	/* set the first row label and text entry for the attribute name */
 	widget = gtk_label_new("Attribute Name");
-	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
-	attr_name = gtk_entry_new();
-	gtk_box_pack_start(GTK_BOX(hbox), attr_name, FALSE, TRUE, 0);
-	if (attr_str != NULL) {
-		gtk_entry_set_text(GTK_ENTRY(attr_name), attr_str);
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 0, 1);
+	attr_entry = gtk_entry_new();
+	gtk_table_attach_defaults(GTK_TABLE(table), attr_entry, 1, 2, 0, 1);
+	if (attr_name != NULL) {
+		gtk_entry_set_text(GTK_ENTRY(attr_entry), attr_name);
 	}
 
- 	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_container_add(GTK_CONTAINER(box), hbox);
-	widget = gtk_label_new("Min Value");
-	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
-
+	/* all label and widget for min value */
+	widget = gtk_label_new("Min value");
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 1, 2);
    	spin_adj = (GtkAdjustment *)gtk_adjustment_new(min_value, 
 		NATTR_MIN_VALUE, NATTR_MAX_VALUE, NATTR_STEP, NATTR_PAGE,
 		NATTR_PAGE_SIZE);	
    	min_spinner = gtk_spin_button_new(spin_adj, 1.000, 3);
-	gtk_box_pack_start(GTK_BOX(hbox), min_spinner, FALSE, TRUE, 0);
+	gtk_table_attach_defaults(GTK_TABLE(table), min_spinner, 1, 2, 1, 2);
 
-
-	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_container_add(GTK_CONTAINER(box), hbox);
-	widget = gtk_label_new("Max Value");
-	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
-   	spin_adj = (GtkAdjustment *)gtk_adjustment_new(max_value, 
+	/* all label and widget for max value */
+	widget = gtk_label_new("Max value");
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 2, 3);
+   	spin_adj = (GtkAdjustment *)gtk_adjustment_new(min_value, 
 		NATTR_MIN_VALUE, NATTR_MAX_VALUE, NATTR_STEP, NATTR_PAGE,
 		NATTR_PAGE_SIZE);	
    	max_spinner = gtk_spin_button_new(spin_adj, 1.000, 3);
-	gtk_box_pack_start(GTK_BOX(hbox), max_spinner, FALSE, TRUE, 0);
+	gtk_table_attach_defaults(GTK_TABLE(table), max_spinner, 1, 2, 2, 3);
 
-	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_container_add(GTK_CONTAINER(box), hbox);
-	dropcb = gtk_check_button_new_with_label("Drop without attribute");
+	/* add label and checkbox to pass/drop objet without named attribute */
+	widget = gtk_label_new("Drop missing");
+	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, 3, 4);
+	dropcb = gtk_check_button_new();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(dropcb), drop_missing);
-	gtk_box_pack_start(GTK_BOX(hbox), dropcb, FALSE, TRUE, 0);
-
+	gtk_table_attach_defaults(GTK_TABLE(table), dropcb, 1, 2, 3, 4);
 
 	gtk_widget_show_all(edit_window);
 
@@ -210,13 +244,12 @@ num_attr_search::save_edits()
 		return;
 	}
 
-	if (attr_str != NULL) {
-		free(attr_str);
+	if (attr_name != NULL) {
+		free(attr_name);
 	}
 
-
-	attr_str = strdup(gtk_entry_get_text(GTK_ENTRY(attr_name)));
-	assert(attr_str != NULL);
+	attr_name = strdup(gtk_entry_get_text(GTK_ENTRY(attr_entry)));
+	assert(attr_name != NULL);
 	min_value = gtk_spin_button_get_value(GTK_SPIN_BUTTON(min_spinner));
 	max_value = gtk_spin_button_get_value(GTK_SPIN_BUTTON(max_spinner));
 	drop_missing = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(dropcb));
@@ -251,7 +284,7 @@ num_attr_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_num_attr  # eval function \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_num_attr  # init function \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_num_attr  # fini function \n");
-	fprintf(ostream, "ARG  %s  # attribute to search \n", attr_str);
+	fprintf(ostream, "ARG  %s  # attribute to search \n", attr_name);
 	fprintf(ostream, "ARG  %f  # min value \n", min_value);
 	fprintf(ostream, "ARG  %f  # min value \n", max_value);
 	fprintf(ostream, "ARG  %d  # drop missing  \n", drop_missing);
@@ -262,12 +295,12 @@ num_attr_search::write_fspec(FILE *ostream)
 void
 num_attr_search::write_config(FILE *ostream, const char *dirname)
 {
-	/*
-	 * This should never be an editable search, so this function should
-	 * never be called.
-	 */
-	// XXX fix asap assert(0);
-	return;
+
+	fprintf(ostream, "SEARCH %s %s\n", SEARCH_NAME, get_name());
+	fprintf(ostream, "%s %s\n", ATTR_NAME_ID, attr_name);
+	fprintf(ostream, "%s %f \n", MIN_VALUE_ID, min_value);
+	fprintf(ostream, "%s %f \n", MAX_VALUE_ID, max_value);
+	fprintf(ostream, "%s %d \n", DROP_MISSING_ID, drop_missing);
 }
 
 void
