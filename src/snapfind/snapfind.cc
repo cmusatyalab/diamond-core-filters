@@ -109,7 +109,8 @@ export_threshold_t;
 TAILQ_HEAD(export_list_t, export_threshold_t) export_list = TAILQ_HEAD_INITIALIZER(export_list);
 
 
-static struct {
+static struct
+{
 	GtkWidget *main_window;
 	GtkWidget *min_faces;
 	GtkWidget *face_levels;
@@ -119,7 +120,8 @@ static struct {
 	GtkWidget *search_widget;
 	GtkWidget *attribute_cb, *attribute_entry;
 	GtkWidget *scapes_tables[2];
-} gui;
+}
+gui;
 
 
 
@@ -142,9 +144,11 @@ pop_win_t	 popup_window = {NULL, NULL, NULL};
 
 /* some stats for user study */
 
-struct {
+struct
+{
 	int total_seen, total_marked;
-} user_measurement = { 0, 0 };
+}
+user_measurement = { 0, 0 };
 
 
 typedef enum {
@@ -216,7 +220,7 @@ static pthread_mutex_t	thumb_mutex = PTHREAD_MUTEX_INITIALIZER;
  */
 
 extern region_t draw_bounding_box(RGBImage *img, int scale,
-	                                   ls_obj_handle_t ohandle,
+	                                  ls_obj_handle_t ohandle,
 	                                  RGBPixel color, RGBPixel mask, char *fmt, int i);
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
 
@@ -257,8 +261,6 @@ make_gimage(RGBImage *img, int dest_width, int dest_height)
 {
 	GdkPixbuf *pbuf; // *scaled_pbuf;
 
-	//fprintf(stderr, "gimage called\n");
-
 	GUI_THREAD_CHECK();
 
 	pbuf = gdk_pixbuf_new_from_data((const guchar *)&img->data[0],
@@ -292,7 +294,7 @@ clear_image_info(image_info_t *img_info)
 
 	sprintf(data, "%-60s", " ");
 	gtk_label_set_text(GTK_LABEL(img_info->name_label), data);
-	
+
 	sprintf(data, "%-60s", " ");
 	gtk_label_set_text(GTK_LABEL(img_info->dev_label), data);
 
@@ -670,28 +672,28 @@ display_thread(void *data)
 		if (message != NULL) {
 			switch (message->type) {
 
-			case NEXT_OBJECT:
-				display_thumbnail(
-					(ls_obj_handle_t) message->data);
-				break;
+				case NEXT_OBJECT:
+					display_thumbnail(
+					    (ls_obj_handle_t) message->data);
+					break;
 
-			case DONE_OBJECTS:
-				/*
-				* We are done recieving objects.
-				* We need to disable the thread
-				* image controls and enable start
-				* search button.
-				*/
+				case DONE_OBJECTS:
+					/*
+					* We are done recieving objects.
+					* We need to disable the thread
+					* image controls and enable start
+					* search button.
+					*/
 
-				free(message);
-				gtk_widget_set_sensitive(gui.start_button, TRUE);
-				gtk_widget_set_sensitive(gui.stop_button, FALSE);
-				display_thread_running = 0;
-				pthread_exit(0);
-				break;
+					free(message);
+					gtk_widget_set_sensitive(gui.start_button, TRUE);
+					gtk_widget_set_sensitive(gui.stop_button, FALSE);
+					display_thread_running = 0;
+					pthread_exit(0);
+					break;
 
-			default:
-				break;
+				default:
+					break;
 
 			}
 			free(message);
@@ -1036,8 +1038,8 @@ cb_load_search_from_dir(GtkWidget *widget, gpointer user_data)
 
 	err = chdir(dirname);
 	if (err) {
-		show_popup_error("Load search", "Invalid search directory", 
-			gui.main_window);
+		show_popup_error("Load search", "Invalid search directory",
+		                 gui.main_window);
 		goto done;
 	}
 
@@ -1319,8 +1321,8 @@ cb_next_image(GtkButton* item, gpointer data)
 	                            GTK_SPIN_BUTTON(image_controls.zbutton));
 	clear_thumbnails();
 	GUI_CALLBACK_LEAVE(); /* need to put this here instead of at
-											 end because signal wakes up another
-											 thread immediately... */
+												 end because signal wakes up another
+												 thread immediately... */
 
 	pthread_mutex_lock(&display_mutex);
 	image_controls.cur_op = CNTRL_NEXT;
@@ -1346,7 +1348,7 @@ cb_img_info(GtkWidget *widget, gpointer data)
 
 	if(thumb->img) {
 		write_image_info(&image_information, thumb->name,
-		thumb->device, thumb->nboxes);
+		                 thumb->device, thumb->nboxes);
 	}
 	GUI_CALLBACK_LEAVE();
 }
@@ -1629,43 +1631,43 @@ redo:
 
 /* The menu at the top of the main window. */
 static GtkItemFactoryEntry menu_items[] = {
-            { "/_File", NULL,  NULL,           
-			0, "<Branch>" },
-            { "/File/Load Search", NULL, G_CALLBACK(cb_load_search), 
-			0, "<Item>" },
-            { "/File/Import Search", NULL, G_CALLBACK(cb_import_search), 
-			0, "<Item>" },
-            { "/File/Save Search as", NULL, G_CALLBACK(cb_save_search_as),  
-			0, "<Item>" },
-            { "/File/Save filterspec", NULL, 
-			G_CALLBACK(cb_save_spec_to_filename), 0, "<Item>" },
-            { "/File/sep1", NULL, NULL,	
-			0, "<Separator>" },
-            { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit, 
-			0, "<StockItem>", GTK_STOCK_QUIT },
+            { "/_File", NULL,  NULL,
+              0, "<Branch>" },
+            { "/File/Load Search", NULL, G_CALLBACK(cb_load_search),
+              0, "<Item>" },
+            { "/File/Import Search", NULL, G_CALLBACK(cb_import_search),
+              0, "<Item>" },
+            { "/File/Save Search as", NULL, G_CALLBACK(cb_save_search_as),
+              0, "<Item>" },
+            { "/File/Save filterspec", NULL,
+              G_CALLBACK(cb_save_spec_to_filename), 0, "<Item>" },
+            { "/File/sep1", NULL, NULL,
+              0, "<Separator>" },
+            { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit,
+              0, "<StockItem>", GTK_STOCK_QUIT },
 
             { "/_Searches", NULL, NULL, 0, "<Branch>"},
             {"/Searches/_New", "<CTRL>N", NULL, 0, "<Branch>"},
 
-            {"/Searches/Import Example", NULL, G_CALLBACK(cb_import), 
-			0, "<Item>" },
+            {"/Searches/Import Example", NULL, G_CALLBACK(cb_import),
+             0, "<Item>" },
 
             { "/_View", NULL,  NULL, 0, "<Branch>" },
             { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats),
-			0,"<Item>" },
-            { "/_View/Progress Window", "<CTRL>P", 
-			G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
+              0,"<Item>" },
+            { "/_View/Progress Window", "<CTRL>P",
+              G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
             { "/_View/Cache Control", "<CTRL>C", G_CALLBACK(cb_toggle_ccontrol),
-			 0,"<Item>" },
+              0,"<Item>" },
             { "/Options", NULL, NULL, 0, "<Branch>" },
             { "/Options/sep1", NULL, NULL, 0, "<Separator>" },
-            { "/Options/Dump Attributes", NULL, 
-			G_CALLBACK(cb_toggle_dump_attributes), 0, 
-			"<CheckItem>" },
+            { "/Options/Dump Attributes", NULL,
+              G_CALLBACK(cb_toggle_dump_attributes), 0,
+              "<CheckItem>" },
             { "/Albums", NULL, NULL, 0, "<Branch>" },
             { "/Albums/tear", NULL, NULL, 0, "<Tearoff>" },
             { NULL, NULL, NULL }
-};
+        };
 
 static void
 cb_collection(gpointer callback_data, guint callback_action,
@@ -1762,7 +1764,7 @@ add_new_search_type(img_factory *factory)
 	entry.callback_action = 1;
 	entry.item_type = "<Item>";
 
-	gtk_item_factory_create_item(item_factory, &entry, factory, 1); 
+	gtk_item_factory_create_item(item_factory, &entry, factory, 1);
 	GtkWidget *widget = gtk_item_factory_get_widget(item_factory, buf);
 }
 
@@ -1902,8 +1904,6 @@ main(int argc, char *argv[])
 	gtk_init(&argc, &argv);
 	gdk_rgb_init();
 	gtk_rc_parse("gtkrc");
-	printf("Starting main\n");
-
 
 
 	while((c = getopt_long(argc, argv, optstring, long_opt, &option_index)) != -1) {
@@ -1945,8 +1945,6 @@ main(int argc, char *argv[])
 				break;
 		}
 	}
-
-	printf("Initializing communciation rings...\n");
 
 	/*
 	 * Initialize communications rings with the thread
