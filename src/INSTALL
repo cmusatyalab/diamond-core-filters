@@ -57,7 +57,7 @@ Like Diamond, SnapFind allows you to build the binaries to a directory outside t
 Thus either run:
 
 >>(7a) cd snapfind/src
->>(7a) ./configure --with-diamond=/home/you/diamond/src/target --with-opencv=/usr/local/lib
+>>(7a) ./configure --with-diamond=/home/you/diamond/src/target --with-opencv=/usr/local
 
 OR
 

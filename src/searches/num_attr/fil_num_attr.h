@@ -22,6 +22,11 @@ typedef struct {
 	int	 	drop_missing;
 } fnum_attr_t;
 
+typedef struct {
+	int		num_configs;
+	fnum_attr_t *	fconfigs;
+} fnum_attr_holder_t;
+
 #ifdef __cplusplus
 extern "C"
 {

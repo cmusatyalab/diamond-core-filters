@@ -17,6 +17,20 @@
 #include <gtk/gtk.h>
 #include "img_search.h"
 
+/* every attribute / numbers pair has a num_attr_node */
+struct num_attr_node {
+	char *		attr_name;
+	double		min_value;	
+	double		max_value;	
+	int		drop_missing;
+	GtkWidget	*attr_entry;
+	GtkWidget	*min_spinner;
+	GtkWidget	*max_spinner;
+	GtkWidget	*dropcb;
+
+	num_attr_node	*next_num_attr;
+};
+
 class num_attr_search: public img_search {
 public:
 	num_attr_search(const char *name, char *descr);
@@ -30,16 +44,14 @@ public:
 	void	close_edit_win();
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
+	void add_num_attr_node(); /* add a blank node to the list */
+	void add_num_attr_node_to_window(num_attr_node * temp);
 private:
-	char *		attr_name;
-	double		min_value;	
-	double		max_value;	
-	int		drop_missing;
-	GtkWidget	*attr_entry;
-	GtkWidget	*min_spinner;
-	GtkWidget	*max_spinner;
 	GtkWidget	*edit_window;
-	GtkWidget	*dropcb;
+	GtkWidget	*box;
+
+	num_attr_node	*num_attr;
+	num_attr_node	*num_attr_tail;
 };
 
 class num_attr_factory: public img_factory {
