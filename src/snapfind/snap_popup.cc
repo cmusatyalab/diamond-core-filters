@@ -44,6 +44,7 @@
 #include "img_search.h"
 #include "sfind_search.h"
 #include "search_support.h"
+#include "attr_info.h"
 #include "sfind_tools.h"
 #include "snap_popup.h"
 #include "snapfind.h"
@@ -55,8 +56,7 @@ static search_set *sset;
 /*
  * global state used for highlighting (running filters locally)
  */
-static struct
-{
+static struct {
 	pthread_mutex_t mutex;
 	int 		thread_running;
 	pthread_t 	thread;
@@ -81,6 +81,8 @@ max(int a, int b)
 	return ( (a > b) ? a : b );
 }
 
+#define	POPUP_XSIZE	850
+#define	POPUP_YSIZE	350
 
 /*
  * make pixbuf from img
@@ -374,7 +376,8 @@ image_highlight_main(void *ptr)
 		snprintf(buf, BUFSIZ, "highlighting %s", csearch->get_name());
 		buf[BUFSIZ - 1] = '\0';
 		GUI_THREAD_ENTER();
-		gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), id, buf);
+		gtk_statusbar_push(GTK_STATUSBAR(popup_window.statusbar), 	
+			id, buf);
 		GUI_THREAD_LEAVE();
 
 
@@ -1071,8 +1074,7 @@ cb_popup_window_close(GtkWidget *window)
 
 
 void
-do_img_popup(GtkWidget *widget, search_set *set
-            )
+do_img_popup(GtkWidget *widget, search_set *set)
 {
 	thumbnail_t *thumb;
 	GtkWidget *eb;
@@ -1095,7 +1097,8 @@ do_img_popup(GtkWidget *widget, search_set *set
 	if(!popup_window.window) {
 		popup_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title(GTK_WINDOW(popup_window.window), "Image");
-		gtk_window_set_default_size(GTK_WINDOW(popup_window.window), 850, 350);
+		gtk_window_set_default_size(GTK_WINDOW(popup_window.window), 
+			POPUP_XSIZE, POPUP_YSIZE); 
 		g_signal_connect(G_OBJECT(popup_window.window), "destroy",
 		                 G_CALLBACK(cb_popup_window_close), NULL);
 
@@ -1127,59 +1130,74 @@ do_img_popup(GtkWidget *widget, search_set *set
 		/*
 		 * Refinement
 		 */
-		{
-			frame = gtk_frame_new("Search Update");
-			gtk_box_pack_end(GTK_BOX(box1), frame, FALSE, FALSE, 0);
+		frame = gtk_frame_new("Search Update");
+		gtk_box_pack_end(GTK_BOX(box1), frame, FALSE, FALSE, 0);
 
-			GtkWidget *box2 = gtk_vbox_new (FALSE, 10);
-			gtk_container_set_border_width(GTK_CONTAINER(box2), 10);
-			gtk_container_add(GTK_CONTAINER(frame), box2);
+		GtkWidget *box2 = gtk_vbox_new (FALSE, 10);
+		gtk_container_set_border_width(GTK_CONTAINER(box2), 10);
+		gtk_container_add(GTK_CONTAINER(frame), box2);
 
-			/* hbox */
-			GtkWidget *hbox = gtk_hbox_new(FALSE, 10);
-			gtk_box_pack_start (GTK_BOX(box2), hbox, TRUE, FALSE, 0);
+		/* hbox */
+		GtkWidget *hbox = gtk_hbox_new(FALSE, 10);
+		gtk_box_pack_start (GTK_BOX(box2), hbox, TRUE, FALSE, 0);
 
-			/* couple of buttons */
+		/* couple of buttons */
 
-			GtkWidget *buttonbox = gtk_vbox_new(FALSE, 10);
-			gtk_box_pack_start(GTK_BOX(box2), buttonbox, TRUE, FALSE,0);
+		GtkWidget *buttonbox = gtk_vbox_new(FALSE, 10);
+		gtk_box_pack_start(GTK_BOX(box2), buttonbox, TRUE, FALSE,0);
 
-			/*
-			  * Create a hbox that has the controls for
-			  * adding examples to new or existing searches.
-			 */
+		/*
+		 * Create a hbox that has the controls for
+		 * adding examples to new or existing searches.
+		 */
 
-			hbox = gtk_hbox_new(FALSE, 10);
-			gtk_box_pack_start(GTK_BOX(buttonbox), hbox, TRUE, FALSE, 0);
+		hbox = gtk_hbox_new(FALSE, 10);
+		gtk_box_pack_start(GTK_BOX(buttonbox), hbox, TRUE, FALSE, 0);
 
-			/* control for creating a new search */
-			widget = new_search_panel();
-			gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
+		/* control for creating a new search */
+		widget = new_search_panel();
+		gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
 
-			/* control for adding to an existing search */
-			widget = existing_search_panel();
-			gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
+		/* control for adding to an existing search */
+		widget = existing_search_panel();
+		gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
-			/* control button to clear selected regions */
-			hbox = gtk_hbox_new(FALSE, 10);
-			gtk_box_pack_start (GTK_BOX(buttonbox), hbox, TRUE, FALSE, 0);
-			button = gtk_button_new_with_label ("Clear");
-			g_signal_connect_after(GTK_OBJECT(button), "clicked",
-			                       GTK_SIGNAL_FUNC(cb_clear_select), NULL);
-			gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, FALSE, 0);
+		/* control button to clear selected regions */
+		hbox = gtk_hbox_new(FALSE, 10);
+		gtk_box_pack_start (GTK_BOX(buttonbox), hbox, TRUE, FALSE, 0);
+		button = gtk_button_new_with_label ("Clear");
+		g_signal_connect_after(GTK_OBJECT(button), "clicked",
+				       GTK_SIGNAL_FUNC(cb_clear_select), NULL);
+		gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, FALSE, 0);
 
-		}
 
 		/* Get highlighting state */
 		frame = highlight_panel();
 		gtk_box_pack_end (GTK_BOX (box1), frame, FALSE, FALSE, 0);
 
 		popup_window.image_area = gtk_viewport_new(NULL, NULL);
-		gtk_paned_pack2(GTK_PANED(pane), popup_window.image_area, TRUE, TRUE);
+		GtkWidget *pane2 = gtk_vpaned_new();
+		gtk_paned_pack2(GTK_PANED(pane), pane2, TRUE, TRUE);
+
+
+
+		gtk_paned_pack1(GTK_PANED(pane2), popup_window.image_area, 
+			TRUE, TRUE);
+
+		popup_window.ainfo =  new attr_info();
+
+
+
+		GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
+		GtkWidget * ainfo_widget = popup_window.ainfo->get_display();
+		
+		gtk_scrolled_window_add_with_viewport(
+			GTK_SCROLLED_WINDOW(scroll), ainfo_widget);
+
+		gtk_paned_pack2(GTK_PANED(pane2), scroll, TRUE, TRUE);
 
 		gtk_widget_show_all(popup_window.window);
-
 		sset->register_update_fn(popup_update_searches);
 
 	} else {
@@ -1197,8 +1215,8 @@ do_img_popup(GtkWidget *widget, search_set *set
 	for(int i=IMG_LAYER+1; i<MAX_LAYERS; i++) {
 		popup_window.layers[i] = rgbimg_new(thumb->hooks->img); /* XXX */
 	}
-	//gtk_object_set_user_data(GTK_OBJECT(popup_window.window), thumb->fullimage);
 
+	popup_window.ainfo->update_obj(thumb->img_obj);
 
 	char buf[SF_MAX_NAME];
 	sprintf(buf, "Image: %s", thumb->name);
@@ -1219,14 +1237,13 @@ do_img_popup(GtkWidget *widget, search_set *set
 	eb = gtk_event_box_new();
 	gtk_object_set_user_data(GTK_OBJECT(eb), NULL);
 	gtk_container_add(GTK_CONTAINER(eb), image);
-	gtk_widget_show(eb);
 
 	/* additional events for selection */
-	g_signal_connect (G_OBJECT (eb), "motion_notify_event",
+	g_signal_connect(G_OBJECT (eb), "motion_notify_event",
 	                  G_CALLBACK (cb_motion_notify_event), NULL);
-	g_signal_connect (G_OBJECT (eb), "button_press_event",
+	g_signal_connect(G_OBJECT (eb), "button_press_event",
 	                  G_CALLBACK (cb_button_press_event), NULL);
-	g_signal_connect (G_OBJECT (eb), "button_release_event",
+	g_signal_connect(G_OBJECT (eb), "button_release_event",
 	                  G_CALLBACK (cb_button_release_event), NULL);
 	gtk_widget_set_events (eb, GDK_EXPOSURE_MASK
 	                       | GDK_LEAVE_NOTIFY_MASK
@@ -1238,8 +1255,6 @@ do_img_popup(GtkWidget *widget, search_set *set
 
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(popup_window.scroll),
 	                                      eb);
-	gtk_widget_show(image);
-	gtk_widget_show(popup_window.scroll);
 	gtk_container_add(GTK_CONTAINER(popup_window.image_area), popup_window.scroll);
 
 
@@ -1251,31 +1266,28 @@ do_img_popup(GtkWidget *widget, search_set *set
 	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area),
 	                      remove_func, popup_window.histo_cb_area);
 
-	{
-		GtkWidget *button = NULL;
+	button = NULL;
 
-		popup_window.nfaces = thumb->nfaces;
-		if (thumb->nfaces) {
-			sprintf(buf, "faces (%d)", thumb->nfaces);
-			button = gtk_check_button_new_with_label(buf);
-			g_signal_connect (G_OBJECT(button), "toggled",
-			                  G_CALLBACK(cb_draw_res_layer), NULL);
-			gtk_box_pack_start(GTK_BOX(popup_window.face_cb_area), button,
-			                   FALSE, FALSE, 0);
-			gtk_widget_show(button);
-		}
+	popup_window.nfaces = thumb->nfaces;
+	if (thumb->nfaces) {
+		sprintf(buf, "faces (%d)", thumb->nfaces);
+		button = gtk_check_button_new_with_label(buf);
+		g_signal_connect (G_OBJECT(button), "toggled",
+				  G_CALLBACK(cb_draw_res_layer), NULL);
+		gtk_box_pack_start(GTK_BOX(popup_window.face_cb_area), button,
+				   FALSE, FALSE, 0);
+	}
 
-		for(int i=0; i<thumb->nboxes; i++) {
-			GtkWidget *widget;
-			widget = describe_hbbox(popup_window.hooks->ohandle,
-			                        i, &button);
-			gtk_box_pack_start(GTK_BOX(popup_window.histo_cb_area), widget,
-			                   FALSE, FALSE, 0);
-		}
+	for(int i=0; i<thumb->nboxes; i++) {
+		GtkWidget *widget;
+		widget = describe_hbbox(popup_window.hooks->ohandle,
+					i, &button);
+		gtk_box_pack_start(GTK_BOX(popup_window.histo_cb_area), widget,
+				   FALSE, FALSE, 0);
 	}
 
 	gtk_widget_queue_resize(popup_window.window);
-	gtk_widget_show(popup_window.window);
+	gtk_widget_show_all(popup_window.window);
 
 done:
 	return;

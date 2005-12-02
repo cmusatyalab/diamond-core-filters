@@ -6,7 +6,9 @@
  *      All Rights Reserved
  *
  *  This software is distributed under the terms of the Eclipse Public
- *  License, Version 1.0 which can be found in the file named LICENSE.  *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ *  License, Version 1.0 which can be found in the file named LICENSE.  
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES 
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
 #ifndef _SNAP_FIND_H_
@@ -18,8 +20,7 @@ static const int THUMBSIZE_Y = 150;
 
 /* this is a misnomer; the thumbnail keeps everything we want to know
  * about an image */
-typedef struct thumbnail_t
-{
+typedef struct thumbnail_t {
 	RGBImage 	*img;	/* the thumbnail image */
 	GtkWidget 	*viewport; /* the viewport that contains the image */
 	GtkWidget 	*gimage; /* the image widget */
@@ -28,6 +29,7 @@ typedef struct thumbnail_t
 	char 		device[COMMON_MAX_NAME];	/* name of device */
 	int		nboxes;	/* number of histo regions */
 	int             nfaces;	/* number of faces */
+	ls_obj_handle_t img_obj;	/* object being veiwed */
 	image_hooks_t   *hooks;
 	int              marked; /* if the user 'marked' this thumbnail */
 	GtkWidget       *frame;

@@ -53,6 +53,7 @@
 #include "ring.h"
 #include "rtimer.h"
 #include "sf_consts.h"
+#include "attr_info.h"
 
 #include "face_search.h"
 #include "lib_results.h"
@@ -602,6 +603,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	cur_thumbnail->nboxes = num_histo;
 	cur_thumbnail->nfaces = num_face;
 	cur_thumbnail->hooks = ih_new_ref(rgbimg, ohandle);
+	cur_thumbnail->img_obj = ohandle;
 
 	gtk_container_add(GTK_CONTAINER(cur_thumbnail->viewport), image);
 	gtk_widget_show_now(image);
@@ -925,7 +927,6 @@ update_search_entry(search_set *cur_set)
 	config_table = cur_set->build_edit_table();
 	gtk_container_add(GTK_CONTAINER(search_frame), config_table);
 	gtk_widget_show_all(search_frame);
-
 }
 
 

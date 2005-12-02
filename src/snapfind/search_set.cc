@@ -282,17 +282,14 @@ search_set::build_edit_table()
 
 	widget = gtk_label_new("Predicate");
 	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 0, 1, row, row+1);
 
 	widget = gtk_label_new("Description");
 	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 1, 2, row, row+1);
 
 	widget = gtk_label_new("Edit");
 	gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
-	gtk_widget_show(widget);
 	gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, row, row+1);
 
 
@@ -309,6 +306,6 @@ search_set::build_edit_table()
 		gtk_table_attach_defaults(GTK_TABLE(table), widget, 2, 3, 
 			row, row+1);
 	}
-	gtk_widget_show(table);
+	gtk_widget_show_all(table);
 	return(table);
 }

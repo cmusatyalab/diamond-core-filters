@@ -38,8 +38,7 @@ enum layers_t {
     MAX_LAYERS
 };
 
-typedef	struct pop_win
-{
+typedef	struct pop_win {
     GtkWidget 	*window;
     image_hooks_t   *hooks;
     GtkWidget 	*drawing_area;
@@ -58,6 +57,7 @@ typedef	struct pop_win
     GtkWidget *	search_name;
     GtkWidget *	hl_frame;
     GtkWidget *	hl_table;
+    attr_info *	ainfo;
     int             nfaces;
     GtkWidget *select_button;
     int x1, y1, x2, y2;
