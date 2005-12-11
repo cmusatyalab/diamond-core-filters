@@ -70,6 +70,8 @@
 #include "search_set.h"
 #include "read_config.h"
 #include "plugin.h"
+#include "attr_decode.h"
+#include "decoder.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -2008,6 +2010,7 @@ main(int argc, char *argv[])
 	/*
 	 * Load all the plugins now.
 	 */
+	decoders_init();
 	load_plugins();
 
 	/*

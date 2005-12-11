@@ -24,11 +24,6 @@
 
 using namespace	std;
 
-enum fmt_types_t {
-        FORMAT_TYPE_STRING = 0,
-        FORMAT_TYPE_HEX,
-        FORMAT_TYPE_INT
-};
 
 class attr_ent {
 public:
@@ -58,7 +53,7 @@ private:
 	int		data_size;
 	GtkWidget *	data_label;
 	GtkWidget *	type_menu;
-	fmt_types_t	fmt_type;
+	int		fmt_type;
 };
 
 
