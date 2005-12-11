@@ -14,6 +14,16 @@
 #include "decoder.h"
 
 
+typedef struct decode_hint {
+	char *		dh_name;
+	char *  	dh_type;
+	attr_decode *	dh_decode;
+	struct decode_hint * dh_next;
+} decode_hint_t;
+
+
+static decode_hint_t * dh_list = NULL;
+static decode_hint_t ** dh_last = &dh_list;
 
 static decoder_map_t * dmap = NULL;
 static decoder_map_t ** dtail = &dmap;
@@ -56,6 +66,47 @@ decoder_register(attr_decode *decoder)
 	num_map++;
 }
 
+decode_hint_t *
+lookup_decode_hint(const char *aname)
+{
+	decode_hint_t *	cur_hint;
+
+	for (cur_hint = dh_list; cur_hint != NULL; 
+	    cur_hint = cur_hint->dh_next) {
+		if (strcmp(cur_hint->dh_name, aname) == 0) {
+			return(cur_hint);
+		}
+	}
+	return(NULL);
+}
+
+decode_hint_t *
+new_decode_hint(const char *aname, const char *dname)
+{
+	decode_hint_t *	new_hint;
+
+	new_hint = (decode_hint_t *)malloc(sizeof(*new_hint));
+	assert(new_hint != NULL);
+
+	new_hint->dh_name = strdup(aname);
+	assert(new_hint->dh_name != NULL);
+
+	new_hint->dh_type = strdup(dname);
+	assert(new_hint->dh_type != NULL);
+
+	new_hint->dh_decode = NULL;
+
+	/* put on tail of the linked list */
+	new_hint->dh_next = NULL;
+	*dh_last = new_hint;
+	dh_last = &new_hint->dh_next;
+
+	return(new_hint);
+}
+
+
+
+/* Find a decoder with the specified name */
 attr_decode *
 find_decode(const char *name)
 {
@@ -118,13 +169,29 @@ get_decoder_menu(void)
         return(menu);
 }
 
+
+
 attr_decode *
 guess_decoder(const char *name, unsigned char *data, size_t dlen)
 {
 	int	val;
 	int	best = -1;
 	attr_decode *best_decode = NULL;
+	attr_decode *decode;
 	decoder_map_t *	cur_map;
+	decode_hint_t *	hint;
+
+	hint = lookup_decode_hint(name);
+	if (hint) {
+		if (hint->dh_decode) {
+			return(hint->dh_decode);
+		}
+		decode = find_decode(hint->dh_type);
+		if (decode) {
+			hint->dh_decode = decode;
+			return(decode);
+		}
+	}
 
 	for (cur_map = dmap; cur_map != NULL; cur_map = cur_map->dm_next) {
 		val = cur_map->dm_decoder->is_type(data, dlen);
@@ -135,4 +202,24 @@ guess_decoder(const char *name, unsigned char *data, size_t dlen)
 	}
 	assert(best_decode != NULL);
 	return(best_decode);
+}
+
+
+void
+decode_update_hint(const char *aname, attr_decode *decode)
+{
+	decode_hint_t *	hint;
+
+	hint = lookup_decode_hint(aname);
+
+	if (hint != NULL) {
+		free(hint->dh_type);
+		hint->dh_type = strdup(decode->get_name());
+		assert(hint->dh_type != NULL);
+		hint->dh_decode = decode;
+	} else {
+		hint = new_decode_hint(aname, decode->get_name());
+		hint->dh_decode = decode;
+	}
+	
 }

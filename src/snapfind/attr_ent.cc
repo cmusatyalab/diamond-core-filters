@@ -142,14 +142,14 @@ attr_ent::get_type_widget()
 	GtkWidget *	widget;
 	GtkWidget *	hbox;
 
-	hbox = gtk_hbox_new(FALSE, 10);
+	hbox = gtk_hbox_new(TRUE, 10);
 
 	type_menu = get_decoder_menu();
 	gtk_menu_set_active(GTK_MENU(type_menu), fmt_type);
 
 	widget = gtk_option_menu_new();
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(widget), type_menu);
-	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, FALSE, 0);
 
         /* put callback to update changes to the name box */
         g_signal_connect(G_OBJECT(widget), "changed",
@@ -171,6 +171,8 @@ attr_ent::update_type()
 	adecode->decode((unsigned char *)rawdata, data_size, 
 			    display_data, DUMP_WIDTH - 1);
 	fmt_type = adecode->get_type();
+
+	decode_update_hint(display_name, adecode);
 
 	gtk_label_set_text(GTK_LABEL(data_label), display_data);
 }

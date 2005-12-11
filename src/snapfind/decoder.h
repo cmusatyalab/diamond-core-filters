@@ -31,6 +31,7 @@ attr_decode * get_first_decoder(void **cookie);
 attr_decode * get_next_decoder(void **cookie);
 GtkWidget * get_decoder_menu(void);
 attr_decode * guess_decoder(const char *name, unsigned char *data, size_t dlen);
+void decode_update_hint(const char *aname, attr_decode *decode);
 
 
 

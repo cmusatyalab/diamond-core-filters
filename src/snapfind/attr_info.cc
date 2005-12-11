@@ -96,7 +96,7 @@ attr_info::get_table()
 
 	gtk_table_set_row_spacings(GTK_TABLE(table), 2);
 	gtk_table_set_col_spacings(GTK_TABLE(table), 4);
-	gtk_container_set_border_width(GTK_CONTAINER(table), 10);
+	gtk_container_set_border_width(GTK_CONTAINER(table), 4);
 
 	hbox = gtk_hbox_new(FALSE, 10);
 	widget = gtk_label_new("Type");
