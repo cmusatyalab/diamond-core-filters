@@ -223,3 +223,27 @@ decode_update_hint(const char *aname, attr_decode *decode)
 	}
 	
 }
+
+void
+add_decode_hint(const char *aname, const char *dname)
+{
+	decode_hint_t *new_decode;
+	new_decode = new_decode_hint(aname, dname);
+}
+
+void
+write_decodes(FILE *ostream)
+{
+	decode_hint_t *	cur_hint;
+	fprintf(ostream, "# mapping between attribute names and decoders\n"); 
+	
+
+	for (cur_hint = dh_list; cur_hint != NULL; 
+	    cur_hint = cur_hint->dh_next) {
+		fprintf(ostream, " \"%s\" = \"%s\" \n",
+			cur_hint->dh_name,
+			cur_hint->dh_decode->get_name());
+	}
+}
+
+

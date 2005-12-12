@@ -175,6 +175,7 @@ attr_ent::update_type()
 	decode_update_hint(display_name, adecode);
 
 	gtk_label_set_text(GTK_LABEL(data_label), display_data);
+	save_attr_map();
 }
 
 attr_ent &

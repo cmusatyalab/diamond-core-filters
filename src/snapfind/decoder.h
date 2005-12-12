@@ -33,6 +33,14 @@ GtkWidget * get_decoder_menu(void);
 attr_decode * guess_decoder(const char *name, unsigned char *data, size_t dlen);
 void decode_update_hint(const char *aname, attr_decode *decode);
 
+void add_decode_hint(const char *name, const char *dname);
+void write_decodes(FILE *ostream);
+
+
+/* from attr_map.l */
+void load_attr_map();
+void save_attr_map();
+
 
 
 #endif	/* ! _DECODER_H_ */

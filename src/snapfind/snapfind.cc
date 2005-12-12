@@ -2011,6 +2011,7 @@ main(int argc, char *argv[])
 	 * Load all the plugins now.
 	 */
 	decoders_init();
+	load_attr_map();
 	load_plugins();
 
 	/*
