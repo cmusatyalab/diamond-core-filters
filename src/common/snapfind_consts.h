@@ -41,10 +41,13 @@
 /* name of the snapfindrc file */
 #define	SNAPFIND_RC			"snapfindrc"
 
+/* name of the snapfindrc file */
+#define	SNAPFIND_AMAP			"attr_map"
+
 /* path relative to $HOME where we assume the SNAPFIND_RC is stored */
 #define	SNAPFIND_CONF_DEFAULT		".diamond/snapfind/"
 
-/* path relative to $HOME where we assume the SNAPFIND_RC is stored */
+/* environmental value where SNAPFIND_RC is stored */
 #define	SNAPFIND_ENV_NAME		"SNAPFIND_CONF"
 
 /* 
