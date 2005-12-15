@@ -98,9 +98,7 @@ SHARED_HEADERS = img_search.h search_set.h factory.h
 include ${OBJROOT}/Makefile.template
 
 
-ifeq ($(OSTYPE),linux)
 DYNAMIC = -rdynamic
-endif
 
 ifeq ($(OSTYPE),darwin)
 DYNAMIC = -dynamic
