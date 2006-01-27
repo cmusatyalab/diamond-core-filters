@@ -11,6 +11,14 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
@@ -234,7 +242,45 @@ image_draw_bbox_scale(RGBImage * img, bbox_t * bbox, int scale,
 	}
 }
 
+/*
+ * Draw the bounding box scaled to the current image.
+ */
+void
+image_draw_patch_scale(RGBImage * img, patch_t * patch, int scale,
+    RGBPixel mask, RGBPixel color)
+{
 
+	int             x, y;
+	int             y_upper, y_lower;
+	int             x_right, x_left;
+
+	/*
+	 * Compute the pixel values, accounting for round off problems
+	 * if necessary.
+	 */
+	y_upper = patch->max_y / scale;
+	if (y_upper >= img->rows) {
+		y_upper = img->rows - 1;
+	}
+	y_lower = patch->min_y / scale;
+	x_left = patch->min_x / scale;
+	x_right = patch->max_x / scale;
+	if (x_right >= img->columns) {
+		x_right = img->columns;
+	}
+
+	/* draw the upper and lower edges of the box */
+	for (x = x_left; x <= x_right; x++) {
+		modify_pixel(img, x, y_upper, mask, color);
+		modify_pixel(img, x, y_lower, mask, color);
+	}
+
+	/* draw the left and right edges */
+	for (y = y_lower; y <= y_upper; y++) {
+		modify_pixel(img, x_left, y, mask, color);
+		modify_pixel(img, x_right, y, mask, color);
+	}
+}
 
 
 /*
