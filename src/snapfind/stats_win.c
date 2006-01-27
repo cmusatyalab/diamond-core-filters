@@ -11,6 +11,16 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -171,15 +181,9 @@ new_page(char *name, int num_dev)
 
 
 	for (i = 0; i < num_dev; i++) {
-		int             rsize;
-
-		//rsize = gtk_table_get_row_spacing(GTK_TABLE(stats_table), i + 1);
-		//gtk_table_set_row_spacing(GTK_TABLE(stats_table), i, rsize);
-
 		init_filt_data(&new_page->fp_data[i]);
 		gtk_table_attach_defaults(GTK_TABLE(new_page->fp_table),
-		                          new_page->fp_data[i].frame, 0, 1, (i + 1),
-		                          (i + 2));
+	  	    new_page->fp_data[i].frame, 0, 1, (i + 1), (i + 2));
 	}
 
 
@@ -222,78 +226,67 @@ init_filt_data(filt_data_t * fdata)
 	 * that manipulate the current image being displayed.
 	 */
 	fdata->frame = gtk_frame_new(NULL);
-	gtk_widget_show(fdata->frame);
 
 	fdata->box = gtk_vbox_new(FALSE, 10);
 	gtk_container_set_border_width(GTK_CONTAINER(fdata->box), 1);
 	gtk_container_add(GTK_CONTAINER(fdata->frame), fdata->box);
-	gtk_widget_show(fdata->box);
 
 
 	fdata->sbox1 = gtk_hbox_new(FALSE, 10);
 	gtk_container_set_border_width(GTK_CONTAINER(fdata->sbox1), 1);
 	gtk_box_pack_start(GTK_BOX(fdata->box), fdata->sbox1, FALSE, FALSE, 0);
-	gtk_widget_show(fdata->sbox1);
 
 
 	fdata->sbox2 = gtk_hbox_new(FALSE, 10);
 	gtk_container_set_border_width(GTK_CONTAINER(fdata->sbox2), 1);
 	gtk_box_pack_start(GTK_BOX(fdata->box), fdata->sbox2, FALSE, FALSE, 0);
-	gtk_widget_show(fdata->sbox2);
 
 
 	fdata->sbox3 = gtk_hbox_new(FALSE, 10);
 	gtk_container_set_border_width(GTK_CONTAINER(fdata->sbox3), 1);
 	gtk_box_pack_start(GTK_BOX(fdata->box), fdata->sbox3, FALSE, FALSE, 0);
-	gtk_widget_show(fdata->sbox3);
 
 
 	sprintf(data, "%s", "Avg Time (ms):");
 	fdata->time_label = gtk_label_new(data);
 	gtk_box_pack_start(GTK_BOX(fdata->sbox1),
 	                   fdata->time_label, FALSE, FALSE, 0);
-	gtk_widget_show(fdata->time_label);
 
 	sprintf(data, "%10.5f", 0.0);
 	fdata->time_val = gtk_label_new(data);
 	gtk_box_pack_start(GTK_BOX(fdata->sbox1),
 	                   fdata->time_val, FALSE, FALSE, 0);
-	gtk_widget_show(fdata->time_val);
 
 
 	sprintf(data, "%s", "Objs Proc:");
 	fdata->proc_label = gtk_label_new(data);
 	gtk_box_pack_start(GTK_BOX(fdata->sbox2), fdata->proc_label,
 	                   FALSE, FALSE, 0);
-	gtk_widget_show(fdata->proc_label);
 
 
 	sprintf(data, "%8d", 0);
 	fdata->proc_val = gtk_label_new(data);
 	gtk_box_pack_start(GTK_BOX(fdata->sbox2),
 	                   fdata->proc_val, FALSE, FALSE, 0);
-	gtk_widget_show(fdata->proc_val);
 
 
 	sprintf(data, "%s", "Objs Drop:");
 	fdata->drop_label = gtk_label_new(data);
 	gtk_box_pack_start(GTK_BOX(fdata->sbox3), fdata->drop_label,
 	                   FALSE, FALSE, 0);
-	gtk_widget_show(fdata->drop_label);
 
 	sprintf(data, "%s", "Bypass Obj:");
 	fdata->nproc_label = gtk_label_new(data);
 	gtk_box_pack_start(GTK_BOX(fdata->sbox3), fdata->nproc_label,
 	                   FALSE, FALSE, 0);
-	gtk_widget_show(fdata->nproc_label);
 
 
 	sprintf(data, "%8d", 0);
 	fdata->drop_val = gtk_label_new(data);
 	gtk_box_pack_start(GTK_BOX(fdata->sbox3), fdata->drop_val, FALSE, FALSE,
 	                   0);
-	gtk_widget_show(fdata->drop_val);
 
+	gtk_widget_show_all(fdata->frame);
 
 }
 

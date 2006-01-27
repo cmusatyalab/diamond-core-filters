@@ -11,6 +11,16 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,7 +100,6 @@ thumbnail_t *cur_thumbnail = NULL;
 
 
 int expert_mode = 0;		/* global (also used in face_widgets.c) */
-int dump_attributes = 0;
 char *dump_spec_file = NULL;		/* dump spec file and exit */
 int dump_objects = 0;		/* just dump all the objects and exit (no gui) */
 GtkTooltips *tooltips = NULL;
@@ -222,9 +231,9 @@ static pthread_mutex_t	thumb_mutex = PTHREAD_MUTEX_INITIALIZER;
  * some prototypes 
  */
 
-extern region_t draw_bounding_box(RGBImage *img, int scale,
-	                                  ls_obj_handle_t ohandle,
-	                                  RGBPixel color, RGBPixel mask, char *fmt, int i);
+void draw_patches(RGBImage *img, int scale, RGBPixel color, RGBPixel mask,
+    img_patches_t *ipatches);
+
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
 
 
@@ -310,7 +319,7 @@ clear_image_info(image_info_t *img_info)
 
 
 static void
-write_image_info(image_info_t *img_info, char *name, char *device, int count)
+write_image_info(image_info_t *img_info, char *name, char *device)
 {
 	char	txt[BUFSIZ];
 
@@ -322,8 +331,6 @@ write_image_info(image_info_t *img_info, char *name, char *device, int count)
 	sprintf(txt, "%-60s", device);
 	gtk_label_set_text(GTK_LABEL(img_info->dev_label), txt);
 
-	sprintf(txt, "%-3d", count);
-	gtk_label_set_text(GTK_LABEL(img_info->count_label), txt);
 }
 
 
@@ -498,7 +505,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	char            device[COMMON_MAX_NAME];
 	size_t		bsize;
 	int		err;
-	int		num_face, num_histo;
+	search_name_t *	cur;
 
 	while(image_controls.cur_op == CNTRL_WAIT) {
 		fprintf(stderr, "GOT WAIT. waiting...\n");
@@ -511,6 +518,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 
 	assert(image_controls.cur_op == CNTRL_NEXT ||
 	       image_controls.cur_op == CNTRL_ELEV);
+
 
 	/* get path */
 	bsize = COMMON_MAX_NAME;
@@ -534,10 +542,8 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	device[bsize] = '\0';
 
 
-
 	/* get the img */
 	rgbimg = (RGBImage*)ft_read_alloc_attr(ohandle, RGB_IMAGE);
-
 	if (rgbimg == NULL) {
 		//rgbimg = get_attr_rgb_img(ohandle, "DATA0");
 		rgbimg = get_rgb_img(ohandle);
@@ -545,32 +551,29 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	assert(rgbimg);
 	assert(rgbimg->width);
 
-	/* figure out bboxes to highlight */
-	bsize = sizeof(num_histo);
-	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
-	if (err) {
-		num_histo = 0;
-	}
-	bsize = sizeof(num_face);
-	err = lf_read_attr(ohandle, NUM_FACE, &bsize, (char *)&num_face);
-	if (err) {
-		num_face = 0;
-	}
-
-
 	int scale = (int)ceil(compute_scale(rgbimg, THUMBSIZE_X, THUMBSIZE_Y));
 	scaledimg = image_gen_image_scale(rgbimg, scale);
 	assert(scaledimg);
 
-	for(int i=0; i<num_histo; i++) {
-		draw_bounding_box(scaledimg, scale, ohandle,
-		                  green, colorMask, HISTO_BBOX_FMT, i);
-	}
-	for(int i=0; i<num_face; i++) {
-		draw_bounding_box(scaledimg, scale, ohandle,
-		                  red, colorMask, FACE_BBOX_FMT, i);
-	}
 
+	/* find out the set of results to highlight */
+
+
+	/* 
+	 * for each of the active searches look for a set of
+	 * result boxes with a well known name.
+	 */
+	for (cur = active_searches; cur != NULL; cur = cur->sn_next) {
+		img_patches_t *ipatch;
+		ipatch = get_patches(ohandle, cur->sn_name);
+		if (ipatch) {
+			draw_patches(scaledimg, scale, green, 
+			    colorMask, ipatch);
+		}	
+
+
+	}
+		
 	user_measurement.total_seen++;
 
 	GUI_THREAD_ENTER();
@@ -602,8 +605,6 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	cur_thumbnail->gimage = image;
 	strcpy(cur_thumbnail->name, name);
 	strcpy(cur_thumbnail->device, device);
-	cur_thumbnail->nboxes = num_histo;
-	cur_thumbnail->nfaces = num_face;
 	cur_thumbnail->hooks = ih_new_ref(rgbimg, ohandle);
 	cur_thumbnail->img_obj = ohandle;
 
@@ -1208,9 +1209,8 @@ cb_toggle_stats( gpointer   callback_data,
 
 /* For the check button */
 static void
-cb_toggle_progress(gpointer   callback_data,
-                   guint      callback_action,
-                   GtkWidget *menu_item )
+cb_toggle_progress(gpointer callback_data, guint callback_action,
+    GtkWidget *menu_item )
 {
 	GUI_CALLBACK_ENTER();
 	toggle_progress_win(shandle, expert_mode);
@@ -1219,25 +1219,11 @@ cb_toggle_progress(gpointer   callback_data,
 
 
 static void
-cb_toggle_ccontrol(gpointer   callback_data,
-                   guint      callback_action,
-                   GtkWidget *menu_item )
+cb_toggle_ccontrol(gpointer callback_data, guint callback_action,
+    GtkWidget *menu_item )
 {
 	GUI_CALLBACK_ENTER();
 	toggle_ccontrol_win(shandle, expert_mode);
-	GUI_CALLBACK_LEAVE();
-}
-
-
-
-/* For the check button */
-static void
-cb_toggle_dump_attributes( gpointer   callback_data,
-                           guint      callback_action,
-                           GtkWidget *menu_item )
-{
-	GUI_CALLBACK_ENTER();
-	dump_attributes = GTK_CHECK_MENU_ITEM (menu_item)->active;
 	GUI_CALLBACK_LEAVE();
 }
 
@@ -1351,7 +1337,7 @@ cb_img_info(GtkWidget *widget, gpointer data)
 
 	if(thumb->img) {
 		write_image_info(&image_information, thumb->name,
-		                 thumb->device, thumb->nboxes);
+		                 thumb->device);
 	}
 	GUI_CALLBACK_LEAVE();
 }
@@ -1390,25 +1376,25 @@ create_image_control(GtkWidget *container_box,
 	gtk_box_pack_end(GTK_BOX(img_cntrl->control_box),
 	                 img_info->qsize_label, FALSE, FALSE, 0);
 	gtk_widget_show(img_info->qsize_label);
-	gtk_timeout_add(500 /* ms */, timeout_write_qsize, img_info->qsize_label);
+	gtk_timeout_add(500 /*ms*/, timeout_write_qsize, img_info->qsize_label);
 
 	img_info->tobjs_label = gtk_label_new ("");
 	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box),
 	                   img_info->tobjs_label, FALSE, FALSE, 0);
 	gtk_widget_show(img_info->tobjs_label);
-	gtk_timeout_add(500 /* ms */, timeout_write_tobjs, img_info->tobjs_label);
+	gtk_timeout_add(500 /*ms*/, timeout_write_tobjs, img_info->tobjs_label);
 
 	img_info->sobjs_label = gtk_label_new ("");
 	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box),
 	                   img_info->sobjs_label, FALSE, FALSE, 0);
 	gtk_widget_show(img_info->sobjs_label);
-	gtk_timeout_add(500 /* ms */, timeout_write_sobjs, img_info->sobjs_label);
+	gtk_timeout_add(500 /*ms*/, timeout_write_sobjs, img_info->sobjs_label);
 
 	img_info->dobjs_label = gtk_label_new ("");
 	gtk_box_pack_start(GTK_BOX(img_cntrl->control_box),
 	                   img_info->dobjs_label, FALSE, FALSE, 0);
 	gtk_widget_show(img_info->dobjs_label);
-	gtk_timeout_add(500 /* ms */, timeout_write_dobjs, img_info->dobjs_label);
+	gtk_timeout_add(500 /*ms*/, timeout_write_dobjs, img_info->dobjs_label);
 
 	adj = gtk_adjustment_new(2.0, 1.0, 10.0, 1.0, 1.0, 1.0);
 	img_cntrl->zlevel = 2;
@@ -1480,21 +1466,21 @@ create_display_region(GtkWidget *main_box)
 			gtk_widget_show(frame);
 
 			widget = gtk_viewport_new(NULL, NULL);
-			gtk_widget_set_size_request(widget, THUMBSIZE_X, THUMBSIZE_Y);
+			gtk_widget_set_size_request(widget, THUMBSIZE_X, 
+			    THUMBSIZE_Y);
 			gtk_container_add(GTK_CONTAINER(frame), widget);
-			gtk_table_attach_defaults(GTK_TABLE(thumbnail_view), eb,
-			                          j, j+1, i, i+1);
+			gtk_table_attach_defaults(GTK_TABLE(thumbnail_view), 
+			    eb, j, j+1, i, i+1);
 			gtk_widget_show(widget);
 			gtk_widget_show(eb);
 
-			thumbnail_t *thumb = (thumbnail_t *)malloc(sizeof(thumbnail_t));
+			thumbnail_t *thumb = (thumbnail_t *)malloc(
+			    sizeof(thumbnail_t));
 			thumb->marked = 0;
 			thumb->img = NULL;
 			thumb->viewport = widget;
 			thumb->frame = frame;
 			thumb->name[0] = '\0';
-			thumb->nboxes = 0;
-			thumb->nfaces = 0;
 			thumb->hooks = NULL;
 			TAILQ_INSERT_TAIL(&thumbnails, thumb, link);
 
@@ -1597,14 +1583,14 @@ redo:
 		/* if name is null, then redo */
 		if (strlen(new_name) == 0) {
 			gtk_label_set_text(GTK_LABEL(helplabel),
-			                   "No name: please enter search name");
+		   	    "No name: please enter search name");
 			goto redo;
 		}
 		/* Make sure there are not spaces */
 		for (i=0; i < strlen(new_name); i++) {
 			if (new_name[i] == ' ') {
 				gtk_label_set_text(GTK_LABEL(helplabel),
-				                   "Name has spaces: please changes");
+		      		    "Name has spaces: please changes");
 				goto redo;
 			}
 		}
@@ -1612,7 +1598,7 @@ redo:
 		/* check for name conflicts */
 		if (search_exists(new_name, snap_searchset)) {
 			gtk_label_set_text(GTK_LABEL(helplabel),
-			                   "Name exists: Please change");
+		   	    "Name exists: Please change");
 			goto redo;
 		}
 		ssearch = factory->create(new_name);
@@ -1664,9 +1650,6 @@ static GtkItemFactoryEntry menu_items[] = {
               0,"<Item>" },
             { "/Options", NULL, NULL, 0, "<Branch>" },
             { "/Options/sep1", NULL, NULL, 0, "<Separator>" },
-            { "/Options/Dump Attributes", NULL,
-              G_CALLBACK(cb_toggle_dump_attributes), 0,
-              "<CheckItem>" },
             { "/Albums", NULL, NULL, 0, "<Branch>" },
             { "/Albums/tear", NULL, NULL, 0, "<Tearoff>" },
             { NULL, NULL, NULL }
@@ -1738,12 +1721,10 @@ get_menubar_menu( GtkWidget  *window )
 		                             NULL,
 		                             1); /* XXX guess, no doc */
 
-		GtkWidget *widget = gtk_item_factory_get_widget(item_factory, buf);
-		//gtk_widget_set_sensitive(widget, FALSE);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget), tmp_coll->active);
-
-		//tmp_menu++;
-		//nmenu_items++;
+		GtkWidget *widget = gtk_item_factory_get_widget(item_factory, 
+		    buf);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget),
+		    tmp_coll->active);
 	}
 
 	/* Attach the new accelerator group to the window. */
@@ -1768,7 +1749,6 @@ add_new_search_type(img_factory *factory)
 	entry.item_type = "<Item>";
 
 	gtk_item_factory_create_item(item_factory, &entry, factory, 1);
-	GtkWidget *widget = gtk_item_factory_get_widget(item_factory, buf);
 }
 
 

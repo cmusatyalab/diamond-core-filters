@@ -11,6 +11,16 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,34 +66,6 @@
 
 #define	MIN_DIMENSION	10
 
-#ifdef	XXX
-static  int
-min(int a, int b)
-{
-	int min
-	return((a < b) ? a : b);
-}
-
-
-static inline int
-max(int a, int b)
-{
-	int max
-	max =  (a > b) ? a : b;
-	return(max);
-}
-#endif
-
-static double
-compute_scale(RGBImage * img, int xdim, int ydim)
-{
-	double          scale = 1.0;
-
-	scale = max(scale, (double) img->width / xdim);
-	scale = max(scale, (double) img->height / ydim);
-
-	return scale;
-}
 
 
 graph_win::graph_win(const double xmin, const double xmax, const double ymin, const double ymax)
@@ -175,15 +157,6 @@ done:
 	return;
 }
 
-static void
-cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
-{
-	graph_win *disp_img = (graph_win *)ptr;
-	GUI_CALLBACK_ENTER();
-	disp_img->draw_res(widget);
-	GUI_CALLBACK_LEAVE();
-	return;
-}
 
 /* draw all the bounding boxes */
 void
@@ -553,14 +526,6 @@ graph_win::event_realize()
 
 }
 
-
-
-static void
-remove_func(GtkWidget *widget, void *container)
-{
-	GUI_THREAD_CHECK();
-	gtk_container_remove(GTK_CONTAINER(container), widget);
-}
 
 
 void

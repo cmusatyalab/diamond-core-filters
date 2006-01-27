@@ -11,6 +11,16 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -29,8 +39,10 @@
 #include <assert.h>
 #include <string.h>
 #include <gtk/gtk.h>
+#include "rgb.h"
 #include "attr_ent.h"
 #include "attr_decode.h"
+#include "lib_results.h"
 
 
 int
@@ -123,3 +135,133 @@ int_decode::is_type(unsigned char *data, size_t dlen)
 	}
 	return(0);
 }
+
+
+int
+time_decode::decode(unsigned char *data, size_t dlen, char *string, size_t slen)
+{
+	uint64_t  time;
+	uint64_t  secs;
+	uint64_t  nsecs;
+
+	time = *((uint64_t *)data);
+	secs = time / 1000000000;
+	nsecs = time % 1000000000;
+
+	snprintf(string, slen, "%llu sec %llu nsecs", secs, nsecs);
+	return(0);
+}
+
+int
+time_decode::is_type(unsigned char *data, size_t dlen)
+{
+	if (dlen == sizeof(uint64_t)) {
+		return(2);
+	}
+	return(0);
+}
+
+
+int
+rgb_decode::decode(unsigned char *data, size_t dlen, char *string, size_t slen)
+{
+	RGBImage *rgb;
+	size_t	offset = 0;
+	int	i;
+	
+
+
+	if (dlen < sizeof(*rgb)) {
+		snprintf(string, slen, "Invalid Data");
+		return(0);	
+	}
+
+	rgb = (RGBImage *)data;
+
+	offset += snprintf(string + offset, slen - offset, 
+    	    "rows=%d columns=%d ", rgb->rows, rgb->columns);
+
+	if (offset >= slen-1) {
+		return(0);
+	}
+
+	for (i = 0; i < rgb->height * rgb->rows; i++) {
+		offset += snprintf(string + offset, slen - offset, 
+    	    	    "{r=%d, b=%d, g=%d} ",
+		    rgb->data[i].r, rgb->data[i].g, rgb->data[i].b);
+		if (offset >= slen-1) {
+			return(0);
+		}
+	}
+
+	return(0);
+}
+
+int
+rgb_decode::is_type(unsigned char *data, size_t dlen)
+{
+	RGBImage *rgb;
+	if (dlen < sizeof(RGBImage)) {
+		return(0);
+	}
+
+	rgb = (RGBImage *)data;
+	if (rgb->nbytes == dlen) {
+		return(4);
+	}
+	return(0);
+}
+
+
+int
+patches_decode::decode(unsigned char *data, size_t dlen, char *string, size_t slen)
+{
+	img_patches_t *patches;
+	size_t	offset = 0;
+	int	i;
+	
+
+
+	if (dlen < sizeof(*patches)) {
+		snprintf(string, slen, "Invalid Data");
+		return(0);	
+	}
+
+	patches = (img_patches_t *)data;
+
+	offset += snprintf(string + offset, slen - offset, 
+    	    "npatches=%d distance=%8.4f ", patches->num_patches,
+	    patches->distance);
+
+	if (offset >= slen-1) {
+		return(0);
+	}
+
+	for (i = 0; i < patches->num_patches; i++) {
+		offset += snprintf(string + offset, slen - offset, 
+    	    	    "{x_lo=%d x_high=%d y_low=%d y_high=%d ",
+		    patches->patches[i].min_x, patches->patches[i].max_x, 
+		    patches->patches[i].min_y, patches->patches[i].max_y);
+		if (offset >= slen-1) {
+			return(0);
+		}
+	}
+
+	return(0);
+}
+
+int
+patches_decode::is_type(unsigned char *data, size_t dlen)
+{
+	img_patches_t *patches;
+	if (dlen < sizeof(img_patches_t)) {
+		return(0);
+	}
+
+	patches = (img_patches_t *)data;
+	if (IMG_PATCH_SZ(patches->num_patches) == dlen) {
+		return(4);
+	}
+	return(0);
+}
+

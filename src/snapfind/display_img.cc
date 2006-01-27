@@ -11,6 +11,15 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +33,6 @@
 #include <string.h>
 #include <libgen.h>		/* dirname */
 #include <assert.h>
-#include <stdint.h>
 #include <signal.h>
 #include <getopt.h>
 
@@ -179,13 +187,6 @@ done:
 	return;
 }
 
-static void
-cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
-{
-	display_img *disp_img = (display_img *)ptr;
-	disp_img->draw_res(widget);
-	return;
-}
 
 /* draw all the bounding boxes */
 void
@@ -199,15 +200,6 @@ display_img::draw_res(GtkWidget *widget)
 	 * that we cleared. */
 	rgbimg_clear(di_layers[DI_RES_LAYER]);
 
-#ifdef	XXX
-	/* draw faces (presumably there's only one checkbox, but that's ok) */
-	gtk_container_foreach(GTK_CONTAINER(import_window.face_cb_area), draw_face_func,
-	                      import_window.face_cb_area);
-
-	/* draw histo bboxes, if on */
-	gtk_container_foreach(GTK_CONTAINER(import_window.histo_cb_area),
-	                      draw_hbbox_func, import_window.histo_cb_area);
-#endif
 
 	GUI_CALLBACK_LEAVE();
 }
@@ -255,13 +247,6 @@ display_img::get_image()
 }
 
 
-static void
-remove_func(GtkWidget *widget, void *container)
-{
-	GUI_THREAD_CHECK();
-	gtk_container_remove(GTK_CONTAINER(container), widget);
-}
-
 
 void
 display_img::clear_selections()
@@ -270,8 +255,7 @@ display_img::clear_selections()
 
 	img = di_layers[DI_SELECT_LAYER];
 	rgbimg_clear(img);
-	gtk_widget_queue_draw_area(di_drawingarea, 0, 0, img->width,
-	                           img->height);
+	gtk_widget_queue_draw(di_drawingarea);
 
 	di_nselections = 0;
 }

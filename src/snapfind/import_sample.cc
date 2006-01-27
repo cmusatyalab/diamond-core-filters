@@ -11,6 +11,15 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -152,65 +161,6 @@ done:
 
 
 
-/* draw all the bounding boxes */
-static void
-cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
-{
-
-	GUI_CALLBACK_ENTER();
-
-	/* although we clear the pixbuf data here, we still need to
-	 * generate refreshes for either the whole image or the parts
-	 * that we cleared. */
-	rgbimg_clear(import_window.layers[IMP_RES_LAYER]);
-
-#ifdef	XXX
-	/* draw faces (presumably there's only one checkbox, but that's ok) */
-	gtk_container_foreach(GTK_CONTAINER(import_window.face_cb_area), draw_face_func,
-	                      import_window.face_cb_area);
-
-	/* draw histo bboxes, if on */
-	gtk_container_foreach(GTK_CONTAINER(import_window.histo_cb_area),
-	                      draw_hbbox_func, import_window.histo_cb_area);
-#endif
-
-	GUI_CALLBACK_LEAVE();
-}
-
-
-static GtkWidget *
-describe_hbbox(ls_obj_handle_t ohandle, int i, GtkWidget **button)
-{
-	search_param_t 	param;
-	int 		err;
-
-	GUI_THREAD_CHECK();
-
-	err = read_param(ohandle, HISTO_BBOX_FMT, &param, i);
-	if (err) {
-		printf("XXX failed to read parameter <%s> \n", HISTO_BBOX_FMT);
-	} else {
-		char buf[BUFSIZ];
-
-		if(param.type == PARAM_HISTO) {
-			sprintf(buf, "%s (similarity %.0f%%)", param.name,
-			        100 - 100.0*param.distance);
-			*button = gtk_check_button_new_with_label(buf);
-			g_signal_connect (G_OBJECT(*button), "toggled",
-			                  G_CALLBACK(cb_draw_res_layer), GINT_TO_POINTER(i));
-			gtk_object_set_user_data(GTK_OBJECT(*button), GINT_TO_POINTER(i));
-
-
-			gtk_widget_show(*button);
-		} else {
-			printf("param type not histo !!! %d \n", param.type);
-		}
-	}
-	return *button;
-}
-
-
-
 
 static gboolean
 realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data)
@@ -332,18 +282,6 @@ image_highlight_main(void *ptr)
 	return NULL;
 }
 
-
-
-
-
-
-
-static void
-remove_func(GtkWidget *widget, void *container)
-{
-	GUI_THREAD_CHECK();
-	gtk_container_remove(GTK_CONTAINER(container), widget);
-}
 
 
 

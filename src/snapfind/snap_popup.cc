@@ -11,6 +11,15 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,8 +75,7 @@ highlight_info = { PTHREAD_MUTEX_INITIALIZER, 0 };
 /* forward function declarations */
 
 static void kill_highlight_thread(int run);
-static void draw_face_func(GtkWidget *widget, void *ptr);
-static void draw_hbbox_func(GtkWidget *widget, void *ptr);
+static void draw_patches_func(GtkWidget *widget, void *ptr);
 
 
 static inline int
@@ -106,36 +114,19 @@ pb_from_img(RGBImage *img)
 	return pbuf;
 }
 
-
-
-/*
- * draw a bounding box into image at scale. bbox is read from object(!)
- */
-region_t
-draw_bounding_box(RGBImage *img, int scale,
-                  ls_obj_handle_t ohandle,
-                  RGBPixel color, RGBPixel mask, char *fmt, int i)
+void
+draw_patches(RGBImage *img, int scale, RGBPixel color, RGBPixel mask, 
+    img_patches_t *ipatches)
 {
-	search_param_t 	param;
-	int 		err;
-	bbox_t		bbox;
+	int		i;
 
-	err = read_param(ohandle, fmt, &param, i);
-
-	bbox.min_x = param.bbox.xmin;
-	bbox.min_y = param.bbox.ymin;
-	bbox.max_x = param.bbox.xmin + param.bbox.xsiz - 1;
-	bbox.max_y = param.bbox.ymin + param.bbox.ysiz - 1;
-
-	if (err) {
-		//printf("XXXX failed to get bbox %d\n", i);
-	} else {
-		image_draw_bbox_scale(img, &bbox, scale, mask, color);
-		//image_fill_bbox_scale(img, &bbox, scale, mask, color);
+	for (i=0; i < ipatches->num_patches; i++) {
+		image_draw_patch_scale(img, &ipatches->patches[i], scale, 
+			mask, color);
 	}
 
-	return param.bbox;
 }
+
 
 static gboolean
 expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
@@ -183,7 +174,7 @@ done:
 
 /* draw all the bounding boxes */
 static void
-cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
+cb_draw_results(GtkWidget *widget, gpointer ptr)
 {
 
 	GUI_CALLBACK_ENTER();
@@ -193,51 +184,31 @@ cb_draw_res_layer(GtkWidget *widget, gpointer ptr)
 	 * that we cleared. */
 	rgbimg_clear(popup_window.layers[RES_LAYER]);
 
-	/* draw faces (presumably there's only one checkbox, but that's ok) */
-	gtk_container_foreach(GTK_CONTAINER(popup_window.face_cb_area), draw_face_func,
-	                      popup_window.face_cb_area);
-
 	/* draw histo bboxes, if on */
 	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area),
-	                      draw_hbbox_func, popup_window.histo_cb_area);
+	    draw_patches_func, popup_window.histo_cb_area);
+
+	gtk_widget_queue_draw(popup_window.drawing_area);
 
 	GUI_CALLBACK_LEAVE();
 }
 
 
 static GtkWidget *
-describe_hbbox(ls_obj_handle_t ohandle, int i,
-               GtkWidget **button)
+result_widget(img_patches_t *ipatch, char *fname)
 {
-	search_param_t 	param;
-	int 		err;
+	GtkWidget *	widget;
+	char 		buf[BUFSIZ];
 
 	GUI_THREAD_CHECK();
-
-	err = read_param(ohandle, HISTO_BBOX_FMT, &param, i);
-	if (err) {
-		printf("XXX failed to read parameter <%s> \n", HISTO_BBOX_FMT);
-		/* 		label = gtk_label_new("ERR"); */
-		/* 		gtk_box_pack_start(GTK_BOX(container), label, TRUE, TRUE, 0); */
-		/* 		gtk_widget_show(label); */
-	} else {
-		char buf[BUFSIZ];
-
-		if(param.type == PARAM_HISTO) {
-			sprintf(buf, "%s (similarity %.0f%%)", param.name,
-			        100 - 100.0*param.distance);
-			*button = gtk_check_button_new_with_label(buf);
-			g_signal_connect (G_OBJECT(*button), "toggled",
-			                  G_CALLBACK(cb_draw_res_layer), GINT_TO_POINTER(i));
-			gtk_object_set_user_data(GTK_OBJECT(*button), GINT_TO_POINTER(i));
-
-
-			gtk_widget_show(*button);
-		} else {
-			printf("param type not histo !!! %d \n", param.type);
-		}
-	}
-	return *button;
+	sprintf(buf, "%s (similarity %.0f%%)", fname, 
+	    100 - 100.0*ipatch->distance);
+	widget = gtk_check_button_new_with_label(buf);
+	g_signal_connect(G_OBJECT(widget), "toggled",
+	    G_CALLBACK(cb_draw_results), NULL);
+	gtk_object_set_user_data(GTK_OBJECT(widget), ipatch);
+	gtk_widget_show(widget);
+	return widget;
 }
 
 
@@ -257,12 +228,11 @@ realize_event(GtkWidget *widget, GdkEventAny *event, gpointer data)
 }
 
 
-
 static void
-draw_hbbox_func(GtkWidget *widget, void *ptr)
+draw_patches_func(GtkWidget *widget, void *ptr)
 {
-	int i = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget)));
-	region_t region;
+	img_patches_t *ipatch = 
+	    (img_patches_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
 	RGBPixel mask = colorMask;
 	RGBPixel color = green;
 
@@ -271,47 +241,13 @@ draw_hbbox_func(GtkWidget *widget, void *ptr)
 	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
 		/* don't draw, but still need to refresh */
 		mask = clearMask;
-
-		/* can't draw clear, lest we wipe out overlapping box */
-		//color = clearColor;
 	}
 
-	region = draw_bounding_box(popup_window.layers[RES_LAYER], 1,
-	                           popup_window.hooks->ohandle,
-	                           color, mask, HISTO_BBOX_FMT, i);
+	draw_patches(popup_window.layers[RES_LAYER], 1,
+	    color, mask, ipatch);
 
-	/* refresh */
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-	                           region.xmin, region.ymin,
-	                           region.xsiz, region.ysiz);
 }
 
-static void
-draw_face_func(GtkWidget *widget, void *ptr)
-{
-	region_t region;
-	RGBPixel mask = colorMask;
-	RGBPixel color = red;
-	int num_faces = popup_window.nfaces;
-
-	/* draw faces, if on */
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-		/* don't draw, but still need to refresh */
-		mask = clearMask;
-	}
-
-	for(int i=0; i<num_faces; i++) {
-		region = draw_bounding_box(popup_window.layers[RES_LAYER], 1, 
-		                           popup_window.hooks->ohandle,
-		                           color, mask, FACE_BBOX_FMT, i);
-		/* refresh */
-		gtk_widget_queue_draw_area(popup_window.drawing_area,
-		                           region.xmin, region.ymin,
-		                           region.xsiz, region.ysiz);
-
-	}
-
-}
 
 void *
 image_highlight_main(void *ptr)
@@ -493,7 +429,6 @@ cb_clear_highlight_layer(GtkWidget *widget, GdkEventButton *event, gpointer ptr)
 	                           0, 0,
 	                           img->width,
 	                           img->height);
-
 	GUI_CALLBACK_LEAVE();
 }
 
@@ -554,9 +489,13 @@ search_popup_add(img_search *ssearch, int nsearch)
 	if (popup_window.window == NULL) {
 		return;
 	}
-	/* Put the list of searches in the ones we can select in the popup menu */
+	/* 
+	 * Put the list of searches in the ones we can select in the.
+	 * popup menu 
+	 */
 	item = gtk_menu_item_new_with_label(ssearch->get_name());
 	gtk_widget_show(item);
+
 	/* XXX change to obj pointer */
 	g_object_set_data(G_OBJECT(item), "user data", (void *)(nsearch - 1));
 	gtk_menu_shell_append(GTK_MENU_SHELL(popup_window.example_list), item);
@@ -593,11 +532,12 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	sname =  gtk_entry_get_text(GTK_ENTRY(popup_window.search_name));
 	if (strlen(sname) < 1) {
 		dialog = gtk_dialog_new_with_buttons("Filter Name",
-		                                     GTK_WINDOW(popup_window.window),
-		                                     GTK_DIALOG_DESTROY_WITH_PARENT,
-		                                     GTK_STOCK_OK, GTK_RESPONSE_NONE, NULL);
+				     GTK_WINDOW(popup_window.window),
+				     GTK_DIALOG_DESTROY_WITH_PARENT,
+				     GTK_STOCK_OK, GTK_RESPONSE_NONE, NULL);
 		label = gtk_label_new("Please provide a name");
-		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), label);
+		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), 
+			label);
 		gtk_widget_show_all(dialog);
 		result = gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(dialog);
@@ -639,10 +579,7 @@ clear_selection( GtkWidget *widget )
 	                      colorMask, clearColor);
 
 	/* refresh */
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-	                           bbox.min_x, bbox.min_y,
-	                           bbox.max_x - bbox.min_x + 1,
-	                           bbox.max_y - bbox.min_y + 1);
+	gtk_widget_queue_draw(popup_window.drawing_area);
 
 }
 
@@ -664,10 +601,7 @@ redraw_selections()
 		                      1, colorMask, red);
 	}
 
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-	                           0, 0,
-	                           img->width,
-	                           img->height);
+	gtk_widget_queue_draw(popup_window.drawing_area);
 }
 
 static void
@@ -683,10 +617,7 @@ draw_selection( GtkWidget *widget )
 	image_draw_bbox_scale(popup_window.layers[SELECT_LAYER], &bbox, 1, colorMask, red);
 
 	/* refresh */
-	gtk_widget_queue_draw_area(popup_window.drawing_area,
-	                           bbox.min_x, bbox.min_y,
-	                           bbox.max_x - bbox.min_x + 1,
-	                           bbox.max_y - bbox.min_y + 1);
+	gtk_widget_queue_draw(popup_window.drawing_area);
 
 
 }
@@ -1120,10 +1051,7 @@ do_img_popup(GtkWidget *widget, search_set *set)
 		GtkWidget *box3 = gtk_vbox_new(FALSE, 0);
 		gtk_container_add(GTK_CONTAINER(frame), box3);
 
-		popup_window.face_cb_area = gtk_vbox_new(FALSE, 0);
 		popup_window.histo_cb_area = gtk_vbox_new(FALSE, 0);
-		gtk_box_pack_start(GTK_BOX (box3),
-		                   popup_window.face_cb_area, FALSE, FALSE, 0);
 		gtk_box_pack_start(GTK_BOX (box3),
 		                   popup_window.histo_cb_area, FALSE, FALSE, 0);
 
@@ -1253,39 +1181,31 @@ do_img_popup(GtkWidget *widget, search_set *set)
 
 	popup_window.nselections = 0;
 
-	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(popup_window.scroll),
-	                                      eb);
-	gtk_container_add(GTK_CONTAINER(popup_window.image_area), popup_window.scroll);
+	gtk_scrolled_window_add_with_viewport(
+	    GTK_SCROLLED_WINDOW(popup_window.scroll), eb);
+	gtk_container_add(GTK_CONTAINER(popup_window.image_area), 
+	    popup_window.scroll);
 
 
 	/*
 	 * add widgets to show search results 
 	 */
-	gtk_container_foreach(GTK_CONTAINER(popup_window.face_cb_area),
-	                      remove_func, popup_window.face_cb_area);
 	gtk_container_foreach(GTK_CONTAINER(popup_window.histo_cb_area),
-	                      remove_func, popup_window.histo_cb_area);
+	    remove_func, popup_window.histo_cb_area);
 
 	button = NULL;
 
-	popup_window.nfaces = thumb->nfaces;
-	if (thumb->nfaces) {
-		sprintf(buf, "faces (%d)", thumb->nfaces);
-		button = gtk_check_button_new_with_label(buf);
-		g_signal_connect (G_OBJECT(button), "toggled",
-				  G_CALLBACK(cb_draw_res_layer), NULL);
-		gtk_box_pack_start(GTK_BOX(popup_window.face_cb_area), button,
-				   FALSE, FALSE, 0);
-	}
-
-	for(int i=0; i<thumb->nboxes; i++) {
-		GtkWidget *widget;
-		widget = describe_hbbox(popup_window.hooks->ohandle,
-					i, &button);
-		gtk_box_pack_start(GTK_BOX(popup_window.histo_cb_area), widget,
-				   FALSE, FALSE, 0);
-	}
-
+  	/* XXX test */
+        search_name_t *cur;
+        for (cur = active_searches; cur != NULL; cur = cur->sn_next) {
+                img_patches_t *ipatch;
+                ipatch = get_patches(popup_window.hooks->ohandle, cur->sn_name);
+                if (ipatch) {
+			widget = result_widget(ipatch, cur->sn_name);
+			gtk_box_pack_start(GTK_BOX(popup_window.histo_cb_area),
+			     widget, FALSE, FALSE, 0);
+                }
+        }
 	gtk_widget_queue_resize(popup_window.window);
 	gtk_widget_show_all(popup_window.window);
 

@@ -11,6 +11,16 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
+
 #ifndef _SNAP_FIND_H_
 #define _SNAP_FIND_H_	1
 
@@ -27,8 +37,6 @@ typedef struct thumbnail_t {
 	TAILQ_ENTRY(thumbnail_t) link;
 	char 		name[COMMON_MAX_NAME];		/* name of image */
 	char 		device[COMMON_MAX_NAME];	/* name of device */
-	int		nboxes;	/* number of histo regions */
-	int             nfaces;	/* number of faces */
 	ls_obj_handle_t img_obj;	/* object being veiwed */
 	image_hooks_t   *hooks;
 	int              marked; /* if the user 'marked' this thumbnail */
@@ -38,6 +46,16 @@ typedef struct thumbnail_t {
 typedef TAILQ_HEAD(thumblist_t, thumbnail_t) thumblist_t;
 extern thumblist_t thumbnails;
 extern thumbnail_t *cur_thumbnail;
+
+/*
+ * keep list of running searches.
+ */
+typedef struct search_name {
+	char *			sn_name;
+	struct search_name *	sn_next;
+} search_name_t;
+
+extern search_name_t * active_searches;
 
 #ifdef __cplusplus
 extern "C"
