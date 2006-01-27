@@ -11,6 +11,15 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
 
 /*
  * face detector 
@@ -81,7 +90,6 @@ f_fini_opencv_fdetect(void *fdata)
 {
 	opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
 
-
 	cvReleaseHidHaarClassifierCascade(&fconfig->haar_cascade);
 	free(fconfig->name);
 	free(fconfig);
@@ -94,50 +102,30 @@ f_eval_opencv_fdetect(lf_obj_handle_t ohandle, void *fdata)
 {
 	int             pass = 0;
 	RGBImage *		img;
-	search_param_t  param;
 	opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
 	int             err;
 	bbox_list_t	    blist;
-	int				i;
 	bbox_t *		cur_box;
 	size_t			len;
 
 	lf_log(LOGL_TRACE, "f_eval_opencv_fdetect: enter\n");
 
-	/*
-	  * get the img
-	  */
+	/* get the img */
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
 	assert(err == 0);
 
 
 	TAILQ_INIT(&blist);
 	pass = opencv_face_scan(img, &blist, fconfig);
+	save_patches(ohandle, fconfig->name, &blist);
 
-	i = 0;
 	while (!(TAILQ_EMPTY(&blist))) {
 		cur_box = TAILQ_FIRST(&blist);
-		param.type = PARAM_FACE;
-		param.bbox.xmin = cur_box->min_x;
-		param.bbox.ymin = cur_box->min_y;
-		param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
-		param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
-		write_param(ohandle, FACE_BBOX_FMT, &param, i);
 		TAILQ_REMOVE(&blist, cur_box, link);
 		free(cur_box);
-		i++;
 	}
 
-	/*
-	 * save 'pass' in attribs 
-	 */
-	err = lf_write_attr(ohandle, NUM_FACE, sizeof(int),
-	                    (char *) &pass);
-	assert(!err);
 	lf_log(LOGL_TRACE, "found %d faces\n", pass);
-
-
-	lf_log(LOGL_TRACE, "f_eval_opencv_fdetect: done\n");
 	return pass;
 }
 

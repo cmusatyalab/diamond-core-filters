@@ -13,6 +13,14 @@
 
 
 /*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+/*
  * texture filter
  */
 
@@ -85,14 +93,6 @@ read_texture_args(texture_args_t *texture_args,
 }
 
 
-static void
-write_notify_f(void *cont, search_param_t *param)
-{
-	write_notify_context_t *context = (write_notify_context_t *)cont;
-	write_param(context->ohandle, HISTO_BBOX_FMT, param, param->id);
-}
-
-
 int
 f_init_texture_detect(int numarg, char **args, int blob_len,
                       void *blob, const char *filt_name, void **f_datap)
@@ -136,16 +136,12 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 	IplImage 	*img = NULL;
 	IplImage 	*dst_img = NULL;
 	RGBImage      * rgb_img = NULL;
-	size_t 		bsize;
 	size_t 		len;
 	float			min_simularity;
 	texture_args_t  *targs = (texture_args_t *)f_datap;
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
-	int				i;
 	int			rgb_alloc = 0;
-	search_param_t param;
-	int ntexture;
 
 	lf_log(LOGL_TRACE, "f_texture_detect: enter");
 
@@ -180,62 +176,28 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 	}
 	if (pass >= targs->min_matches) {
 
-		/* increase num_histo counter (for boxes in app)*/
-		int num_histo = 0;
-		bsize = sizeof(int);
-		err = lf_read_attr(ohandle, NUM_HISTO, &bsize, (char *)&num_histo);
-		if (err)
-			num_histo=0;
-
-		/* increase the ntexture counter */
-		bsize = sizeof(int);
-		err = lf_read_attr(ohandle, NUM_TEXTURE, &bsize, (char *)&ntexture);
-		if(err)
-			ntexture = 0;
-		ntexture= ntexture+pass;
-		err = lf_write_attr(ohandle, NUM_TEXTURE, sizeof(int), (char *)&ntexture);
-		ASSERT(!err);
+		save_patches(ohandle, targs->name, &blist);
 
 
 		min_simularity = 2.0;
-		i = num_histo;
 		while (!(TAILQ_EMPTY(&blist))) {
 			cur_box = TAILQ_FIRST(&blist);
-			param.type = PARAM_HISTO;  //temporary hack
-			param.bbox.xmin = cur_box->min_x;
-			param.bbox.ymin = cur_box->min_y;
-			param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
-			param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
-			param.distance = cur_box->distance;
-
-			if ((1.0 - param.distance) < min_simularity) {
-				min_simularity = 1.0 - param.distance;
+			if ((1.0 - cur_box->distance) < min_simularity) {
+				min_simularity = 1.0 - cur_box->distance;
 			}
-
-			strncpy(param.name, targs->name, PARAM_NAME_MAX);
-			param.name[PARAM_NAME_MAX] = '\0';
-			param.id = i;
-			write_notify_context_t context;
-			context.ohandle = ohandle;
-			write_notify_f(&context, &param);
 			TAILQ_REMOVE(&blist, cur_box, link);
-			free(cur_box);
-			i++;
 		}
-
-		/* write out the update number of matches, XXX clean this up soon */
-		num_histo = num_histo+pass;
-		err = lf_write_attr(ohandle, NUM_HISTO, sizeof(int), (char *)&num_histo);
-		ASSERT(!err);
 
 		if (min_simularity == 2.0) {
 			pass = 0;
-			printf("min unchange \n");
 		} else {
 			pass = (int)(100.0 * min_simularity);
-			//printf("min change \n");
 		}
 	} else {
+		while (!(TAILQ_EMPTY(&blist))) {
+			cur_box = TAILQ_FIRST(&blist);
+			TAILQ_REMOVE(&blist, cur_box, link);
+		}
 		pass = 0;
 	}
 done:
@@ -250,9 +212,9 @@ done:
 		ft_free((char*)rgb_img);
 	}
 
-	char buf[BUFSIZ];
-	sprintf(buf, "_texture_detect.int");
-	lf_write_attr(ohandle, buf, sizeof(int), (char *)&pass);
+	// XXX char buf[BUFSIZ];
+	// XXX sprintf(buf, "_texture_detect.int");
+	// XXX lf_write_attr(ohandle, buf, sizeof(int), (char *)&pass);
 
 	return pass;
 }

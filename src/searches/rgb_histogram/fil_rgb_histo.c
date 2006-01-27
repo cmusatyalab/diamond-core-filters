@@ -11,6 +11,15 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
 
 /*
  * color histogram filter
@@ -109,35 +118,6 @@ done:
 
 
 
-typedef struct write_notify_context_t
-{
-	lf_obj_handle_t ohandle;
-
-}
-write_notify_context_t;
-
-
-#ifdef __cplusplus
-extern          "C"
-{
-#endif
-
-	static void     write_notify_f(void *cont, search_param_t * param);
-
-#ifdef __cplusplus
-}
-#endif
-
-static void
-write_notify_f(void *cont, search_param_t * param)
-{
-	write_notify_context_t *context = (write_notify_context_t *) cont;
-
-	write_param(context->ohandle, HISTO_BBOX_FMT, param,
-	            param->id);
-	lf_log(LOGL_TRACE, "found histo match");
-}
-
 
 /*
  ********************************************************************** */
@@ -215,7 +195,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	HistoII        *ii = NULL;
 	int             rv = 0;     /* return value */
 	bbox_t *		cur_box;
-	int				i;
 	int				ii_alloc = 0, img_alloc = 0;
 	size_t			len;
 
@@ -251,47 +230,24 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	/*
 	 * scan the image
 	 */
-	write_notify_context_t context;
-	context.ohandle = ohandle;
 
 	TAILQ_INIT(&blist);
 	pass = 	histo_scan_image(hconfig->name, img, ii, hconfig,
 	                         hconfig->req_matches, &blist);
 
-	i = nhisto;
+	save_patches(ohandle, hconfig->name, &blist);
+
+
 	min_simularity = 2.0;
 	while (!(TAILQ_EMPTY(&blist))) {
-		search_param_t param;
 		cur_box = TAILQ_FIRST(&blist);
-		param.type = PARAM_HISTO;
-		param.bbox.xmin = cur_box->min_x;
-		param.bbox.ymin = cur_box->min_y;
-		param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
-		param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
-		param.distance = cur_box->distance;
 		if ((1.0 - cur_box->distance) < min_simularity) {
 			min_simularity = 1.0 - cur_box->distance;
 		}
-		strncpy(param.name, hconfig->name, PARAM_NAME_MAX);
-		param.name[PARAM_NAME_MAX] = '\0';
-		param.id = i;
-		write_notify_f(&context, &param);
 		TAILQ_REMOVE(&blist, cur_box, link);
 		free(cur_box);
-		i++;
 	}
 
-	/*
-	 * save some stats 
-	 */
-	nhisto += pass;
-	err = lf_write_attr(ohandle, NUM_HISTO, sizeof(int),
-	                    (char *) &nhisto);
-	ASSERT(!err);
-
-	/*
-	 * XXX ?? 
-	 */
 	if (min_simularity == 2.0) {
 		rv = 0;
 	} else {

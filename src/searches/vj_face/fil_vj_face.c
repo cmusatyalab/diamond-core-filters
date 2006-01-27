@@ -11,6 +11,15 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
 
 /*
  * face detector 
@@ -36,24 +45,7 @@
 
 typedef struct {
 	double          over_thresh;
-}
-overlap_state_t;
-
-// #define VERBOSE 1
-
-static int
-process_region(ii_image_t * ii, int lev1, int lev2, region_t * bboxp,
-               double scale, double m)
-{
-	int             found = 0;
-	/*
-	 * test the region 
-	 */
-	found = test_region(ii, lev1, lev2, bboxp->xmin, bboxp->ymin, scale, m)
-	        ? 1 : 0;
-
-	return found;
-}
+} overlap_state_t;
 
 
 
@@ -61,8 +53,14 @@ int
 f_init_vj_detect(int numarg, char **args, int blob_len, void *blob_data,
 		const char *fname, void **fdatap)
 {
+	static int      inited = 0;
 
 	fconfig_fdetect_t *fconfig;
+
+	if (!inited) {
+		init_classifier();
+		inited = 1;
+	}
 
 	if (numarg != 9) {
 		lf_log( LOGL_TRACE, "bad args in fdetect\n");
@@ -126,25 +124,17 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, void *fdata)
 	int             pass = 0;
 	ii_image_t     *ii;
 	ii2_image_t    *ii2;
-	search_param_t  param;
 	fconfig_fdetect_t *fconfig = (fconfig_fdetect_t *) fdata;
-	int             count;
 	size_t           bsize;
 	int             err;
-	double          last_scale = 0.0;
+	bbox_t *		cur_box;
 	bbox_list_t		blist;
 	double          xsiz,
 	ysiz;       /* size of window px */
 	dim_t           width,
 	height;     /* size of image px */
-	static int      inited = 0;
 
 	lf_log(LOGL_TRACE, "f_detect: enter\n");
-
-	if (!inited) {
-		init_classifier();
-		inited = 1;
-	}
 
 	xsiz = fconfig->xsize;
 	ysiz = fconfig->ysize;
@@ -168,71 +158,18 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, void *fdata)
 	assert(!err);
 
 
+	TAILQ_INIT(&blist);
+	pass = face_scan_image(ii, ii2, fconfig, &blist, height, width);
 
-	/*
-	 * get count 
-	 */
-	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, NUM_FACE, &bsize, (char *) &count);
-	if (err)
-		count = 0;              /* XXX */
-
-	if (count > 0) {
-		int             i;
-		/*
-		 * foreach 'param in attribs 
-		 */
-		for (i = 0; i < count; i++) {
-			read_param(ohandle, FACE_BBOX_FMT, &param, i);
-			/*
-			 * We keep track of the last scale we made to the table
-			 * if it is not what we needed then we scale it now.  Ideally
-			 * these are going to be ordered by the scale.
-			 */
-			if (last_scale != param.scale) {
-				scale_feature_table(param.scale);
-			}
-			if (process_region(ii, fconfig->lev1, fconfig->lev2, &param.bbox,
-			                   param.scale, param.img_var)) {
-				param.lev1 = fconfig->lev1;
-				param.lev2 = fconfig->lev2;
-				/*
-				 * ok to potentially overwrite since we just read this anyway 
-				 */
-				write_param(ohandle, FACE_BBOX_FMT, &param, pass);
-				pass++;
-			}
-		}
-	} else {
-		bbox_t *		cur_box;
-		int				i;
-		search_param_t	param;
+	save_patches(ohandle, fconfig->name, &blist);
 
 
-		TAILQ_INIT(&blist);
-		pass = face_scan_image(ii, ii2, fconfig, &blist, height, width);
-
-		i = 0;
-		while (!(TAILQ_EMPTY(&blist))) {
-			cur_box = TAILQ_FIRST(&blist);
-			param.type = PARAM_FACE;
-			param.bbox.xmin = cur_box->min_x;
-			param.bbox.ymin = cur_box->min_y;
-			param.bbox.xsiz = cur_box->max_x - cur_box->min_x;
-			param.bbox.ysiz = cur_box->max_y - cur_box->min_y;
-			write_param(ohandle, FACE_BBOX_FMT, &param, i);
-			TAILQ_REMOVE(&blist, cur_box, link);
-			free(cur_box);
-			i++;
-		}
+	while (!(TAILQ_EMPTY(&blist))) {
+		cur_box = TAILQ_FIRST(&blist);
+		TAILQ_REMOVE(&blist, cur_box, link);
+		free(cur_box);
 	}
 
-	/*
-	 * save 'pass in attribs 
-	 */
-	err = lf_write_attr(ohandle, NUM_FACE, sizeof(int),
-	                    (char *) &pass);
-	assert(!err);
 	lf_log(LOGL_TRACE, "found %d faces\n", pass);
 	/*
 	 * save some stats 
@@ -249,11 +186,6 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, void *fdata)
 	 * struct. 
 	 */
 	ft_free((char *) ii2);
-	ii2 = NULL;
-	err = lf_write_attr(ohandle, II_SQ_DATA, sizeof(char *), (char *) &ii2);   /* pseudo
-		                                                                                         * delete 
-		                                                                                         */
-	assert(!err);
 
 	lf_log(LOGL_TRACE, "f_detect: done\n");
 	return pass;
