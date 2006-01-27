@@ -12,6 +12,16 @@
  */
 
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
+
 #ifndef _LIB_RESULTS_H_
 #define _LIB_RESULTS_H_	1
 
@@ -39,6 +49,12 @@ typedef enum param_type_t {
     PARAM_TEXTURE
 } param_type_t;
 
+typedef struct patch {
+    int                                 min_x;
+    int                                 min_y;
+    int                                 max_x;
+    int                                 max_y;
+} patch_t;
 
 typedef struct bbox {
     int                                 min_x;
@@ -50,6 +66,7 @@ typedef struct bbox {
 } bbox_t;
 
 typedef TAILQ_HEAD(bbox_list_t, bbox)   bbox_list_t;
+
 
 
 /*
@@ -71,6 +88,13 @@ typedef struct search_param
 } search_param_t;
 
 
+typedef struct img_patches {
+	int		num_patches;
+	double		distance;
+	patch_t		patches[0];	
+} img_patches_t;
+
+#define	IMG_PATCH_SZ(num) (sizeof(img_patches_t) + ((num) * sizeof(patch_t)))
 
 
 
@@ -86,6 +110,8 @@ typedef struct search_param
 #define NUM_TEXTURE      "_ntexture_passed.int"
 #define HISTO_BBOX_FMT   "_h_box%d.search_param"
 #define FACE_BBOX_FMT    "_f_box%d.search_param"
+
+#define FILTER_MATCHES  "_filter.%s.patches"
 
 #define POISON_FN  "poison_%s"
 
@@ -120,6 +146,10 @@ int write_param(lf_obj_handle_t ohandle, char *fmt,
                         search_param_t *param, int i);
 int read_param(lf_obj_handle_t ohandle, char *fmt,
                        search_param_t *param, int i);
+
+
+img_patches_t * get_patches(lf_obj_handle_t ohandle, char *fname);
+void save_patches(lf_obj_handle_t ohandle, char *fname, bbox_list_t *blist);
 
 
 char *ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name);
