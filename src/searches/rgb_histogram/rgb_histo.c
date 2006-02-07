@@ -871,7 +871,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 	dim_t           xsiz = hconfig->xsize;
 	dim_t           ysiz = hconfig->ysize;
 	bbox_t	 *		bbox;
-	patch_t        *patch;
+	histo_patch_t   *histo_patch;
 	int             done = 0;
 	int             pass;
 	float          scale;
@@ -904,12 +904,13 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 					histo_update_subimage(&h2, img, old_x, old_y, (int) x,
 					                      (int) y, xsiz, ysiz, hconfig->type);
 				}
-				patch = TAILQ_FIRST(&hconfig->patchlist);
+				histo_patch = TAILQ_FIRST(&hconfig->histo_patchlist);
 
-				while (!done && patch) {    /* foreach patch */
-					d = histo_distance(&patch->histo, &h2);
+				while (!done && histo_patch) {
+				  	/* foreach histo_patch */
+					d = histo_distance(&histo_patch->histo, &h2);
 
-					patch = TAILQ_NEXT(patch, link);
+					histo_patch = TAILQ_NEXT(histo_patch, link);
 					if (d < (1.0 - hconfig->simularity)) {  /* found match */
 						bbox = (bbox_t *) malloc(sizeof(*bbox));
 						bbox->min_x = x;
@@ -928,7 +929,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 							done = 1;
 						break;  /* no need to check other patches */
 					}           /* found match */
-				}               /* foreach patch */
+				}               /* foreach histo_patch */
 
 				old_x = (int) x;
 				old_y = (int) y;
@@ -954,7 +955,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 	dim_t           ysiz = hconfig->ysize;
 	bbox_t	 *		bbox;
 	bbox_t*	  		best_box = NULL;
-	patch_t        *patch;
+	histo_patch_t        *histo_patch;
 	int             done = 0;
 	int             pass;
 	int				count;
@@ -983,10 +984,10 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 			ysiz = hconfig->ysize;
 			while (((x + xsiz) < width) && ((y + ysiz) < height)) {
 				histo_get_histo(ii, (int) x, (int) y, xsiz, ysiz, &h2);
-				patch = TAILQ_FIRST(&hconfig->patchlist);
-				while (!done && patch) {    /* foreach patch */
-					d = histo_distance(&patch->histo, &h2);
-					patch = TAILQ_NEXT(patch, link);
+				histo_patch = TAILQ_FIRST(&hconfig->histo_patchlist);
+				while (!done && histo_patch) {    /* foreach patch */
+					d = histo_distance(&histo_patch->histo, &h2);
+					histo_patch = TAILQ_NEXT(histo_patch, link);
 
 					if ((num_req < 10) && (d < (1.0 - hconfig->simularity))  &&
 					    (d < best_box[num_req - 1].distance)) {  /* found match */
@@ -1028,7 +1029,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 							done = 1;
 						break;  /* no need to check other patches */
 					}
-				}               /* foreach patch */
+				}               /* foreach histo_patch */
 
 				xsiz *= scale_factor;
 				ysiz *= scale_factor;
@@ -1069,7 +1070,7 @@ old_histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 	dim_t           ysiz = hconfig->ysize;
 	bbox_t	 *		bbox;
 	bbox_t	  		best_box;
-	patch_t        *patch;
+	histo_patch_t        *histo_patch;
 	int             done = 0;
 	int             pass;
 	float          scale;
@@ -1107,11 +1108,11 @@ old_histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 					histo_update_subimage(&h2, img, old_x, old_y, (int) x,
 					                      (int) y, xsiz, ysiz, hconfig->type);
 				}
-				patch = TAILQ_FIRST(&hconfig->patchlist);
+				histo_patch = TAILQ_FIRST(&hconfig->histo_patchlist);
 
-				while (!done && patch) {    /* foreach patch */
-					d = histo_distance(&patch->histo, &h2);
-					patch = TAILQ_NEXT(patch, link);
+				while (!done && histo_patch) {    /* foreach patch */
+					d = histo_distance(&histo_patch->histo, &h2);
+					histo_patch = TAILQ_NEXT(histo_patch, link);
 
 					if ((num_req == 1) && (d < (1.0 - hconfig->simularity))  &&
 					    (d < best_box.distance)) {  /* found match */

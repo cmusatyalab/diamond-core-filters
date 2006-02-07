@@ -75,6 +75,8 @@ void image_fill_bbox_scale(RGBImage *, bbox_t *bbox, int scale,
                            RGBPixel mask, RGBPixel color);
                                                                                 
 
+/* In place image normalization */
+int rgb_normalize(RGBImage* img);
 
 #ifdef __cplusplus
 }

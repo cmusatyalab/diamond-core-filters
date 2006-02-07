@@ -79,7 +79,7 @@ static int
 patch_spec_read_args(histo_config_t * hconfig, int argc, char **args)
 {
 	int             i, j;
-	patch_t        *patch;
+	histo_patch_t   *histo_patch;
 	double          sum;
 	int             pass = 1;
 	int             nbins = HBINS * HBINS * HBINS;  /* XXX */
@@ -89,26 +89,26 @@ patch_spec_read_args(histo_config_t * hconfig, int argc, char **args)
 	 */
 	assert(HBINS == hconfig->bins);
 
-	TAILQ_INIT(&hconfig->patchlist);
+	TAILQ_INIT(&hconfig->histo_patchlist);
 	for (i = 0; i < hconfig->num_patches; i++) {
-		patch = (patch_t *)malloc(sizeof(*patch));
-		ASSERT(patch);
-		histo_clear(&patch->histo);
+		histo_patch = (histo_patch_t *)malloc(sizeof(*histo_patch));
+		ASSERT(histo_patch);
+		histo_clear(&histo_patch->histo);
 
 		argc -= nbins;
 		ASSERT(argc >= 0);
 
 		sum = 0.0;
 		for (j = 0; j < nbins; j++) {
-			patch->histo.data[j] = atof(*args++);
-			sum += patch->histo.data[j];
+			histo_patch->histo.data[j] = atof(*args++);
+			sum += histo_patch->histo.data[j];
 		}
-		patch->histo.weight = 1.0;
+		histo_patch->histo.weight = 1.0;
 		/*
 		 * any errors should be close to 1.0 
 		 */
 		assert(fabs(sum - 1.0) < 0.001);
-		TAILQ_INSERT_TAIL(&hconfig->patchlist, patch, link);
+		TAILQ_INSERT_TAIL(&hconfig->histo_patchlist, histo_patch, link);
 	}
 
 done:
@@ -168,12 +168,12 @@ f_init_histo_detect(int numarg, char **args, int blob_len,
 int
 f_fini_histo_detect(void *data)
 {
-	patch_t        *patch;
+	histo_patch_t        *histo_patch;
 	histo_config_t *hconfig = (histo_config_t *) data;
 
-	while ((patch = TAILQ_FIRST(&hconfig->patchlist))) {
-		TAILQ_REMOVE(&hconfig->patchlist, patch, link);
-		free(patch);
+	while ((histo_patch = TAILQ_FIRST(&hconfig->histo_patchlist))) {
+		TAILQ_REMOVE(&hconfig->histo_patchlist, histo_patch, link);
+		free(histo_patch);
 	}
 	free(hconfig);
 

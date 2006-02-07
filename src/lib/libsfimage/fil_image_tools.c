@@ -206,7 +206,6 @@ get_rgb_from_tiff(u_char* buf, off_t size)
 RGBImage*
 get_rgb_from_jpeg(u_char* buf, off_t size)
 {
-  	// TODO
   	assert(buf);
 
 	MyJPEG myjpeg;
@@ -258,3 +257,47 @@ get_rgb_img(lf_obj_handle_t ohandle)
 	return img;
 }
 
+// Does an in-place linear normalization of the given image
+// (each channel scaled independently)
+// Returns a 0 if all is well.
+//
+int
+rgb_normalize(RGBImage* img)
+{
+	assert(img);
+
+	uint8_t rmin=255, gmin=255, bmin=255;
+	uint8_t rmax=0,   gmax=0,   bmax=0;
+	double	rscale,	  gscale,   bscale;
+	int i, pixels;
+
+	pixels = img->width * img->height;
+	for (i=0; i < pixels; i++) {
+		uint8_t r = img->data[i].r;
+		uint8_t g = img->data[i].g;
+		uint8_t b = img->data[i].b;
+		if (r < rmin) { rmin = r; }
+		if (r > rmax) { rmax = r; }
+		if (g < gmin) { gmin = g; }
+		if (g > gmax) { gmax = g; }
+		if (b < bmin) { bmin = b; }
+		if (b > bmax) { bmax = b; }
+	}
+	fprintf(stderr, "r(%d,%d), g(%d,%d), b(%d,%d)\n",
+	    rmin,rmax, gmin,gmax, bmin,bmax);
+
+	if (rmin < rmax) {	// only normalize if channels differ
+	  rscale = (double)255.0/(rmax-rmin);
+	  img->data[i].r = (uint8_t)(rmin + rscale * (img->data[i].r - rmin));
+	}
+	if (gmin < gmax) {	// only normalize if channels differ
+	  gscale = (double)255.0/(gmax-gmin);
+	  img->data[i].g = (uint8_t)(gmin + gscale * (img->data[i].g - gmin));
+	}
+	if (bmin < bmax) {	// only normalize if channels differ
+	  bscale = (double)255.0/(bmax-bmin);
+	  img->data[i].b = (uint8_t)(bmin + bscale * (img->data[i].b - bmin));
+	}
+	  
+	return 0;
+}

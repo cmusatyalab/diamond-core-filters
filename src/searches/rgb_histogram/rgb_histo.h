@@ -45,7 +45,7 @@ HistoII;
 
 
 /* histogram build from file name, starting at minx, miny */
-typedef struct patch_t
+typedef struct histo_patch_t
 {
 	Histo     histo;
 	char          name[COMMON_MAX_PATH];
@@ -53,10 +53,10 @@ typedef struct patch_t
 	float        threshold;  /* max distance allowed to declare similar */
 	TAILQ_ENTRY(patch_t) link;
 }
-patch_t;
+histo_patch_t;
 
 
-typedef TAILQ_HEAD(patchlist_t, patch_t) patchlist_t;
+typedef TAILQ_HEAD(histo_patchlist_t, histo_patch_t) histo_patchlist_t;
 
 typedef enum {
     HISTO_INTERPOLATED,
@@ -76,7 +76,7 @@ typedef struct histo_config
 	int 		distance_type;  /* XXX fix this */
 	int 		num_patches;    /* num patches to match */
 	histo_type_t	type;	/* type of histogram */
-	patchlist_t   patchlist;
+	histo_patchlist_t   histo_patchlist;
 }
 histo_config_t;
 
