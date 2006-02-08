@@ -465,7 +465,7 @@ void
 rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 {
 	histo_config_t	hconfig;
-	patch_t		*	hpatch;
+	histo_patch_t	*	hpatch;
 	example_patch_t* epatch;
 	int				i;
 	int				pass;
@@ -486,11 +486,11 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 	hconfig.distance_type = metric;
 	hconfig.type = htype;
 
-	TAILQ_INIT(&hconfig.patchlist);
+	TAILQ_INIT(&hconfig.histo_patchlist);
 
 	i = 0;
 	TAILQ_FOREACH(epatch, &ex_plist, link) {
-		hpatch = (patch_t *) malloc(sizeof(*hpatch));
+		hpatch = (histo_patch_t *) malloc(sizeof(*hpatch));
 		histo_clear(&hpatch->histo);
 		assert(hpatch != NULL);
 
@@ -499,7 +499,7 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 		normalize_histo(&hpatch->histo);
 		hpatch->histo.weight = 1.0;
 
-		TAILQ_INSERT_TAIL(&hconfig.patchlist, hpatch, link);
+		TAILQ_INSERT_TAIL(&hconfig.histo_patchlist, hpatch, link);
 		i++;
 	}
 	hconfig.num_patches = i;

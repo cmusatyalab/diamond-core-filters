@@ -51,7 +51,7 @@ typedef struct histo_patch_t
 	char          name[COMMON_MAX_PATH];
 	uint32_t         minx, miny;
 	float        threshold;  /* max distance allowed to declare similar */
-	TAILQ_ENTRY(patch_t) link;
+	TAILQ_ENTRY(histo_patch_t) link;
 }
 histo_patch_t;
 
@@ -77,8 +77,7 @@ typedef struct histo_config
 	int 		num_patches;    /* num patches to match */
 	histo_type_t	type;	/* type of histogram */
 	histo_patchlist_t   histo_patchlist;
-}
-histo_config_t;
+} histo_config_t;
 
 
 #define II_PROBE(ii,x,y)	((ii)->data[(y) * ((ii)->width) + (x)])
