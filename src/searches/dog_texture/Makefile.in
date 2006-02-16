@@ -18,10 +18,12 @@ OBJROOT = @OBJROOT@
 CVCPPFLAGS = @CVCPPFLAGS@
 CVLDFLAGS = @CVLDFLAGS@
 
+STATIC_LIBS = @STATIC_LIBS@
+
 
 
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
-CPPFLAGS += ${CVCPPFLAGS}
+CPPFLAGS += ${CVCPPFLAGS}  -ffreestanding
 LDFLAGS += ${CVLDFLAGS}
 
 
@@ -31,8 +33,7 @@ FILTER_LIB_SRCS = fil_texture.cc texture_tools.c
 
 FILTER_LIB_OBJS = fil_texture.o texture_tools.o
 
-SEARCHLET_LIBS += -lm -locvimage -lcvaux -lopencv  -lsfimage  -lresults
-SEARCHLET_LIBS += -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -lm -locvimage -lsfimage  -lresults
 
 
 SEARCH_LIB_SRCS = dog_texture_search.cc  texture_tools.c
@@ -40,7 +41,7 @@ SEARCH_LIB_SRCS = dog_texture_search.cc  texture_tools.c
 SEARCH_LIB_OBJS = dog_texture_search.o  texture_tools.o
 
 
-SEARCH_LIB_LIBS += -lm -lcvaux -lopencv  -locvimage
+SEARCH_LIB_LIBS += -lm -locvimage
 
 #
 # All the source files that are needed for depend.
@@ -57,11 +58,11 @@ TARGETS = fil_dog_texture.so dog_texture_search.so
 SHARED_LIB += fil_dog_texture.so dog_texture_search.so dog_texture.sf_conf
 
 include ${OBJROOT}/Makefile.template
-                                                                                
+
 fil_dog_texture.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(LDFLAGS)
-                                                                                
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(STATIC_LIBS) $(LDFLAGS)
+
 dog_texture_search.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(LDFLAGS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(STATIC_LIBS) $(LDFLAGS)
 
 default: $(TARGETS)

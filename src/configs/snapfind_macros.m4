@@ -1,13 +1,27 @@
 AC_SUBST(CVCPPFLAGS)
 AC_SUBST(CVLDFLAGS)
 
+AC_DEFUN([ADD_LIB_SEARCH],
+    [
+       LIB_SEARCH_DIRS="${LIB_SEARCH_DIRS} $1"
+    ])
+
+AC_ARG_WITH(staticlib, 
+    [--with-staticlib=DIR - add DIR to search path for static libraries],
+    [ pfx="`(cd ${withval} ; pwd)`"
+      ADD_LIB_SEARCH(${pfx})
+    ])
+	
+
+
 AC_ARG_WITH(opencv, 
     [--with-opencv=DIR - root of opencv install dir],
     [ pfx="`(cd ${withval} ; pwd)`"
       CVCPPFLAGS="-I${pfx}/include/ -I${pfx}/include/opencv/"
-      CVLDFLAGS="-L${pfx}/lib/"
-    ]
-)
+      CVLDFLAGS=" ${pfx}/lib/libcvaux.a ${pfx}/lib/libopencv.a "
+      ADD_LIB_SEARCH(${pfx}/lib)
+    ])
+
 
 AC_DEFUN(SNAPFIND_OPTIONS_SYS,
   [AC_ARG_WITH($1,
@@ -28,4 +42,30 @@ AC_DEFUN(SNAPFIND_OPTION_LIBRARY,
     [ pfx="`(cd ${withval} ; pwd)`"
       LDFLAGS="${LDFLAGS} -L${pfx}"]) 
     ])
+
+#
+# this is a work around for gcc 4.0.  There is a big design
+# flaw that does not let you link against static libraries when
+# building .so's to ship as the searchlets.  To get around this
+# we find all the libraries and include them as part of the link
+# instead of using the -l option.  Yuck, but until they fix the loader...
+#
+
+AC_DEFUN([CHECK_STATIC_LIB],
+   [
+    found_static_lib="no";
+    for dir in ${LIB_SEARCH_DIRS}; do
+        if test -f "$dir/$1"; then
+    	    STATIC_LIBS="$STATIC_LIBS $dir/$1";
+	    found_static_lib="yes";
+            break;
+        fi
+    done
+    if test x_$found_static_lib != x_yes; then
+	AC_MSG_ERROR(Missing $1: try using --with-staticlib option)
+    fi
+    AC_SUBST(STATIC_LIBS)
+    ])
+
+
 

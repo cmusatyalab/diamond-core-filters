@@ -21,6 +21,11 @@ CFLAGS="${CFLAGS} -Wall -D_REENTRANT -D_THREAD_SAFE -ffast-math"
 #AC_CONFIG_AUX_DIR(configs)
 sinclude(configs/snapfind_macros.m4)
 
+#
+# Paths to search for static libraries when building searchlet code.
+#
+ADD_LIB_SEARCH([/usr/lib])
+ADD_LIB_SEARCH([/lib])
 
 SNAPFIND_OPTIONS_SYS(diamond)
 
@@ -48,9 +53,19 @@ AC_CHECK_LIB([tools], [main], ,
 	[AC_MSG_ERROR(Missing libtools: try using --with-diamond option)])
 
 
+#
+# Find static libraries we need for compiling the searchlet code.
+#
+CHECK_STATIC_LIB([libtiff.a])
+CHECK_STATIC_LIB([libjpeg.a])
+CHECK_STATIC_LIB([libz.a])
+
 # deal with the cv stuff
-AC_CHECK_LIB([cvaux], [main])
-AC_CHECK_LIB([opencv], [main])
+AC_CHECK_LIB([cvaux], [main], ,
+	[AC_MSG_ERROR(Missing libcvaux: try using --with-opencv option)])
+
+AC_CHECK_LIB([opencv], [main], ,
+	[AC_MSG_ERROR(Missing libopencv: try using --with-opencv option)])
 
 
 # standard system libraries.

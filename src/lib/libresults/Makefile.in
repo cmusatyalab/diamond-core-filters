@@ -16,8 +16,6 @@ SRCDIR = @srcdir@
 VPATH = @srcdir@
 OBJROOT = @OBJROOT@
 
-
-
 LIBSRCS += lib_results.c 
 
 LIBOBJS += lib_results.o

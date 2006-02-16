@@ -16,7 +16,6 @@ SRCDIR = @srcdir@
 VPATH = @srcdir@
 OBJROOT = @OBJROOT@
 CVCPPFLAGS = @CVCPPFLAGS@
-CVLDFLAGS = @CVLDFLAGS@
 
 CPPFLAGS += $(CVCPPFLAGS)                                                                                
 

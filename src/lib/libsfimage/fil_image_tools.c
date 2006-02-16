@@ -250,7 +250,7 @@ get_rgb_img(lf_obj_handle_t ohandle)
 	    img = get_rgb_from_png(obj_data, data_len);
 	    break;
 	  default:
-	    assert(0);		// Unknown image format
+	    //assert(0);		// Unknown image format
 	    break;
 	}
 

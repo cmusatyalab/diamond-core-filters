@@ -17,13 +17,13 @@ VPATH = @srcdir@
 OBJROOT = @OBJROOT@
 CVCPPFLAGS = @CVCPPFLAGS@
 CVLDFLAGS = @CVLDFLAGS@
-                                                                                
+
 
 LIBSRCS += fil_image_tools.c image_draw.c image_tools.c
 LIBSRCS += readjpeg.c readtiff.c rgb.c
 
 LIBOBJS += fil_image_tools.o image_draw.o image_tools.o
-LIBOBJS += readjpeg.o readtiff.o rgb.o
+LIBOBJS += readjpeg.o readtiff.o rgb.o 
 
 SRCS = $(LIBSRCS)
 OBJS = $(LIBOBJS) 

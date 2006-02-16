@@ -15,8 +15,8 @@ ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
-CVCPPFLAGS = @CVCPPFLAGS@
-CVLDFLAGS = @CVLDFLAGS@
+
+STATIC_LIBS = @STATIC_LIBS@
 
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
 
@@ -26,7 +26,7 @@ FILTER_LIB_SRCS = fil_rgb_histo.c rgb_histo.c
 
 FILTER_LIB_OBJS =  fil_rgb_histo.o rgb_histo.o
 
-SEARCHLET_LIBS += -Wl,-static -lm -lsfimage -lresults -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -lm -lsfimage -lresults 
 
 SEARCH_LIB_SRCS = rgb_histo.c rgb_histo_search.cc histo_ii.cc
 
@@ -51,9 +51,9 @@ SHARED_LIB += fil_rgb_histo.so rgb_histo_search.so rgb_histo.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_rgb_histo.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(LDFLAGS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(STATIC_LIBS) $(LDFLAGS)
                                                                                 
 rgb_histo_search.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(LDFLAGS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(SEARCH_LIB_OBJS) $(STATIC_LIBS) $(SEARCH_LIB_LIBS) $(LDFLAGS)
 
 default: $(TARGETS)

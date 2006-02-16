@@ -15,10 +15,6 @@ ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
-CVCPPFLAGS = @CVCPPFLAGS@
-CVLDFLAGS = @CVLDFLAGS@
-
-
 
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
                                                                                 
@@ -48,10 +44,10 @@ SHARED_LIB = fil_text_attr.so text_attr_search.so text_attr.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_text_attr.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(FILTER_LIB_OBJS)
                                                                                 
 text_attr_search.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS)
+	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(SEARCH_LIB_OBJS)
 
 cln:
 	$(RM) core.*
