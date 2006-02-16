@@ -61,11 +61,9 @@ CHECK_STATIC_LIB([libjpeg.a])
 CHECK_STATIC_LIB([libz.a])
 
 # deal with the cv stuff
-AC_CHECK_LIB([cvaux], [main], ,
-	[AC_MSG_ERROR(Missing libcvaux: try using --with-opencv option)])
+AC_CHECK_LIB([cvaux], [main], , )
 
-AC_CHECK_LIB([opencv], [main], ,
-	[AC_MSG_ERROR(Missing libopencv: try using --with-opencv option)])
+AC_CHECK_LIB([opencv], [main], , )
 
 
 # standard system libraries.
