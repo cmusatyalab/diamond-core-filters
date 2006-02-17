@@ -13,6 +13,16 @@
 
 
 #
+#  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+#
+#  This software is distributed under the terms of the Eclipse Public
+#  License, Version 1.0 which can be found in the file named LICENSE.
+#  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+#  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+#
+
+
+#
 # Where the headers, libraries, and binaries should be placed during
 # the build process.
 #
@@ -41,14 +51,15 @@ vpath %.h $(VPATH)
 LDFLAGS += @LDFLAGS@
 LDFLAGS += -L${BUILD_LIB_PATH} 
 
+#Just to go overboard and be sure
+CFLAGS += -D_THREAD_SAFE
+CFLAGS += -D_REENTRANT
 # general flags
 CFLAGS += -O2
 CFLAGS += -ggdb
 CFLAGS += -DDEBUG 
 CFLAGS += -Wall
-#Just to go overboard and be sure
-CFLAGS += -D_REENTRANT
-CFLAGS += -D_THREAD_SAFE
+CFLAGS += -ffast-math
 
 
 
