@@ -12,6 +12,17 @@
  */
 
 
+
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
+
 /*
  * filter to make an integral image from raw data in pgm format
  */
@@ -203,9 +214,9 @@ f_eval_integrate(lf_obj_handle_t ohandle, void *fdata)
 	 * save some attribs 
 	 */
 	lf_write_attr(ohandle, IMG_HEADERLEN, sizeof(int),
-	              (char *) &headerlen);
-	lf_write_attr(ohandle, ROWS, sizeof(int), (char *) &height);
-	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &width);
+	              (unsigned char *) &headerlen);
+	lf_write_attr(ohandle, ROWS, sizeof(int), (unsigned char *) &height);
+	lf_write_attr(ohandle, COLS, sizeof(int), (unsigned char *) &width);
 
 	/*
 	 * create image to hold the integral image 
@@ -232,15 +243,15 @@ f_eval_integrate(lf_obj_handle_t ohandle, void *fdata)
 	 */
 	rgb_integrate(rgbimg, img->data, img2->data, width + 1, height + 1);
 	FILTER_ASSERT(!err, "read data");
-	// ff_close(&file);
 
 	/*
 	 * save img as an attribute? 
 	 */
-	err = lf_write_attr(ohandle, II_DATA, img->nbytes, (char *) img);
+	err = lf_write_attr(ohandle, II_DATA, img->nbytes, 
+	    (unsigned char *) img);
 	FILTER_ASSERT(!err, "write_attr");
 	err = lf_write_attr(ohandle, II_SQ_DATA, img2->nbytes,
-	                    (char *) img2);
+     	    (unsigned char *) img2);
 	FILTER_ASSERT(!err, "write_attr");
 
 

@@ -151,10 +151,10 @@ f_eval_vj_detect(lf_obj_handle_t ohandle, void *fdata)
 	 * get width, height 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, ROWS, &bsize, (char *) &height);
+	err = lf_read_attr(ohandle, ROWS, &bsize, (unsigned char *) &height);
 	assert(!err);
 	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, COLS, &bsize, (char *) &width);
+	err = lf_read_attr(ohandle, COLS, &bsize, (unsigned char *) &width);
 	assert(!err);
 
 
@@ -232,7 +232,7 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, void *fdata)
 	 * get count 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, NUM_FACE, &bsize, (char *) &count);
+	err = lf_read_attr(ohandle, NUM_FACE, &bsize, (unsigned char *) &count);
 	if (err) {
 		printf("Failed to read num face \n");
 		count = 0;              /* XXX */
@@ -273,7 +273,7 @@ f_eval_bbox_merge(lf_obj_handle_t ohandle, void *fdata)
 	free(out_bbox_list);
 
 	err = lf_write_attr(ohandle, NUM_FACE, sizeof(int),
-	                  (char *) &count);
+	    (unsigned char *) &count);
 	assert(!err);
 
 	lf_log(LOGL_TRACE, "bbox_merge: outcount = %d\n", count);

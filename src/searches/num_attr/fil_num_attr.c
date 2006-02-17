@@ -12,6 +12,17 @@
  */
 
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -23,8 +34,6 @@
 #include "lib_log.h"
 #include "num_attr_priv.h"
 #include "fil_num_attr.h"
-
-// #define VERBOSE 1
 
 
 int
@@ -41,7 +50,8 @@ f_init_num_attr(int argc, char **args, int blob_len, void *blob_data,
 	fholder-> num_configs = argc / 4;
 	assert((argc % 4) == 0);
 	
-	fholder->fconfigs = (fnum_attr_t *) malloc(sizeof(fnum_attr_t) * fholder->num_configs);
+	fholder->fconfigs = (fnum_attr_t *) malloc(sizeof(fnum_attr_t) * 
+			fholder->num_configs);
 	assert(fholder->fconfigs != NULL);
 	
 	for (i = 0; i<fholder->num_configs; i++) {
@@ -89,13 +99,14 @@ f_eval_num_attr(lf_obj_handle_t ohandle, void *fdata)
 
 	for (i = 0; i<fholder->num_configs; i++) {
 		fconfig = &fholder->fconfigs[i];
-		err = lf_ref_attr(ohandle, fconfig->attr_name, &dsize, (void **) &data);
+		err = lf_ref_attr(ohandle, fconfig->attr_name, &dsize, 
+		    &data);
 		if (err) {
 			if (fconfig->drop_missing) {
 				return(0);
 			}
 		} else {
-			val = atof(data);
+			val = atof((char *)data);
 			if ((val < fconfig->min_value) || (val > fconfig->max_value)) {
 				return(0);
 			}

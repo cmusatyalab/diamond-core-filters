@@ -134,6 +134,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	int		pass = 0;
 	int		err;
 	RGBImage      * rgb_img = NULL;
+	unsigned char * dptr;
 	size_t 		bsize;
 	size_t 		len;
 	float			min_simularity;
@@ -146,8 +147,9 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 
 	lf_log(LOGL_TRACE, "f_texture_detect: enter");
 
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&rgb_img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	assert(err == 0);
+	rgb_img = (RGBImage *)dptr;
 	if (rgb_img == NULL) {
 		rgb_alloc = 1;
 		rgb_img = get_rgb_img(ohandle);
@@ -199,7 +201,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 
 	char buf[BUFSIZ];
 	sprintf(buf, "_texture_detect.int");
-	lf_write_attr(ohandle, buf, sizeof(int), (char *)&pass);
+	lf_write_attr(ohandle, buf, sizeof(int), (unsigned char *)&pass);
 
 	return pass;
 }

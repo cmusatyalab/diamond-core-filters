@@ -42,20 +42,15 @@
 #include "rgb_histo.h"
 #include "fil_rgb_histo.h"
 
-/* #define VERBOSE 1 */
 
-typedef struct
-{
+typedef struct {
 	int             	scale;
 	histo_type_t	type;
-}
-hintegrate_data_t;
+} hintegrate_data_t;
 
-typedef struct
-{
+typedef struct {
 	int             num_hist;
-}
-hpass_data_t;
+} hpass_data_t;
 
 
 
@@ -187,16 +182,17 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	int             pass = 0;
 	int             err;
 	RGBImage       *img = NULL;
-	size_t           bsize;
-	bbox_list_t		blist;
+	size_t   	bsize;
+	bbox_list_t	blist;
 	histo_config_t *hconfig = (histo_config_t *) f_data;
 	int             nhisto;
 	float           min_simularity;
 	HistoII        *ii = NULL;
+	bbox_t *	cur_box;
+	int		ii_alloc = 0, img_alloc = 0;
+	size_t		len;
+	unsigned char *	dptr;
 	int             rv = 0;     /* return value */
-	bbox_t *		cur_box;
-	int				ii_alloc = 0, img_alloc = 0;
-	size_t			len;
 
 
 	lf_log(LOGL_TRACE, "f_histo_detect: enter");
@@ -204,14 +200,16 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	/*
 	 * get the img 
 	 */
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
+	img = (RGBImage *)dptr;
 	if (err != 0) {
 		img_alloc = 1;
 		img = get_rgb_img(ohandle);
 	}
 	ASSERT(img->type == IMAGE_PPM);
 
-	err = lf_ref_attr(ohandle, HISTO_II, &len, (void **)&ii);
+	err = lf_ref_attr(ohandle, HISTO_II, &len, &dptr);
+	ii = (HistoII *)dptr;
 	if (err != 0) {
 		ii_alloc = 1;
 		ii = histo_get_ii(hconfig, img);
@@ -221,7 +219,8 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	 * get nhisto 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, (char *) &nhisto);
+	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, 
+	    (unsigned char *)&nhisto);
 	if (err) {
 		nhisto = 0;             /* XXX */
 	}
@@ -314,7 +313,8 @@ f_eval_hpass(lf_obj_handle_t ohandle, void *f_data)
 	 * get nhisto 
 	 */
 	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, (char *) &nhisto);
+	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, 
+			(unsigned char *) &nhisto);
 	ASSERT(!err);
 
 	pass = (nhisto >= fstate->num_hist);
@@ -368,6 +368,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	HistoII        *ii = NULL;
 	int             err;
 	size_t          nbytes;
+	unsigned char *	dptr;
 	hintegrate_data_t *fstate = (hintegrate_data_t *) f_data;
 	int             width,
 	height;
@@ -383,10 +384,12 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	/*
 	 * get the img 
 	 */
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void **)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	if (err != 0) {
 		img_alloc = 1;
 		img = get_rgb_img(ohandle);
+	} else {
+		img = (RGBImage *)dptr;
 	}
 
 	ASSERT(img);
@@ -412,7 +415,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 
 
 	err = lf_write_attr(ohandle, HISTO_II, ii->nbytes,
-	                    (char *) ii);
+	    (unsigned char *) ii);
 	ASSERT(!err);
 done:
 	if (img_alloc) {

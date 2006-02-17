@@ -12,6 +12,18 @@
  */
 
 
+
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
+
+
 /*
  * color histogram filter * rgb reader
  */
@@ -83,16 +95,19 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 	 */
 #ifdef	XXX
 	lf_write_attr(ohandle, IMG_HEADERLEN, sizeof(int),
-	              (char *) &headerlen);
+	              (unsigned char *) &headerlen);
 #endif
 
-	lf_write_attr(ohandle, ROWS, sizeof(int), (char *) &img->height);
-	lf_write_attr(ohandle, COLS, sizeof(int), (char *) &img->width);
+	lf_write_attr(ohandle, ROWS, sizeof(int), 
+	    (unsigned char *) &img->height);
+	lf_write_attr(ohandle, COLS, sizeof(int), 
+	    (unsigned char *) &img->width);
 
 	/*
 	 * save img as an attribute 
 	 */
-	err = lf_write_attr(ohandle, RGB_IMAGE, img->nbytes, (char *) img);
+	err = lf_write_attr(ohandle, RGB_IMAGE, img->nbytes,
+	    (unsigned char *) img);
 	ASSERT(!err);
 done:
 	if (img)

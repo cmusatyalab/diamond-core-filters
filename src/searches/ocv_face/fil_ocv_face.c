@@ -100,19 +100,21 @@ f_fini_opencv_fdetect(void *fdata)
 int
 f_eval_opencv_fdetect(lf_obj_handle_t ohandle, void *fdata)
 {
-	int             pass = 0;
+	int             	pass = 0;
+	unsigned char *		dptr;
 	RGBImage *		img;
-	opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
-	int             err;
-	bbox_list_t	    blist;
+	opencv_fdetect_t *	fconfig = (opencv_fdetect_t *) fdata;
+	int             	err;
+	bbox_list_t	    	blist;
 	bbox_t *		cur_box;
 	size_t			len;
 
 	lf_log(LOGL_TRACE, "f_eval_opencv_fdetect: enter\n");
 
 	/* get the img */
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	assert(err == 0);
+	img = (RGBImage *)dptr;
 
 
 	TAILQ_INIT(&blist);

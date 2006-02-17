@@ -12,6 +12,17 @@
  */
 
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -81,7 +92,7 @@ f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata)
 	size_t		bsize;
 	unsigned char *	buf; 
 
-	err = lf_ref_attr(ohandle, fconfig->attr_name, &bsize, (void **)&buf);
+	err = lf_ref_attr(ohandle, fconfig->attr_name, &bsize, &buf);
 	/* handle case where attributed doesn't exist */
 	if (err) {
 		if (fconfig->drop_missing) {
@@ -95,13 +106,13 @@ f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata)
 	/* for exact match use strcmp */
 	/* handle wierd data XXX */
 	if (fconfig->exact_match) {
-		if (strcmp(fconfig->string, buf) == 0) {
+		if (strcmp(fconfig->string, (char *)buf) == 0) {
 			return(1);
 		} else {
 			return(0);
 		}
 	} else {
-		if (regexec(&fconfig->regex, buf, 0, NULL, 0) == 0) {
+		if (regexec(&fconfig->regex, (char *)buf, 0, NULL, 0) == 0) {
 			return(1);
 		} else {
 			return(0);
