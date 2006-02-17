@@ -522,9 +522,11 @@ display_thumbnail(ls_obj_handle_t ohandle)
 
 	/* get path */
 	bsize = COMMON_MAX_NAME;
-	err = lf_read_attr(ohandle, DISPLAY_NAME, &bsize, name);
-	if(err) {
-		err = lf_read_attr(ohandle, OBJ_PATH, &bsize, name);
+	err = lf_read_attr(ohandle, DISPLAY_NAME, &bsize,
+	    (unsigned char *)name);
+	if (err) {
+		err = lf_read_attr(ohandle, OBJ_PATH, &bsize, 
+		    (unsigned char *)name);
 	}
 	if (err) {
 		sprintf(name, "%s", "unknown");
@@ -533,7 +535,8 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	name[bsize] = '\0';	/* terminate string */
 
 	bsize = COMMON_MAX_NAME;
-	err = lf_read_attr(ohandle, DEVICE_NAME, &bsize, device);
+	err = lf_read_attr(ohandle, DEVICE_NAME, &bsize,
+	    (unsigned char *)device);
 	if (err) {
 		sprintf(name, "%s", "unknown");
 		bsize = strlen(device);
