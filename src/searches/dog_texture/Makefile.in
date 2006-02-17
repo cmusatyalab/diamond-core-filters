@@ -10,6 +10,17 @@
 #  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
+#
+
+#
+#  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+#
+#  This software is distributed under the terms of the Eclipse Public
+#  License, Version 1.0 which can be found in the file named LICENSE.
+#  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+#  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+#
+
 
 ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
@@ -23,7 +34,7 @@ STATIC_LIBS = @STATIC_LIBS@
 
 
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
-CPPFLAGS += ${CVCPPFLAGS}  -ffreestanding
+CPPFLAGS += ${CVCPPFLAGS} 
 LDFLAGS += ${CVLDFLAGS}
 
 

@@ -76,7 +76,7 @@ read_texture_args(texture_args_t *texture_args,
 	args += 10;
 
 	texture_args->sample_values = (double **)
-	                              malloc(sizeof(double *) * texture_args->num_samples);
+      	    malloc(sizeof(double *) * texture_args->num_samples);
 	assert(texture_args->sample_values != NULL);
 	for (s_index = 0; s_index < texture_args->num_samples; s_index++) {
 		texture_args->sample_values[s_index] =
@@ -142,10 +142,12 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
 	int			rgb_alloc = 0;
+	unsigned char *	dptr;
 
 	lf_log(LOGL_TRACE, "f_texture_detect: enter");
 
-	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, (void**)&img);
+	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
+	rgb_img = (RGBImage *)dptr;
 	assert(err == 0);
 	if (rgb_img == NULL) {
 		rgb_alloc = 1;
@@ -211,20 +213,13 @@ done:
 	if (rgb_alloc) {
 		ft_free((char*)rgb_img);
 	}
-
-	// XXX char buf[BUFSIZ];
-	// XXX sprintf(buf, "_texture_detect.int");
-	// XXX lf_write_attr(ohandle, buf, sizeof(int), (char *)&pass);
-
 	return pass;
 }
 
 /* XXX move elsewhere */
-typedef struct
-{
+typedef struct {
 	int     num_req;
-}
-tpass_data_t;
+} tpass_data_t;
 
 
 int
@@ -267,7 +262,9 @@ f_eval_tpass(lf_obj_handle_t ohandle, void *f_data)
 
 	/* get ntexture */
 	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, NUM_TEXTURE, &bsize, (char *)&ntexture);
+	err = lf_read_attr(ohandle, NUM_TEXTURE, &bsize, 
+	    (unsigned char *)&ntexture);
+
 	ASSERT(!err);
 
 	pass = (ntexture >= tdata->num_req);
@@ -276,7 +273,7 @@ done:
 
 	char buf[BUFSIZ];
 	sprintf(buf, "_texture_pass.int");
-	lf_write_attr(ohandle, buf, sizeof(int), (char *)&pass);
+	lf_write_attr(ohandle, buf, sizeof(int), (unsigned char *)&pass);
 
 	return pass;
 }
