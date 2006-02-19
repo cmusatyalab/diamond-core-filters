@@ -11,6 +11,14 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
 
 #include <stdio.h>
 #include <limits.h>
@@ -150,7 +158,8 @@ get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type)
 
 	int err, width, height, headerlen;
 	image_type_t magic;
-	err = pnm_parse_header(buf, size, &width, &height, &magic, &headerlen);
+	err = pnm_parse_header((char *)buf, size, &width, &height, 
+	    &magic, &headerlen);
 	if (err) {
 		return NULL;
 	}
@@ -226,8 +235,8 @@ RGBImage*
 get_rgb_img(lf_obj_handle_t ohandle)
 {
 	int		err = 0;
-	char *	obj_data;
-	off_t		data_len;
+	unsigned char *	obj_data;
+	size_t		data_len;
 	RGBImage*	img = NULL;
 
 	err = lf_next_block(ohandle, INT_MAX, &data_len, &obj_data);
