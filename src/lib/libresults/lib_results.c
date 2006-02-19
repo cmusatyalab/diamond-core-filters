@@ -46,7 +46,7 @@ write_param(lf_obj_handle_t ohandle, char *fmt, search_param_t * param, int i)
 
         sprintf(buf, fmt, i);
         bsize = sizeof(search_param_t);
-        err = lf_write_attr(ohandle, buf, bsize, (char *) param);
+        err = lf_write_attr(ohandle, buf, bsize, (unsigned char *) param);
 
         return err;
 }
@@ -62,7 +62,7 @@ read_param(lf_obj_handle_t ohandle, char *fmt,
 
         sprintf(buf, fmt, i);
         bsize = sizeof(search_param_t);
-        err = lf_read_attr(ohandle, buf, &bsize, (char *) param);
+        err = lf_read_attr(ohandle, buf, &bsize, (unsigned char *) param);
 
         return err;
 }
@@ -73,10 +73,12 @@ get_patches(lf_obj_handle_t ohandle, char *fname)
         char            buf[BUFSIZ];
 	size_t		a_size;
 	int		err;
+	unsigned char *	dptr;
 	img_patches_t * patches;
 
         sprintf(buf, FILTER_MATCHES, fname);
-        err = lf_ref_attr(ohandle, buf, &a_size, &patches);
+        err = lf_ref_attr(ohandle, buf, &a_size, &dptr);
+	patches = (img_patches_t *)dptr;
 	if (err) {
 		return(NULL);
 	} else {
@@ -117,7 +119,8 @@ save_patches(lf_obj_handle_t ohandle, char *fname, bbox_list_t *blist)
 	ipatch->distance = min_dist;
 
         sprintf(buf, FILTER_MATCHES, fname);
-        err = lf_write_attr(ohandle, buf, IMG_PATCH_SZ(count), ipatch);
+        err = lf_write_attr(ohandle, buf, IMG_PATCH_SZ(count), 
+	   (unsigned char *)ipatch);
 	assert(err == 0);
 	free(ipatch);
 }
@@ -135,7 +138,7 @@ ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name)
          */
 
         bsize = 0;
-        err = lf_read_attr(ohandle, name, &bsize, (char *) NULL);
+        err = lf_read_attr(ohandle, name, &bsize, (unsigned char *) NULL);
         if (err != ENOMEM) {
                 // fprintf(stderr, "attribute lookup error: %s\n", name);
                 return NULL;
@@ -147,7 +150,7 @@ ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name)
                 return (NULL);
         }
 
-        err = lf_read_attr(ohandle, name, &bsize, (char *) ptr);
+        err = lf_read_attr(ohandle, name, &bsize, (unsigned char *) ptr);
         if (err) {
                 fprintf(stderr, "attribute read error: %s\n", name);
                 return NULL;
