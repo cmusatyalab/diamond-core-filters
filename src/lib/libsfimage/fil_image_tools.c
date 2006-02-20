@@ -47,6 +47,7 @@ determine_image_type(const u_char* buf)
 	const u_char tiff_big_endian[4] = { 0x4d, 0x4d, 0x00, 0x2a };
 	const u_char tiff_lit_endian[4] = { 0x49, 0x49, 0x2a, 0x00 };
 	const u_char jpeg[4]		= { 0xff, 0xd8, 0xff, 0xe0 };
+	const u_char jpeg_wexif[4]	= { 0xff, 0xd8, 0xff, 0xe1 };
 	const u_char png[4]		= { 0x89, 0x50, 0x4e, 0x47 };
 
 	image_type_t type = IMAGE_UNKNOWN;
@@ -68,9 +69,11 @@ determine_image_type(const u_char* buf)
 		type = IMAGE_TIFF;
 	} else if (0 == memcmp(buf, jpeg, 4)) {
 	  	type = IMAGE_JPEG;
+	} else if (0 == memcmp(buf, jpeg_wexif, 4)) {
+	  	type = IMAGE_JPEG;
 	} else if (0 == memcmp(buf, png, 4)) {
 	  	type = IMAGE_PNG;
-	}
+        }
 
 	return type;
 }
@@ -259,10 +262,9 @@ get_rgb_img(lf_obj_handle_t ohandle)
 	    img = get_rgb_from_png(obj_data, data_len);
 	    break;
 	  default:
-	    //assert(0);		// Unknown image format
+	    lf_log(LOGL_ERR, "Unknown image format!!", magic);
 	    break;
 	}
-
 	return img;
 }
 
