@@ -82,6 +82,7 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 
 	img = get_rgb_img(ohandle);
 	if (img == NULL) {
+		lf_log(LOGL_ERR, "f_pnm2rgb: failed to get rgb image");
 		return(0);
 	}
 
@@ -93,11 +94,6 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 	/*
 	 * save some attribs 
 	 */
-#ifdef	XXX
-	lf_write_attr(ohandle, IMG_HEADERLEN, sizeof(int),
-	              (unsigned char *) &headerlen);
-#endif
-
 	lf_write_attr(ohandle, ROWS, sizeof(int), 
 	    (unsigned char *) &img->height);
 	lf_write_attr(ohandle, COLS, sizeof(int), 
