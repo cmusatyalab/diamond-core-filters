@@ -31,6 +31,7 @@ void create_progress_win(ls_search_handle_t shandle, int expert);
 void toggle_progress_win(ls_search_handle_t shandle, int expert);
 void close_progress_win();
 
+void toggle_log_win(ls_search_handle_t shandle);
 
 void create_ccontrol_win(ls_search_handle_t shandle, int expert);
 void toggle_ccontrol_win(ls_search_handle_t shandle, int expert);

@@ -66,6 +66,8 @@ extern "C"
 /* From snapfind_config.l */
 char * sfconf_get_plugin_dir();
 
+/* from log_win.cc */
+void init_logging(void);
 
 #ifdef __cplusplus
 }

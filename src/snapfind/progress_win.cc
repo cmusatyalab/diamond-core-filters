@@ -241,8 +241,8 @@ open_progress_win()
 		g_signal_connect(G_OBJECT(progress_window), "destroy",
 		                 G_CALLBACK(stats_close), NULL);
 		/*
-		 * don't show window until we add all the components (for correct
-		 * sizing) 
+		 * don't show window until we add all the components 
+		 * (for correct sizing) 
 		 */
 
 		progress_box = gtk_vbox_new(FALSE, 0);

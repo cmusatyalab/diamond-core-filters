@@ -1220,6 +1220,15 @@ cb_toggle_progress(gpointer callback_data, guint callback_action,
 	GUI_CALLBACK_LEAVE();
 }
 
+static void
+cb_toggle_log(gpointer callback_data, guint callback_action,
+    GtkWidget *menu_item )
+{
+	GUI_CALLBACK_ENTER();
+	toggle_log_win(shandle);
+	GUI_CALLBACK_LEAVE();
+}
+
 
 static void
 cb_toggle_ccontrol(gpointer callback_data, guint callback_action,
@@ -1623,40 +1632,39 @@ redo:
 
 /* The menu at the top of the main window. */
 static GtkItemFactoryEntry menu_items[] = {
-            { "/_File", NULL,  NULL,
-              0, "<Branch>" },
-            { "/File/Load Search", NULL, G_CALLBACK(cb_load_search),
-              0, "<Item>" },
-            { "/File/Import Search", NULL, G_CALLBACK(cb_import_search),
-              0, "<Item>" },
-            { "/File/Save Search as", NULL, G_CALLBACK(cb_save_search_as),
-              0, "<Item>" },
-            { "/File/Save filterspec", NULL,
-              G_CALLBACK(cb_save_spec_to_filename), 0, "<Item>" },
-            { "/File/sep1", NULL, NULL,
-              0, "<Separator>" },
-            { "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit,
-              0, "<StockItem>", GTK_STOCK_QUIT },
+	{ "/_File", NULL,  NULL, 0, "<Branch>" },
+	{ "/File/Load Search", NULL, G_CALLBACK(cb_load_search), 0, "<Item>" },
+	{ "/File/Import Search", NULL, G_CALLBACK(cb_import_search), 
+	    0, "<Item>" },
+	{ "/File/Save Search as", NULL, G_CALLBACK(cb_save_search_as),
+	    0, "<Item>" },
+	{ "/File/Save filterspec", NULL, G_CALLBACK(cb_save_spec_to_filename), 
+	    0, "<Item>" },
+	{ "/File/sep1", NULL, NULL, 0, "<Separator>" },
+	{ "/File/_Quit", "<CTRL>Q", (GtkItemFactoryCallback)cb_quit,
+	    0, "<StockItem>", GTK_STOCK_QUIT },
 
-            { "/_Searches", NULL, NULL, 0, "<Branch>"},
-            {"/Searches/_New", "<CTRL>N", NULL, 0, "<Branch>"},
+	{ "/_Searches", NULL, NULL, 0, "<Branch>"},
+	{"/Searches/_New", "<CTRL>N", NULL, 0, "<Branch>"},
 
-            {"/Searches/Import Example", NULL, G_CALLBACK(cb_import),
-             0, "<Item>" },
+	{"/Searches/Import Example", NULL, G_CALLBACK(cb_import),
+	    0, "<Item>" },
 
-            { "/_View", NULL,  NULL, 0, "<Branch>" },
-            { "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats),
-              0,"<Item>" },
-            { "/_View/Progress Window", "<CTRL>P",
-              G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
-            { "/_View/Cache Control", "<CTRL>C", G_CALLBACK(cb_toggle_ccontrol),
-              0,"<Item>" },
-            { "/Options", NULL, NULL, 0, "<Branch>" },
-            { "/Options/sep1", NULL, NULL, 0, "<Separator>" },
-            { "/Albums", NULL, NULL, 0, "<Branch>" },
-            { "/Albums/tear", NULL, NULL, 0, "<Tearoff>" },
-            { NULL, NULL, NULL }
-        };
+	{ "/_View", NULL,  NULL, 0, "<Branch>" },
+	{ "/_View/Stats Window", "<CTRL>I",  G_CALLBACK(cb_toggle_stats),
+	    0,"<Item>" },
+	{ "/_View/Progress Window", "<CTRL>P",
+	    G_CALLBACK(cb_toggle_progress), 0,"<Item>" },
+	{ "/_View/Log Window", "<CTRL>L",
+	    G_CALLBACK(cb_toggle_log), 0,"<Item>" },
+	{ "/_View/Cache Control", "<CTRL>C", G_CALLBACK(cb_toggle_ccontrol),
+	    0,"<Item>" },
+	{ "/Options", NULL, NULL, 0, "<Branch>" },
+	{ "/Options/sep1", NULL, NULL, 0, "<Separator>" },
+	{ "/Albums", NULL, NULL, 0, "<Branch>" },
+	{ "/Albums/tear", NULL, NULL, 0, "<Tearoff>" },
+	{ NULL, NULL, NULL }
+};
 
 static void
 cb_collection(gpointer callback_data, guint callback_action,
@@ -1996,6 +2004,7 @@ main(int argc, char *argv[])
 	decoders_init();
 	load_attr_map();
 	load_plugins();
+	init_logging();
 
 	/*
 	 * Start the main loop processing for the GUI.

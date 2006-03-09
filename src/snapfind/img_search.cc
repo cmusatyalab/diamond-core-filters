@@ -273,9 +273,7 @@ img_search::img_search_display()
 	GtkWidget *	container;
 	GtkWidget *	box;
 
-	//box = gtk_vbox_new(FALSE, 10);
 	frame = gtk_frame_new("Search");
-	//gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 10);
 
 	container = gtk_vbox_new(FALSE, 10);
 	gtk_container_add(GTK_CONTAINER(frame), container);
