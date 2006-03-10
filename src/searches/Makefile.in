@@ -16,7 +16,7 @@ SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
 
-SUBDIRS = rgbimg gabor_texture ocv_face vj_face dog_texture rgb_histogram
+SUBDIRS = rgbimg gabor_texture ocv_face dog_texture rgb_histogram
 SUBDIRS += num_attr text_attr
 
 include $(OBJROOT)/Makefile.template
