@@ -73,6 +73,7 @@ static GtkWidget *cb_disk;
 static GtkWidget *cb_filt;
 static GtkWidget *cb_bg;
 static GtkWidget *cb_utility;
+static GtkWidget *cb_net;
 
 /*
  * Convert the level to a human readable string.
@@ -132,6 +133,14 @@ get_type_string(uint32_t level, char *string, int max)
 			snprintf(string, max, "%s", "Bkgrnd");
 			break;
 
+		case LOGT_UTILITY:
+			snprintf(string, max, "%s", "Utility");
+			break;
+
+		case LOGT_NET:
+			snprintf(string, max, "%s", "NET");
+			break;
+
 		default:
 			snprintf(string, max, "%s", "Unknown");
 			break;
@@ -158,6 +167,7 @@ process_log(log_msg_t *lheader, const char *data)
 	GtkTextIter   	iter;
 	static int	count = 0;
 	GtkTextTag  *	tag = trace_tag;
+	struct hostent *hent;
 
 	/*
 	 * Setup the source of the data.
@@ -326,6 +336,9 @@ cb_set_type(GtkButton *item, gpointer data)
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(cb_utility))) {
 		new_type |= LOGT_UTILITY;
 	}
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(cb_net))) {
+		new_type |= LOGT_NET;
+	}
 
 	log_type = new_type;
 	set_log_flags();
@@ -453,6 +466,10 @@ open_log_win()
 		cb_utility = create_type_cb("Utility", 
 		    log_type & LOGT_UTILITY);
 		gtk_box_pack_start(GTK_BOX(hbox), cb_utility, FALSE, FALSE, 0);
+
+		cb_net = create_type_cb("Network", 
+		    log_type & LOGT_NET);
+		gtk_box_pack_start(GTK_BOX(hbox), cb_net, FALSE, FALSE, 0);
 
 
 		scroll = gtk_scrolled_window_new(NULL, NULL);
