@@ -131,20 +131,6 @@ PATCHFILE grass.ex2.ppm 0 0 32 32
 PATCHFILE grass.ex3.ppm 0 0 32 32 
 PATCHFILE grass.ex4.ppm 0 0 32 32 
 
-
-SEARCH vj_face_search vj_faces
-NUMFACE 1 
-START 0 
-END 37 
-MERGE 1 
-OVERLAP 0.750000 
-TESTX 24 
-TESTY 24 
-STRIDE 8 
-SCALE 1.250000 
-MATCHES 1 
-
-
 SEARCH ocv_face_search ocv_faces
 NUMFACE 1 
 SUPPORT 2 
