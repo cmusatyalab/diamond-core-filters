@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <gtk/gtk.h>
 #include <math.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdint.h>
@@ -180,7 +181,13 @@ process_log(log_msg_t *lheader, const char *data)
 
 
 	iaddr.s_addr = lheader->dev_id;
-	host_id = inet_ntoa(iaddr);
+
+	hent = gethostbyaddr(&iaddr, sizeof(iaddr), AF_INET);
+	if (hent == NULL) {
+		host_id = inet_ntoa(iaddr);
+	} else {
+		host_id = hent->h_name;
+	}
 
 	total_len = lheader->log_len;
 	cur_offset = 0;

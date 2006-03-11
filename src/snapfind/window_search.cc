@@ -55,7 +55,6 @@ window_search::window_search(const char *name, char *descr)
 
 window_search::~window_search()
 {
-	/* XXX example search destruct */
 	return;
 }
 
@@ -81,7 +80,6 @@ window_search::set_scale_control(int val)
 void
 window_search::set_matches(int new_matches)
 {
-	/* XXX any bounds checks */
 	num_matches = new_matches;
 	return;
 }
@@ -89,7 +87,6 @@ window_search::set_matches(int new_matches)
 void
 window_search::set_matches(char * data)
 {
-	/* XXX any bounds checks */
 	num_matches = atoi(data);
 	return;
 }
@@ -105,7 +102,6 @@ window_search::get_matches()
 void
 window_search::set_stride(int new_stride)
 {
-	/* XXX any bounds checks */
 	stride = new_stride;
 	return;
 }
@@ -113,7 +109,6 @@ window_search::set_stride(int new_stride)
 void
 window_search::set_stride(char *data)
 {
-	/* XXX any bounds checks */
 	stride = atoi(data);
 	return;
 }
@@ -128,7 +123,6 @@ window_search::get_stride()
 void
 window_search::set_scale(double new_scale)
 {
-	/* XXX any bounds checks */
 	scale = new_scale;
 	return;
 }
@@ -136,7 +130,6 @@ window_search::set_scale(double new_scale)
 void
 window_search::set_scale(char * data)
 {
-	/* XXX any bounds checks */
 	scale = atof(data);
 	return;
 }
@@ -157,7 +150,6 @@ window_search::get_scale()
 void
 window_search::set_testx(char *data)
 {
-	/* XXX any bounds checks */
 	testx = atoi(data);
 	return;
 }
@@ -165,7 +157,6 @@ window_search::set_testx(char *data)
 void
 window_search::set_testx(int val)
 {
-	/* XXX any bounds checks */
 	testx = val;
 	return;
 }
@@ -181,7 +172,6 @@ window_search::get_testx()
 void
 window_search::set_testy(char *data)
 {
-	/* XXX any bounds checks */
 	testy = atoi(data);
 	return;
 }
@@ -189,7 +179,6 @@ window_search::set_testy(char *data)
 void
 window_search::set_testy(int val)
 {
-	/* XXX any bounds checks */
 	testy = val;
 	return;
 }
@@ -204,7 +193,6 @@ window_search::get_testy()
 int
 window_search::handle_config(int nconf, char **data)
 {
-	/* XXX example search destruct */
 	int		err;
 
 	if (strcmp(data[0], BOX_X_ID) == 0) {
@@ -352,8 +340,6 @@ window_search::save_edits()
 
 	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(match_adj));
 	set_matches(ival);
-
-	/* XXX look at cleanup issues  */
 
 	/* call the parent class */
 	img_search::save_edits();
