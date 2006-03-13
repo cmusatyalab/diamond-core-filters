@@ -206,7 +206,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 		img_alloc = 1;
 		img = get_rgb_img(ohandle);
 	}
-	ASSERT(img->type == IMAGE_PPM);
 
 	err = lf_ref_attr(ohandle, HISTO_II, &len, &dptr);
 	ii = (HistoII *)dptr;
@@ -253,7 +252,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 		rv = (int)(100.0 * min_simularity);
 	}
 
-done:
 	if (ii_alloc) {
 		ft_free((char *) ii);
 	}
@@ -393,7 +391,6 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	}
 
 	ASSERT(img);
-	ASSERT(img->type == IMAGE_PPM);
 
 	/*
 	 * initialize a new ii 

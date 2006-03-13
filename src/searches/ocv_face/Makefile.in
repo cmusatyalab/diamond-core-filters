@@ -11,16 +11,16 @@
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
 
-ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 CVCPPFLAGS = @CVCPPFLAGS@
 CVLDFLAGS = @CVLDFLAGS@
 
-STATIC_LIBS = @STATIC_LIBS@
-
-
+STATIC_LIBS += ${BUILD_LIB_PATH}/libocvimage.a ${BUILD_LIB_PATH}/libsfimage.a 
+STATIC_LIBS += ${BUILD_LIB_PATH}/libresults.a
+STATIC_LIBS += ${CVLDFLAGS}
+STATIC_LIBS += @STATIC_LIBS@
 
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
 CPPFLAGS += ${CVCPPFLAGS}
@@ -36,10 +36,9 @@ SEARCH_LIB_SRCS = ocv_face_search.cc  opencv_face_tools.c
 
 SEARCH_LIB_OBJS =  ocv_face_search.o opencv_face_tools.o
 
-SEARCH_LIB_LIBS += -lm -locvimage
+SEARCH_LIB_LIBS += -lm 
 
-SEARCHLET_LIBS += -lm -locvimage -lsfimage 
-SEARCHLET_LIBS += -lresults -ltiff -ljpeg -lz
+SEARCHLET_LIBS += -lm -ltiff -ljpeg -lz
 #
 # All the source files that are needed for depend.
 #
@@ -57,9 +56,13 @@ SHARED_LIB += fil_ocv_face.so opencv_face_search.so opencv_face.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_ocv_face.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(STATIC_LIBS) $(LDFLAGS)
-                                                                                
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
 opencv_face_search.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(STATIC_LIBS) $(LDFLAGS)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
 
 default: $(TARGETS)

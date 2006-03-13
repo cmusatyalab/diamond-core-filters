@@ -16,7 +16,8 @@ VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
-STATIC_LIBS = @STATIC_LIBS@
+STATIC_LIBS += $(BUILD_LIB_PATH)/libsfimage.a
+STATIC_LIBS += @STATIC_LIBS@
 
 CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
 
@@ -32,7 +33,7 @@ SEARCH_LIB_OBJS =  rgb_img.o
 
 SEARCH_LIB_LIBS += -lm 
 
-SEARCHLET_LIBS += -lm  -lsfimage -lresults 
+SEARCHLET_LIBS += -lm 
 #
 # All the source files that are needed for depend.
 #
@@ -50,9 +51,7 @@ SHARED_LIB += fil_rgb.so rgb_img.so rgb_img.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_rgb.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(FILTER_LIB_OBJS) $(SEARCHLET_LIBS) $(SEARCHLET_LIBDIR) $(STATIC_LIBS) $(LDFLAGS)
-                                                                                
+
 rgb_img.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(SEARCH_LIB_OBJS) $(SEARCH_LIB_LIBS) $(STATIC_LIBS) $(LDFLAGS)
 
 default: $(TARGETS)

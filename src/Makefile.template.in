@@ -11,7 +11,6 @@
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
 
-
 #
 #  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
 #
@@ -20,7 +19,6 @@
 #  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
-
 
 #
 # Where the headers, libraries, and binaries should be placed during
@@ -50,6 +48,8 @@ vpath %.h $(VPATH)
 
 LDFLAGS += @LDFLAGS@
 LDFLAGS += -L${BUILD_LIB_PATH} 
+
+LD_SOFLAGS += -shared
 
 #Just to go overboard and be sure
 CFLAGS += -D_THREAD_SAFE
@@ -114,13 +114,10 @@ DIST_OBJS += .depend Makefile
 	ar -csr $@  $^
 	cp -f $@ ${BUILD_LIB_PATH}
 
-%.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(FILTER_LIB_OBJS)
-
-%.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared -static $(SEARCH_LIB_OBJS)
-
-
+%.so: %.o
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a 
 
 # The common targets
 

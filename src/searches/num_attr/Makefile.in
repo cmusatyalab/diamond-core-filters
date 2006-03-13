@@ -46,17 +46,7 @@ SHARED_LIB = fil_num_attr.so num_attr_search.so num_attr.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_num_attr.so: $(FILTER_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(FILTER_LIB_OBJS)
-                                                                                
+
 num_attr_search.so: $(SEARCH_LIB_OBJS)
-	$(CPLUSPLUS) $(CFLAGS_SO) -o $@ -shared $(SEARCH_LIB_OBJS)
-
-cln:
-	$(RM) core.*
-	$(RM) /tmp/fspec* /tmp/filsp* /tmp/objfil*
-	$(RM) /var/tmp/fspec* /var/tmp/filsp* /var/tmp/objfil*
-
-clean-targets:	clean-experiments
-	$(RM) $(TARGETS)
 
 default: $(TARGETS)

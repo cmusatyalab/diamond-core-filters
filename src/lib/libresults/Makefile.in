@@ -37,5 +37,3 @@ SHARED_LIB = libresults.a
 TARGETS = libresults.a 
 
 include $(OBJROOT)/Makefile.template 
-
-
