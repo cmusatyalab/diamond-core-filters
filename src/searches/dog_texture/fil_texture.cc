@@ -100,7 +100,8 @@ f_init_texture_detect(int numarg, char **args, int blob_len,
 	texture_args_t*	targs;
 	int				err;
 
-	printf("f_init_texture_detect: fname %s \n", filt_name);
+	lf_log(LOGL_TRACE, "f_init_texture_detect: filter name %s", 
+	     filt_name);
 	targs = (texture_args_t *)malloc(sizeof(*targs));
 	assert(targs);
 

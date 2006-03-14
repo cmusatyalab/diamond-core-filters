@@ -11,6 +11,14 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+/*
+ *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *
+ *  This software is distributed under the terms of the Eclipse Public
+ *  License, Version 1.0 which can be found in the file named LICENSE.
+ *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+ *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +50,6 @@ void
 search_init()
 {
 	texture_factory *fac;
-	// XXX printf("texture init \n");
 
 	fac = new texture_factory;
 
@@ -247,7 +254,6 @@ texture_search::edit_search()
 
 	edit_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	snprintf(name, MAX_DISPLAY_NAME - 1, "Edit %s", get_name());
-	name[MAX_DISPLAY_NAME -1] = '\0';
 	gtk_window_set_title(GTK_WINDOW(edit_window), name);
 	g_signal_connect(G_OBJECT(edit_window), "destroy",
 	                 G_CALLBACK(cb_close_edit_window), this);
