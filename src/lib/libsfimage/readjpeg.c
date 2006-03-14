@@ -91,8 +91,6 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	struct jpeg_error_mgr jerr;
 
 	lf_log(LOGL_TRACE, "Entering convertJPEGtoRGBImage");
-	printf("Entering convertJPEGtoRGBImage!");
-
 
 	// XXX TODO XXX
 	// Maybe we could allocate these statically and not have

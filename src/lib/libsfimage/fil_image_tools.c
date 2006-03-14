@@ -294,7 +294,7 @@ rgb_normalize(RGBImage* img)
 		if (b < bmin) { bmin = b; }
 		if (b > bmax) { bmax = b; }
 	}
-	fprintf(stderr, "r(%d,%d), g(%d,%d), b(%d,%d)\n",
+	lf_log(LOGL_TRACE, "rgb_normalize: r(%d,%d), g(%d,%d), b(%d,%d)\n",
 	    rmin,rmax, gmin,gmax, bmin,bmax);
 
 	if (rmin < rmax) {	// only normalize if channels differ

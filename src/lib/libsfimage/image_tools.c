@@ -41,9 +41,6 @@ skip_space_comments(char *buf, char *endbuf)
 	int             eol = 0;
 
 	assert(buf < endbuf);
-
-	// fprintf(stderr, "buf=%.32s\n", buf);
-
 	/*
 	 * skip spaces 
 	 */
@@ -52,23 +49,16 @@ skip_space_comments(char *buf, char *endbuf)
 		buf++;
 	}
 
-	// fprintf(stderr, "buf=%.32s; eol=%d\n", buf, eol);
-
 	/*
 	 * skip any comments 
 	 */
 	while (buf < endbuf && eol && *buf == '#') {
-		// fprintf(stderr, "skipping comment: %.32s\n", buf);
 		while (buf < endbuf && *buf != '\n') {
 			buf++;
 		}
 		if (buf < endbuf)
 			buf++;
 	}
-
-	// fprintf(stderr, "buf=%p, endbuf=%p\n", buf, endbuf);
-	// fprintf(stderr, "buf=%.32s\n", buf);
-
 	/*
 	 * skip spaces 
 	 */
@@ -76,8 +66,6 @@ skip_space_comments(char *buf, char *endbuf)
 		eol = (*buf == '\n');
 		buf++;
 	}
-
-	// fprintf(stderr, "buf=%.32s\n", buf);
 
 	assert(buf < endbuf);
 	return buf;
@@ -125,12 +113,12 @@ create_rgb_image(const char *filename)
 	 */
 	err = pnm_parse_header(buf, buflen, &width, &height, &magic, &headerlen);
 	if (err) {
-		fprintf(stderr, "%s: parse error\n", filename);
+		lf_log(LOGL_ERR, "%s: parse error", filename);
 		return NULL;
 	}
 
 	if (magic != IMAGE_PPM) {
-		fprintf(stderr, "%s: only ppm format supported\n", filename);
+		lf_log(LOGL_ERR, "%s: only ppm format supported", filename);
 		return NULL;
 	}
 
@@ -140,7 +128,7 @@ create_rgb_image(const char *filename)
 	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
 	img = (RGBImage *) malloc(bytes);
 	if (!img) {
-		fprintf(stderr, "out of memory!\n");
+		lf_log(LOGL_ERR, "out%s: only ppm format supported", filename);
 		return NULL;
 	}
 	img->nbytes = bytes;
@@ -168,19 +156,14 @@ create_rgb_image(const char *filename)
 			 * done with this bufp; 
 			 */
 			bufp = buf;
-
-			// fprintf(stderr, "added %d bytes\n", buflen);
 			buflen = fread(bufp, 1, read_buffer_size, fp);
-			// fprintf(stderr, "read %d bytes\n", buflen);
 
 		} while (!err && buflen);
-		// fprintf(stderr, "complete\n");
 		pnm_state_delete(state);
 	}
 
 	free(buf);
 	fclose(fp);
-	// fprintf(stderr, "done\n");
 	return img;
 }
 
