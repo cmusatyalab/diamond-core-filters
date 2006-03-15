@@ -379,7 +379,6 @@ kill_highlight_thread(int run)
 	pthread_mutex_lock(&highlight_info.mutex);
 	if(highlight_info.thread_running) {
 		int err = pthread_cancel(highlight_info.thread);
-		//assert(!err);
 		if(!err) {
 			/* should do this in a cleanup function XXX */
 			ih_drop_ref(popup_window.hooks);
@@ -387,7 +386,6 @@ kill_highlight_thread(int run)
 			/* child should not be inside gui, since we
 			 * are in a callback here, and presumable own
 			 * the lock. */
-			//GUI_THREAD_LEFT(); /* XXX */
 			pthread_join(highlight_info.thread, NULL);
 		}
 	}
@@ -525,7 +523,7 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 
 	active_item = gtk_menu_get_active(GTK_MENU(popup_window.search_type));
 
-	/* XXX can't directly get the cast to work ??? */
+	/* can't directly get the cast to work ??? */
 	idx = (int) g_object_get_data(G_OBJECT(active_item), "user data");
 	factory = (img_factory *)idx;
 
@@ -847,8 +845,6 @@ make_highlight_table()
 	int row = 0;        /* current table row */
 	img_search *	csearch;
 	search_iter_t	iter;
-
-	// XXX GUI_THREAD_CHECK();
 
 	popup_window.hl_table = gtk_table_new(sset->get_search_count()+2, 3, FALSE);
 	gtk_table_set_row_spacings(GTK_TABLE(popup_window.hl_table), 2);
@@ -1195,7 +1191,6 @@ do_img_popup(GtkWidget *widget, search_set *set)
 
 	button = NULL;
 
-  	/* XXX test */
         search_name_t *cur;
         for (cur = active_searches; cur != NULL; cur = cur->sn_next) {
                 img_patches_t *ipatch;

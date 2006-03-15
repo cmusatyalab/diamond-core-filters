@@ -111,7 +111,6 @@ new_config(char *yyt)
 	}
 	err = cur_search->handle_config(arg_offset, argv);
 
-	/* XXX more graceful way to handle */
 	if (err) {
 		fprintf(stderr, "config for %s not handled \n", 
 			cur_search->get_name());

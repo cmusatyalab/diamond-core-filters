@@ -129,12 +129,10 @@ graph_win::process_expose(GtkWidget *widget, GdkEventExpose *event)
 {
 	int width, height;
 
-	// XXX pthread_mutex_lock(&di_mutex);
 	width = min(event->area.width, gw_cur_img->width - event->area.x);
 	height = min(event->area.height, gw_cur_img->height - event->area.y);
 
 	if(width <= 0 || height <= 0) {
-		// XXX pthread_mutex_unlock(&di_mutex);
 		goto done;
 	}
 	assert(widget == gw_drawingarea);
@@ -389,7 +387,6 @@ graph_win::draw_point(const double x, const double y, int series)
 
 	assert(series < GW_MAX_SERIES);
 
-	/* XXX deal withoffset for margins, etc. */
 	pixelx = (int)(((x - gw_xmin) /gw_xspan) * (double)gw_xdisp) +
 	         X_ZERO_OFFSET ;
 
@@ -511,7 +508,6 @@ graph_win::event_realize()
 {
 
 
-	// XXX pthread_mutex_lock(&di_mutex);
 	printf("event realize \n");
 	for(int i=0; i<GW_MAX_LAYERS; i++) {
 		gw_pixbufs[i] = pb_from_img(gw_layers[i]);
@@ -522,8 +518,6 @@ graph_win::event_realize()
 	init_window();
 	init_series();
 
-	// XXpthread_mutex_unlock(&di_mutex);
-
 }
 
 
@@ -532,10 +526,8 @@ void
 graph_win::clear_graph()
 {
 	RGBImage *img;
-	// XXX pthread_mutex_lock(&di_mutex);
 	img = gw_layers[GW_HIGHLIGHT_LAYER];
 	rgbimg_clear(img);
-	// XXX pthread_mutex_unlock(&di_mutex);
 	gtk_widget_queue_draw_area(gw_drawingarea,
 	                           0, 0, img->width, img->height);
 }
@@ -556,13 +548,11 @@ graph_win::get_graph_display(int width, int height)
 	gw_cur_img = rgbimg_blank_image(gw_width, gw_height);
 
 
-	// XXX pthread_mutex_lock(&di_mutex);
 	gw_layers[GW_IMG_LAYER] = gw_cur_img;
 	for(i=GW_IMG_LAYER+1; i<GW_MAX_LAYERS; i++) {
 		gw_layers[i] = rgbimg_new(gw_cur_img);
 		rgbimg_clear(gw_layers[i]);
 	}
-	// XXX pthread_mutex_unlock(&di_mutex);
 
 	gw_drawingarea = gtk_drawing_area_new();
 

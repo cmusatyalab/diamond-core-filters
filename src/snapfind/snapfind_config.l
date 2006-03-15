@@ -135,7 +135,6 @@ sfconfig_open_config_file()
 	/* try the environment variable */
 	lkup = getenv(SNAPFIND_ENV_NAME);
 	if (lkup != NULL) {
-		/* XXX deal with overflow */
 		len = snprintf(fname, SF_MAX_PATH, "%s/%s", lkup,
 			SNAPFIND_RC);
 		if (len >= (SF_MAX_PATH - 1)) {
@@ -151,10 +150,9 @@ sfconfig_open_config_file()
 	/* try the user's home directory */
 	lkup = getenv("HOME");
 	if (lkup != NULL) {
-		/* XXX deal with overflow */
 		len = snprintf(fname, SF_MAX_PATH, "%s/%s/%s", lkup,
 			SNAPFIND_CONF_DEFAULT, SNAPFIND_RC);
-		if (len >= (SF_MAX_PATH - 1)) {
+		if (len >= SF_MAX_PATH) {
 			fprintf(stderr, "open_config: Exceeded SF_MAX_PATH\n");
 			exit(1);
 		}

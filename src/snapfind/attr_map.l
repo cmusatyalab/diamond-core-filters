@@ -91,8 +91,7 @@ extract_name_value(char *input, char *name, char *value)
 		name[soffset++] = input[offset++];
 		if (offset >= inlen) return(1);
 		if (soffset >= SF_MAX_PATH) {
-			/* XXX log */
-			printf("Data too large for storage \n");
+			fprintf(stderr, "Data too large for storage \n");
 			return(1);
 		}
 	}
@@ -124,8 +123,7 @@ extract_name_value(char *input, char *name, char *value)
 		value[soffset++] = input[offset++];
 		if (offset >= inlen) return(1);
 		if (soffset >= SF_MAX_PATH) {
-			/* XXX log */
-			printf("Data too large for storage \n");
+			fprintf(stderr, "Data too large for storage \n");
 			return(1);
 		}
 	}
@@ -172,10 +170,9 @@ open_attr_map()
 	/* try the environment variable */
 	lkup = getenv(SNAPFIND_ENV_NAME);
 	if (lkup != NULL) {
-		/* XXX deal with overflow */
 		len = snprintf(fname, SF_MAX_PATH, "%s/%s", lkup,
 			SNAPFIND_RC);
-		if (len >= (SF_MAX_PATH - 1)) {
+		if (len >= SF_MAX_PATH) {
 			fprintf(stderr, "open_config: Exceeded SF_MAX_PATH\n");
 			exit(1);
 		}
@@ -240,7 +237,7 @@ load_attr_map()
 
 	ret = yylex();
 	if (ret) {
-		/* XXX log message */
+		fprintf(stderr, "Problems during lex\n");
 	}
 
 	fclose(yyin);

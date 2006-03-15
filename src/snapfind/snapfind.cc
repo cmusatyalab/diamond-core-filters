@@ -140,27 +140,17 @@ gui;
 /* the search entries for this search */
 search_set *	snap_searchset;
 
-#define		MAX_SEARCHES	64	/* XXX */
-
-/**********************************************************************/
-
 /*
  * state required to support popup window to show fullsize img
  */
 
 pop_win_t	 popup_window = {NULL, NULL, NULL};
 
-
-
-/* ********************************************************************** */
-
 /* some stats for user study */
 
-struct
-{
+struct {
 	int total_seen, total_marked;
-}
-user_measurement = { 0, 0 };
+} user_measurement = { 0, 0 };
 
 
 typedef enum {
@@ -742,7 +732,7 @@ stop_search()
 
 	err = ring_enq(to_search_thread, message);
 	if (err) {
-		printf("XXX failed to enq message \n");
+		fprintf(stderr, "failed to enq message \n");
 		exit(1);
 	}
 }
@@ -1727,10 +1717,7 @@ get_menubar_menu( GtkWidget  *window )
 		entry.callback = G_CALLBACK(cb_collection);
 		entry.callback_action = tmp_coll - collections;
 		entry.item_type = "<CheckItem>";
-		gtk_item_factory_create_item(item_factory,
-		                             &entry,
-		                             NULL,
-		                             1); /* XXX guess, no doc */
+		gtk_item_factory_create_item(item_factory, &entry, NULL, 1);
 
 		GtkWidget *widget = gtk_item_factory_get_widget(item_factory, 
 		    buf);
