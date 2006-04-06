@@ -14,52 +14,29 @@
 #ifndef	_OCV_FACE_SEARCH_H_
 #define	_OCV_FACE_SEARCH_H_	1
 
-#include <gtk/gtk.h>
 #include "snapfind_consts.h"
-#include "img_search.h"
+#include "ocv_search.h"
 
 
-class ocv_face_search: public window_search {
+class ocv_face_search: public ocv_search {
 public:
 	ocv_face_search(const char *name, char *descr);
-	~ocv_face_search(void);
+	virtual ~ocv_face_search();
 
-	void	save_edits();
-	void 	write_fspec(FILE* stream);
 	void	write_config(FILE* stream, const char *data_dir);
-
-	virtual void 	edit_search();
-	virtual void	close_edit_win();
-
-	/* set the min number of faces required */
-	void 		set_face_count(char *data);
-	void 		set_face_count(int new_count);
-
-	/* set the min number of faces required */
-	void 		set_support(char *data);
-	void 		set_support(int new_count);
-
-	virtual	int	handle_config(int num_conf, char **datav);
-
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
-
-private:
-	int			face_count;
-	int			support_matches;
-
-	GtkWidget *	edit_window;
-	GtkObject *	count_widget;
-	GtkObject *	support_widget;
+	void    write_fspec(FILE* stream);
+	int     matches_filter(char *name);
 };
 
-class ocv_face_factory: public img_factory {
+class ocv_face_factory: public ocv_factory {
 public:
 	ocv_face_factory() {
-		set_name("OCV Face");
+		set_name("Face (front)");
 		set_description("ocv_face_search");
 	}
+
 	img_search *create(const char *name) {
-		return new ocv_face_search(name, "OCV Face");
+		return new ocv_face_search(name, "Face (front)");
 	}
 	int is_example() {
 		return(0);

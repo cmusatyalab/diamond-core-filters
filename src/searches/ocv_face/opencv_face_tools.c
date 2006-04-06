@@ -71,13 +71,14 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 
 
 	/* XXX fix args */
+	CvSize minSize = { 20, 20 };
 	faces = cvHaarDetectObjects(gray, fconfig->haar_cascade, storage,
-	                            fconfig->scale_mult, fconfig->support, CV_HAAR_DO_CANNY_PRUNING);
+	                            fconfig->scale_mult, fconfig->support, CV_HAAR_DO_CANNY_PRUNING, minSize);
 
 
 	/* XXX who cleans up the faces */
 	for (i = 0; i < faces->total; i++) {
-		r1 = *(CvAvgComp*)cvGetSeqElem(faces, i, NULL);
+		r1 = *(CvAvgComp*)cvGetSeqElem(faces, i);
 		bb = (bbox_t *)malloc(sizeof(*bb));
 		assert(bb != NULL);
 		bb->min_x = r1.rect.x;

@@ -16,6 +16,7 @@ SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 CVCPPFLAGS = @CVCPPFLAGS@
 CVLDFLAGS = @CVLDFLAGS@
+CVCFGXMLS = @CVCFGXMLS@
 
 STATIC_LIBS += ${BUILD_LIB_PATH}/libocvimage.a ${BUILD_LIB_PATH}/libsfimage.a 
 STATIC_LIBS += ${BUILD_LIB_PATH}/libresults.a
@@ -28,13 +29,17 @@ LDFLAGS += ${CVLDFLAGS}
 
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_ocv_face.c opencv_face_tools.c
+FILTER_LIB_SRCS = fil_ocv_face.c fil_ocv_profile.c fil_ocv_body.c fil_ocv_upperbody.c fil_ocv_lowerbody.c fil_ocv_common.c opencv_face_tools.c
 
-FILTER_LIB_OBJS =  fil_ocv_face.o opencv_face_tools.o
+FILTER_LIB_COMMON = fil_ocv_common.o opencv_face_tools.o
 
-SEARCH_LIB_SRCS = ocv_face_search.cc  opencv_face_tools.c
+FILTER_LIB_OBJS = ${FILTER_LIB_COMMON} fil_ocv_face.o fil_ocv_profile.o fil_ocv_body.o fil_ocv_upperbody.o fil_ocv_lowerbody.o 
 
-SEARCH_LIB_OBJS =  ocv_face_search.o opencv_face_tools.o
+SEARCH_LIB_SRCS = ocv_search.cc ocv_face_search.cc opencv_face_tools.c ocv_body_search.cc ocv_upperbody_search.cc ocv_lowerbody_search.cc ocv_profile_search.cc
+
+SEARCH_LIB_COMMON = ocv_search.o opencv_face_tools.o
+
+SEARCH_LIB_OBJS = ${SEARCH_LIB_COMMON} ocv_face_search.o ocv_body_search.o ocv_upperbody_search.o ocv_lowerbody_search.o ocv_profile_search.o
 
 SEARCH_LIB_LIBS += -lm 
 
@@ -43,24 +48,70 @@ SEARCHLET_LIBS += -lm -ltiff -ljpeg -lz
 # All the source files that are needed for depend.
 #
 SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS) 
 
 #
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_ocv_face.so opencv_face_search.so
+TARGETS = fil_ocv_face.so opencv_face_search.so fil_ocv_profile.so opencv_profile_search.so fil_ocv_body.so opencv_body_search.so fil_ocv_upperbody.so opencv_upperbody_search.so fil_ocv_lowerbody.so opencv_lowerbody_search.so
 
-SHARED_LIB += fil_ocv_face.so opencv_face_search.so opencv_face.sf_conf
+SHARED_LIB += fil_ocv_face.so fil_ocv_profile.so fil_ocv_body.so fil_ocv_upperbody.so fil_ocv_lowerbody.so 
+SHARED_LIB += opencv_face_search.so opencv_face.sf_conf ${CVCFGXMLS}/haarcascade_frontalface_default.xml 
+SHARED_LIB += opencv_profile_search.so opencv_profile.sf_conf ${CVCFGXMLS}/haarcascade_profileface.xml
+SHARED_LIB += opencv_body_search.so opencv_body.sf_conf ${CVCFGXMLS}/haarcascade_fullbody.xml 
+SHARED_LIB += opencv_upperbody_search.so opencv_upperbody.sf_conf ${CVCFGXMLS}/haarcascade_upperbody.xml
+SHARED_LIB += opencv_lowerbody_search.so opencv_lowerbody.sf_conf ${CVCFGXMLS}/haarcascade_lowerbody.xml
+
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_ocv_face.so: $(FILTER_LIB_OBJS)
+fil_ocv_face.so: fil_ocv_face.o $(FILTER_LIB_COMMON)
 	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a
 
-opencv_face_search.so: $(SEARCH_LIB_OBJS)
+fil_ocv_profile.so: fil_ocv_profile.o $(FILTER_LIB_COMMON)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
+fil_ocv_body.so: fil_ocv_body.o $(FILTER_LIB_COMMON)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
+fil_ocv_upperbody.so: fil_ocv_upperbody.o $(FILTER_LIB_COMMON)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
+fil_ocv_lowerbody.so: fil_ocv_lowerbody.o $(FILTER_LIB_COMMON)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
+opencv_face_search.so: ocv_face_search.o $(SEARCH_LIB_COMMON)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
+opencv_profile_search.so: ocv_profile_search.o $(SEARCH_LIB_COMMON)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
+opencv_body_search.so: ocv_body_search.o $(SEARCH_LIB_COMMON)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
+opencv_upperbody_search.so: ocv_upperbody_search.o $(SEARCH_LIB_COMMON)
+	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
+	rm -f foo.a
+
+opencv_lowerbody_search.so: ocv_lowerbody_search.o $(SEARCH_LIB_COMMON)
 	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a

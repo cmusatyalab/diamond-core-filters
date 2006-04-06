@@ -36,7 +36,7 @@ typedef struct opencv_fdetect {
 	int		stride;
 	float		scale_mult;
 	int		support;
-	CvHidHaarClassifierCascade	*haar_cascade;
+	CvHaarClassifierCascade	*haar_cascade;
 } opencv_fdetect_t;
 
 #endif /*  ! _OPENCV_FACE_H_ */
