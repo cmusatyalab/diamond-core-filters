@@ -56,9 +56,9 @@ CHECK_STATIC_LIB([libjpeg.a])
 CHECK_STATIC_LIB([libz.a])
 
 # deal with the cv stuff
+AC_CHECK_LIB([cxcore], [main], , )
 AC_CHECK_LIB([cvaux], [main], , )
-
-AC_CHECK_LIB([opencv], [main], , )
+AC_CHECK_LIB([cv], [main], , )
 
 
 # standard system libraries.

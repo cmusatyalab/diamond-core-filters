@@ -1,5 +1,6 @@
 AC_SUBST(CVCPPFLAGS)
 AC_SUBST(CVLDFLAGS)
+AC_SUBST(CVCFGXMLS)
 
 AC_DEFUN([ADD_LIB_SEARCH],
     [
@@ -18,7 +19,8 @@ AC_ARG_WITH(opencv,
     [--with-opencv=DIR - root of opencv install dir],
     [ pfx="`(cd ${withval} ; pwd)`"
       CVCPPFLAGS="-I${pfx}/include/ -I${pfx}/include/opencv/"
-      CVLDFLAGS=" ${pfx}/lib/libcvaux.a ${pfx}/lib/libopencv.a "
+      CVLDFLAGS=" ${pfx}/lib/libcvaux.a ${pfx}/lib/libcv.a ${pfx}/lib/libcxcore.a"
+      CVCFGXMLS="${pfx}/share/opencv/haarcascades"
       ADD_LIB_SEARCH(${pfx}/lib)
     ])
 
