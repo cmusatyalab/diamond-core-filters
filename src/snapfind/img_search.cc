@@ -48,6 +48,8 @@ img_search::img_search(const char *name, char *descr)
 	search_label = NULL;
 	adjust_label = NULL;
 	parent_set = NULL;
+	auxdata = NULL;
+	auxdatalen = 0;
 }
 
 
@@ -385,4 +387,31 @@ img_search::operator == (const img_search &rhs) const
 	return(!strcmp(t1, t2));
 }
 
+void *
+img_search::get_auxiliary_data() 
+{
+  return(auxdata);
+}
 
+int 
+img_search::get_auxiliary_data_length()
+{
+  return(auxdatalen);
+}
+
+void 
+img_search::set_auxiliary_data(void *data) 
+{
+  auxdata = data;
+}
+
+void 
+img_search::set_auxiliary_data_length(int len)
+{
+  auxdatalen = len;
+}
+
+int
+img_search::matches_filter(char *name) {
+  return 0;
+}

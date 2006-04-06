@@ -25,6 +25,8 @@
 #define _SNAP_FIND_H_	1
 
 #include "sfind_tools.h"	/* XXX can I remove this ??? */
+#include "snapfind_config.h"
+
 static const int THUMBSIZE_X = 200;
 static const int THUMBSIZE_Y = 150;
 
@@ -61,10 +63,6 @@ extern search_name_t * active_searches;
 extern "C"
 {
 #endif
-
-
-/* From snapfind_config.l */
-char * sfconf_get_plugin_dir();
 
 /* from log_win.cc */
 void init_logging(void);

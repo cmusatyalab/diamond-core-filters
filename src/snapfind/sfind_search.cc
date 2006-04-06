@@ -95,7 +95,8 @@ do_search(gid_list_t * main_region, char *fspec)
 	int             err;
 	char           *filter_name;
 	char           *dir_name;
-	void *		cookie;
+	void 	       *cookie;
+	img_search     *search;
 
 	if (!fspec) {
 		fspec = sset->build_filter_spec(NULL);
@@ -132,6 +133,27 @@ do_search(gid_list_t * main_region, char *fspec)
 		free(filter_name);
 	}
 
+	/*
+	 * Attach auxiliary data for this search.
+	 */
+	for (filter_name = first_searchlet_lib(&cookie);
+	     filter_name != NULL;
+	     filter_name = next_searchlet_lib(&cookie)) {
+		if (((search = sset->find_search(filter_name)) != NULL) &&
+		    search->is_selected()) {
+			err = ls_set_blob(shandle, 
+					  (char *)search->get_name(), 
+					  search->get_auxiliary_data_length(),
+					  search->get_auxiliary_data());
+			if (err) {
+			  printf("Failed to set data on %s, err %d \n", 
+				 (char *)search->get_name(), err);
+			  exit(1);
+			}
+		}
+		free(filter_name);
+	}
+	  
 	/*
 	 * Go ahead and start the search.
 	 */

@@ -54,6 +54,13 @@ public:
 	void		close_edit_win();
 	/* XXX need to free the above */
 
+	virtual int     matches_filter(char *name);
+	void *          get_auxiliary_data();
+	void            set_auxiliary_data(void *data);
+
+	int             get_auxiliary_data_length();
+	void            set_auxiliary_data_length(int len);
+
 	img_search &operator=(const img_search &rhs);
 	int operator==(const img_search &rhs) const;
 	int operator<(const img_search &rhs) const;
@@ -67,6 +74,8 @@ private:
 	GtkWidget *	name_entry;
 	GtkWidget *	search_label;
 	GtkWidget *	adjust_label;
+	void *          auxdata;
+	int             auxdatalen;
 };
 
 

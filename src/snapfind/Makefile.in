@@ -93,7 +93,7 @@ SHARED_BIN += snapfind
 
 SHARED_LIB += snap_searchlet.so  snap_searchlet.sf_conf
 
-SHARED_HEADERS = img_search.h search_set.h factory.h
+SHARED_HEADERS = img_search.h search_set.h factory.h snapfind_config.h
 
 include ${OBJROOT}/Makefile.template
 
@@ -106,8 +106,8 @@ endif
 
 cln:
 	$(RM) core.*
-	$(RM) /tmp/fspec* /tmp/filsp* /tmp/objfil*
-	$(RM) /var/tmp/fspec* /var/tmp/filsp* /var/tmp/objfil*
+	$(RM) /tmp/fspec* /tmp/filsp* /tmp/objfil* /tmp/haar*
+	$(RM) /var/tmp/fspec* /var/tmp/filsp* /var/tmp/objfil* /var/tmp/haar*
 
 clean-targets:	clean-experiments
 	$(RM) $(TARGETS)
