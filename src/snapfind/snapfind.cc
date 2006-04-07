@@ -93,6 +93,8 @@ static int default_face_levels = 37;
 
 thumblist_t thumbnails = TAILQ_HEAD_INITIALIZER(thumbnails);
 thumbnail_t *cur_thumbnail = NULL;
+int thumbnail_size_x = THUMBSIZE_X;
+int thumbnail_size_y = THUMBSIZE_Y;
 
 /* XXX move these later to common header */
 #define	TO_SEARCH_RING_SIZE		512
@@ -544,7 +546,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	assert(rgbimg);
 	assert(rgbimg->width);
 
-	int scale = (int)ceil(compute_scale(rgbimg, THUMBSIZE_X, THUMBSIZE_Y));
+	int scale = (int)ceil(compute_scale(rgbimg, thumbnail_size_x, thumbnail_size_y));
 	scaledimg = image_gen_image_scale(rgbimg, scale);
 	assert(scaledimg);
 
@@ -574,7 +576,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	/*
 	 * Build image the new data
 	 */
-	GtkWidget *image = make_gimage(scaledimg, THUMBSIZE_X, THUMBSIZE_Y);
+	GtkWidget *image = make_gimage(scaledimg, thumbnail_size_x, thumbnail_size_y);
 	assert(image);
 
 	/*
@@ -1468,8 +1470,8 @@ create_display_region(GtkWidget *main_box)
 			gtk_widget_show(frame);
 
 			widget = gtk_viewport_new(NULL, NULL);
-			gtk_widget_set_size_request(widget, THUMBSIZE_X, 
-			    THUMBSIZE_Y);
+			gtk_widget_set_size_request(widget, thumbnail_size_x, 
+			    thumbnail_size_y);
 			gtk_container_add(GTK_CONTAINER(frame), widget);
 			gtk_table_attach_defaults(GTK_TABLE(thumbnail_view), 
 			    eb, j, j+1, i, i+1);
@@ -1821,6 +1823,8 @@ usage(char **argv)
 	fprintf(stderr, "  --dump-spec=<file>      - dump spec file and exit \n");
 	fprintf(stderr, "  --dump-objects          - start search and dump objects\n");
 	fprintf(stderr, "  --read-spec=<file>      - use spec file. requires dump-objects\n");
+	fprintf(stderr, "  --thumbnail-width=<num>     - thumbnail width in pixels\n");
+	fprintf(stderr, "  --thumbnail-height=<num>     - thumbnail height in pixels\n");
 }
 
 
@@ -1866,13 +1870,14 @@ main(int argc, char *argv[])
 	int c;
 	static const char *optstring = "hes:f:";
 	struct option long_opt[] = {
-		                           {"dump-spec", required_argument, NULL, 0
-		                           },
+		                           {"dump-spec", required_argument, NULL, 0},
 		                           {"dump-objects", no_argument, NULL, 0},
 		                           {"read-spec", required_argument, NULL, 0},
 		                           {"similarity", required_argument, NULL, 'f'},
 		                           {"min-faces", required_argument, NULL, 0},
 		                           {"face-levels", required_argument, NULL, 0},
+					   {"thumbnail-width", required_argument, NULL, 0},
+					   {"thumbnail-height", required_argument, NULL, 0},
 		                           {0, 0, 0, 0}
 	                           };
 	int option_index = 0;
@@ -1900,7 +1905,12 @@ main(int argc, char *argv[])
 					default_min_faces = atoi(optarg);
 				} else if(strcmp(long_opt[option_index].name, "face-levels") == 0) {
 					default_face_levels = atoi(optarg);
+				} else if(strcmp(long_opt[option_index].name, "thumbnail-width") == 0) {
+				        thumbnail_size_x = atoi(optarg);
+				} else if(strcmp(long_opt[option_index].name, "thumbnail-height") == 0) {
+				        thumbnail_size_y = atoi(optarg);
 				}
+				
 				break;
 			case 'e':
 				fprintf(stderr, "expert mode must now be turned on with the menu option\n");
