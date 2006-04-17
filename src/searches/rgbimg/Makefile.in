@@ -46,7 +46,7 @@ CLEAN_OTHERS +=
 
 TARGETS = fil_rgb.so rgb_img.so
 
-SHARED_LIB += fil_rgb.so rgb_img.so rgb_img.sf_conf
+SHARED_LIB += fil_rgb.so rgb_img.so $(SRCDIR)/rgb_img.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 

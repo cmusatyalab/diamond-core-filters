@@ -43,7 +43,7 @@ CLEAN_OTHERS +=
 
 TARGETS = fil_gabor_texture.so gabor_texture_search.so
 
-SHARED_LIB += fil_gabor_texture.so gabor_texture_search.so gabor_texture.sf_conf
+SHARED_LIB += fil_gabor_texture.so gabor_texture_search.so $(SRCDIR)/gabor_texture.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 

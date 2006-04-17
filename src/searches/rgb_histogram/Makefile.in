@@ -47,7 +47,7 @@ CLEAN_OTHERS +=
 
 TARGETS = fil_rgb_histo.so rgb_histo_search.so
 
-SHARED_LIB += fil_rgb_histo.so rgb_histo_search.so rgb_histo.sf_conf
+SHARED_LIB += fil_rgb_histo.so rgb_histo_search.so $(SRCDIR)/rgb_histo.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 

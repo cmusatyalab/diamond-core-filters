@@ -41,7 +41,7 @@ CLEAN_OTHERS += eead_config.cc $(COMMON_SRCS)
 
 TARGETS = fil_num_attr.so num_attr_search.so
 
-SHARED_LIB = fil_num_attr.so num_attr_search.so num_attr.sf_conf
+SHARED_LIB = fil_num_attr.so num_attr_search.so $(SRCDIR)/num_attr.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 

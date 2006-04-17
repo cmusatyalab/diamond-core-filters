@@ -57,11 +57,11 @@ CLEAN_OTHERS +=
 TARGETS = fil_ocv_face.so opencv_face_search.so fil_ocv_profile.so opencv_profile_search.so fil_ocv_body.so opencv_body_search.so fil_ocv_upperbody.so opencv_upperbody_search.so fil_ocv_lowerbody.so opencv_lowerbody_search.so
 
 SHARED_LIB += fil_ocv_face.so fil_ocv_profile.so fil_ocv_body.so fil_ocv_upperbody.so fil_ocv_lowerbody.so 
-SHARED_LIB += opencv_face_search.so opencv_face.sf_conf ${CVCFGXMLS}/haarcascade_frontalface_default.xml 
-SHARED_LIB += opencv_profile_search.so opencv_profile.sf_conf ${CVCFGXMLS}/haarcascade_profileface.xml
-SHARED_LIB += opencv_body_search.so opencv_body.sf_conf ${CVCFGXMLS}/haarcascade_fullbody.xml 
-SHARED_LIB += opencv_upperbody_search.so opencv_upperbody.sf_conf ${CVCFGXMLS}/haarcascade_upperbody.xml
-SHARED_LIB += opencv_lowerbody_search.so opencv_lowerbody.sf_conf ${CVCFGXMLS}/haarcascade_lowerbody.xml
+SHARED_LIB += opencv_face_search.so $(SRCDIR)/opencv_face.sf_conf ${CVCFGXMLS}/haarcascade_frontalface_default.xml 
+SHARED_LIB += opencv_profile_search.so $(SRCDIR)/opencv_profile.sf_conf ${CVCFGXMLS}/haarcascade_profileface.xml
+SHARED_LIB += opencv_body_search.so $(SRCDIR)/opencv_body.sf_conf ${CVCFGXMLS}/haarcascade_fullbody.xml 
+SHARED_LIB += opencv_upperbody_search.so $(SRCDIR)/opencv_upperbody.sf_conf ${CVCFGXMLS}/haarcascade_upperbody.xml
+SHARED_LIB += opencv_lowerbody_search.so $(SRCDIR)/opencv_lowerbody.sf_conf ${CVCFGXMLS}/haarcascade_lowerbody.xml
 
 
 include ${OBJROOT}/Makefile.template
