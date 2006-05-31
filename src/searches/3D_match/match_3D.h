@@ -18,8 +18,8 @@
 #include "snapfind_consts.h"
 #include "img_search.h"
 
-#define MAX_DISTANCE 10  /* for slider bar */
-#define DEFAULT_DISTANCE 2
+#define MAX_DISTANCE 1.23  /* for slider bar */
+#define DEFAULT_DISTANCE 0.342
 
 /*
  * The class for doing windowed searches over
