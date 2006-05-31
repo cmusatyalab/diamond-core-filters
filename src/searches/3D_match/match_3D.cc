@@ -240,8 +240,7 @@ match_3D::edit_search()
 	 */
 
 	widget = create_slider_entry("Max Distance", 0.0, MAX_DISTANCE, 
-				     DEFAULT_DISTANCE,
-	                             distance, 0.05, &sim_adj);
+				     			2, distance, 0.05, &sim_adj);
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 	gtk_container_add(GTK_CONTAINER(edit_window), box);
 
@@ -365,7 +364,7 @@ void match_3D::getQueryAttr(char *querryAttrFilename, int size,float *q)
 	for (i = 0; i<size;i++)
 	{
 	  fscanf(fid, "%f", &q[i]);
-	  printf("Number %d %f\n",i,q[i]);
+	  //printf("Number %d %f\n",i,q[i]);
 	}
 
 	fclose(fid);
