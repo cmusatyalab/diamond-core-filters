@@ -120,6 +120,7 @@ AC_CONFIG_FILES([Makefile
 		searches/rgbimg/Makefile
 		searches/dog_texture/Makefile
 		searches/rgb_histogram/Makefile
+		searches/3D_match/Makefile
 		lib/Makefile
 		lib/libsfimage/Makefile
 		lib/libresults/Makefile
