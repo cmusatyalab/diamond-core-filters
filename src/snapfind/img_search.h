@@ -52,6 +52,8 @@ public:
 	GtkWidget *	get_highlight_widget();
 	GtkWidget *	get_edit_widget();
 	void		close_edit_win();
+	const char *get_example_name() const;
+	void 	    set_example_name(const char *new_name);
 	/* XXX need to free the above */
 
 	virtual int     matches_filter(char *name);
@@ -76,6 +78,7 @@ private:
 	GtkWidget *	adjust_label;
 	void *          auxdata;
 	int             auxdatalen;
+	char *  example_name;
 };
 
 

@@ -495,11 +495,13 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	ssearch = factory->create(sname);
 	assert(ssearch != NULL);
 	sset->add_search(ssearch);
+	ssearch->set_example_name(import_window.img_name);	
 
 	/* put the patches into the newly created search */
 	for(int i=0; i<import_window.nselections; i++) {
 		ssearch->add_patch(import_window.img, import_window.selections[i]);
 	}
+
 
 	/* popup the edit window */
 	ssearch->edit_search();
@@ -1004,12 +1006,13 @@ load_import_file(const char *file)
 
 	if (file == NULL) {
 		import_window.img = rgbimg_blank_image(300, 400);
+		import_window.img_name = NULL;
 	} else {
 		import_window.img = create_rgb_image(file);
+		import_window.img_name = strdup(file);
 	}
 	import_window.button_down = 0;
 	assert(import_window.img != NULL);
-
 
 	import_window.layers[IMP_IMG_LAYER] = import_window.img;
 	for(int i=IMP_IMG_LAYER+1; i<IMP_MAX_LAYERS; i++) {
@@ -1068,16 +1071,14 @@ load_import_file(const char *file)
 }
 
 void
-open_import_window(search_set *set
-                  )
+open_import_window(search_set *set)
 {
 	GtkWidget *frame;
 	GtkWidget *button;
 	GtkWidget *widget;
 	GtkWidget *hbox;
 
-	sset = set
-		       ;
+	sset = set;
 	if (import_window.window == NULL) {
 		import_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title(GTK_WINDOW(import_window.window), "Image");

@@ -65,11 +65,11 @@ typedef	struct import_win
     bbox_t selections[MAX_SELECT];
     int    nselections;
     RGBImage *	img;
+    char * img_name;
 }
 import_win_t;
 
-void open_import_window(search_set *set
-                       );
+void open_import_window(search_set *set);
 void import_update_searches();
 void update_search_entry(img_search *cur_search, int row);
 

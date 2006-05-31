@@ -50,6 +50,7 @@ img_search::img_search(const char *name, char *descr)
 	parent_set = NULL;
 	auxdata = NULL;
 	auxdatalen = 0;
+	example_name = NULL;
 }
 
 
@@ -57,8 +58,17 @@ img_search::~img_search()
 {
 	free(display_name);
 	free(descript);
+	if (example_name != NULL) 
+		free(example_name);
 	return;
 }
+
+const char *
+img_search::get_example_name() const
+{
+	return(example_name);
+}
+
 
 const char *
 img_search::get_name() const
@@ -92,6 +102,13 @@ cleanup_name(char *name)
 	return(modified);
 }
 
+void
+img_search::set_example_name(const char *new_name)
+{
+	if (example_name != NULL)
+		free(example_name);
+	example_name = strdup(new_name);
+}
 
 int
 img_search::set_name(const char *new_name)
