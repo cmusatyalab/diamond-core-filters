@@ -1,0 +1,55 @@
+#
+#       SnapFind (Release 0.9)
+#       An interactive image search application
+#
+#      Copyright (c) 2002-2005, Intel Corporation
+#      All Rights Reserved
+#
+#  This software is distributed under the terms of the Eclipse Public
+#  License, Version 1.0 which can be found in the file named LICENSE.
+#  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+#  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+#
+
+VPATH = @srcdir@
+SRCDIR = @srcdir@
+OBJROOT = @OBJROOT@
+
+STATIC_LIBS += @STATIC_LIBS@
+
+CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
+
+
+# objects used to build the searchlet(s)
+FILTER_LIB_SRCS = fil_3D_match.c 
+
+FILTER_LIB_OBJS =  fil_3D_match.o 
+
+SEARCHLET_LIBS += -lm 
+
+SEARCH_LIB_SRCS = match_3D.cc 
+
+SEARCH_LIB_OBJS = match_3D.o 
+
+
+#
+# All the source files that are needed for depend.
+#
+SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+
+#
+# Other objects to cleanup
+CLEAN_OTHERS += 
+
+TARGETS = fil_3D_match.so match_3D.so
+
+SHARED_LIB += fil_3D_match.so match_3D.so 3D_match.sf_conf
+
+include ${OBJROOT}/Makefile.template
+
+fil_3D_match.so: $(FILTER_LIB_OBJS)
+
+3D_match.so: $(SEARCH_LIB_OBJS)
+
+default: $(TARGETS)
