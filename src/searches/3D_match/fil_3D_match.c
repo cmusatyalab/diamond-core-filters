@@ -73,7 +73,6 @@ f_fini_3D_match(void *data)
 int
 f_eval_3D_match(lf_obj_handle_t ohandle, void *f_data)
 {
-	int             pass = 0;
 	int             err;
 	int i;
 	match_config_t     *fconfig = (match_config_t *) f_data;
@@ -82,16 +81,15 @@ f_eval_3D_match(lf_obj_handle_t ohandle, void *f_data)
 	char           *suffix;
 	int             rv = 0;     /* return value */
 	float           features[NUM_FEATURES];
-	char          featurename[3];
 	FILE *fid;
 
 	lf_log(LOGL_TRACE, "f_eval_3D_match: enter");
 
 	err = lf_read_attr(ohandle, DISPLAY_NAME, &len, (unsigned char *) name); 
 	name[len] = '\0';
-	suffix = strrchr(name, '.');
+	suffix = strrchr((char *) name, '.');
 	strcpy(suffix, ".jpg.query");
-	fid = fopen(name, "r");
+	fid = fopen((char *) name, "r");
 
 	/* get the image features */
 	for (i = 0; i < NUM_FEATURES; i++) {
