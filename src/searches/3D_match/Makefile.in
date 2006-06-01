@@ -46,10 +46,11 @@ TARGETS = fil_3D_match.so match_3D.so
 
 SHARED_LIB += fil_3D_match.so match_3D.so 3D_match.sf_conf
 
-include ${OBJROOT}/Makefile.template
-
 fil_3D_match.so: $(FILTER_LIB_OBJS)
 
 3D_match.so: $(SEARCH_LIB_OBJS)
 
 default: $(TARGETS)
+
+include ${OBJROOT}/Makefile.template
+
