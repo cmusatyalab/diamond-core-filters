@@ -206,9 +206,6 @@ copylib:
 # this check iff they define their own installdirs target.
 
 install: installdirs
-ifneq ($(strip ${PROG}),)
-	${INSTALL_BIN} ${PROG} ${INSTALLDIR_BIN}
-endif
 ifneq ($(strip ${INSTALL_OTHERS}),)	
 	${INSTALL} ${INSTALL_OTHERS} ${INSTALLDIR}
 endif
@@ -222,7 +219,11 @@ ifneq ($(strip ${INSTALL_LIBS}),)
 		${INSTALL} $${entry} ${INSTALLDIR_LIB} ; \
 	done
 endif
-
+ifneq ($(strip ${INSTALL_BIN}),)	
+	@for entry in ${INSTALL_BIN} ; do \
+		${INSTALL} $${entry} ${INSTALLDIR_BIN} ; \
+	done
+endif
 
 
 

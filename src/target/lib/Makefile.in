@@ -25,7 +25,7 @@ ALLFILES = $(wildcard *)
 EXCLUDES = CVS Makefile Makefile.in
                                                                                 
 # The reduced set
-INSTALL_LIB = $(filter-out $(EXCLUDES), $(ALLFILES))
+INSTALL_LIBS = $(filter-out $(EXCLUDES), $(ALLFILES))
                                                                                 
 CLEAN_OTHERS += ${INSTALL_LIB}
 

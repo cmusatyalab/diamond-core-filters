@@ -25,9 +25,9 @@ ALLFILES = $(wildcard *)
 EXCLUDES = CVS Makefile Makefile.in
 
 # The reduced set
-INSTALL_BIN = $(filter-out $(EXCLUDES), $(ALLFILES))
-                                                                                
-CLEAN_OTHERS += ${INSTALL_BIN}
-                                                                                
+INSTALL_HEADERS = $(filter-out $(EXCLUDES), $(ALLFILES))
+
+CLEAN_OTHERS += ${INSTALL_HEADERS}
+
 include $(OBJROOT)/Makefile.template
 

@@ -26,8 +26,8 @@ EXCLUDES = CVS Makefile Makefile.in
 
 # The reduced set
 INSTALL_BIN = $(filter-out $(EXCLUDES), $(ALLFILES))
-                                                                                
+
 CLEAN_OTHERS += ${INSTALL_BIN}
-                                                                                
+
 include $(OBJROOT)/Makefile.template
 
