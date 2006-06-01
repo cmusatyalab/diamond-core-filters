@@ -115,3 +115,74 @@ OR
 >>(11b) cd snapfind-OBJS/target/bin; ./snapfind
 
 
+
+Installing OpenCV 0.9.7 Debian packages
+---------------------------------------
+
+Snapfind version 1.1.0 uses OpenCV 0.9.7, which is available in
+Debian packaging.  To build or use Snapfind, the OpenCV packages
+and their prerequisities must be installed.  First the prereqs:
+	debhelper (>= 4.0.0), 
+	quilt, 
+	libjpeg62-dev, 
+	zlib1g-dev, 
+	libpng12-dev, 
+	libtiff4-dev, 
+	libraw1394-dev, 
+	libdc1394-13-dev, 
+	libgtk2.0-dev, 
+	libavcodec-dev (>= 0.cvs20060329-1), 
+	libavformat-dev, 
+	python2.3-dev, 
+	swig
+
+To find some of the dev packages, make sure the package manager
+checks the "Community maintained (Universe)" repository.  (In the
+Synaptic package manager, go to settings->repositories->add and
+check the "Community maintained (Universe) checkbox".
+
+Now install the OpenCV packages:
+
+	dpkg -i libcv0.9.7-0_0.9.7-2_i386.deb
+	dpkg -i libcvaux0.9.7-0_0.9.7-2_i386.deb
+	dpkg -i libhighgui0.9.7-0_0.9.7-2_i386.deb
+
+These dev packages must be installed together because of circular 
+dependencies:
+
+	dpkg -i libcv-dev_0.9.7-2_i386.deb libcvaux-dev_0.9.7-2_i386.deb libhighgui-dev_0.9.7-2_i386.deb
+	
+
+Building Debian packages
+------------------------
+
+Debian packaging files are in the debian subdirectory.  To build the
+debian packages from scratch, run the following from the Snapfind
+source diretory, which must be named snapfind-<version>.
+
+	cp -pr src snapfind-<version>
+	cd snapfind-<version>
+	fakeroot debian/rules clean
+
+This will do a make clean.  Then build the source package.
+	cd ..
+	dpkg-source -b -sn  snapfind-<version>
+
+This will create the source package, which consists of:
+	snapfind_<version>.tar.gz (source tarball)
+	snapfind_<version>.dsc	(source summary)
+
+Build the binary package:
+	cd snapfind-<version>
+	fakeroot debian/rules binary
+
+This will create snapfind_<version>_<arch>.deb in the directory above.
+
+
+Installing Debian packages
+--------------------------
+To install the binary package:
+	dpkg -i snapfind_<version>_<arch>.deb
+
+To unpack the source package:
+	dpkg-source -x snapfind-<version>.dsc
