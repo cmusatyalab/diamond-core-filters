@@ -166,7 +166,7 @@ source diretory, which must be named snapfind-<version>.
 
 This will do a make clean.  Then build the source package.
 	cd ..
-	dpkg-source -b -sn  snapfind-<version>
+	dpkg-source -b -ICVS -sn  snapfind-<version>
 
 This will create the source package, which consists of:
 	snapfind_<version>.tar.gz (source tarball)
@@ -186,3 +186,18 @@ To install the binary package:
 
 To unpack the source package:
 	dpkg-source -x snapfind-<version>.dsc
+
+
+Building RPMs
+-------------
+
+Use the alien package to build RPMs from debian files.
+To build the binary package:
+	alien -k -r snapfind_<version>_<arch>.deb
+
+This will generate snapfind-<version>.<arch>.rpm
+
+To build the source package:
+	alien -k -r snapfind_<version>.tar.gz
+
+This will generate snapfind_<version>.noarch.rpm
