@@ -468,16 +468,14 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 {
 	GtkWidget *	active_item;
 	img_search *ssearch;
-	int		idx;
 	const char *	sname;
 	img_factory *	factory;
 	GUI_CALLBACK_ENTER();
 
 	active_item = gtk_menu_get_active(GTK_MENU(import_window.search_type));
 
-	/* XXX can't directly get the cast to work ??? */
-	idx = (int) g_object_get_data(G_OBJECT(active_item), "user data");
-	factory = (img_factory *)idx;
+	factory = (img_factory *) g_object_get_data(G_OBJECT(active_item),
+						    "user data");
 
 	/* 
 	 * Get the new name and make sure it is valid

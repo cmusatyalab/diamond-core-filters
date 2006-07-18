@@ -72,7 +72,7 @@ public:
 
 	char * 		build_filter_spec(char *tmp_file);
 
-	GtkWidget * search_set::build_edit_table();
+	GtkWidget *     build_edit_table();
 
 
 private:

@@ -516,16 +516,14 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	GtkWidget *	label;
 	img_search *	ssearch;
 	img_factory *	factory;
-	int		idx;
 	gint		result;
 	const char *	sname;
 	GUI_CALLBACK_ENTER();
 
 	active_item = gtk_menu_get_active(GTK_MENU(popup_window.search_type));
 
-	/* can't directly get the cast to work ??? */
-	idx = (int) g_object_get_data(G_OBJECT(active_item), "user data");
-	factory = (img_factory *)idx;
+	factory = (img_factory *) g_object_get_data(G_OBJECT(active_item),
+						    "user data");
 
 	sname =  gtk_entry_get_text(GTK_ENTRY(popup_window.search_name));
 	if (strlen(sname) < 1) {
