@@ -52,6 +52,7 @@ LDFLAGS += -L${BUILD_LIB_PATH}
 LD_SOFLAGS += -shared
 
 #Just to go overboard and be sure
+CFLAGS += -D_GNU_SOURCE
 CFLAGS += -D_THREAD_SAFE
 CFLAGS += -D_REENTRANT
 # general flags
@@ -59,8 +60,10 @@ CFLAGS += -O2
 CFLAGS += -ggdb
 CFLAGS += -DDEBUG 
 CFLAGS += -Wall
+CFLAGS += -fPIC
 CFLAGS += -ffast-math
 
+EXTRA_CFLAGS += -Werror-implicit-function-declaration
 
 
 # The tools we want to use to compile
@@ -104,7 +107,7 @@ DIST_OBJS += .depend Makefile
 	${LEX} -o$@ $<
 
 %.o: %.c
-	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o $@
+	${CC} ${CPPFLAGS} ${CFLAGS} ${EXTRA_CFLAGS} -c $< -o $@
 
 %.o: %.cc
 	${CPLUSPLUS} ${CPPFLAGS} ${CFLAGS} -c $< -o $@
