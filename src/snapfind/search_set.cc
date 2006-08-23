@@ -130,13 +130,10 @@ search_set::get_next_search(search_iter_t *iter)
 }
 
 img_search *
-search_set::find_search(char *name)
+search_set::find_search(char *name, search_iter_t *iter)
 {
     img_search *cur;
-    search_iter_t iter;
-
-    reset_search_iter(&iter);
-    while ((cur = get_next_search(&iter)) != NULL) {
+    while ((cur = get_next_search(iter)) != NULL) {
       if (cur->matches_filter(name)) {
 	  return(cur);
       }
