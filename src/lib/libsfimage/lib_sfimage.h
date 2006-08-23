@@ -32,12 +32,14 @@ extern "C"
 #endif
 
 /*
- * some interfaces to read images from a path/file
+ * some interfaces to read images from a path/file/buffer
  */
 
 RGBImage       *get_rgb_img(lf_obj_handle_t ohandle);
+RGBImage	   *read_rgb_image(unsigned char *buf, size_t buflen);
 
-RGBImage *create_rgb_image(const char *filename);
+RGBImage 	*create_rgb_image(const char *filename);
+
 int rgb_write_image(RGBImage *img, const char *filename, const char *path);
 
 
