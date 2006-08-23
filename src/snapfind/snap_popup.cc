@@ -546,7 +546,9 @@ cb_add_to_new(GtkWidget *widget, GdkEventAny *event, gpointer data)
 	ssearch = factory->create(sname);
 	assert(ssearch != NULL);
 	sset->add_search(ssearch);
-
+	if (strlen(GTK_WINDOW(popup_window.window)->title) > strlen("Image: "))
+		ssearch->set_example_name((char *)
+			((GTK_WINDOW(popup_window.window)->title + strlen("Image: "))));
 
 	/* put the patches into the newly created search */
 	for(int i=0; i<popup_window.nselections; i++) {
