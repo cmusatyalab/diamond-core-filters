@@ -17,7 +17,7 @@ OBJROOT = @OBJROOT@
 
 
 SUBDIRS = rgbimg gabor_texture ocv_face dog_texture rgb_histogram 3D_match
-SUBDIRS += num_attr text_attr
+SUBDIRS += num_attr text_attr img_diff
 
 include $(OBJROOT)/Makefile.template
 
