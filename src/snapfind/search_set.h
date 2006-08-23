@@ -47,7 +47,7 @@ public:
 	void		reset_search_iter(search_iter_t *iter);
 	img_search *get_next_search(search_iter_t *iter);
 
-	img_search     *find_search(char *name);
+	img_search     *find_search(char *name, search_iter_t *iter);
 
 	/* calls to add new dependency or reset the list */
 	void		add_dep(img_search *dep_search);
