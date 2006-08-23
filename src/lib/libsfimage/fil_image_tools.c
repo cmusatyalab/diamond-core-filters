@@ -240,32 +240,40 @@ get_rgb_img(lf_obj_handle_t ohandle)
 	int		err = 0;
 	unsigned char *	obj_data;
 	size_t		data_len;
-	RGBImage*	img = NULL;
 
 	err = lf_next_block(ohandle, INT_MAX, &data_len, &obj_data);
 	assert(!err);
+	
+	return read_rgb_image(obj_data, data_len);
+}
 
-	image_type_t magic = determine_image_type(obj_data);
+RGBImage *
+read_rgb_image(unsigned char *buf, size_t buflen)
+{
+	RGBImage*	img = NULL;
+		
+	image_type_t magic = determine_image_type(buf);
 	switch(magic) {
 	  case IMAGE_PBM:
 	  case IMAGE_PGM:
 	  case IMAGE_PPM:
-	    img = get_rgb_from_pnm(obj_data, data_len, magic);
+	    img = get_rgb_from_pnm(buf, buflen, magic);
 	    break;
 	  case IMAGE_TIFF:
-	    img = get_rgb_from_tiff(obj_data, data_len);
+	    img = get_rgb_from_tiff(buf, buflen);
 	    break;
 	  case IMAGE_JPEG:
-	    img = get_rgb_from_jpeg(obj_data, data_len);
+	    img = get_rgb_from_jpeg(buf, buflen);
 	    break;
 	  case IMAGE_PNG:
-	    img = get_rgb_from_png(obj_data, data_len);
+	    img = get_rgb_from_png(buf, buflen);
 	    break;
 	  default:
 	    lf_log(LOGL_ERR, "Unknown image format!!", magic);
 	    break;
 	}
 	return img;
+	
 }
 
 // Does an in-place linear normalization of the given image
