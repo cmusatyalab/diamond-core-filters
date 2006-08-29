@@ -27,14 +27,14 @@
 #include <libgen.h>
 #include <stdint.h>
 #include <limits.h>
-#include <ctype.h>
-#include <assert.h>
-
+#include <ctype.h> 
+#include <assert.h> 
 #include "lib_searchlet.h"
 #include "lib_filter.h"
 #include "lib_log.h"
 #include "lib_results.h"
 #include "ring.h"
+#include "snap_bench.h"
 
 
 #define	MAX_PATH	128
@@ -48,7 +48,8 @@
  * this need to be global because we share it with the main
  * GUI.  XXX hack, do it right later.
  */
-ls_search_handle_t shandle;
+extern ls_search_handle_t shandle;
+int verbose;
 
 uint64_t
 parse_uint64_string(const char *s)
@@ -71,36 +72,10 @@ parse_uint64_string(const char *s)
 }
 
 
-/*
- * This initializes the search  state.
- */
-
-void
-init_search()
-{
-
-	shandle = ls_init_search();
-	if (shandle == NULL) {
-		printf("failed to initialize:  !! \n");
-		exit(1);
-	}
-
-}
-
-void
-set_searchlist(int n, groupid_t * gids)
-{
-	int             err;
-
-	err = ls_set_searchlist(shandle, n, gids);
-	if (err) {
-		printf("Failed to set searchlist on  err %d \n", err);
-		exit(1);
-	}
-}
+#ifdef 	XXX	
 
 int
-load_searchlet(char *obj_file, char *spec_file)
+load_searchlet(bench_config_t *bconfig)
 {
 	int             err;
 	char           *full_spec;
@@ -127,21 +102,29 @@ load_searchlet(char *obj_file, char *spec_file)
 		exit(1);
 	}
 
-	sprintf(full_obj, "%s/%s", path_name, obj_file);
-	sprintf(full_spec, "%s/%s", path_name, spec_file);
+	if (bconfig->obj_files[0][0] != '/')
+		sprintf(full_obj, "%s/%s", path_name, bconfig->obj_files[0]);
+	else 
+		sprintf(full_obj, "%s", bconfig->obj_files[0]);
 
-	if (obj_file[0] == '/') {
-		err = ls_set_searchlet(shandle, DEV_ISA_IA32, obj_file, full_spec);
-	} else {
-		err = ls_set_searchlet(shandle, DEV_ISA_IA32, full_obj, full_spec);
-	}
+	if (bconfig->searchlet_config[0] != '/')
+		sprintf(full_spec, "%s/%s", path_name, 
+		    bconfig->searchlet_config);
+	else
+		sprintf(full_spec, "%s", bconfig->searchlet_config);
+
+
+	if (verbose)
+		fprintf(stdout, "load obj %s spec %s \n", full_obj, full_spec);
+	err = ls_set_searchlet(shandle, DEV_ISA_IA32, full_obj, full_spec);
 	if (err) {
-		printf("Failed to set searchlet on err %d \n", err);
+		fprintf(stderr, "Failed to set searchlet on err %d \n", err);
 		exit(1);
 	}
-
+	/* XXX do for all objs */
 	return (0);
 }
+#endif
 
 #define	MAX_DEVS	24
 #define	MAX_FILTS	24
@@ -176,11 +159,44 @@ dump_dev_stats(dev_stats_t * dev_stats, int stat_len)
 		        dev_stats->ds_filter_stats[i].fs_avg_exec_time);
 
 	}
-
-
-
 }
 
+
+char *
+load_file(char *fname, int *len)
+{
+
+	int             fd;
+	int             err;
+	char           *buf;
+	struct stat     stats;
+	size_t          rsize;
+
+
+	fd = open(fname, O_RDONLY);
+	if (fd < 0) 
+		return(NULL);
+	
+	err = fstat(fd, &stats);
+
+	if (err < 0) {
+		close(fd);
+		return(NULL);
+	}
+
+	buf = (char *) malloc(stats.st_size);
+	assert(buf != NULL);
+
+	rsize = read(fd, buf, stats.st_size);
+	if (rsize < stats.st_size) {
+		free(buf);
+		close(fd);
+		return(NULL);
+	}
+	close(fd);
+	*len = rsize;
+	return(buf);
+}
 
 void
 dump_state()
@@ -200,6 +216,7 @@ dump_state()
 		exit(1);
 	}
 
+	fprintf(stdout, "active devices %d \n", dev_count);
 	dev_stats = (dev_stats_t *) malloc(DEV_STATS_SIZE(MAX_FILTS));
 	assert(dev_stats != NULL);
 
@@ -362,8 +379,7 @@ configure_devices(char *config_file)
 void
 usage()
 {
-	fprintf(stdout, "snap_bench -c <config_file> -f <filter_spec> ");
-	fprintf(stdout, "-s <searchlet> -g <gid> \n");
+	fprintf(stdout, "snap_bench -c <config_file> <-v> \n");
 }
 
 
@@ -373,25 +389,19 @@ int
 main(int argc, char **argv)
 {
 	int             err;
-	char           *searchlet_file = NULL;
-	char           *fspec_file = NULL;
 	char           *config_file = NULL;
-	int             gid_count = 0;
-	groupid_t       gid_list[MAX_GROUPS];
-	struct timeval  tv1,
-				tv2;
+	struct timeval  tv1, tv2;
 	struct timezone tz;
 	int             secs;
 	int             usec;
-	int             c,
-	count;
+	int             c;
 
 
 	/*
 	 * Parse the command line args.
 	 */
-while (1) {
-		c = getopt(argc, argv, "c:f:g:hs:");
+	while (1) {
+		c = getopt(argc, argv, "c:hv");
 		if (c == -1) {
 			break;
 		}
@@ -402,25 +412,14 @@ while (1) {
 				config_file = optarg;
 				break;
 
-			case 'f':
-				fspec_file = optarg;
-				break;
-
-			case 'g':
-				gid_list[gid_count] = parse_uint64_string(optarg);
-				gid_count++;
-				assert(gid_count < MAX_GROUPS);
-				break;
-
 			case 'h':
 				usage();
 				exit(0);
 				break;
 
-			case 's':
-				searchlet_file = optarg;
-				break;
-
+			case 'v':
+				verbose++;
+				break;	
 			default:
 				fprintf(stderr, "unknown option %c\n", c);
 				usage();
@@ -429,36 +428,24 @@ while (1) {
 		}
 	}
 
-
-	if ((searchlet_file == NULL) || (fspec_file == NULL) ||
-	    (config_file == NULL) || (gid_count == 0)) {
-
+	if (config_file == NULL) {
 		usage();
 		exit(1);
 	}
 
-	/*
-	 * setup the search 
-	 */
-	init_search();
+			
+	run_config_script(config_file);
 
-	set_searchlist(gid_count, gid_list);
-
-	err = load_searchlet(searchlet_file, fspec_file);
-
-	err = configure_devices(config_file);
 
 	/*
 	 * get start time 
 	 */
 	err = gettimeofday(&tv1, &tz);
 
-	count = do_bench_search();
 
 	/*
 	 * get stop time 
-	 */
-	err = gettimeofday(&tv2, &tz);
+	 */ err = gettimeofday(&tv2, &tz);
 
 	secs = tv2.tv_sec - tv1.tv_sec;
 	usec = tv2.tv_usec - tv1.tv_usec;
@@ -467,7 +454,7 @@ while (1) {
 		secs -= 1;
 	}
 
-	fprintf(stdout, " Found %d items in %d.%d  \n", count, secs, usec);
+	fprintf(stdout, " Found items in %d.%d  \n", secs, usec);
 	fflush(stdout);
 	sleep(1);
 	dump_state();

@@ -34,8 +34,8 @@ LIBS += -lcv -lssl
 #
 
 
-OBJS = snap_bench.o 
-SRCS = snap_bench.c
+OBJS = snap_bench.o bench_config.o
+SRCS = snap_bench.c bench_config.c
 
 TARGETS = snap_bench 
 
