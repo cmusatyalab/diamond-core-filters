@@ -1,0 +1,27 @@
+ls_init_search: id 1 
+ls_set_searchlist: id 1 groups(1) 1  
+ls_set_searchlet: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_rgb.so spec ./sample_scripts/example.fspec
+ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_text_attr.so 
+ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_num_attr.so 
+ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_3D_match.so 
+ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_rgb_histo.so 
+ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_dog_texture.so 
+ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_ocv_lowerbody.so 
+ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_ocv_upperbody.so 
+#
+# and so on, snapfind loads all the plugins
+#
+ls_start_search: id 2 
+ls_next_object: id 2 
+ls_next_object: id 2 
+ls_next_object: id 2 
+ls_next_object: id 2 
+ls_next_object: id 2 
+# ... bunch of these
+sleep 1104  # ms
+ls_next_object: id 2 
+ls_next_object: id 2 
+ls_next_object: id 2 
+ls_next_object: id 2 
+# ... bunch of these
+ls_terminate_search: id 2 
