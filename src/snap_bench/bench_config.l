@@ -12,6 +12,7 @@
 #include "queue.h"
 #include "lib_searchlet.h"
 #include "snap_bench.h"
+#include "sys_attr.h"
 
 static char *eat_token(char *tok);
 static void init_search(char *tok);
@@ -23,12 +24,17 @@ static void term_search(char *tok);
 static void set_blob(char *tok);
 static void next_object(char *tok);
 static void sleep_ms(char *tok);
+static void run_script(char *tok);
 static void have_error(char *tok);
 
 
 extern int verbose;
 
 ls_search_handle_t shandle;
+
+struct timeval	start;
+
+
 
 %}
 
@@ -38,7 +44,7 @@ HEX8    [[:xdigit:]][[:xdigit:]]
 HEX16   {HEX8}:{HEX8} 
 HEX32   {HEX16}:{HEX16}
 HEX64   {HEX32}:{HEX32}
-NAME    [a-zA-Z0-9][a-zA-Z0-9_\.-]*
+NAME    [a-zA-Z0-9][a-zA-Z0-9_\.-]
 
 %%
 #.*\n
@@ -51,7 +57,11 @@ ls_terminate_search:[ \t]+id[ \t]+[[:digit:]].*\n  {term_search(yytext);}
 ls_next_object:[ \t]+id[ \t]+[[:digit:]].*\n  	{next_object(yytext);}
 ls_set_blob:[ \t]+id[ \t]+[[:digit:]].*\n  	{set_blob(yytext);}
 sleep[ \t]+[[:digit:]].*\n  			{sleep_ms(yytext);}
-.*\n                               {have_error(yytext); }
+run_script[ \t]+.*\n 				{run_script(yytext);}
+[[:blank:]]
+\n
+. 		                              {have_error(yytext); }
+
 %%
 
 
@@ -235,6 +245,7 @@ void
 start_search(char *string)
 {
 	int	err;
+        gettimeofday(&start, NULL);
 	err = ls_start_search(shandle);
         if (err) {
                 fprintf(stderr, "Failed to start search on err %d \n", err);
@@ -248,11 +259,23 @@ void
 term_search(char *string)
 {
 	int	err;
+	int	secs, usec;
+
+	struct timeval end;
 	err = ls_terminate_search(shandle);
         if (err) {
                 fprintf(stderr, "Failed to terminate search on err %d\n", err);
                 exit(1);
 	}
+        gettimeofday(&end, NULL);
+
+        secs = end.tv_sec - start.tv_sec;
+        usec = end.tv_usec - start.tv_usec;
+        if (usec < 0) {
+                usec += 1000000;
+                secs -= 1;
+        }
+        fprintf(stdout, "Elapsed time %d s %d us  \n", secs, usec);
 }
 
 void
@@ -293,9 +316,9 @@ next_object(char *string)
 	if (err == ENOENT) {
 		fprintf(stderr, "get_next_obj: no more objects \n");
 	} else if (err == 0) {
-		dump_id(cur_obj);
+		fprintf(stdout, "get_next_obj: ");
+		dump_device(cur_obj);
 		dump_name(cur_obj);
-		dump_matches(cur_obj);
 		fprintf(stdout, "\n");
 		fflush(stdout);
 		ls_release_object(shandle, cur_obj);
@@ -304,6 +327,31 @@ next_object(char *string)
 		exit(1);
 	}
 
+}
+
+void
+run_script(char *string)
+{
+	char *token;
+	char *fname;
+	int err;
+
+	token = eat_token(string);
+	fname = copy_to_whitespace(token);
+	if (fname == NULL) {
+		fprintf(stderr, "run script failed: invalid file name\n");
+		return;
+	}
+	if (verbose)
+		fprintf(stdout, "run script: fname %s \n", fname);
+
+	err = system(fname);
+	if (err)  {
+		fprintf(stderr, "run script fail: failed to execute system\n");
+	}
+		
+	free(fname);	
+        return;
 }
 
 

@@ -40,6 +40,8 @@ SRCS = snap_bench.c bench_config.c
 TARGETS = snap_bench 
 
 
+CLEAN_OTHERS += bench_config.c
+
 include $(OBJROOT)/Makefile.template
 
 #

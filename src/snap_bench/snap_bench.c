@@ -34,6 +34,7 @@
 #include "lib_log.h"
 #include "lib_results.h"
 #include "ring.h"
+#include "sys_attr.h"
 #include "snap_bench.h"
 
 
@@ -41,35 +42,11 @@
 #define	MAX_NAME	128
 
 /*
- * this needs to be synced with the snapfind searchlets 
- */
-#define	DISPLAY_NAME "Display-Name"
-/*
  * this need to be global because we share it with the main
  * GUI.  XXX hack, do it right later.
  */
 extern ls_search_handle_t shandle;
 int verbose;
-
-uint64_t
-parse_uint64_string(const char *s)
-{
-	int             i,
-	o;
-	unsigned int    x;          // Will actually hold an unsigned char
-	uint64_t        u = 0u;
-
-	assert(s);
-	for (i = 0; i < 8; i++) {
-		o = 3 * i;
-		assert(isxdigit(s[o]) && isxdigit(s[o + 1]));
-		assert((s[o + 2] == ':') || (s[o + 2] == '\0'));
-		sscanf(s + o, "%2x", &x);
-		u <<= 8;
-		u += x;
-	}
-	return u;
-}
 
 
 #ifdef 	XXX	
@@ -147,14 +124,12 @@ dump_dev_stats(dev_stats_t * dev_stats, int stat_len)
 		        dev_stats->ds_filter_stats[i].fs_objs_processed);
 		fprintf(stdout, "\tDropped: %d \n",
 		        dev_stats->ds_filter_stats[i].fs_objs_dropped);
-		/* JIAYING */
 		fprintf(stdout, "\tCACHE Dropped: %d \n",
 		        dev_stats->ds_filter_stats[i].fs_objs_cache_dropped);
 		fprintf(stdout, "\tCACHE Passed: %d \n",
 		        dev_stats->ds_filter_stats[i].fs_objs_cache_passed);
 		fprintf(stdout, "\tCACHE Compute: %d \n",
 		        dev_stats->ds_filter_stats[i].fs_objs_compute);
-		/* JIAYING */
 		fprintf(stdout, "\tAvg Time: %lld \n\n",
 		        dev_stats->ds_filter_stats[i].fs_avg_exec_time);
 
@@ -231,34 +206,24 @@ dump_state()
 	}
 
 	free(dev_stats);
-
 	fflush(stdout);
-	sleep(1);
-	/*
-	 * Dump the dclt state.  XXX assumes this is in the local path */
-	err = system("./dctl -r");
-	if (err == -1) {
-		fprintf(stderr, "Failed to execute dctl \n");
-		exit(1);
-	}
 
 }
 
 void
-dump_id(ls_obj_handle_t handle)
+dump_device(ls_obj_handle_t handle)
 {
-	size_t           size;
+	size_t          size;
 	int             err;
-	obj_id_t        obj_id;
+	char            big_buffer[MAX_NAME];
 
-	size = sizeof(obj_id);
-	err = lf_read_attr(handle, "MY_OID", &size, (unsigned char *) &obj_id);
+	size = MAX_NAME;
+	err = lf_read_attr(handle, DEVICE_NAME, &size,
+	    (unsigned char *)big_buffer);
 	if (err) {
-		fprintf(stdout, "OID Unknown ");
+		fprintf(stdout, "device Unknown ");
 	} else {
-		fprintf(stdout, "OID %016llX.%016llX ",
-		        obj_id.dev_id, obj_id.local_id);
-
+		fprintf(stdout, "device %s ", big_buffer);
 	}
 }
 
@@ -272,108 +237,17 @@ dump_name(ls_obj_handle_t handle)
 
 	size = MAX_NAME;
 	err = lf_read_attr(handle, DISPLAY_NAME, &size,
-	    (unsigned char *) big_buffer);
+	    (unsigned char *)big_buffer);
 	if (err) {
-		fprintf(stdout, "name: Unknown ");
+		fprintf(stdout, "name Unknown ");
 	} else {
 		for (i = 0; i < strlen(big_buffer); i++) {
 			if (big_buffer[i] == ' ') {
 				big_buffer[i] = '_';
 			}
 		}
-		fprintf(stdout, "name: %s ", big_buffer);
+		fprintf(stdout, "name %s ", big_buffer);
 	}
-}
-
-void
-dump_matches(ls_obj_handle_t handle)
-{
-	size_t           size;
-	int             err;
-	char            big_buffer[MAX_NAME];
-	int             num_histo;
-	search_param_t  param;
-	int             i;
-	double          prod = 1.0;
-	double          sum = 0.0;
-
-	size = sizeof(num_histo);
-	err = lf_read_attr(handle, NUM_HISTO, &size,
-	                   (unsigned char *) &num_histo);
-	if (err) {
-		return;
-	}
-
-	for (i = 0; i < num_histo; i++) {
-
-		sprintf(big_buffer, HISTO_BBOX_FMT, i);
-		size = sizeof(param);
-		err = lf_read_attr(handle, big_buffer, &size,
-	   	    (unsigned char *) &param);
-
-		if (!err) {
-			prod *= (1.0 - param.distance);
-			sum += (1.0 - param.distance);
-			// fprintf(stdout, "%s %f ", param.name, (1.0 - param.distance));
-		}
-	}
-	fprintf(stdout, "prod %f sum %f ", prod, sum);
-}
-
-/*
- * This function initiates the search by building a filter
- * specification, setting the searchlet and then starting the search.
- */
-int
-do_bench_search()
-{
-	int             err;
-	int             count = 0;
-	ls_obj_handle_t cur_obj;
-
-	/*
-	 * Go ahead and start the search.
-	 */
-	err = ls_start_search(shandle);
-	if (err) {
-		printf("Failed to start search on err %d \n", err);
-		exit(1);
-	}
-
-	fprintf(stderr, "starting loop \n");
-	fflush(stderr);
-	while (1) {
-		err = ls_next_object(shandle, &cur_obj, 0);
-		if (err == ENOENT) {
-			return (count);
-		} else if (err == 0) {
-			count++;
-			dump_id(cur_obj);
-			dump_name(cur_obj);
-			dump_matches(cur_obj);
-			fprintf(stdout, "\n");
-			fflush(stdout);
-			ls_release_object(shandle, cur_obj);
-		} else {
-			fprintf(stderr, "get_next_obj: failed on %d \n", err);
-			exit(1);
-		}
-	}
-	fprintf(stderr, "ending loop \n");
-	fflush(stderr);
-
-}
-
-int
-configure_devices(char *config_file)
-{
-	int             err;
-
-	sleep(5);
-	err = system(config_file);
-
-	return (err);
-
 }
 
 void
@@ -437,25 +311,6 @@ main(int argc, char **argv)
 	run_config_script(config_file);
 
 
-	/*
-	 * get start time 
-	 */
-	err = gettimeofday(&tv1, &tz);
-
-
-	/*
-	 * get stop time 
-	 */ err = gettimeofday(&tv2, &tz);
-
-	secs = tv2.tv_sec - tv1.tv_sec;
-	usec = tv2.tv_usec - tv1.tv_usec;
-	if (usec < 0) {
-		usec += 1000000;
-		secs -= 1;
-	}
-
-	fprintf(stdout, " Found items in %d.%d  \n", secs, usec);
-	fflush(stdout);
 	sleep(1);
 	dump_state();
 

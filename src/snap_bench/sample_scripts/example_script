@@ -9,7 +9,14 @@ ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib
 ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_ocv_lowerbody.so 
 ls_add_filter_file: id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_ocv_upperbody.so 
 #
-# and so on, snapfind loads all the plugins
+#
+#
+# After the initial load run a script that sets up or start values.  Because
+# setup is async we need to sleep a little to make sure all devices are 
+# establised
+sleep 3000
+run_script ./sample_scripts/adiskd_setup
+#
 #
 ls_start_search: id 2 
 ls_next_object: id 2 
@@ -25,3 +32,7 @@ ls_next_object: id 2
 ls_next_object: id 2 
 # ... bunch of these
 ls_terminate_search: id 2 
+
+#
+# After this has completed we dump the dctl state with a script
+run_script ./sample_scripts/dctl_dump
