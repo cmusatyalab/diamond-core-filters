@@ -48,14 +48,14 @@ NAME    [a-zA-Z0-9][a-zA-Z0-9_\.-]
 
 %%
 #.*\n
-ls_init_search:.*\n   				{init_search(yytext);}
-ls_set_searchlist:[ \t]+id[ \t]+[[:digit:]].*\n  {set_searchlist(yytext);}
-ls_set_searchlet:[ \t]+id[ \t]+[[:digit:]].*\n  {set_searchlet(yytext);}
-ls_add_filter_file:[ \t]+id[ \t]+[[:digit:]].*\n  {add_filterfile(yytext);}
-ls_start_search:[ \t]+id[ \t]+[[:digit:]].*\n  {start_search(yytext);}
-ls_terminate_search:[ \t]+id[ \t]+[[:digit:]].*\n  {term_search(yytext);}
-ls_next_object:[ \t]+id[ \t]+[[:digit:]].*\n  	{next_object(yytext);}
-ls_set_blob:[ \t]+id[ \t]+[[:digit:]].*\n  	{set_blob(yytext);}
+ls_init_search.*\n   				{init_search(yytext);}
+ls_set_searchlist[ \t]+id[ \t]+[[:digit:]].*\n  {set_searchlist(yytext);}
+ls_set_searchlet[ \t]+id[ \t]+[[:digit:]].*\n  {set_searchlet(yytext);}
+ls_add_filter_file[ \t]+id[ \t]+[[:digit:]].*\n  {add_filterfile(yytext);}
+ls_start_search[ \t]+id[ \t]+[[:digit:]].*\n  {start_search(yytext);}
+ls_terminate_search[ \t]+id[ \t]+[[:digit:]].*\n  {term_search(yytext);}
+ls_next_object[ \t]+id[ \t]+[[:digit:]].*\n  	{next_object(yytext);}
+ls_set_blob[ \t]+id[ \t]+[[:digit:]].*\n  	{set_blob(yytext);}
 sleep[ \t]+[[:digit:]].*\n  			{sleep_ms(yytext);}
 run_script[ \t]+.*\n 				{run_script(yytext);}
 [[:blank:]]
