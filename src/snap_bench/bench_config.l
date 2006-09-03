@@ -23,6 +23,7 @@ static void start_search(char *tok);
 static void term_search(char *tok);
 static void set_blob(char *tok);
 static void next_object(char *tok);
+static void all_objects(char *tok);
 static void sleep_ms(char *tok);
 static void run_script(char *tok);
 static void have_error(char *tok);
@@ -58,6 +59,7 @@ ls_next_object[ \t]+id[ \t]+[[:digit:]].*\n  	{next_object(yytext);}
 ls_set_blob[ \t]+id[ \t]+[[:digit:]].*\n  	{set_blob(yytext);}
 sleep[ \t]+[[:digit:]].*\n  			{sleep_ms(yytext);}
 run_script[ \t]+.*\n 				{run_script(yytext);}
+all_objects[ \t]+.*\n 				{all_objects(yytext);}
 [[:blank:]]
 \n
 . 		                              {have_error(yytext); }
@@ -324,6 +326,27 @@ next_object(char *string)
 		ls_release_object(shandle, cur_obj);
 	} else {
 		fprintf(stderr, "get_next_obj: failed on %d \n", err);
+		exit(1);
+	}
+
+}
+
+void
+all_objects(char *string)
+{
+	ls_obj_handle_t	cur_obj;
+	int		err;
+
+ 	while ((err = ls_next_object(shandle, &cur_obj, 0)) == 0) {
+		fprintf(stdout, "get_next_obj: ");
+		dump_device(cur_obj);
+		dump_name(cur_obj);
+		fprintf(stdout, "\n");
+		fflush(stdout);
+		ls_release_object(shandle, cur_obj);
+	}
+	if (err != ENOENT) {
+		fprintf(stderr, "all_objects: error %d fetching object\n", err);
 		exit(1);
 	}
 
