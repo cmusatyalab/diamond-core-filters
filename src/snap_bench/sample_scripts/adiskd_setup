@@ -1,0 +1,7 @@
+#!/bin/sh
+
+dctl -w devices.localhost.cur_search.split_type=0
+dctl -w devices.localhost.cur_search.split_ratio=100
+
+
+
