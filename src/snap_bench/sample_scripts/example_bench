@@ -1,0 +1,28 @@
+ls_init_search id 1 
+ls_set_searchlist id 1 groups(1) 1  
+ls_set_searchlet id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_rgb.so spec ./sample_scripts/example.fspec
+ls_add_filter_file id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_text_attr.so 
+ls_add_filter_file id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_num_attr.so 
+ls_add_filter_file id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_3D_match.so 
+ls_add_filter_file id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_rgb_histo.so 
+ls_add_filter_file id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_dog_texture.so 
+ls_add_filter_file id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_ocv_lowerbody.so 
+ls_add_filter_file id 2 filter /home/huston/cur_diamond/snapfind/src/target/lib/./fil_ocv_upperbody.so 
+#
+#
+#
+# After the initial load run a script that sets up or start values.  Because
+# setup is async we need to sleep a little to make sure all devices are 
+# establised
+sleep 3000
+run_script ./sample_scripts/adiskd_setup
+#
+#
+ls_start_search id 2 
+# get all the objects
+all_objects id 2 
+ls_terminate_search id 2 
+
+#
+# After this has completed we dump the dctl state with a script
+run_script ./sample_scripts/dctl_dump
