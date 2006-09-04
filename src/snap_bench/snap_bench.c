@@ -174,7 +174,7 @@ load_file(char *fname, int *len)
 }
 
 void
-dump_state()
+dump_filtstats()
 {
 	int             err,
 	i;
@@ -197,7 +197,8 @@ dump_state()
 
 	for (i = 0; i < dev_count; i++) {
 		stat_len = DEV_STATS_SIZE(MAX_FILTS);
-		err = ls_get_dev_stats(shandle, dev_list[i], dev_stats, &stat_len);
+		err = ls_get_dev_stats(shandle, dev_list[i], dev_stats,
+		    &stat_len);
 		if (err) {
 			fprintf(stderr, "Failed to get device list %d \n", err);
 			exit(1);
@@ -207,7 +208,6 @@ dump_state()
 
 	free(dev_stats);
 	fflush(stdout);
-
 }
 
 void
@@ -262,12 +262,7 @@ usage()
 int
 main(int argc, char **argv)
 {
-	int             err;
 	char           *config_file = NULL;
-	struct timeval  tv1, tv2;
-	struct timezone tz;
-	int             secs;
-	int             usec;
 	int             c;
 
 
@@ -309,10 +304,6 @@ main(int argc, char **argv)
 
 			
 	run_config_script(config_file);
-
-
-	sleep(1);
-	dump_state();
 
 	exit(0);
 }

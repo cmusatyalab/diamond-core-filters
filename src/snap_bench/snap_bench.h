@@ -3,6 +3,7 @@
 #define _SNAP_BENCH_H	1
 
 int run_config_script(char *fname);
+void dump_filtstats();
 char * load_file(char *fname, int *len);
 
 

@@ -1,4 +1,4 @@
-%option nounput
+%option nounput 
 %option noyywrap 
 %option prefix="benchconfig" 
 %{ 
@@ -59,6 +59,7 @@ ls_next_object[ \t]+id[ \t]+[[:digit:]].*\n  	{next_object(yytext);}
 ls_set_blob[ \t]+id[ \t]+[[:digit:]].*\n  	{set_blob(yytext);}
 sleep[ \t]+[[:digit:]].*\n  			{sleep_ms(yytext);}
 run_script[ \t]+.*\n 				{run_script(yytext);}
+dump_filterstats[ \t]+.*\n 			{dump_filtstats();}
 all_objects[ \t]+.*\n 				{all_objects(yytext);}
 [[:blank:]]
 \n
