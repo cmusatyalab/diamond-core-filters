@@ -23,6 +23,7 @@ ls_start_search id 2
 all_objects id 2 
 ls_terminate_search id 2 
 
+dump_filterstats
 #
 # After this has completed we dump the dctl state with a script
 run_script ./sample_scripts/dctl_dump
