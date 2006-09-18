@@ -87,11 +87,11 @@ OBJS = $(SNAPFIND_OBJS) $(SEARCHLET_OBJS) $(DEBUG_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += read_config.cc 
 
-TARGETS =  snapfind snap_searchlet.so
+TARGETS =  snapfind 
 
 SHARED_BIN += snapfind 
 
-SHARED_LIB += snap_searchlet.so  snap_searchlet.sf_conf
+SHARED_LIB += 
 
 SHARED_HEADERS = img_search.h search_set.h factory.h snapfind_config.h
 

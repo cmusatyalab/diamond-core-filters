@@ -34,6 +34,7 @@ SEARCH_LIB_OBJS =  rgb_img.o
 SEARCH_LIB_LIBS += -lm 
 
 SEARCHLET_LIBS += -lm 
+
 #
 # All the source files that are needed for depend.
 #
@@ -44,13 +45,14 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_rgb.so rgb_img.so
+TARGETS = fil_rgb.a rgb_img.so
 
-SHARED_LIB += fil_rgb.so rgb_img.so $(SRCDIR)/rgb_img.sf_conf
+SHARED_LIB += fil_rgb.a rgb_img.so $(SRCDIR)/rgb_img.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_rgb.so: $(FILTER_LIB_OBJS)
+fil_rgb.a: $(FILTER_LIB_OBJS)
+	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
 rgb_img.so: $(SEARCH_LIB_OBJS)
 

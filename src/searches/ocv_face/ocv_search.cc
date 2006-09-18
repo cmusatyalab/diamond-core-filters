@@ -122,6 +122,7 @@ ocv_search::set_classifier(char *name)
 	struct stat     stats;
 	size_t          nbytes;
 
+	fprintf(stderr, "set_classified !!! \n");
         cascade_file_name = (char *) malloc(SF_MAX_PATH);
 	strcpy(cascade_file_name, sfconf_get_plugin_dir());
         strcat(cascade_file_name, "/");

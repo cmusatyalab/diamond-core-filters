@@ -325,6 +325,27 @@ search_set::build_filter_spec(char *tmp_file)
 	return(tmp_file);
 }
 
+void
+search_set::write_blobs(ls_search_handle_t shandle)
+{
+	img_search * srch;
+	search_iter_t iter;
+
+
+	for (iter = ss_search_list.begin(); iter != ss_search_list.end(); 
+	    iter++) {
+		srch = *iter;
+		if (srch->is_selected()) {
+			if (ls_set_blob(shandle, (char *)srch->get_name(), 
+			     srch->get_auxiliary_data_length(), 
+			     srch->get_auxiliary_data())) {
+				fprintf(stderr, "failed to write blob \n");
+			}
+		}
+	}
+
+}
+
 GtkWidget *
 search_set::build_edit_table()
 {

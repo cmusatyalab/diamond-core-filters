@@ -64,19 +64,18 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_dog_texture.so dog_texture_search.so
+TARGETS = fil_dog_texture.a dog_texture_search.so
 
-SHARED_LIB += fil_dog_texture.so dog_texture_search.so $(SRCDIR)/dog_texture.sf_conf
+SHARED_LIB += fil_dog_texture.a dog_texture_search.so 
+SHARED_LIB += $(SRCDIR)/dog_texture.sf_conf
 
 include ${OBJROOT}/Makefile.template
 
 #
 # for some reason the pattern matching doesn't seem to work for
 # some *.so's.
-fil_dog_texture.so: $(FILTER_LIB_OBJS)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
+fil_dog_texture.a: $(FILTER_LIB_OBJS)
+	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
 dog_texture_search.so: $(SEARCH_LIB_OBJS)
 

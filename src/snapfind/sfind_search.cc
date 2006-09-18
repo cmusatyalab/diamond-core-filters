@@ -134,33 +134,10 @@ do_search(gid_list_t * main_region, char *fspec)
 		free(filter_name);
 	}
 
-	/*
-	 * Attach auxiliary data for this search.
-	 */
-	for (filter_name = first_searchlet_lib(&cookie);
-	     filter_name != NULL;
-	     filter_name = next_searchlet_lib(&cookie)) {
-
-     	// filter_name refers to the name of the filter library
-		sset->reset_search_iter(&iter);
-		while ((search = sset->find_search(filter_name, &iter)) != NULL) {
-			if (search->is_selected()) {
-				err = ls_set_blob(shandle, 
-				  	(char *)search->get_name(), 
-				  	search->get_auxiliary_data_length(),
-				  	search->get_auxiliary_data());
-				if (err) {
-		  			printf("Failed to set data on %s, err %d \n", 
-							 (char *)search->get_name(), err);
-				}
-			}
-		}
-	}
-	free(filter_name);
+	/* Attach auxiliary data for this search.  */
+	sset->write_blobs(shandle);
 	  
-	/*
-	 * Go ahead and start the search.
-	 */
+	/* Go ahead and start the search.  */
 	err = ls_start_search(shandle);
 	if (err) {
 		printf("Failed to start search on err %d \n", err);
@@ -294,6 +271,7 @@ sfind_search_main(void *foo)
 	ls_obj_handle_t cur_obj;
 	int             err;
 	int             temp;
+	int		any;
 
 	struct timespec timeout;
 
@@ -304,21 +282,16 @@ sfind_search_main(void *foo)
 	 */
 
 	while (1) {
+		any = 0;
 		message = (message_t *) ring_deq(to_search_thread);
 		if (message != NULL) {
+			any = 1;
 			handle_message(message);
 			free(message);
 		}
 		if ((active) && (ring_count(from_search_thread) < 7)) {
 			err = ls_next_object(shandle, &cur_obj, LSEARCH_NO_BLOCK);
-			if (err == EWOULDBLOCK) {
-				/*
-				 * no data is available, sleep for a small amount of time. 
-				 */
-				timeout.tv_sec = 0;
-				timeout.tv_nsec = 10000000; /* XXX 10ms ?? */
-				nanosleep(&timeout, NULL);
-			} else if (err == ENOENT) {
+			if (err == ENOENT) {
 				fprintf(stderr, "No more objects \n");  /* XXX */
 				search_active = 0;
 				active = 0;
@@ -337,18 +310,14 @@ sfind_search_main(void *foo)
 					fprintf(stderr, "XXX failed to enq \n");
 					exit(1);
 				}
-
-				timeout.tv_sec = 0;
-				timeout.tv_nsec = 100000000;    /* XXX 100ms ?? */
-				nanosleep(&timeout, NULL);
-
-			} else if (err != 0) {
+			} else if ((err != 0) && (err != EWOULDBLOCK)) {
 				/*
 				 * XXX 
 				 */
 				fprintf(stderr, "get_next_obj: failed on %d \n", err);
 				exit(1);
-			} else {
+			} else if (err == 0) {
+				any = 1;
 				message = (message_t *) malloc(sizeof(*message));
 				assert(message != NULL);
 
@@ -365,16 +334,17 @@ sfind_search_main(void *foo)
 					free(message);
 				}
 			}
-		} else {
-			timeout.tv_sec = 0;
-			timeout.tv_nsec = 100000000;    /* XXX 100ms ?? */
-			nanosleep(&timeout, NULL);
-		}
+		} 
 		err = ls_num_objects(shandle, &temp);
 		temp += ring_count(from_search_thread);
 
 		pend_obj_cnt = temp;
 		update_stats();
+		if (any == 0) {
+			timeout.tv_sec = 0;
+			timeout.tv_nsec = 100000000;    /* XXX 100ms ?? */
+			nanosleep(&timeout, NULL);
+		}
 	}
 	return (0);
 }

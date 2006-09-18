@@ -1,2 +1,2 @@
 GUI_LIB		./text_attr_search.so
-SEARCHLET_LIB	./fil_text_attr.so
+SEARCHLET_LIB	./fil_text_attr.a

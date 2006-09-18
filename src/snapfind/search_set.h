@@ -71,9 +71,9 @@ public:
 	void		notify_update();
 
 	char * 		build_filter_spec(char *tmp_file);
+	void		write_blobs(ls_search_handle_t shandle);
 
 	GtkWidget *     build_edit_table();
-
 
 private:
 	list<img_search *>		ss_search_list;
