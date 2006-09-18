@@ -127,7 +127,6 @@ ocv_search::set_classifier(char *name)
         strcat(cascade_file_name, "/");
 	strcat(cascade_file_name, name);
 	strcat(cascade_file_name, ".xml");
-	printf("opening %s\n", cascade_file_name);
 
 	fd = open(cascade_file_name, O_RDONLY);
         assert(fd >=0);
