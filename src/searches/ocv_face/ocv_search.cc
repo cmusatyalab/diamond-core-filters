@@ -352,7 +352,6 @@ ocv_search::write_fspec(FILE *ostream)
 	 * Write the remainder of the header.
 	 */
 	fprintf(ostream, "THRESHOLD %d \n", count);
-	fprintf(ostream, "ARG  %s  # name \n", get_name());
 
 	/*
 	 * Next we write call the parent to write out the releated args,

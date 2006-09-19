@@ -54,16 +54,16 @@ f_init_opencv_detect(int numarg, char **args, int blob_len, void *blob_data,
 	fconfig = (opencv_fdetect_t *) malloc(sizeof(*fconfig));
 	assert(fconfig != NULL);
 
-	fconfig->name = strdup(args[0]);
+	fconfig->name = strdup(fname);
 	assert(fconfig->name != NULL);
-	fconfig->scale_mult = atof(args[1]);
-	fconfig->xsize = atoi(args[2]);
-	fconfig->ysize = atoi(args[3]);
-	fconfig->stride = atoi(args[4]);
+	fconfig->scale_mult = atof(args[0]);
+	fconfig->xsize = atoi(args[1]);
+	fconfig->ysize = atoi(args[2]);
+	fconfig->stride = atoi(args[3]);
 	/*
-	 * XXX skip 5 for now ?? 
+	 * XXX skip 4 for now ?? 
 	 */
-	fconfig->support = atoi(args[6]);
+	fconfig->support = atoi(args[5]);
 
 	if (fconfig->scale_mult <= 1) {
 		lf_log(LOGL_TRACE,
