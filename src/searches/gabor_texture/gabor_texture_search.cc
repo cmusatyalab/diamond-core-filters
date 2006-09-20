@@ -600,7 +600,6 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_gab_texture \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_gab_texture \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_gab_texture \n");
-	fprintf(ostream, "ARG  %s  # name (helps debug) \n", get_name());
 
 	/*
 	 * Next we write call the parent to write out the releated args,

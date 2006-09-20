@@ -43,13 +43,13 @@
 
 
 static int
-read_texture_args(gtexture_args_t *data, int argc, char **args)
+read_texture_args(const char *fname, gtexture_args_t *data, int argc, char **args)
 {
 	int	i,j;
 	float *	respv;
 	int num_resp;
 
-	data->name = strdup(*args++);
+	data->name = strdup(fname);
 	assert(data->name != NULL);
 
 	data->xdim = atoi(*args++);
@@ -100,7 +100,7 @@ f_init_gab_texture(int numarg, char **args, int blob_len,
 	data = (gtexture_args_t *) malloc(sizeof(*data));
 	assert(data != NULL);
 
-	err = read_texture_args(data, numarg, args);
+	err = read_texture_args(fname, data, numarg, args);
 	assert(err == 0);
 
 	*f_datap = data;
