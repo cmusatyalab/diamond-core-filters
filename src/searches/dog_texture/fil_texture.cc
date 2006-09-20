@@ -46,34 +46,34 @@ if(!(exp)) {								\
 
 
 static int
-read_texture_args(texture_args_t *texture_args,
+read_texture_args(const char *fname, texture_args_t *texture_args,
                   int argc, char **args)
 {
 
 	int pass = 0;
 	int s_index, f_index;
 
-	texture_args->name = strdup(args[0]);
+	texture_args->name = strdup(fname);
 	assert(texture_args->name != NULL);
 
-	texture_args->scale = atof(args[1]);
-	texture_args->box_width = atoi(args[2]);
-	texture_args->box_height = atoi(args[3]);
-	texture_args->step = atoi(args[4]);
-	texture_args->min_matches = atoi(args[5]);
+	texture_args->scale = atof(args[0]);
+	texture_args->box_width = atoi(args[1]);
+	texture_args->box_height = atoi(args[2]);
+	texture_args->step = atoi(args[3]);
+	texture_args->min_matches = atoi(args[4]);
 	// <-- for normalized
 	//texture_args->max_distance = (1.0 - atof(args[6])) * NUM_LAP_PYR_LEVELS;
-	texture_args->max_distance = (1.0 - atof(args[6]));
+	texture_args->max_distance = (1.0 - atof(args[5]));
 
-	texture_args->num_channels = atoi(args[7]);
+	texture_args->num_channels = atoi(args[6]);
 
-	texture_args->texture_distance = (texture_dist_t) atoi(args[8]);
+	texture_args->texture_distance = (texture_dist_t) atoi(args[7]);
 
-	texture_args->num_samples = atoi(args[9]);
+	texture_args->num_samples = atoi(args[8]);
 	/* read in the arguments for each sample */
 
 
-	args += 10;
+	args += 9;
 
 	texture_args->sample_values = (double **)
       	    malloc(sizeof(double *) * texture_args->num_samples);
@@ -105,7 +105,7 @@ f_init_texture_detect(int numarg, char **args, int blob_len,
 	targs = (texture_args_t *)malloc(sizeof(*targs));
 	assert(targs);
 
-	err = read_texture_args(targs, numarg, args);
+	err = read_texture_args(filt_name, targs, numarg, args);
 	assert(err);
 
 	*f_datap = targs;

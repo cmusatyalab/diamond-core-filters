@@ -54,7 +54,6 @@ search_init()
 	fac = new texture_factory;
 
 	factory_register(fac);
-
 }
 
 texture_search::texture_search(const char *name, char *descr)
@@ -415,7 +414,6 @@ texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_texture_detect \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_texture_detect \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_texture_detect \n");
-	fprintf(ostream, "ARG  %s  # name \n", get_name());
 
 	/*
 	 * Next we write call the parent to write out the releated args,
