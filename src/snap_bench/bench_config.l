@@ -9,6 +9,7 @@
 #include <assert.h> 
 #include <stdlib.h> 
 #include <time.h> 
+#include <errno.h>
 #include "queue.h"
 #include "lib_searchlet.h"
 #include "snap_bench.h"
