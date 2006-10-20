@@ -117,39 +117,51 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	// cinfo.output_width
 	// cinfo.output_height
 	// cinfo.output_components	(3 for RGB, 1 for greyscale)
-	assert(cinfo.output_components == 3);
+    // assert(cinfo.output_components == 3);
+    assert( (cinfo.output_components == 3) ||
+            (cinfo.output_components == 1) );
 
-	int w = cinfo.output_width;
-	int h = cinfo.output_height;
-	RGBImage* rgbimg = rgbimg_blank_image(w, h);	// output image
+    int w = cinfo.output_width;
+    int h = cinfo.output_height;
+    RGBImage* rgbimg = rgbimg_blank_image(w, h);    // output image
 
-        // XXX WARNING XXX
-	// This  might not be OK since it is called after
-	// jpeg_start_decompress()
-	//
-	// Note this is a funny datastructure.
-	// buffer is an array of size 1, containing a single scanline.
-// 	buffer = (*cinfo.mem->alloc_sarray)
-// 	  		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
-	u_char* scanline = (u_char*) malloc( w * 3 * sizeof(u_char));
-	JSAMPARRAY buffer = &scanline;
+    // XXX WARNING XXX
+    // This  might not be OK since it is called after
+    // jpeg_start_decompress()
+    //
+    // Note this is a funny datastructure.
+    // buffer is an array of size 1, containing a single scanline.
+//        u_char* scanline = (u_char*) malloc( w * 3 * sizeof(u_char));
+    u_char* scanline;
+    if (cinfo.output_components == 1) {     // monochrome
+        scanline = (u_char*) malloc( w * 1 * sizeof(u_char));
+    } else {                                // color jpeg
+        scanline = (u_char*) malloc( w * 3 * sizeof(u_char));
+    }
+    JSAMPARRAY buffer = &scanline;
 
-	RGBPixel* outpix = rgbimg->data;
-	while (cinfo.output_scanline < h) {
-	  // process a line
-	  //
-	  jpeg_read_scanlines(&cinfo, buffer, 1);
-	  u_char* curpix = buffer[0];	// [0] refers to 1st scanline
-	  int c;
-	  for (c=0; c < w; c++) {	// write scanline [note 3*w]
-	    // Note each curpix is a single R, G or B value
-	    outpix->r = *curpix++;
-	    outpix->g = *curpix++;
-	    outpix->b = *curpix++;
-	    outpix->a = 255;
-	    outpix++;
-	  }
-	}
+    RGBPixel* outpix = rgbimg->data;
+    while (cinfo.output_scanline < h) {
+      // process a line
+      //
+      jpeg_read_scanlines(&cinfo, buffer, 1);
+      u_char* curpix = buffer[0];   // [0] refers to 1st scanline
+      int c;
+      for (c=0; c < w; c++) {       // write scanline [note 3*w]
+
+        if (cinfo.output_components == 1) { // monochrome
+            outpix->r = outpix->g = outpix->b = *curpix++;
+        } else {                            // color jpeg
+            // Note each curpix is a single R, G or B value
+            outpix->r = *curpix++;
+            outpix->g = *curpix++;
+            outpix->b = *curpix++;
+        }
+        outpix->a = 255;
+        outpix++;
+      }
+    }
+
 	free(scanline);
 	scanline = NULL;
 
