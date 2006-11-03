@@ -17,7 +17,7 @@ OBJROOT = @OBJROOT@
 
 STATIC_LIBS += @STATIC_LIBS@
 
-CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
+CPPFLAGS += @GTK_CFLAGS@
 
 
 # objects used to build the searchlet(s)

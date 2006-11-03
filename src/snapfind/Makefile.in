@@ -18,11 +18,11 @@ OBJROOT = @OBJROOT@
 CVCPPFLAGS = @CVCPPFLAGS@
 CVLDFLAGS = @CVLDFLAGS@
 
-GTK_LDFLAGS = @GTK_LDFLAGS@
-GTK_CPPFLAGS = @GTK_CPPFLAGS@
+GTK_LIBS = @GTK_LIBS@
+GTK_CFLAGS = @GTK_CFLAGS@
 
 # use the GTK values when building this code
-CPPFLAGS += ${GTK_CPPFLAGS}
+CPPFLAGS += ${GTK_CFLAGS}
 
 # 
 # Set the libraries and the library paths we will need
@@ -122,5 +122,5 @@ libssearch.a: $(SEARCHLET_OBJS)
 
 
 snapfind: $(SNAPFIND_OBJS)
-	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LDFLAGS) $(GTK_LDFLAGS) 
+	$(CPLUSPLUS) $(CFLAGS) $(DYNAMIC) -o $@ $(SNAPFIND_OBJS) $(LIBS) $(LDFLAGS) $(GTK_LIBS) 
 

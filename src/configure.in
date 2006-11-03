@@ -19,6 +19,7 @@ sinclude(configs/snapfind_macros.m4)
 #
 # Paths to search for static libraries when building searchlet code.
 #
+ADD_LIB_SEARCH([/opt/diamond-filter-kit/lib])
 ADD_LIB_SEARCH([/usr/lib])
 ADD_LIB_SEARCH([/lib])
 
@@ -56,18 +57,16 @@ CHECK_STATIC_LIB([libjpeg.a])
 CHECK_STATIC_LIB([libz.a])
 
 # deal with the cv stuff
-AC_CHECK_LIB([cxcore], [main], , )
-AC_CHECK_LIB([cvaux], [main], , )
-AC_CHECK_LIB([cv], [main], , )
+AC_CHECK_LIB([cxcore], [cvAlloc])
+AC_CHECK_LIB([cvaux], [cvFindFace])
+AC_CHECK_LIB([cv], [cvResize])
 
 
 # standard system libraries.
-# XXX make this fail
-AC_CHECK_LIB([dl], [main])
-AC_CHECK_LIB([fl], [main])
-AC_CHECK_LIB([m], [main])
-AC_CHECK_LIB([pthread], [main])
-AC_CHECK_LIB([ssl], [main])
+AC_CHECK_LIB([dl], [dlopen])
+AC_CHECK_LIB([m], [atan2])
+AC_CHECK_LIB([pthread], [pthread_create])
+AC_CHECK_LIB([ssl], [SSL_CTX_new])
 
 # XXXX
 AC_CHECK_LIB([wvlt], [main])
@@ -83,10 +82,9 @@ AC_ARG_WITH(buildroot, [--with-buildroot=DIR set target build hierachy to DIR],
     ) 
 
 
-GTK_CPPFLAGS=`pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
-GTK_LDFLAGS=`pkg-config gtk+-2.0 gthread-2.0 --libs`
-AC_SUBST(GTK_CPPFLAGS)
-AC_SUBST(GTK_LDFLAGS)
+PKG_CHECK_MODULES(GTK, [gtk+-2.0, gthread-2.0])
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
 
 # Checks for header files.
 AC_HEADER_STDC

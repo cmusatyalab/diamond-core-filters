@@ -16,7 +16,7 @@ VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
-CPPFLAGS += `pkg-config gtk+-2.0 gthread-2.0 --cflags-only-I`
+CPPFLAGS += @GTK_CFLAGS@
                                                                                 
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_text_attr.c
