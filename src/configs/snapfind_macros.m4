@@ -25,7 +25,7 @@ AC_ARG_WITH(opencv,
     ])
 
 
-AC_DEFUN(SNAPFIND_OPTIONS_SYS,
+AC_DEFUN([SNAPFIND_OPTIONS_SYS],
   [AC_ARG_WITH($1,
     [  --with-$1=DIR    $1 was installed in DIR],
     [ pfx="`(cd ${withval} ; pwd)`"
@@ -34,7 +34,7 @@ AC_DEFUN(SNAPFIND_OPTIONS_SYS,
       PATH="${PATH}:${pfx}/bin"])
     ])
 
-AC_DEFUN(SNAPFIND_OPTION_LIBRARY,
+AC_DEFUN([SNAPFIND_OPTION_LIBRARY],
   [AC_ARG_WITH($1-includes,
     [  --with-$1-includes=DIR   $1 include files are in DIR],
     [ pfx="`(cd ${withval} ; pwd)`"
