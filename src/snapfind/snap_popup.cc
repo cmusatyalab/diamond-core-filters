@@ -910,7 +910,7 @@ highlight_panel(void)
 	gtk_container_set_border_width (GTK_CONTAINER (box2), 10);
 	gtk_container_add(GTK_CONTAINER(frame), box2);
 
-	GtkWidget *label = gtk_label_new("Highlight regions matching seaches");
+	GtkWidget *label = gtk_label_new("Highlight regions matching searches");
 	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
 	gtk_box_pack_start (GTK_BOX (box2), label, FALSE, TRUE, 0);
 
