@@ -40,8 +40,8 @@ In summary, execute:
 Building SnapFind
 -----------------
 
-If you are building from CVS, run autoconf to generate the configure script.
->>(6) cd snapfind/src; autoconf
+If you are building from CVS, run autoreconf to generate the configure script.
+>>(6) cd snapfind/src; autoreconf
 
 You also need a built diamond system.  Diamond does not need to be installed,
 but you must specify the path when configuring snapfind.
