@@ -20,15 +20,15 @@ CVCPPFLAGS = @CVCPPFLAGS@
 CVLDFLAGS = @CVLDFLAGS@
 
 
-CPPFLAGS += ${CVCPPFLAGS}
-LDFLAGS += ${CVLDFLAGS}
+CPPFLAGS += `pkg-config opencv --cflags-only-I`
+LDFLAGS += `pkg-config opencv --libs-only-I`
 
 
 # to build these files.
 LIBS += -ldl -lfl -lpthread -lm
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -ltools -llog
 LIBS += -Wl,-no-whole-archive -lfl -lodisk
-LIBS += -lhstub -ldctl -ldconfig
+LIBS += -lhstub -ldctl -ldconfig -lauth -lkrb5
 LIBS += -lcv -lssl -lglib-2.0
                                                                                 
 #

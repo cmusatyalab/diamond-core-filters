@@ -30,7 +30,7 @@ CPPFLAGS += ${GTK_CFLAGS}
 LIBS += -ldl -lfl -lpthread -lm 
 LIBS += -Wl,-whole-archive -lsearchlet -lfilterexec -lfilter -llog 
 LIBS += -Wl,-no-whole-archive -lfl -lodisk -ltools
-LIBS += -lhstub -ldctl -ldconfig
+LIBS += -lhstub -ldctl -ldconfig -lauth -lkrb5
 LIBS += -llog -lssl -ltiff -lz -lsfgtk -lsfimage -ltiff -lresults -ljpeg
 
 # objects used to build the searchlet(s)
