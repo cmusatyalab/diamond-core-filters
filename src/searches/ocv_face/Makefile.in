@@ -24,8 +24,8 @@ STATIC_LIBS += ${CVLDFLAGS}
 STATIC_LIBS += @STATIC_LIBS@
 
 CPPFLAGS += @GTK_CFLAGS@
-CPPFLAGS += ${CVCPPFLAGS}
-LDFLAGS += ${CVLDFLAGS}
+CPPFLAGS += `pkg-config opencv --cflags-only-I`
+LDFLAGS += `pkg-config opencv --libs-only-I`
 
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_ocv_face.c fil_ocv_profile.c fil_ocv_body.c 
@@ -68,15 +68,15 @@ TARGETS += fil_ocv_lowerbody.a opencv_lowerbody_search.so
 SHARED_LIB += fil_ocv_face.a fil_ocv_profile.a fil_ocv_body.a
 SHARED_LIB += fil_ocv_upperbody.a fil_ocv_lowerbody.a 
 SHARED_LIB += opencv_face_search.so $(SRCDIR)/opencv_face.sf_conf 
-SHARED_LIB += ${CVCFGXMLS}/haarcascade_frontalface_default.xml 
+SHARED_LIB += $(SRCDIR)/haarcascade_frontalface_default.xml 
 SHARED_LIB += opencv_profile_search.so $(SRCDIR)/opencv_profile.sf_conf 
-SHARED_LIB += ${CVCFGXMLS}/haarcascade_profileface.xml
+SHARED_LIB += $(SRCDIR)/haarcascade_profileface.xml
 SHARED_LIB += opencv_body_search.so $(SRCDIR)/opencv_body.sf_conf 
-SHARED_LIB += ${CVCFGXMLS}/haarcascade_fullbody.xml 
+SHARED_LIB += $(SRCDIR)/haarcascade_fullbody.xml 
 SHARED_LIB += opencv_upperbody_search.so $(SRCDIR)/opencv_upperbody.sf_conf 
-SHARED_LIB += ${CVCFGXMLS}/haarcascade_upperbody.xml
+SHARED_LIB += $(SRCDIR)/haarcascade_upperbody.xml
 SHARED_LIB += opencv_lowerbody_search.so $(SRCDIR)/opencv_lowerbody.sf_conf 
-SHARED_LIB += ${CVCFGXMLS}/haarcascade_lowerbody.xml
+SHARED_LIB += $(SRCDIR)/haarcascade_lowerbody.xml
 
 
 include ${OBJROOT}/Makefile.template
