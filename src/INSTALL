@@ -11,7 +11,7 @@ Notes
 Building SnapFind - installing OpenCV
 -----------------
 
-Before starting you need to have built and install opencv 0.9.5.  Snapfind
+Before starting you need to have built and install opencv 0.9.5.  SnapFind
 requires that you build opencv with static libraries.  This can be done
 at opencv configuration time by: 
 
@@ -25,7 +25,7 @@ you should use:
 	./configure --enable-static=yes --prefix=<writiable path>
 
 After it configures, then run "make" and "make install".  NOTE: Compiling
-snapfind with opencv in a non-standard location will generate many warning
+SnapFind with opencv in a non-standard location will generate many warning
 messages from the opencv include files.  Please ignore this.
 
 In summary, execute:
@@ -43,8 +43,9 @@ Building SnapFind
 If you are building from CVS, run autoreconf to generate the configure script.
 >>(6) cd snapfind/src; autoreconf
 
-You also need a built diamond system.  Diamond does not need to be installed,
-but you must specify the path when configuring snapfind.
+You also need to have built the OpenDiamond Platform. The OpenDiamond
+Platform does not need to be installed, but you must specify the path
+when configuring SnapFind.
 
 Then run configure 
 
@@ -53,7 +54,7 @@ Then run configure
 where somepath is the top of the diamond build directory 
 ("somedir/diamond/target" if using the build tree).
 
-Like Diamond, SnapFind allows you to build the binaries to a directory outside the source tree. In option (b) following, we're assuming you also compiled diamond into a different directory, named diamond-OBJS.
+Like the OpenDiamond Platform, SnapFind allows you to build the binaries to a directory outside the source tree. In option (b) following, we're assuming you also compiled the OpenDiamond Platform  into a different directory, named diamond-OBJS.
 Thus either run:
 
 >>(7a) cd snapfind/src
@@ -73,23 +74,23 @@ will be placed in target/{lib,include,bin}.
 
 >>(8) make
 
-Running Snapfind
+Running SnapFind
 ----------------
 To run SnapFind you must have two configurations files.  The first
 is called "gid_map" and the second is called "name_map".  The name_map
 groups logical collections of files into one or more group numbers. 
-Snapfind allows the user to select the groups id to search.  There must be
+SnapFind allows the user to select the groups id to search.  There must be
 at least 1 collection defined.  The gid_map file is used to map
-the each group to 1 or more diamond back-ends (IP addresses).  
+the each group to 1 or more OpenDiamond back-ends (IP addresses).  
 If running standalone this should map the group to localhost, 
 if running across a distributed set of machines, each group will 
 list 1 or more machines that hold some of the data belonging to
 that group.
 
 There files are usually in ${HOME}/.diamond but can be in
-other places (see diamond documentation).
+other places (see OpenDiamond documentation).
 
->>(9) See diamond documentation (diamond/src/INSTALL) for setting up configuration files
+>>(9) See OpenDiamond documentation (diamond/src/INSTALL) for setting up configuration files
 
 One more configuration file needs to be added.
 >>(10) cd .diamond; mkdir snapfind
@@ -109,7 +110,7 @@ There is a sample_search in the directory called "sample_search" under
 SnapFind.
 	
 
->>(12) Start adiskd (see diamond documentation in diamond/src/INSTALL)
+>>(12) Start adiskd (see OpenDiamond documentation in opendiamond/src/INSTALL)
 >>(11a) cd snapfind/src/target/bin; ./snapfind
 OR
 >>(11b) cd snapfind-OBJS/target/bin; ./snapfind
@@ -119,8 +120,8 @@ OR
 Installing OpenCV 0.9.7 Debian packages
 ---------------------------------------
 
-Snapfind version 1.1.0 uses OpenCV 0.9.7, which is available in
-Debian packaging.  To build or use Snapfind, the OpenCV packages
+SnapFind version 1.1.0 uses OpenCV 0.9.7, which is available in
+Debian packaging.  To build or use SnapFind, the OpenCV packages
 and their prerequisities must be installed.  First the prereqs:
 	debhelper (>= 4.0.0), 
 	quilt, 
@@ -157,7 +158,7 @@ Building Debian packages
 ------------------------
 
 Debian packaging files are in the debian subdirectory.  To build the
-debian packages from scratch, run the following from the Snapfind
+debian packages from scratch, run the following from the SnapFind
 source diretory, which must be named snapfind-<version>.
 
 	cp -pr src snapfind-<version>
