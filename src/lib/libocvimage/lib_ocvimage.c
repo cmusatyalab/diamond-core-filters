@@ -2,7 +2,7 @@
  * 	SnapFind (Release 0.9)
  *      An interactive image search application
  *
- *      Copyright (c) 2002-2005, Intel Corporation
+ *      Copyright (c) 2002-2005 Intel Corporation
  *      All Rights Reserved
  *
  *  This software is distributed under the terms of the Eclipse Public

@@ -1,16 +1,16 @@
 /*
- * 	SnapFind (Release 0.9)
- *      An interactive image search application
- */
-/*
+ *  SnapFind
+ *  An interactive image search application
+ *  Version 1
+ *
  *  Copyright (c) 2005-2006 Larry Huston <larry@thehustons.net>
+ *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
  *  License, Version 1.0 which can be found in the file named LICENSE.
  *  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
-
 
 #ifndef	_ATTR_DECODE_H_
 #define	_ATTR_DECODE_H_	1
