@@ -16,6 +16,7 @@ VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 CVCFGXMLS = @CVCFGXMLS@
+CVLDFLAGS = @CVLDFLAGS@ 
 
 STATIC_LIBS += ${BUILD_LIB_PATH}/libocvimage.a ${BUILD_LIB_PATH}/libsfimage.a 
 STATIC_LIBS += ${BUILD_LIB_PATH}/libresults.a
@@ -24,7 +25,6 @@ STATIC_LIBS += @STATIC_LIBS@
 
 CPPFLAGS += @GTK_CFLAGS@
 CPPFLAGS += `pkg-config opencv --cflags-only-I`
-LDFLAGS += `pkg-config opencv --libs-only-L`
 
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_ocv_face.c fil_ocv_profile.c fil_ocv_body.c 
@@ -77,46 +77,12 @@ SHARED_LIB += $(SRCDIR)/haarcascade_upperbody.xml
 SHARED_LIB += opencv_lowerbody_search.so $(SRCDIR)/opencv_lowerbody.sf_conf 
 SHARED_LIB += $(SRCDIR)/haarcascade_lowerbody.xml
 
-
 include ${OBJROOT}/Makefile.template
-                                                                                
-fil_ocv_face.a: fil_ocv_face.o $(FILTER_LIB_COMMON)
+
+$(filter %.a,$(TARGETS)): %.a: %.o $(FILTER_LIB_COMMON)
 	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
-fil_ocv_profile.a: fil_ocv_profile.o $(FILTER_LIB_COMMON)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-
-fil_ocv_body.a: fil_ocv_body.o $(FILTER_LIB_COMMON)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-
-fil_ocv_upperbody.a: fil_ocv_upperbody.o $(FILTER_LIB_COMMON)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-
-fil_ocv_lowerbody.a: fil_ocv_lowerbody.o $(FILTER_LIB_COMMON)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-
-
-opencv_face_search.so: ocv_face_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
-
-opencv_profile_search.so: ocv_profile_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
-
-opencv_body_search.so: ocv_body_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
-
-opencv_upperbody_search.so: ocv_upperbody_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
-
-opencv_lowerbody_search.so: ocv_lowerbody_search.o $(SEARCH_LIB_COMMON)
+$(filter %.so,$(TARGETS)): %.so: $(%.o:opencv=ocv) $(SEARCH_LIB_COMMON)
 	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a
