@@ -24,7 +24,7 @@ STATIC_LIBS += @STATIC_LIBS@
 
 CPPFLAGS += @GTK_CFLAGS@
 CPPFLAGS += `pkg-config opencv --cflags-only-I`
-LDFLAGS += `pkg-config opencv --libs-only-I`
+LDFLAGS += `pkg-config opencv --libs-only-L`
 
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_ocv_face.c fil_ocv_profile.c fil_ocv_body.c 
