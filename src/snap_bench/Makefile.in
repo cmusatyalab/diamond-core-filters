@@ -19,10 +19,8 @@ OBJROOT = @OBJROOT@
 CVCPPFLAGS = @CVCPPFLAGS@
 CVLDFLAGS = @CVLDFLAGS@
 
-
-CPPFLAGS += `pkg-config opencv --cflags-only-I`
-LDFLAGS += `pkg-config opencv --libs-only-I`
-
+CPPFLAGS += ${CVCPPFLAGS}
+LDFLAGS += ${CVLDFLAGS}
 
 # to build these files.
 LIBS += -ldl -lfl -lpthread -lm
