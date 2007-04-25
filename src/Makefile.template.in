@@ -32,7 +32,7 @@ CPPFLAGS += @CPPFLAGS@
 CPPFLAGS += -I${BUILD_INC_PATH} -I. -I${SRCDIR}
 
 # from the configure script
-CFLAGS += @CFLAGS@ 
+CFLAGS += @CFLAGS@ @OPENDIAMOND_CFLAGS@
 
 
 # include the shared source files

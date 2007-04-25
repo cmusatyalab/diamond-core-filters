@@ -30,44 +30,17 @@
 /* Define to 1 if you have the `cxcore' library (-lcxcore). */
 #undef HAVE_LIBCXCORE
 
-/* Define to 1 if you have the `dconfig' library (-ldconfig). */
-#undef HAVE_LIBDCONFIG
-
-/* Define to 1 if you have the `dctl' library (-ldctl). */
-#undef HAVE_LIBDCTL
-
 /* Define to 1 if you have the `dl' library (-ldl). */
 #undef HAVE_LIBDL
-
-/* Define to 1 if you have the `filter' library (-lfilter). */
-#undef HAVE_LIBFILTER
-
-/* Define to 1 if you have the `filterexec' library (-lfilterexec). */
-#undef HAVE_LIBFILTEREXEC
-
-/* Define to 1 if you have the `hstub' library (-lhstub). */
-#undef HAVE_LIBHSTUB
-
-/* Define to 1 if you have the `log' library (-llog). */
-#undef HAVE_LIBLOG
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
-/* Define to 1 if you have the `odisk' library (-lodisk). */
-#undef HAVE_LIBODISK
-
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
 
-/* Define to 1 if you have the `searchlet' library (-lsearchlet). */
-#undef HAVE_LIBSEARCHLET
-
 /* Define to 1 if you have the `ssl' library (-lssl). */
 #undef HAVE_LIBSSL
-
-/* Define to 1 if you have the `tools' library (-ltools). */
-#undef HAVE_LIBTOOLS
 
 /* Define to 1 if you have the `wvlt' library (-lwvlt). */
 #undef HAVE_LIBWVLT

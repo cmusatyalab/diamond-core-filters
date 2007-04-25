@@ -27,13 +27,8 @@ CPPFLAGS += ${GTK_CFLAGS}
 
 # 
 # Set the libraries and the library paths we will need
-# to build t`hese files.
-LIBS += -Wl,-\( -ldl -lfl -lpthread -lm 
-LIBS += -lsearchlet -lfilterexec -lfilter -llog 
-LIBS += -lodisk -ltools
-LIBS += -lhstub -ldctl -ldconfig -lauth -lkrb5
-LIBS += -lssl -ltiff -lz -lsfgtk -lsfimage -lresults -ljpeg
-LIBS += -Wl,-\)
+# to build these files.
+LIBS += @OPENDIAMOND_LIBS@ -ltiff -lz -lsfgtk -lsfimage -lresults -ljpeg
 
 # objects used to build the searchlet(s)
 SEARCHLET_SRCS = 
