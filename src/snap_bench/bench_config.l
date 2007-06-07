@@ -22,6 +22,7 @@
 #include <ctype.h>
 #include <assert.h> 
 #include <stdlib.h> 
+#include <sys/time.h>
 #include <time.h> 
 #include <errno.h>
 #include "queue.h"
@@ -37,9 +38,11 @@ static void add_filterfile(char *tok);
 static void start_search(char *tok);
 static void term_search(char *tok);
 static void set_blob(char *tok);
+static void set_user_state(char *tok);
 static void next_object(char *tok);
 static void all_objects(char *tok);
 static void sleep_ms(char *tok);
+static void think_ms(char *tok);
 static void run_script(char *tok);
 static void have_error(char *tok);
 
@@ -47,9 +50,10 @@ static void have_error(char *tok);
 extern int verbose;
 
 ls_search_handle_t shandle;
+app_stats_t astats;
 
 struct timeval	start;
-
+struct timeval  think;
 
 
 %}
@@ -72,7 +76,9 @@ ls_start_search[ \t]+id[ \t]+[[:digit:]].*\n  {start_search(yytext);}
 ls_terminate_search[ \t]+id[ \t]+[[:digit:]].*\n  {term_search(yytext);}
 ls_next_object[ \t]+id[ \t]+[[:digit:]].*\n  	{next_object(yytext);}
 ls_set_blob[ \t]+id[ \t]+[[:digit:]].*\n  	{set_blob(yytext);}
+ls_set_user_state[ \t]+id[ \t]+[[:digit:]].*\n  {set_user_state(yytext);}
 sleep[ \t]+[[:digit:]].*\n  			{sleep_ms(yytext);}
+think[ \t]+[[:digit:]].*\n			{think_ms(yytext);}
 run_script[ \t]+.*\n 				{run_script(yytext);}
 dump_filterstats[ \t]+.*\n 			{dump_filtstats();}
 all_objects[ \t]+.*\n 				{all_objects(yytext);}
@@ -270,7 +276,8 @@ start_search(char *string)
                 exit(1);
         }
 	if (verbose)
-                fprintf(stdout, "starting new search\n");
+                fprintf(stdout, "starting new search at %lu.%06lu\n",
+        		start.tv_sec, start.tv_usec);
 }
 
 void
@@ -280,7 +287,7 @@ term_search(char *string)
 	int	secs, usec;
 
 	struct timeval end;
-	err = ls_terminate_search(shandle);
+	err = ls_terminate_search(shandle, &astats);
         if (err) {
                 fprintf(stderr, "Failed to terminate search on err %d\n", err);
                 exit(1);
@@ -293,8 +300,45 @@ term_search(char *string)
                 usec += 1000000;
                 secs -= 1;
         }
-        fprintf(stdout, "Elapsed time %d s %d us  \n", secs, usec);
+        if (verbose) {
+          	fprintf(stdout, "stopping search at %lu.%06lu\n", 
+    			end.tv_sec, end.tv_usec);
+        }
 }
+
+void
+set_user_state(char *string)
+{
+	int  err;
+	char *token;
+	char *state;
+	user_state_t us;
+	struct timeval stamp;
+
+	token = eat_token(string); 
+	token = eat_token(token); // id 
+	token = eat_token(token); // id number
+	token = eat_token(token); // state
+	state = copy_to_whitespace(token);  // state string
+	if (strncmp(state, "BUSY", strlen("BUSY")) == 0) {
+		us = USER_BUSY;
+	    gettimeofday(&think, NULL);
+	} else {
+		us = USER_WAITING;
+		timerclear(&think);
+	}
+	
+	gettimeofday(&stamp, NULL);
+	err = ls_set_user_state(shandle, us);
+    if (err) {
+    	fprintf(stderr, "Error setting user state: %d \n", err);
+        exit(1);
+    }
+	if (verbose)
+        fprintf(stdout, "user state is %s at %lu.%06lu\n", 
+        		state, stamp.tv_sec, stamp.tv_usec);
+}
+
 
 void
 sleep_ms(char *string)
@@ -322,6 +366,54 @@ sleep_ms(char *string)
 
 }
 
+
+void
+think_ms(char *string)
+{
+	char *		token;
+	long		ms;
+	long		remainder;
+	struct timeval	wanted;
+	struct timeval now;
+	struct timeval done;
+	struct timeval todo;
+	struct timeval zero;
+	struct timespec todospec;
+	long todoms;
+
+	token = eat_token(string);
+	ms = strtol(token, NULL, 10);
+	if ((ms == 0) && (errno == EINVAL)) {
+        fprintf(stderr, "Failed to convert sleep argument %s\n", token);
+		exit(1);
+	}
+	wanted.tv_sec = ms / 1000;	
+	remainder = ms - (wanted.tv_sec * 1000);
+	wanted.tv_usec = remainder * 1000;	
+
+	gettimeofday(&now, NULL);
+	timersub(&now, &think, &done);
+	timersub(&wanted, &done, &todo);
+	timerclear(&zero);
+	
+	if (verbose) {
+		if (timercmp(&todo, &zero, >)) {
+			todoms = todo.tv_sec * 1000 + todo.tv_usec / 1000;
+			fprintf(stdout, "think_ms: sleeping %ld ms of %ld ms\n", 
+					todoms, ms);
+		} else {
+			fprintf(stdout, 
+				"think_ms: user think time %ld exceeded, skipping\n",
+				ms);
+		}
+	}
+	
+	if (timercmp(&todo, &zero, >)) {
+		todospec.tv_sec = todo.tv_sec;
+		todospec.tv_nsec = todo.tv_usec * 1000;
+		nanosleep(&todospec, NULL);
+	}
+}
 
 void
 next_object(char *string)

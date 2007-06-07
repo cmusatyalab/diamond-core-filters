@@ -182,7 +182,7 @@ img_diff::close_edit_win()
 {
 	int fd;
 	int err;
-	size_t nbytes;
+	ssize_t nbytes;
 	char *buf;
 	struct stat     stats;
 		
@@ -211,6 +211,10 @@ img_diff::close_edit_win()
 	  close(fd);
 	  assert(0);
 	}
+
+	log_message(LOGT_APP, LOGL_TRACE, 
+				"auxiliary data: %s file %s buf %x len %d",
+				get_name(), get_example_name(), buf, nbytes);
 
 	set_auxiliary_data((void *) buf);
 	set_auxiliary_data_length(nbytes);

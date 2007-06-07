@@ -328,7 +328,8 @@ search_set::write_blobs(ls_search_handle_t shandle)
 	for (iter = ss_search_list.begin(); iter != ss_search_list.end(); 
 	    iter++) {
 		srch = *iter;
-		if (srch->is_selected()) {
+		if (srch->is_selected() &&
+			(srch->get_auxiliary_data() != NULL)) {
 			if (ls_set_blob(shandle, (char *)srch->get_name(), 
 			     srch->get_auxiliary_data_length(), 
 			     srch->get_auxiliary_data())) {

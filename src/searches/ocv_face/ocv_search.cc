@@ -19,9 +19,10 @@
 #include <unistd.h>
 #include <dlfcn.h>
 #include <gtk/gtk.h>
-#include <opencv/cv.h>
-#include <opencv/cvaux.h>
 #include <sys/stat.h>
+
+#include <cv.h>
+#include <cvaux.h>
 
 #include "queue.h"
 #include "rgb.h"
@@ -120,7 +121,7 @@ ocv_search::set_classifier(char *name)
 	int rc;
         char *cascade_bytes;
 	struct stat     stats;
-	size_t          nbytes;
+	ssize_t          nbytes;
 
         cascade_file_name = (char *) malloc(SF_MAX_PATH);
 	strcpy(cascade_file_name, sfconf_get_plugin_dir());
@@ -149,6 +150,11 @@ ocv_search::set_classifier(char *name)
 	  close(fd);
 	  assert(0);
 	}
+
+	log_message(LOGT_APP, LOGL_TRACE, 
+				"auxiliary data: %s file %s buf %x len %d",
+				get_name(), cascade_file_name, cascade_bytes, 
+				nbytes);
 
 	set_auxiliary_data((void *) cascade_bytes);
 	set_auxiliary_data_length(nbytes);

@@ -24,7 +24,9 @@
 #include <math.h>
 #include <assert.h>
 #include <unistd.h>
-#include <opencv/cvaux.h>
+
+#include <cv.h>
+#include <cvaux.h>
 
 #include "lib_filter.h"
 #include "fil_ocv_common.h"

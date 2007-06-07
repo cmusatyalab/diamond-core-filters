@@ -29,6 +29,7 @@
 #include <ctype.h>
 #include <assert.h>
 
+#include "diamond_types.h"
 #include "searchlet_api.h"
 #include "lib_results.h"
 #include "lib_sfimage.h"
@@ -38,13 +39,17 @@
 #include "search_set.h"
 #include "sfind_search.h"
 #include "plugin.h"
+#include "snapfind.h"
 
 extern pthread_mutex_t ring_mutex;
+extern void *log_cookie;
+
 /*
  * this need to be global because we share it with the main
  * GUI.  XXX hack, do it right later.
  */
 ls_search_handle_t shandle;
+app_stats_t	astats;
 
 /*
  * state the is global to all of these functions.
@@ -97,7 +102,6 @@ do_search(gid_list_t * main_region, char *fspec)
 	char           *filter_name;
 	char           *dir_name;
 	void 	       *cookie;
-	img_search     *search;
 	search_iter_t iter;
 
 	if (!fspec) {
@@ -138,6 +142,10 @@ do_search(gid_list_t * main_region, char *fspec)
 	/* Attach auxiliary data for this search.  */
 	sset->write_blobs(shandle);
 	  
+	/* reset application statistics */
+	astats.as_objs_queued = 0;
+	astats.as_objs_presented = 0;
+	  
 	/* Go ahead and start the search.  */
 	err = ls_start_search(shandle);
 	if (err) {
@@ -153,7 +161,12 @@ static void
 stop_search(void *data)
 {
 	int             err;
-	err = ls_terminate_search(shandle);
+
+	static int		old_total = 0;
+	
+	astats.as_objs_presented = user_measurement.total_seen - old_total;
+	old_total = user_measurement.total_seen;
+	err = ls_terminate_search_extended(shandle, &astats);
 	if (err != 0) {
 		printf("XXX failed to terminate search \n");
 		exit(1);
@@ -170,6 +183,20 @@ drain_ring(ring_data_t * ring)
 	}
 	assert(ring_empty(ring));
 
+}
+
+
+void
+set_user_state(user_state_t state)
+{
+	int err;
+	log_message(LOGT_APP, LOGL_TRACE, "snapfind: user is %s", 
+				state==USER_BUSY?"busy":"waiting");
+	err = ls_set_user_state(shandle, state);
+	if (err) {
+		printf("failed to set user state: %d", err);
+		exit(1);
+	}
 }
 
 
@@ -210,6 +237,13 @@ handle_message(message_t * new_message)
 			/*
 			 * XXX get stats ??? 
 			 */
+		case SET_USER_BUSY:
+			set_user_state(USER_BUSY);
+			break;
+		
+		case SET_USER_WAITING:
+			set_user_state(USER_WAITING);
+			break;
 
 		default:
 			printf("XXX unknown message %d \n", new_message->type);
@@ -277,6 +311,7 @@ sfind_search_main(void *foo)
 	struct timespec timeout;
 
 	sset = (search_set *)foo;
+	log_thread_register(log_cookie);
 
 	/*
 	 * XXX init_search(); 
@@ -290,7 +325,8 @@ sfind_search_main(void *foo)
 			handle_message(message);
 			free(message);
 		}
-		if ((active) && (ring_count(from_search_thread) < 7)) {
+		if ((active) && 
+			(ring_count(from_search_thread) < THUMBNAIL_DISPLAY_SIZE+1)) {
 			err = ls_next_object(shandle, &cur_obj, LSEARCH_NO_BLOCK);
 			if (err == ENOENT) {
 				fprintf(stderr, "No more objects \n");  /* XXX */
@@ -333,6 +369,8 @@ sfind_search_main(void *foo)
 					 */
 					ls_release_object(shandle, cur_obj);
 					free(message);
+				} else {
+					astats.as_objs_queued++;
 				}
 			}
 		} 

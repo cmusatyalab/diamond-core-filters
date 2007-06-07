@@ -99,6 +99,9 @@ int dump_objects = 0;		/* just dump all the objects and exit (no gui) */
 GtkTooltips *tooltips = NULL;
 char *read_spec_filename = NULL;
 
+void *log_cookie;
+user_state_t user_state = USER_WAITING;
+
 /* XXXX fix this */
 GtkWidget *config_table;
 
@@ -141,10 +144,7 @@ search_set *	snap_searchset;
 pop_win_t	 popup_window = {NULL, NULL, NULL};
 
 /* some stats for user study */
-
-struct {
-	int total_seen, total_marked;
-} user_measurement = { 0, 0 };
+user_stats_t user_measurement = { 0, 0 };
 
 
 typedef enum {
@@ -476,7 +476,48 @@ timeout_write_dobjs(gpointer label)
 	return TRUE;
 }
 
+static void
+user_busy()
+{
+	message_t *		message;
+	int			err;
 
+	message = (message_t *)malloc(sizeof(*message));
+	if (message == NULL) {
+		printf("failed to allocate message \n");
+		exit(1);
+	}
+
+	message->type = SET_USER_BUSY;
+
+	err = ring_enq(to_search_thread, message);
+	if (err) {
+		fprintf(stderr, "failed to enq message \n");
+		exit(1);
+	}
+}
+
+
+static void
+user_waiting()
+{
+	message_t *		message;
+	int			err;
+
+	message = (message_t *)malloc(sizeof(*message));
+	if (message == NULL) {
+		printf("failed to allocate message \n");
+		exit(1);
+	}
+
+	message->type = SET_USER_WAITING;
+
+	err = ring_enq(to_search_thread, message);
+	if (err) {
+		fprintf(stderr, "failed to enq message \n");
+		exit(1);
+	}
+}
 
 
 /* ********************************************************************** */
@@ -606,6 +647,11 @@ display_thumbnail(ls_obj_handle_t ohandle)
 		pthread_mutex_unlock(&thumb_mutex);
 
 		enable_image_control(&image_controls);
+		log_message(LOGT_APP, LOGL_TRACE, "snapfind: window full");
+		if (user_state == USER_WAITING) {
+			user_state = USER_BUSY;
+			user_busy();
+		}
 		//fprintf(stderr, "WINDOW FULL. waiting...\n");
 		GUI_THREAD_LEAVE();
 
@@ -617,6 +663,16 @@ display_thumbnail(ls_obj_handle_t ohandle)
 
 		GUI_THREAD_ENTER();
 		disable_image_control(&image_controls);
+		/*
+		 * signal Diamond that the user is waiting
+		 * only if there are not enough images buffered 
+		 * to fill the next screen.
+		 */
+		if ((user_state == USER_BUSY) && 
+			(ring_count(from_search_thread) < THUMBNAIL_DISPLAY_SIZE)) {
+			user_state = USER_WAITING;
+			user_waiting();
+		}
 		//fprintf(stderr, "WAIT COMPLETE...\n");
 		GUI_THREAD_LEAVE();
 	} else {
@@ -655,6 +711,7 @@ display_thread(void *data)
 	message_t *		message;
 	struct timespec timeout;
 
+	log_thread_register(log_cookie);
 
 	while (1) {
 		pthread_mutex_lock(&ring_mutex);
@@ -755,6 +812,9 @@ cb_start_search(GtkButton* item, gpointer data)
 	gtk_widget_set_sensitive(gui.start_button, FALSE);
 	gtk_widget_set_sensitive(gui.stop_button, TRUE);
 	clear_thumbnails();
+
+	/* reset user state */
+	user_state = USER_WAITING;
 
 	/* another global, ack!! this should be on the heap XXX */
 	static gid_list_t gid_list;
@@ -1209,7 +1269,7 @@ cb_toggle_log(gpointer callback_data, guint callback_action,
     GtkWidget *menu_item )
 {
 	GUI_CALLBACK_ENTER();
-	toggle_log_win(shandle);
+	//	toggle_log_win(shandle);
 	GUI_CALLBACK_LEAVE();
 }
 
@@ -1301,6 +1361,8 @@ create_image_info(GtkWidget *container_box, image_info_t *img_info)
 static void
 cb_next_image(GtkButton* item, gpointer data)
 {
+	log_message(LOGT_APP, LOGL_TRACE, "snapfind: next button pressed");
+	
 	GUI_CALLBACK_ENTER();
 	image_controls.zlevel = gtk_spin_button_get_value_as_int(
 	                            GTK_SPIN_BUTTON(image_controls.zbutton));
@@ -1977,6 +2039,12 @@ main(int argc, char *argv[])
 	GUI_THREAD_LEAVE();
 
 	/*
+	 * start logging
+	 */
+	log_init("snapfind", NULL, &log_cookie);
+	log_thread_register(log_cookie);
+		
+	/*
 	 * initialize and start the background thread 
 	 */
 	init_search();
@@ -1993,7 +2061,7 @@ main(int argc, char *argv[])
 	decoders_init();
 	load_attr_map();
 	load_plugins();
-	init_logging();
+	//	init_logging();
 
 	/*
 	 * Start the main loop processing for the GUI.

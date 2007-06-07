@@ -19,9 +19,10 @@
 #include <unistd.h>
 #include <dlfcn.h>
 #include <gtk/gtk.h>
-#include <opencv/cv.h>
-#include <opencv/cvaux.h>
 #include <sys/stat.h>
+
+#include <cv.h>
+#include <cvaux.h>
 
 #include "queue.h"
 #include "rgb.h"

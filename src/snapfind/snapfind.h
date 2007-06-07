@@ -22,6 +22,9 @@
 static const int THUMBSIZE_X = 200;
 static const int THUMBSIZE_Y = 150;
 
+// number of thumbnails displayed per screen
+static const int THUMBNAIL_DISPLAY_SIZE = 6;  
+
 /* this is a misnomer; the thumbnail keeps everything we want to know
  * about an image */
 typedef struct thumbnail_t {
@@ -50,6 +53,12 @@ typedef struct search_name {
 } search_name_t;
 
 extern search_name_t * active_searches;
+
+typedef struct user_stats {
+	int total_seen, total_marked;
+} user_stats_t;
+
+extern user_stats_t user_measurement;
 
 #ifdef __cplusplus
 extern "C"

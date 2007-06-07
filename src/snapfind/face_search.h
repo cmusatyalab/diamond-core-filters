@@ -42,6 +42,8 @@ typedef enum message_ops {
     TERM_SEARCH,
     NEXT_OBJECT,
     DONE_OBJECTS,
+    SET_USER_BUSY,
+    SET_USER_WAITING,
 } message_ops_t;
 
 typedef struct
