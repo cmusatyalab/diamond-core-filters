@@ -36,6 +36,10 @@ AC_ARG_WITH(opencv,
       CVLDFLAGS=" ${pfx}/lib/libcvaux.a ${pfx}/lib/libcv.a ${pfx}/lib/libcxcore.a"
       CVCFGXMLS="${pfx}/share/opencv/haarcascades"
       ADD_LIB_SEARCH(${pfx}/lib)
+    ],
+    [ CVCPPFLAGS="-I/opt/diamond-filter-kit/include -I/opt/diamond-filter-kit/include/opencv"
+      CVLDFLAGS=" -L/opt/diamond-filter-kit/lib -lcvaux -lcv -lcxcore"
+      CVCFGXMLS="/opt/diamond-filter-kit/share/opencv/haarcascades"
     ])
 
 
