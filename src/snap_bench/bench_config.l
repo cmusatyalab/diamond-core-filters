@@ -50,7 +50,6 @@ static void have_error(char *tok);
 extern int verbose;
 
 ls_search_handle_t shandle;
-app_stats_t astats;
 
 struct timeval	start;
 struct timeval  think;
@@ -287,7 +286,7 @@ term_search(char *string)
 	int	secs, usec;
 
 	struct timeval end;
-	err = ls_terminate_search(shandle, &astats);
+	err = ls_terminate_search(shandle);
         if (err) {
                 fprintf(stderr, "Failed to terminate search on err %d\n", err);
                 exit(1);
