@@ -1,0 +1,4 @@
+/bin/snapfind
+/include/*.h
+/lib/*.sf_conf
+/lib/*.xml

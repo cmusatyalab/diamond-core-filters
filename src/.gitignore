@@ -1,0 +1,15 @@
+*~
+*.a
+*.o
+*.so
+
+/autom4te.cache
+/aclocal.m4
+/configure
+/config.h.in
+/config.h
+/config.log
+/config.status
+/Makefile.template
+
+Makefile
