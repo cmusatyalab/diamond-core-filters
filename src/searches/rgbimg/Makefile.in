@@ -53,7 +53,7 @@ SHARED_LIB += fil_rgb.a rgb_img.so $(SRCDIR)/rgb_img.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_rgb.a: $(FILTER_LIB_OBJS)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
 rgb_img.so: $(SEARCH_LIB_OBJS)
 

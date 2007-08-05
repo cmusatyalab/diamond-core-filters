@@ -45,7 +45,7 @@ SHARED_LIB = fil_text_attr.a text_attr_search.so $(SRCDIR)/text_attr.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_text_attr.a: $(FILTER_LIB_OBJS)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
 text_attr_search.so: $(SEARCH_LIB_OBJS)
 

@@ -66,7 +66,7 @@ include ${OBJROOT}/Makefile.template
 # for some reason the pattern matching doesn't seem to work for
 # some *.so's.
 fil_dog_texture.a: $(FILTER_LIB_OBJS)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
 dog_texture_search.so: $(SEARCH_LIB_OBJS)
 

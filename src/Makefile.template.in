@@ -111,7 +111,7 @@ DIST_OBJS += .depend Makefile
 	cp -f $@ ${BUILD_LIB_PATH}
 
 %.so: %.o
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a 
 

@@ -49,7 +49,7 @@ SHARED_LIB += $(SRCDIR)/gabor_texture.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_gabor_texture.a: $(FILTER_LIB_OBJS)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
 gabor_texture_search.so: $(SEARCH_LIB_OBJS)
 

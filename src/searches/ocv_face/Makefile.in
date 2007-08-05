@@ -79,30 +79,30 @@ SHARED_LIB += $(SRCDIR)/haarcascade_lowerbody.xml
 include ${OBJROOT}/Makefile.template
 
 $(filter %.a,$(TARGETS)): %.a: %.o $(FILTER_LIB_COMMON)
-	$(LD) -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
 opencv_face_search.so: ocv_face_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a
 
 opencv_profile_search.so: ocv_profile_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a
 
 opencv_body_search.so: ocv_body_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a
 
 opencv_upperbody_search.so: ocv_upperbody_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a
 
 opencv_lowerbody_search.so: ocv_lowerbody_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
 	rm -f foo.a
 
