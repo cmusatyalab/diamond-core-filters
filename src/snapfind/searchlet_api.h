@@ -14,6 +14,7 @@
 
 #include "diamond_consts.h"
 #include "diamond_types.h"
+#include "lib_scope.h"
 #include "lib_searchlet.h"
 #include "lib_dconfig.h"
 #include "sys_attr.h"

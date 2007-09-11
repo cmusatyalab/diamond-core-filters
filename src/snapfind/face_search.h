@@ -44,6 +44,7 @@ typedef enum message_ops {
     DONE_OBJECTS,
     SET_USER_BUSY,
     SET_USER_WAITING,
+	DEFINE_SCOPE,
 } message_ops_t;
 
 typedef struct

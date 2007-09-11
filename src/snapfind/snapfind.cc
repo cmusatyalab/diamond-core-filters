@@ -123,6 +123,7 @@ static struct
 	GtkWidget *main_window;
 	GtkWidget *min_faces;
 	GtkWidget *face_levels;
+	GtkWidget *scope_button;
 	GtkWidget *start_button;
 	GtkWidget *stop_button;
 	GtkWidget *search_box;
@@ -736,6 +737,7 @@ display_thread(void *data)
 
 					free(message);
 					gtk_widget_set_sensitive(gui.start_button, TRUE);
+					gtk_widget_set_sensitive(gui.scope_button, TRUE);
 					gtk_widget_set_sensitive(gui.stop_button, FALSE);
 					display_thread_running = 0;
 					pthread_exit(0);
@@ -756,6 +758,28 @@ display_thread(void *data)
 }
 
 static void
+define_scope()
+{
+	message_t *		message;
+	int			err;
+
+	message = (message_t *)malloc(sizeof(*message));
+	if (message == NULL) {
+		printf("failed to allocate message \n");
+		exit(1);
+	}
+
+	message->type = DEFINE_SCOPE;
+	message->data = NULL;
+
+	err = ring_enq(to_search_thread, message);
+	if (err) {
+		fprintf(stderr, "failed to enq message \n");
+		exit(1);
+	}
+}
+
+static void
 stop_search()
 {
 	message_t *		message;
@@ -765,6 +789,7 @@ stop_search()
 	 * Toggle the start and stop buttons.
 	 */
 	gtk_widget_set_sensitive(gui.start_button, TRUE);
+	gtk_widget_set_sensitive(gui.scope_button, TRUE);
 
 	/* we should not be messing with the default. this is here so
 	 * that we can trigger a search from the text entry without a
@@ -789,6 +814,14 @@ stop_search()
 }
 
 static void
+cb_define_scope(GtkButton* item, gpointer data)
+{
+	GUI_CALLBACK_ENTER();
+	define_scope();
+	GUI_CALLBACK_LEAVE();
+}
+
+static void
 cb_stop_search(GtkButton* item, gpointer data)
 {
 	GUI_CALLBACK_ENTER();
@@ -810,6 +843,7 @@ cb_start_search(GtkButton* item, gpointer data)
 	 * button.
 	 */
 	gtk_widget_set_sensitive(gui.start_button, FALSE);
+	gtk_widget_set_sensitive(gui.scope_button, FALSE);
 	gtk_widget_set_sensitive(gui.stop_button, TRUE);
 	clear_thumbnails();
 
@@ -1019,6 +1053,13 @@ create_search_window()
 	GTK_WIDGET_SET_FLAGS (gui.stop_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_sensitive(gui.stop_button, FALSE);
 	gtk_widget_show (gui.stop_button);
+
+	gui.scope_button = gtk_button_new_with_label ("Define Scope");
+	g_signal_connect_swapped (G_OBJECT (gui.scope_button), "clicked",
+	                          G_CALLBACK(cb_define_scope), NULL);
+	gtk_box_pack_end (GTK_BOX (box1), gui.scope_button, TRUE, TRUE, 0);
+	GTK_WIDGET_SET_FLAGS (gui.scope_button, GTK_CAN_DEFAULT);
+	gtk_widget_show (gui.scope_button);
 
 	separator = gtk_hseparator_new ();
 	gtk_box_pack_end (GTK_BOX (box1), separator, FALSE, FALSE, 0);
@@ -1707,24 +1748,8 @@ static GtkItemFactoryEntry menu_items[] = {
 	    0,"<Item>" },
 	{ "/Options", NULL, NULL, 0, "<Branch>" },
 	{ "/Options/sep1", NULL, NULL, 0, "<Separator>" },
-	{ "/Albums", NULL, NULL, 0, "<Branch>" },
-	{ "/Albums/tear", NULL, NULL, 0, "<Tearoff>" },
 	{ NULL, NULL, NULL }
 };
-
-static void
-cb_collection(gpointer callback_data, guint callback_action,
-              GtkWidget  *menu_item )
-{
-
-	/* printf("cb_collection: #%d\n", callback_action); */
-
-	if(GTK_CHECK_MENU_ITEM(menu_item)->active) {
-		collections[callback_action].active = 1;
-	} else {
-		collections[callback_action].active = 0;
-	}
-}
 
 
 static GtkItemFactory *item_factory;
@@ -1755,31 +1780,6 @@ get_menubar_menu( GtkWidget  *window )
 	   the number of items in the array, the array itself, and any
 	   callback data for the the menu items. */
 	gtk_item_factory_create_items(item_factory, nmenu_items, menu_items, NULL);
-
-	/* create more menu items */
-	struct collection_t *tmp_coll;
-	for(tmp_coll = collections; tmp_coll->name; tmp_coll++) {
-		GtkItemFactoryEntry entry;
-		char buf[BUFSIZ];
-
-		sprintf(buf, "/Albums/%s", tmp_coll->name);
-		for(char *s=buf; *s; s++) {
-			if(*s == '_') {
-				*s = ' ';
-			}
-		}
-		entry.path = strdup(buf);
-		entry.accelerator = NULL;
-		entry.callback = G_CALLBACK(cb_collection);
-		entry.callback_action = tmp_coll - collections;
-		entry.item_type = "<CheckItem>";
-		gtk_item_factory_create_item(item_factory, &entry, NULL, 1);
-
-		GtkWidget *widget = gtk_item_factory_get_widget(item_factory, 
-		    buf);
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget),
-		    tmp_coll->active);
-	}
 
 	/* Attach the new accelerator group to the window. */
 	gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);

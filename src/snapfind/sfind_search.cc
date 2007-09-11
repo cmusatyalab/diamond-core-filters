@@ -41,6 +41,8 @@
 #include "plugin.h"
 #include "snapfind.h"
 
+#include "lib_scope.h"
+
 extern pthread_mutex_t ring_mutex;
 extern void *log_cookie;
 
@@ -155,6 +157,21 @@ do_search(gid_list_t * main_region, char *fspec)
 }
 
 /*
+ *  Defines a scope for a new search.
+ */
+static void
+define_scope(void *data)
+{
+	int             err;
+
+	err = ls_define_scope();
+	if (err != 0) {
+		printf("XXX failed to define scope \n");
+		exit(1);
+	}
+}
+
+/*
  *  Stops a currently executing search.
  */
 static void
@@ -232,6 +249,10 @@ handle_message(message_t * new_message)
 		case TERM_SEARCH:
 			stop_search(new_message->data);
 			search_active = 0;
+			break;
+
+		case DEFINE_SCOPE:
+			define_scope(new_message->data);
 			break;
 
 			/*
