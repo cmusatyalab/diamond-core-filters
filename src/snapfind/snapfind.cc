@@ -376,6 +376,30 @@ get_gid_list(gid_list_t *main_region)
 
 
 static void
+get_name_list()
+{
+  
+  /*
+   * read the list of collections
+   */
+  {
+    void *cookie;
+    char *name;
+    int err;
+    int pos = 0;
+    err = nlkup_first_entry(&name, &cookie);
+    while(!err && pos < MAX_ALBUMS)
+      {
+	collections[pos].name = name;
+	collections[pos].active = 1; /* first one active */
+	pos++;
+	err = nlkup_next_entry(&name, &cookie);
+      }
+    collections[pos].name = NULL;
+  }
+}
+
+static void
 do_img_mark(GtkWidget *widget)
 {
 	thumbnail_t *thumb;
@@ -853,6 +877,7 @@ cb_start_search(GtkButton* item, gpointer data)
 	/* another global, ack!! this should be on the heap XXX */
 	static gid_list_t gid_list;
 	gid_list.ngids = 0;
+	get_name_list();
 	get_gid_list(&gid_list);
 
 	pthread_mutex_lock(&display_mutex);
@@ -2008,25 +2033,7 @@ main(int argc, char *argv[])
 
 	snap_searchset = new search_set();
 
-	/*
-	 * read the list of collections
-	 */
-	{
-		void *cookie;
-		char *name;
-		int err;
-		int pos = 0;
-		err = nlkup_first_entry(&name, &cookie);
-		while(!err && pos < MAX_ALBUMS)
-		{
-			collections[pos].name = name;
-			collections[pos].active = pos ? 0 : 1; /* first one active */
-			pos++;
-			err = nlkup_next_entry(&name, &cookie);
-		}
-		collections[pos].name = NULL;
-	}
-
+	get_name_list();
 
 	/*
 	 * Create the main window.
