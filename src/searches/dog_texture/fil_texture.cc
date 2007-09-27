@@ -131,7 +131,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 	IplImage 	*dst_img = NULL;
 	RGBImage      * rgb_img = NULL;
 	size_t 		len;
-	float			min_simularity;
+	float			min_similarity;
 	texture_args_t  *targs = (texture_args_t *)f_datap;
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
@@ -161,8 +161,8 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 
 	TAILQ_INIT(&blist);
 
-	if (targs->texture_distance == TEXTURE_DIST_MAHOLONOBIS) {
-		pass = texture_test_entire_image_maholonobis(img, targs, &blist);
+	if (targs->texture_distance == TEXTURE_DIST_MAHALANOBIS) {
+		pass = texture_test_entire_image_mahalanobis(img, targs, &blist);
 	} else if (targs->texture_distance == TEXTURE_DIST_VARIANCE) {
 		pass = texture_test_entire_image_variance(img, targs, &blist);
 	} else if (targs->texture_distance == TEXTURE_DIST_PAIRWISE) {
@@ -175,19 +175,19 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 		save_patches(ohandle, targs->name, &blist);
 
 
-		min_simularity = 2.0;
+		min_similarity = 2.0;
 		while (!(TAILQ_EMPTY(&blist))) {
 			cur_box = TAILQ_FIRST(&blist);
-			if ((1.0 - cur_box->distance) < min_simularity) {
-				min_simularity = 1.0 - cur_box->distance;
+			if ((1.0 - cur_box->distance) < min_similarity) {
+				min_similarity = 1.0 - cur_box->distance;
 			}
 			TAILQ_REMOVE(&blist, cur_box, link);
 		}
 
-		if (min_simularity == 2.0) {
+		if (min_similarity == 2.0) {
 			pass = 0;
 		} else {
-			pass = (int)(100.0 * min_simularity);
+			pass = (int)(100.0 * min_similarity);
 		}
 	} else {
 		while (!(TAILQ_EMPTY(&blist))) {

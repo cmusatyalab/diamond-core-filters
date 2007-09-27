@@ -21,7 +21,7 @@
 #include "texture_tools.h"
 
 int
-texture_test_entire_image_maholonobis(IplImage * img, texture_args_t * targs,
+texture_test_entire_image_mahalanobis(IplImage * img, texture_args_t * targs,
                                       bbox_list_t * blist)
 {
 

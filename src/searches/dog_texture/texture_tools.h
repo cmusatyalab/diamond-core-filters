@@ -24,7 +24,7 @@
 
 
 typedef	enum {
-    TEXTURE_DIST_MAHOLONOBIS,
+    TEXTURE_DIST_MAHALANOBIS,
     TEXTURE_DIST_VARIANCE,
     TEXTURE_DIST_PAIRWISE
 } texture_dist_t;
@@ -64,7 +64,7 @@ extern "C"
 #endif
 
 
-int texture_test_entire_image_maholonobis(IplImage *img, texture_args_t *targs,
+int texture_test_entire_image_mahalanobis(IplImage *img, texture_args_t *targs,
 	        bbox_list_t *blist);
 int texture_test_entire_image_variance(IplImage *img, texture_args_t *targs,
 								   bbox_list_t *blist);

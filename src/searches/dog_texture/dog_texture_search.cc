@@ -53,7 +53,7 @@ texture_search::texture_search(const char *name, char *descr)
 		: example_search(name, descr)
 {
 	edit_window = NULL;
-	simularity = 0.93;
+	similarity = 0.93;
 	channels = 3;
 	distance_metric = TEXTURE_DIST_PAIRWISE;
 }
@@ -65,26 +65,26 @@ texture_search::~texture_search()
 
 
 void
-texture_search::set_simularity(char *data)
+texture_search::set_similarity(char *data)
 {
 
-	simularity = atof(data);
-	if (simularity < 0) {
-		simularity = 0.0;
-	} else if (simularity > 1.0) {
-		simularity = 1.0;
+	similarity = atof(data);
+	if (similarity < 0) {
+		similarity = 0.0;
+	} else if (similarity > 1.0) {
+		similarity = 1.0;
 	}
 	return;
 }
 
 void
-texture_search::set_simularity(double sim)
+texture_search::set_similarity(double sim)
 {
-	simularity = sim;
-	if (simularity < 0) {
-		simularity = 0.0;
-	} else if (simularity > 1.0) {
-		simularity = 1.0;
+	similarity = sim;
+	if (similarity < 0) {
+		similarity = 0.0;
+	} else if (similarity > 1.0) {
+		similarity = 1.0;
 	}
 	return;
 }
@@ -111,7 +111,7 @@ texture_search::handle_config(int nconf, char **confv)
 
 	if (strcmp(METRIC_ID, confv[0]) == 0) {
 		assert(nconf > 1);
-		set_simularity(confv[1]);
+		set_similarity(confv[1]);
 		err = 0;
 	} else if (strcmp(CHANNEL_ID, confv[0]) == 0) {
 		assert(nconf > 1);
@@ -276,8 +276,8 @@ texture_search::edit_search()
 	container = gtk_vbox_new(FALSE, 10);
 	gtk_container_add(GTK_CONTAINER(frame), container);
 
-	widget = create_slider_entry("Min Simularity", 0.0, 1.0, 2,
-	                             simularity, 0.05, &sim_adj);
+	widget = create_slider_entry("Min similarity", 0.0, 1.0, 2,
+	                             similarity, 0.05, &sim_adj);
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 	hbox = gtk_hbox_new(FALSE, 10);
@@ -300,7 +300,7 @@ texture_search::edit_search()
 	menu = gtk_menu_new();
 
 	/* these must be declared as the order of the enum  */
-	item = gtk_menu_item_new_with_label("Maholonibis");
+	item = gtk_menu_item_new_with_label("Mahalanobis");
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 	item = gtk_menu_item_new_with_label("Variance");
 	gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
@@ -360,9 +360,9 @@ texture_search::save_edits()
 		return;
 	}
 
-	/* get the simularity and save */
+	/* get the similarity and save */
 	sim = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
-	set_simularity(sim);
+	set_similarity(sim);
 
 	color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(rgb_widget));
 	if (color) {
@@ -403,7 +403,7 @@ texture_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * simularity));
+	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * similarity));
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_texture_detect \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_texture_detect \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_texture_detect \n");
@@ -422,7 +422,7 @@ texture_search::write_fspec(FILE *ostream)
 	 * as well as the linearized histograms.
 	 */
 
-	fprintf(ostream, "ARG  %f  # simularity \n", 0.0);
+	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
 	fprintf(ostream, "ARG  %d  # channels \n", channels);
 	fprintf(ostream, "ARG  %d  # distance type \n", distance_metric);
 	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
@@ -489,7 +489,7 @@ texture_search::write_config(FILE *ostream, const char *dirname)
 	/* create the search configuration */
 	fprintf(ostream, "\n\n");
 	fprintf(ostream, "SEARCH texture %s\n", get_name());
-	fprintf(ostream, "%s %f \n", METRIC_ID, simularity);
+	fprintf(ostream, "%s %f \n", METRIC_ID, similarity);
 	fprintf(ostream, "%s %d \n", CHANNEL_ID, channels);
 
 	example_search::write_config(ostream, dirname);
@@ -520,7 +520,7 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	targs.step = get_stride();
 	targs.scale = get_scale();
 	targs.min_matches = INT_MAX; 	/* get all bounding boxes */
-	targs.max_distance = (1.0 - simularity);
+	targs.max_distance = (1.0 - similarity);
 	targs.num_channels = channels;
 
 	i = 0;
@@ -579,8 +579,8 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 		iimg = get_rgb_ipl_image(rimg);
 	}
 
-	if (distance_metric == TEXTURE_DIST_MAHOLONOBIS) {
-		pass = texture_test_entire_image_maholonobis(iimg, &targs, blist);
+	if (distance_metric == TEXTURE_DIST_MAHALANOBIS) {
+		pass = texture_test_entire_image_mahalanobis(iimg, &targs, blist);
 	} else if (distance_metric == TEXTURE_DIST_VARIANCE) {
 		pass = texture_test_entire_image_variance(iimg, &targs, blist);
 	} else if (distance_metric == TEXTURE_DIST_PAIRWISE)  {
