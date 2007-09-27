@@ -44,7 +44,7 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
 {
 
 	int pass = 0;
-	int s_index, f_index;
+	int s_index, f_index, f_vals;
 
 	texture_args->name = strdup(fname);
 	assert(texture_args->name != NULL);
@@ -63,24 +63,25 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
 	texture_args->texture_distance = (texture_dist_t) atoi(args[7]);
 
 	texture_args->num_samples = atoi(args[8]);
+
 	/* read in the arguments for each sample */
-
-
-	args += 9;
+	argc -= 9; args += 9;
 
 	texture_args->sample_values = (double **)
       	    malloc(sizeof(double *) * texture_args->num_samples);
 	assert(texture_args->sample_values != NULL);
-	for (s_index = 0; s_index < texture_args->num_samples; s_index++) {
+
+	f_vals = NUM_LAP_PYR_LEVELS * texture_args->num_channels;
+	for (s_index = 0; s_index < texture_args->num_samples && argc >= f_vals;
+	     s_index++) {
 		texture_args->sample_values[s_index] =
-		    (double *)malloc(sizeof(double) *
-		                     (NUM_LAP_PYR_LEVELS*TEXTURE_MAX_CHANNELS));
-		for (f_index = 0; f_index < NUM_LAP_PYR_LEVELS*texture_args->num_channels;
-		     f_index++) {
+		    (double *)malloc(sizeof(double) * f_vals);
+		for (f_index = 0; f_index < f_vals; f_index++) {
 			texture_args->sample_values[s_index][f_index] = atof(*args);
-			args++;
+			argc--; args++;
 		}
 	}
+	texture_args->num_samples = s_index;
 	pass = 1;
 	return pass;
 }

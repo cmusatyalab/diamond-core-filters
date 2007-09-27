@@ -393,6 +393,7 @@ texture_search::write_fspec(FILE *ostream)
 	example_patch_t	*cur_patch;
 	img_search *	rgb;
 	img_factory *	ifac;
+	int num_samples;
 	int		i = 0;
 
 	save_edits();
@@ -425,51 +426,43 @@ texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
 	fprintf(ostream, "ARG  %d  # channels \n", channels);
 	fprintf(ostream, "ARG  %d  # distance type \n", distance_metric);
-	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
+
+	num_samples = 0;
+	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
+		num_samples += (cur_patch->patch_image->width / 32) *
+			       (cur_patch->patch_image->height / 32);
+	}
+	fprintf(ostream, "ARG  %d  # num examples \n", num_samples);
 
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		int j;
-		int neww, newh;
-		if ((cur_patch->patch_image->width < 32) ||
-		    (cur_patch->patch_image->height < 32)) {
-			continue;
-		}
+	    int x, y, j;
+	    for (y = 0; y + 32 < cur_patch->ysize; y += 32) {
+		for (x = 0; x + 32 < cur_patch->xsize; x += 32) {
 
-		neww = cur_patch->xsize;
-		newh = cur_patch->ysize;
+		    rimg = create_rgb_subimage(cur_patch->patch_image,
+					       x, y, 32, 32);
 
-		/* XXX only works for assume we want squares */
-		if (neww > newh) {
-			neww = newh;
-		} else {
-			newh = neww;
-
-		}
-		rimg = create_rgb_subimage(cur_patch->patch_image,
-		                           0, 0, neww, newh);
-
-		if (channels == 1) {
+		    if (channels == 1) {
 			img = get_gray_ipl_image(rimg);
-		} else {
+		    } else {
 			img = get_rgb_ipl_image(rimg);
-		}
-		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U, channels);
-		cvResize(img, scale_img, CV_INTER_LINEAR);
-#ifdef	XXX
+		    }
+		    scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U,
+					      channels);
+		    cvResize(img, scale_img, CV_INTER_LINEAR);
 
-		texture_get_lap_pyr_features_from_subimage(img, channels, 0, 0,
-		        cur_patch->xsize, cur_patch->ysize, feature_vals);
-#else
+		    texture_get_lap_pyr_features_from_subimage(scale_img,
+							       channels, 0, 0,
+							       32, 32,
+							       feature_vals);
 
-		texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
-		        32, 32, feature_vals);
-#endif
-
-		for (j=0; j < (NUM_LAP_PYR_LEVELS*channels); j++) {
+		    for (j = 0; j < NUM_LAP_PYR_LEVELS * channels; j++) {
 			fprintf(ostream, "ARG  %f  # sample %d val %d \n",
-			        feature_vals[j], i, j);
+				feature_vals[j], i, j);
+		    }
+		    i++;	/* count thenumber of samples for debugging */
 		}
-		i++;	/* count thenumber of samples for debugging */
+	    }
 	}
 	fprintf(ostream, "REQUIRES  RGB # dependencies \n");
 	fprintf(ostream, "MERIT  100 # some relative cost \n");
@@ -525,53 +518,49 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		i++;
+		i += (cur_patch->patch_image->width / 32) *
+		     (cur_patch->patch_image->height / 32);
 	}
 
 	targs.num_samples = i;
-
 	targs.sample_values = (double **)malloc(sizeof(double *) * targs.num_samples);
 
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		int j;
-		if ((cur_patch->patch_image->width < 32) ||
-		    (cur_patch->patch_image->height < 32)) {
-			continue;
-		}
+	    int x, y, j;
+	    for (y = 0; y + 32 < cur_patch->ysize; y += 32) {
+		for (x = 0; x + 32 < cur_patch->xsize; x += 32) {
 
-		tmp_img = create_rgb_subimage(cur_patch->patch_image,
-		                              0, 0, 32, 32);
-		if (channels == 1) {
+		    tmp_img = create_rgb_subimage(cur_patch->patch_image,
+						  x, y, 32, 32);
+		    if (channels == 1) {
 			iimg = get_gray_ipl_image(tmp_img);
-		} else {
+		    } else {
 			iimg = get_rgb_ipl_image(tmp_img);
-		}
-		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U, channels);
-		cvResize(iimg, scale_img, CV_INTER_LINEAR);
+		    }
+		    scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U,
+					      channels);
+		    cvResize(iimg, scale_img, CV_INTER_LINEAR);
 
-#ifdef	XXX
+		    texture_get_lap_pyr_features_from_subimage(scale_img,
+							       channels, 0, 0,
+							       32, 32,
+							       feature_vals);
+		    /* XXX free iimg */
 
-		texture_get_lap_pyr_features_from_subimage(iimg, channels, 0, 0,
-		        cur_patch->xsize, cur_patch->ysize,
-		        feature_vals);
-#else
+		    data_arr = (double *)malloc(sizeof(double) * NUM_LAP_PYR_LEVELS * channels);
+		    assert(data_arr != NULL);
 
-		texture_get_lap_pyr_features_from_subimage(scale_img, channels, 0, 0,
-		        cur_patch->xsize, cur_patch->ysize,
-		        feature_vals);
-#endif
-
-		/* XXX free iimg */
-		data_arr = (double *)malloc(sizeof(double) * NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS);
-		assert(data_arr != NULL);
-		for (j=0; j < (NUM_LAP_PYR_LEVELS*channels); j++) {
+		    for (j=0; j < NUM_LAP_PYR_LEVELS * channels; j++) {
 			data_arr[j] = feature_vals[j];
-		}
-		targs.sample_values[i] = data_arr;
-		i++;	/* count thenumber of samples for debugging */
+		    }
 
-		release_rgb_image(tmp_img);
+		    targs.sample_values[i] = data_arr;
+		    i++;	/* count thenumber of samples for debugging */
+
+		    release_rgb_image(tmp_img);
+		}
+	    }
 	}
 	if (channels == 1) {
 		iimg = get_gray_ipl_image(rimg);
