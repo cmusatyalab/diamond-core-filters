@@ -392,7 +392,7 @@ get_name_list()
     while(!err && pos < MAX_ALBUMS)
       {
 	collections[pos].name = name;
-	collections[pos].active = 1; /* first one active */
+	collections[pos].active = 1; /* no choice, all collections active */
 	pos++;
 	err = nlkup_next_entry(&name, &cookie);
       }
