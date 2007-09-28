@@ -79,6 +79,11 @@ find_support_factory(const char *name)
 			return(cur_map->fm_factory);
 		}
 	}
+
+	fprintf(stderr, "Could not find a support factory for %s.\n", name);
+	fprintf(stderr, "Is the PLUGIN_DIR configuration setting correct\n");
+	fprintf(stderr, "in your snapfindrc file?\n");
+
 	return(NULL);
 }
 
