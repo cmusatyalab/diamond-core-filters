@@ -168,7 +168,6 @@ define_scope(void *data)
 	err = ls_define_scope();
 	if (err != 0) {
 		printf("XXX failed to define scope \n");
-		exit(1);
 	}
 }
 
