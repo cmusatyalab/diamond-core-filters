@@ -81,23 +81,12 @@ init_search()
 	}
 }
 
-void
-set_searchlist(int n, groupid_t * gids)
-{
-	int             err;
-
-	err = ls_set_searchlist(shandle, n, gids);
-	if (err) {
-		printf("Failed to set searchlist on  err %d \n", err);
-		exit(1);
-	}
-}
-
 
 /*
  * This function initiates the search by building a filter
  * specification, setting the searchlet and then starting the search.
  */
+
 void
 do_search(gid_list_t * main_region, char *fspec)
 {
@@ -120,8 +109,12 @@ do_search(gid_list_t * main_region, char *fspec)
 		exit(1);                /* XXX */
 	}
 
-	set_searchlist(main_region->ngids, main_region->gids);
-
+	err = ls_set_searchlist(shandle, main_region->ngids,
+				main_region->gids);
+	if (err) {
+		printf("Failed to set searchlist on  err %d \n", err);
+		exit(1);
+	}
 
 	filter_name = first_searchlet_lib(&cookie);
 	if (filter_name == NULL) {

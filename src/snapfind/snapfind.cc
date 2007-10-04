@@ -232,8 +232,6 @@ extern void drain_ring(ring_data_t *ring);
 struct collection_t
 {
 	char *name;
-	//int id;
-	int active;
 };
 
 struct collection_t collections[MAX_ALBUMS+1] =
@@ -354,50 +352,41 @@ enable_image_control(image_control_t *img_cntrl)
 static void
 get_gid_list(gid_list_t *main_region)
 {
-	int	i;
-	int j;
-	/*
-	 * figure out the args and build message
-	 */
-	for(i=0; i<MAX_ALBUMS && collections[i].name; i++) {
-		/* if collection active, figure out the gids and add to out list
-		 * allows duplicates XXX */
-		if(collections[i].active) {
-			int err;
-			int num_gids = MAX_ALBUMS;
-			groupid_t gids[MAX_ALBUMS];
-			err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
-			assert(!err);
-			for (j=0; j < num_gids; j++) {
-				main_region->gids[main_region->ngids++] = gids[j];
-			}
-		}
-	}
+  int i, j;
+
+  for(i=0; i<MAX_ALBUMS && collections[i].name; i++) {
+    int err;
+    int num_gids = MAX_ALBUMS;
+    groupid_t gids[MAX_ALBUMS];
+
+    err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
+    assert(!err);
+
+    for (j=0; j < num_gids; j++)
+      main_region->gids[main_region->ngids++] = gids[j];
+  }
 }
 
 
 static void
 get_name_list()
 {
-  
   /*
-   * read the list of collections
+   * freshly read the list of collections
    */
-  {
-    void *cookie;
-    char *name;
-    int err;
-    int pos = 0;
-    err = nlkup_first_entry(&name, &cookie);
-    while(!err && pos < MAX_ALBUMS)
-      {
-	collections[pos].name = name;
-	collections[pos].active = 1; /* no choice, all collections active */
-	pos++;
-	err = nlkup_next_entry(&name, &cookie);
-      }
-    collections[pos].name = NULL;
+
+  void *cookie;
+  char *name;
+  int err, pos;
+  
+  for(pos = 0, err = nlkup_first_entry(&name, &cookie);
+      (!err && pos < MAX_ALBUMS); pos++) {
+    collections[pos].name = name;
+    pos++;
+    err = nlkup_next_entry(&name, &cookie);
   }
+  
+  collections[pos].name = NULL;
 }
 
 static void
@@ -877,7 +866,7 @@ cb_start_search(GtkButton* item, gpointer data)
 
 	/* another global, ack!! this should be on the heap XXX */
 	static gid_list_t gid_list;
-	gid_list.ngids = 0;
+	memset(&gid_list, 0, sizeof(gid_list_t));
 	get_name_list();
 	get_gid_list(&gid_list);
 
