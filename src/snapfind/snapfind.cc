@@ -100,7 +100,6 @@ int dump_objects = 0;		/* just dump all the objects and exit (no gui) */
 GtkTooltips *tooltips = NULL;
 char *read_spec_filename = NULL;
 
-void *log_cookie;
 user_state_t user_state = USER_WAITING;
 
 /* XXXX fix this */
@@ -725,8 +724,6 @@ display_thread(void *data)
 {
 	message_t *		message;
 	struct timespec timeout;
-
-	log_thread_register(log_cookie);
 
 	while (1) {
 		pthread_mutex_lock(&ring_mutex);
@@ -2038,9 +2035,8 @@ main(int argc, char *argv[])
 	/*
 	 * start logging
 	 */
-	log_init("snapfind", NULL, &log_cookie);
-	log_thread_register(log_cookie);
-		
+	log_init("snapfind", NULL);
+
 	/*
 	 * initialize and start the background thread 
 	 */

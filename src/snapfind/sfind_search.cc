@@ -45,7 +45,6 @@
 #include "lib_scope.h"
 
 extern pthread_mutex_t ring_mutex;
-extern void *log_cookie;
 
 /*
  * this need to be global because we share it with the main
@@ -325,7 +324,6 @@ sfind_search_main(void *foo)
 	struct timespec timeout;
 
 	sset = (search_set *)foo;
-	log_thread_register(log_cookie);
 
 	/*
 	 * XXX init_search(); 
