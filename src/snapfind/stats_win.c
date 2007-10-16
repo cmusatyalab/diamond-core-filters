@@ -799,7 +799,7 @@ create_stats_win(ls_search_handle_t shandle, int verbose)
 	 */
 	thread_close = 0;
 	err =
-	    pthread_create(&stats_thread, PATTR_DEFAULT, stats_main,
+	    pthread_create(&stats_thread, NULL, stats_main,
 	                   (void *) shandle);
 	if (err) {
 		perror("create_stats_regions:");

@@ -284,7 +284,7 @@ create_ccontrol_win(ls_search_handle_t shandle, int verbose)
 	 * Create a thread that processes gets the statistics.
 	 */
 	thread_close = 0;
-	err = pthread_create(&stats_thread, PATTR_DEFAULT, ccontrol_main,
+	err = pthread_create(&stats_thread, NULL, ccontrol_main,
 	                     (void *) shandle);
 	if (err) {
 		perror("create_stats_regions:");

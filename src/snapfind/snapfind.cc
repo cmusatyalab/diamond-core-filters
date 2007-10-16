@@ -897,7 +897,7 @@ cb_start_search(GtkButton* item, gpointer data)
 
 	if(!display_thread_running) {
 		display_thread_running = 1;
-		err = pthread_create(&display_thread_info, PATTR_DEFAULT, display_thread, NULL);
+		err = pthread_create(&display_thread_info, NULL, display_thread, NULL);
 		if (err) {
 			printf("failed to create  display thread \n");
 			exit(1);
@@ -2041,7 +2041,7 @@ main(int argc, char *argv[])
 	 * initialize and start the background thread 
 	 */
 	init_search();
-	err = pthread_create(&search_thread, PATTR_DEFAULT, sfind_search_main,
+	err = pthread_create(&search_thread, NULL, sfind_search_main,
 	                     snap_searchset);
 	if (err) {
 		perror("failed to create search thread");

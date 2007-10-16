@@ -299,7 +299,7 @@ create_progress_win(ls_search_handle_t shandle)
 	 * Create a thread that processes gets the statistics.
 	 */
 	thread_close = 0;
-	err = pthread_create(&stats_thread, PATTR_DEFAULT, stats_main,
+	err = pthread_create(&stats_thread, NULL, stats_main,
 	                     (void *) shandle);
 	if (err) {
 		perror("create_stats_regions:");

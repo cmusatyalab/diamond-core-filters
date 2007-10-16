@@ -541,7 +541,7 @@ init_logging()
 	/*
 	 * Create a thread that processes gets the statistics.
 	 */
-	err = pthread_create(&stats_thread, PATTR_DEFAULT, log_main,
+	err = pthread_create(&stats_thread, NULL, log_main,
 	                     (NULL));
 	if (err) {
 		perror("create log background thread:");

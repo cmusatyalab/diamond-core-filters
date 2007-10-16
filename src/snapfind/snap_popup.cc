@@ -430,7 +430,7 @@ cb_run_highlight()
 	GUI_CALLBACK_ENTER();
 
 	kill_highlight_thread(1);
-	int err = pthread_create(&highlight_info.thread, PATTR_DEFAULT,
+	int err = pthread_create(&highlight_info.thread, NULL,
 	                         image_highlight_main, NULL);
 	assert(!err);
 
