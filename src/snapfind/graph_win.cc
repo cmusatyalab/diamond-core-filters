@@ -309,16 +309,14 @@ graph_win::clear_series(int series)
 void
 graph_win::scale_x_up(const double x)
 {
-	double 	newx;
-	double 	mult;
-
-
+	double newx;
+	double mult;
 
 	assert(x > gw_xmax);
 	newx = x/0.75;
 
 	mult = newx/gw_orig_xmax;
-	newx = ceill(mult) * gw_orig_xmax;
+	newx = ceil(mult) * gw_orig_xmax;
 
 	gw_xmax = newx;
 	gw_xspan = gw_xmax - gw_xmin;
@@ -329,15 +327,15 @@ graph_win::scale_x_up(const double x)
 void
 graph_win::scale_y_up(const double y)
 {
-	double 	newy;
-	double 	mult;
+	double newy;
+	double mult;
 
 	assert(y > gw_ymax);
 
 	newy = y/0.75;
 
 	mult = newy/gw_orig_ymax;
-	newy = ceill(mult) * gw_orig_ymax;
+	newy = ceil(mult) * gw_orig_ymax;
 
 	gw_ymax = newy;
 	gw_yspan = gw_ymax - gw_ymin;
