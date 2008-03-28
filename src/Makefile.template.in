@@ -29,7 +29,7 @@ INSTALLDIR_LIB=${INSTALLBASE}/lib
 INSTALLDIR_INCLUDE=${INSTALLBASE}/include
 
 CPPFLAGS += @CPPFLAGS@
-CPPFLAGS += -I${BUILD_INC_PATH} -I. -I${SRCDIR}
+CPPFLAGS += -I${BUILD_INC_PATH} -I. -I${SRCDIR} -m32
 
 # from the configure script
 CFLAGS += @CFLAGS@ @OPENDIAMOND_CFLAGS@
@@ -40,9 +40,9 @@ VPATH += $(SRCDIR)
 vpath %.h $(VPATH)
 
 LDFLAGS += @LDFLAGS@
-LDFLAGS += -L${BUILD_LIB_PATH} 
+LDFLAGS += -L${BUILD_LIB_PATH} -m32
 
-LD_SOFLAGS += -shared
+LD_SOFLAGS += -shared -m32
 
 #Just to go overboard and be sure
 CFLAGS += -D_GNU_SOURCE
