@@ -68,6 +68,9 @@ PLUGIN_DIR[ \t]+{DIRNAME}	{set_plugin_dir(eat_token(yytext));}
 .				{have_error(); }
 %%
 
+#ifndef SNAPFIND_PLUGIN_DIR
+#error SNAPFIND_PLUGIN_DIR must be defined
+#endif
 
                                                                                 
 static char *
@@ -181,16 +184,15 @@ do_init()
 
 	yyin = sfconfig_open_config_file();
 	if (yyin == NULL) {
-		fprintf(stderr, "open_config: No snapfindrc file found \n");
-		exit(1);
+		fprintf(stderr, "open_config: No snapfindrc file found, using default \n");
+		set_plugin_dir(SNAPFIND_PLUGIN_DIR);
+	} else {
+		ret = sfconflex();
+		if (ret) {
+			free(sfconf);
+			sfconf = NULL;
+			exit(1);
+		}
 	}
-
-	ret = sfconflex();
-	if (ret) {
-		free(sfconf);
-		sfconf = NULL;
-		exit(1);
-	}
-
 	return;
 }
