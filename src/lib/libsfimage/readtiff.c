@@ -153,14 +153,6 @@ convertTIFFtoRGBImage(MyTIFF* tp)
 	                           myTIFFsize, myTIFFmmap, myTIFFunmap);
 	assert(tif);
 
-	/*
-	 * TIFF files can contain multiple images.
-	 * It's not clear what Diamond should do in this case.
-	 * Using the first one would probably be the right thing,
-	 * which is what removing this assert() will do.
-	 */
-	assert(TIFFLastDirectory(tif));
-
 #if 0
 	// Here is code for counting the number of directories in a
 	// TIFF file, in case future versions need it.
