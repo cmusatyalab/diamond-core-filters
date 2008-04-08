@@ -551,7 +551,7 @@ texture_get_lap_pyr_features_from_subimage(IplImage * img,
 		laplacianIm[i] =
 		    cvCreateImage(cvSize(xsize[i], ysize[i]), IPL_DEPTH_8U,
 		                  num_channels);
-		cvResize(gaussianIm[i - 1], laplacianIm_tmp[i], CV_INTER_NN);
+		cvResize(laplacianIm[i - 1], laplacianIm_tmp[i], CV_INTER_NN);
 		cvAbsDiff(gaussianIm[i], laplacianIm_tmp[i], laplacianIm[i]);
 	}
 	/*
