@@ -18,6 +18,7 @@
 #include <gtk/gtk.h>
 #include "rgb.h"
 #include "snapfind_consts.h"
+#include <cstring>
 
 
 /* forward declaration to we can get a pointer */
