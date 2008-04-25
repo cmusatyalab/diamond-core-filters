@@ -244,10 +244,10 @@ ALL_INSTALLDIRS= ${INSTALLBASE} ${INSTALLDIR_BIN} ${INSTALLDIR_LIB} ${INSTALLDIR
 installdirs:
 	${TESTROOT}
 	@for entry in ${ALL_INSTALLDIRS} ; do \
-		(if ! test -d $${entry}; then \
+		if ! test -d $${entry}; then \
 			echo Creating directory $${entry} ; \
 			${MKDIR} $${entry} ; \
-		fi); \
+		fi; \
 	done
 	${do-subdirs}
 
