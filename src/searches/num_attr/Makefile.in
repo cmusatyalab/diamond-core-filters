@@ -40,15 +40,16 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += eead_config.cc $(COMMON_SRCS)
 
-TARGETS = fil_num_attr.a num_attr_search.so
+TARGETS = fil_num_attr.so num_attr_search.so
 
-SHARED_LIB = fil_num_attr.a num_attr_search.so $(SRCDIR)/num_attr.sf_conf
+SHARED_LIB = fil_num_attr.so num_attr_search.so $(SRCDIR)/num_attr.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_num_attr.a: $(FILTER_LIB_OBJS)
-	$(LD) -m elf_i386 -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+fil_num_attr.so: $(FILTER_LIB_OBJS)
+	$(SO_COMMAND)
 
 num_attr_search.so: $(SEARCH_LIB_OBJS)
+	$(SO_COMMAND)
 
 default: $(TARGETS)

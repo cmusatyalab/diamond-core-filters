@@ -1,2 +1,2 @@
 GUI_LIB		./opencv_body_search.so
-SEARCHLET_LIB	./fil_ocv_body.a
+SEARCHLET_LIB	./fil_ocv_body.so

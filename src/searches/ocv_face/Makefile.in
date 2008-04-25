@@ -58,13 +58,13 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_ocv_face.a opencv_face_search.so fil_ocv_profile.a
-TARGETS += opencv_profile_search.so fil_ocv_body.a opencv_body_search.so 
-TARGETS += fil_ocv_upperbody.a opencv_upperbody_search.so 
-TARGETS += fil_ocv_lowerbody.a opencv_lowerbody_search.so
+TARGETS = fil_ocv_face.so opencv_face_search.so fil_ocv_profile.so
+TARGETS += opencv_profile_search.so fil_ocv_body.so opencv_body_search.so 
+TARGETS += fil_ocv_upperbody.so opencv_upperbody_search.so 
+TARGETS += fil_ocv_lowerbody.so opencv_lowerbody_search.so
 
-SHARED_LIB += fil_ocv_face.a fil_ocv_profile.a fil_ocv_body.a
-SHARED_LIB += fil_ocv_upperbody.a fil_ocv_lowerbody.a 
+SHARED_LIB += fil_ocv_face.so fil_ocv_profile.so fil_ocv_body.so
+SHARED_LIB += fil_ocv_upperbody.so fil_ocv_lowerbody.so 
 SHARED_LIB += opencv_face_search.so $(SRCDIR)/opencv_face.sf_conf 
 SHARED_LIB += $(SRCDIR)/haarcascade_frontalface_default.xml 
 SHARED_LIB += opencv_profile_search.so $(SRCDIR)/opencv_profile.sf_conf 
@@ -78,32 +78,35 @@ SHARED_LIB += $(SRCDIR)/haarcascade_lowerbody.xml
 
 include ${OBJROOT}/Makefile.template
 
-$(filter %.a,$(TARGETS)): %.a: %.o $(FILTER_LIB_COMMON)
-	$(LD) -m elf_i386 -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+
+fil_ocv_face.so: $(FILTER_LIB_OBJS)
+	$(SO_COMMAND)
+
+fil_ocv_profile.so: $(FILTER_LIB_OBJS)
+	$(SO_COMMAND)
+
+fil_ocv_body.so: $(FILTER_LIB_OBJS)
+	$(SO_COMMAND)
+
+fil_ocv_upperbody.so: $(FILTER_LIB_OBJS)
+	$(SO_COMMAND)
+
+fil_ocv_lowerbody.so: $(FILTER_LIB_OBJS)
+	$(SO_COMMAND)
 
 opencv_face_search.so: ocv_face_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
+	$(SO_COMMAND)
 
 opencv_profile_search.so: ocv_profile_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
+	$(SO_COMMAND)
 
 opencv_body_search.so: ocv_body_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
+	$(SO_COMMAND)
 
 opencv_upperbody_search.so: ocv_upperbody_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
+	$(SO_COMMAND)
 
 opencv_lowerbody_search.so: ocv_lowerbody_search.o $(SEARCH_LIB_COMMON)
-	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a
+	$(SO_COMMAND)
 
 default: $(TARGETS)

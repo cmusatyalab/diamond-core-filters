@@ -45,15 +45,16 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_img_diff.a img_diff.so
+TARGETS = fil_img_diff.so img_diff.so
 
-SHARED_LIB += fil_img_diff.a img_diff.so $(SRCDIR)/img_diff.sf_conf
+SHARED_LIB += fil_img_diff.so img_diff.so $(SRCDIR)/img_diff.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_img_diff.a: $(FILTER_LIB_OBJS)
-	$(LD) -m elf_i386 -o $@ -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+fil_img_diff.so: $(FILTER_LIB_OBJS)
+	$(SO_COMMAND)
 
 img_diff.so: $(SEARCH_LIB_OBJS)
+	$(SO_COMMAND)
 
 default: $(TARGETS)

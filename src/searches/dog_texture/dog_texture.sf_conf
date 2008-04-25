@@ -1,2 +1,2 @@
 GUI_LIB		./dog_texture_search.so
-SEARCHLET_LIB	./fil_dog_texture.a
+SEARCHLET_LIB	./fil_dog_texture.so

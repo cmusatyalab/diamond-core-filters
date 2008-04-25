@@ -111,10 +111,7 @@ DIST_OBJS += .depend Makefile
 	ar -csr $@  $^
 	cp -f $@ ${BUILD_LIB_PATH}
 
-%.so: %.o
-	$(LD) -m elf_i386 -o foo.a -r $^ $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
-	$(CPLUSPLUS) -o $@ $(LD_SOFLAGS) foo.a
-	rm -f foo.a 
+SO_COMMAND=$(CPLUSPLUS) -o $@ $^ $(LD_SOFLAGS) $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
 
 # The common targets
 

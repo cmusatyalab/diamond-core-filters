@@ -1,2 +1,2 @@
 GUI_LIB  ./img_diff.so
-SEARCHLET_LIB ./fil_img_diff.a
+SEARCHLET_LIB ./fil_img_diff.so
