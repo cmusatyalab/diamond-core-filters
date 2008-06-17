@@ -294,7 +294,7 @@ update_filt_data(filt_data_t * fdata, filter_stats_t * fstats)
 
 	GUI_THREAD_CHECK();
 
-	elap_time = rt_time2secs(fstats->fs_avg_exec_time);
+	elap_time = fstats->fs_avg_exec_time / 1000000000.0;
 	elap_time = elap_time * 1000.0; /* convert to ms */
 	sprintf(data, "%.1f", elap_time);
 	gtk_label_set_text(GTK_LABEL(fdata->time_val), data);
