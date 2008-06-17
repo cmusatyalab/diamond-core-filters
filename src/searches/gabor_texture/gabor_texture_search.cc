@@ -24,7 +24,6 @@
 #include "gabor.h"
 #include "gabor_priv.h"
 #include "gabor_texture_search.h"
-#include "rtimer.h"
 #include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64
@@ -494,9 +493,6 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 	float *			respv;
 	int			err;
 	int	i;
-	rtimer_t		t1;
-	rtime_t			rt;
-	double			tv;
 
 	gargs->name = strdup(get_name());
 	assert(gargs->name != NULL);
@@ -534,15 +530,8 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 	gargs->response_list = (float **)malloc(sizeof(float *) * samples);
 
 
-	rt_init(&t1);
-	rt_start(&t1);
 	gargs->gobj = new gabor(gargs->num_angles, gargs->radius, 
 		gargs->num_freq, gargs->max_freq, gargs->min_freq);
-
-	rt_stop(&t1);
-	rt = rt_nanos(&t1);
-	tv = rt_time2secs(rt);
-	printf("constructor %10.7f \n", tv);
 
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
@@ -671,17 +660,9 @@ gabor_texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	size_t			bsize;
 	gabor_ii_img_t *	gii_img;
 	gtexture_args_t		gargs;
-	rtimer_t		t1, t2, t3;
-	rtime_t			rt;
-	double			tv;
 
 	save_edits();
 
-	rt_init(&t1);
-	rt_init(&t2);
-	rt_init(&t3);
-
-	rt_start(&t1);
 	/* get the gabor argument data structure */
 	pass = gen_args(&gargs);
 	if (pass == 0) {
@@ -689,13 +670,7 @@ gabor_texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 		return;
 	}
 	gargs.min_matches = INT_MAX;	/* get all the matches */
-	rt_stop(&t1);
 
-	rt = rt_nanos(&t1);
-	tv = rt_time2secs(rt);
-	printf("gen_args %10.7f \n", tv);
-
-	rt_start(&t2);
 	bsize = (GII_SIZE(rimg->width, rimg->height, &gargs));
 
   	gii_img = (gabor_ii_img_t *)malloc(bsize);
@@ -704,19 +679,8 @@ gabor_texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
         gabor_init_ii_img(rimg->width, rimg->height, &gargs, gii_img);
         gabor_compute_ii_img(rimg, &gargs, gii_img);
 
-	rt_stop(&t2);
-	rt = rt_nanos(&t2);
-	tv = rt_time2secs(rt);
-	printf("gen_ii %10.7f \n", tv);
-
-	rt_start(&t3);
 	/* generate list of bounding boxes */
 	pass = gabor_test_image(gii_img, &gargs, blist);
-
-	rt_stop(&t3);
-	rt = rt_nanos(&t3);
-	tv = rt_time2secs(rt);
-	printf("test %10.7f \n", tv);
 
 	/* cleanup */
 	release_args(&gargs);
