@@ -19,7 +19,7 @@
 #include "lib_filter.h"
 #include "snapfind_consts.h"
 #include "rgb_histo.h"
-#include "queue.h"
+#include <sys/queue.h>
 
 
 

@@ -18,7 +18,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <assert.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "snapfind_consts.h"
 #include "lib_results.h"
 #include "match_3D.h"

@@ -17,7 +17,7 @@
 #include <assert.h>
 #include <pthread.h>
 #include <gtk/gtk.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "lib_results.h"
 #include "rgb.h"
 #include "search_set.h"

@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include "lib_filter.h"
 #include "snapfind_consts.h"
-#include "queue.h"
+#include <sys/queue.h>
 
 typedef struct img_diff_config
 {

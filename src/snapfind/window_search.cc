@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "rgb.h"
 #include "lib_results.h"
 #include "img_search.h"

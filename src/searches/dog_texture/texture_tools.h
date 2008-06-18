@@ -16,7 +16,7 @@
 #define TEXTURE_TOOLS_H
 
 #include <opencv/cv.h>
-#include "queue.h"
+#include <sys/queue.h>
 
 
 #define NUM_LAP_PYR_LEVELS 		4

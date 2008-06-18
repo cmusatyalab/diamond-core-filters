@@ -37,7 +37,7 @@
 #include "lib_filter.h"
 #include "lib_log.h"
 
-#include "queue.h"
+#include <sys/queue.h>
 #include "ring.h"
 
 #include "lib_results.h"

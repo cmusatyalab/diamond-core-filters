@@ -26,7 +26,7 @@
 #include <stdint.h>
 
 
-#include "queue.h"
+#include <sys/queue.h>
 #include "snapfind_consts.h"
 #include "ring.h"
 #include "lib_results.h"

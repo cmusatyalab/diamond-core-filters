@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <gtk/gtk.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "rgb.h"
 #include "lib_results.h"
 #include "lib_sfimage.h"

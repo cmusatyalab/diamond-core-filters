@@ -19,7 +19,8 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <stdint.h>
-#include "queue.h"
+#include <sys/queue.h>
+
 #include "lib_filter.h"
 
 /* image dimension */

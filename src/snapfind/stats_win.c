@@ -29,7 +29,7 @@
 #include "searchlet_api.h"
 #include "snapfind_consts.h"
 #include "gui_thread.h"
-#include "queue.h"
+#include <sys/queue.h>
 #include "ring.h"
 #include "sfind_search.h"
 

@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <values.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "lib_results.h"
 #include "rgb.h"
 #include "num_attr_search.h"

@@ -19,7 +19,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include "img_search.h"

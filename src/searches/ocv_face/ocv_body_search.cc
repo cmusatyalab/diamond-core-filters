@@ -23,7 +23,7 @@
 #include <opencv/cvaux.h>
 #include <sys/stat.h>
 
-#include "queue.h"
+#include <sys/queue.h>
 #include "rgb.h"
 #include "lib_results.h"
 #include "snapfind_consts.h"

@@ -19,7 +19,7 @@
 #include <opencv/cv.h>
 #include <opencv/cvaux.h>
 #include "lib_results.h"
-#include "queue.h"
+#include <sys/queue.h>
 
 
 

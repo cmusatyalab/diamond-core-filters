@@ -19,7 +19,7 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "lib_results.h"
 #include "rgb.h"
 #include "text_attr_search.h"

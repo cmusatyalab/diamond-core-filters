@@ -18,7 +18,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <assert.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "snapfind_consts.h"
 #include "rgb.h"
 #include "histo.h"

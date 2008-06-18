@@ -52,7 +52,7 @@
 
 #include "lib_results.h"
 #include "lib_sfimage.h"
-#include "queue.h"
+#include <sys/queue.h>
 #include "ring.h"
 #include "sf_consts.h"
 #include "attr_info.h"

@@ -22,7 +22,7 @@
 #include <fcntl.h>
 #include <dlfcn.h>
 
-#include "queue.h"
+#include <sys/queue.h>
 #include "snapfind_consts.h"
 #include "lib_results.h"
 #include "lib_sfimage.h"

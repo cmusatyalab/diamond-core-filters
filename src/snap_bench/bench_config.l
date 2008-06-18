@@ -25,7 +25,7 @@
 #include <sys/time.h>
 #include <time.h> 
 #include <errno.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "lib_searchlet.h"
 #include "snap_bench.h"
 #include "sys_attr.h"

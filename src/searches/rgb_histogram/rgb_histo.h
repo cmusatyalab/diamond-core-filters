@@ -15,7 +15,7 @@
 #ifndef _HISTO_H_
 #define _HISTO_H_	1
 
-#include "queue.h"
+#include <sys/queue.h>
 #include "rgb.h"
 
 #define HISTO_SCALE  	1.5

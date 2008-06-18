@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include "lib_filter.h"
 #include "snapfind_consts.h"
-#include "queue.h"
+#include <sys/queue.h>
 
 #define NUM_FEATURES 10
 #define FEATURE_LENGTH 32

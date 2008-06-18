@@ -18,7 +18,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include "queue.h"
+#include <sys/queue.h>
 #include "snapfind_consts.h"
 #include "rgb.h"
 #include "lib_results.h"
