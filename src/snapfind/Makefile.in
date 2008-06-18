@@ -65,14 +65,11 @@ SNAPFIND_OBJS += decoder.o std_decoders.o attr_decode.o
 SNAPFIND_OBJS += attr_map.o
 
 
-DEBUG_SRCS = face.c
-DEBUG_OBJS = face.o
-
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(SNAPFIND_SRCS) $(SEARCHLET_SRCS) $(DEBUG_SRCS)
-OBJS = $(SNAPFIND_OBJS) $(SEARCHLET_OBJS) $(DEBUG_OBJS)
+SRCS = $(SNAPFIND_SRCS) $(SEARCHLET_SRCS)
+OBJS = $(SNAPFIND_OBJS) $(SEARCHLET_OBJS)
 
 
 #
