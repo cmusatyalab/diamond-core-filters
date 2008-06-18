@@ -54,7 +54,6 @@
 #include "lib_sfimage.h"
 #include "queue.h"
 #include "ring.h"
-#include "rtimer.h"
 #include "sf_consts.h"
 #include "attr_info.h"
 

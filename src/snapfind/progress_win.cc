@@ -27,7 +27,6 @@
 
 #include "searchlet_api.h"
 #include "gui_thread.h"
-#include "rtimer.h"
 #include "queue.h"
 #include "ring.h"
 #include "lib_results.h"

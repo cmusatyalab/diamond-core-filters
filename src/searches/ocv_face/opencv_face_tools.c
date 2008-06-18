@@ -30,7 +30,6 @@
 
 #include "queue.h"
 #include "ring.h"
-#include "rtimer.h"
 
 #include "opencv_face_tools.h"
 #include "rgb.h"

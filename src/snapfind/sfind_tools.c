@@ -29,7 +29,6 @@
 #include "queue.h"
 #include "snapfind_consts.h"
 #include "ring.h"
-#include "rtimer.h"
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include "rgb.h"

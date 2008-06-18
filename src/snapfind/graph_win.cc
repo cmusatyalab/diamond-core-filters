@@ -36,7 +36,6 @@
 
 #include "queue.h"
 #include "ring.h"
-#include "rtimer.h"
 
 #include "lib_results.h"
 #include "lib_sfimage.h"
