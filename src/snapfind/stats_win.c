@@ -30,7 +30,6 @@
 #include "snapfind_consts.h"
 #include "gui_thread.h"
 #include <sys/queue.h>
-#include "ring.h"
 #include "sfind_search.h"
 
 

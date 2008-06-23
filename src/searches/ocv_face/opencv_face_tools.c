@@ -29,7 +29,6 @@
 #include <opencv/cvaux.h>
 
 #include <sys/queue.h>
-#include "ring.h"
 
 #include "opencv_face_tools.h"
 #include "rgb.h"

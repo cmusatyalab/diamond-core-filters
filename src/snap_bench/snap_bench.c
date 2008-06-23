@@ -33,7 +33,6 @@
 #include "lib_filter.h"
 #include "lib_log.h"
 #include "lib_results.h"
-#include "ring.h"
 #include "sys_attr.h"
 #include "snap_bench.h"
 

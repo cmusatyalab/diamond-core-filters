@@ -34,7 +34,6 @@
 #include "gui_thread.h"
 
 #include <sys/queue.h>
-#include "ring.h"
 #include "sf_consts.h"
 
 #include "lib_results.h"

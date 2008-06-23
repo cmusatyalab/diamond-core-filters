@@ -28,7 +28,6 @@
 #include "searchlet_api.h"
 #include "gui_thread.h"
 #include <sys/queue.h>
-#include "ring.h"
 #include "lib_results.h"
 
 #include "sfind_search.h"
