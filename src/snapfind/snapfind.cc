@@ -43,6 +43,8 @@
 #include <gnugetopt/getopt.h>
 #endif
 
+#include <glib.h>
+
 #include "lib_filter.h"
 #include "lib_log.h"
 #include "sys_attr.h"
@@ -53,7 +55,6 @@
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include <sys/queue.h>
-#include "ring.h"
 #include "sf_consts.h"
 #include "attr_info.h"
 
@@ -191,8 +192,8 @@ static image_info_t		image_information;
 /*
  * some globals that we need to find a place for
  */
-ring_data_t *	to_search_thread;
-ring_data_t *	from_search_thread;
+GAsyncQueue *	to_search_thread;
+GAsyncQueue *	from_search_thread;
 int		pend_obj_cnt = 0;
 int		tobj_cnt = 0;
 int		sobj_cnt = 0;
@@ -206,7 +207,6 @@ static int		display_thread_running = 0;
  */
 static pthread_cond_t	display_cond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t	display_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t	ring_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t	thumb_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
@@ -219,10 +219,6 @@ void draw_patches(RGBImage *img, int scale, RGBPixel color, RGBPixel mask,
     img_patches_t *ipatches);
 
 static GtkWidget *make_gimage(RGBImage *img, int w, int h);
-
-
-/* from face_search.c */
-extern void drain_ring(ring_data_t *ring);
 
 
 /* ********************************************************************** */
@@ -493,7 +489,6 @@ static void
 user_busy()
 {
 	message_t *		message;
-	int			err;
 
 	message = (message_t *)malloc(sizeof(*message));
 	if (message == NULL) {
@@ -503,11 +498,7 @@ user_busy()
 
 	message->type = SET_USER_BUSY;
 
-	err = ring_enq(to_search_thread, message);
-	if (err) {
-		fprintf(stderr, "failed to enq message \n");
-		exit(1);
-	}
+	g_async_queue_push(to_search_thread, message);
 }
 
 
@@ -515,7 +506,6 @@ static void
 user_waiting()
 {
 	message_t *		message;
-	int			err;
 
 	message = (message_t *)malloc(sizeof(*message));
 	if (message == NULL) {
@@ -525,11 +515,7 @@ user_waiting()
 
 	message->type = SET_USER_WAITING;
 
-	err = ring_enq(to_search_thread, message);
-	if (err) {
-		fprintf(stderr, "failed to enq message \n");
-		exit(1);
-	}
+	g_async_queue_push(to_search_thread, message);
 }
 
 
@@ -682,7 +668,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 		 * to fill the next screen.
 		 */
 		if ((user_state == USER_BUSY) && 
-			(ring_count(from_search_thread) < THUMBNAIL_DISPLAY_SIZE)) {
+			(g_async_queue_length(from_search_thread) < THUMBNAIL_DISPLAY_SIZE)) {
 			user_state = USER_WAITING;
 			user_waiting();
 		}
@@ -725,9 +711,7 @@ display_thread(void *data)
 	struct timespec timeout;
 
 	while (1) {
-		pthread_mutex_lock(&ring_mutex);
-		message = (message_t *)ring_deq(from_search_thread);
-		pthread_mutex_unlock(&ring_mutex);
+		message = (message_t *)g_async_queue_try_pop(from_search_thread);
 
 		if (message != NULL) {
 			switch (message->type) {
@@ -771,7 +755,6 @@ static void
 define_scope()
 {
 	message_t *		message;
-	int			err;
 
 	message = (message_t *)malloc(sizeof(*message));
 	if (message == NULL) {
@@ -782,18 +765,13 @@ define_scope()
 	message->type = DEFINE_SCOPE;
 	message->data = NULL;
 
-	err = ring_enq(to_search_thread, message);
-	if (err) {
-		fprintf(stderr, "failed to enq message \n");
-		exit(1);
-	}
+	g_async_queue_push(to_search_thread, message);
 }
 
 static void
 stop_search()
 {
 	message_t *		message;
-	int			err;
 
 	/*
 	 * Toggle the start and stop buttons.
@@ -816,11 +794,7 @@ stop_search()
 	message->type = TERM_SEARCH;
 	message->data = NULL;
 
-	err = ring_enq(to_search_thread, message);
-	if (err) {
-		fprintf(stderr, "failed to enq message \n");
-		exit(1);
-	}
+	g_async_queue_push(to_search_thread, message);
 }
 
 static void
@@ -873,9 +847,7 @@ cb_start_search(GtkButton* item, gpointer data)
 
 	/* problem: the signal (below) gets handled before the search
 	   thread has a chance to drain the ring. so do it here. */
-	pthread_mutex_lock(&ring_mutex);
 	drain_ring(from_search_thread);
-	pthread_mutex_unlock(&ring_mutex);
 
 
 	/* send the message */
@@ -886,11 +858,7 @@ cb_start_search(GtkButton* item, gpointer data)
 	}
 	message->type = START_SEARCH;
 	message->data = (void *)&gid_list;
-	err = ring_enq(to_search_thread, message);
-	if (err) {
-		printf("XXX failed to enq message \n");
-		exit(1);
-	}
+	g_async_queue_push(to_search_thread, message);
 
 	GUI_CALLBACK_LEAVE();	/* need to do this before signal (below) */
 
@@ -2006,13 +1974,13 @@ main(int argc, char *argv[])
 	 * Initialize communications rings with the thread
 	 * that interacts with the search thread.
 	 */
-	err = ring_init(&to_search_thread, TO_SEARCH_RING_SIZE);
-	if (err) {
+	to_search_thread = g_async_queue_new();
+	if (!to_search_thread) {
 		exit(1);
 	}
 
-	err = ring_init(&from_search_thread, FROM_SEARCH_RING_SIZE);
-	if (err) {
+	from_search_thread = g_async_queue_new();
+	if (!from_search_thread) {
 		exit(1);
 	}
 

@@ -18,7 +18,7 @@
 /* this file defines the structures exchanged between the search
  * thread and the main application. (face_search.c and facemain.c)  */
 
-#include "ring.h"
+#include <glib.h>
 #include "snapfind_consts.h"
 
 /*
@@ -59,8 +59,8 @@ message_t;
 /*
  * Global data structures shared among the files.
  */
-extern ring_data_t * to_search_thread;
-extern ring_data_t * from_search_thread;
+extern GAsyncQueue * to_search_thread;
+extern GAsyncQueue * from_search_thread;
 extern int		pend_obj_cnt;
 extern int		tobj_cnt;
 extern int		sobj_cnt;

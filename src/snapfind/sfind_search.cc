@@ -35,7 +35,6 @@
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include "sf_consts.h"
-#include "ring.h"
 #include "face_search.h"
 #include "search_set.h"
 #include "sfind_search.h"
@@ -43,8 +42,6 @@
 #include "snapfind.h"
 
 #include "lib_scope.h"
-
-extern pthread_mutex_t ring_mutex;
 
 /*
  * this need to be global because we share it with the main
@@ -184,14 +181,15 @@ stop_search(void *data)
 
 
 void
-drain_ring(ring_data_t * ring)
+drain_ring(GAsyncQueue * ring)
 {
-	while (!ring_empty(ring)) {
-		void           *msg = ring_deq(ring);
+	g_async_queue_lock(ring);
+
+	gpointer msg;
+	while ((msg = g_async_queue_try_pop_unlocked(ring))) {
 		free(msg);
 	}
-	assert(ring_empty(ring));
-
+	g_async_queue_unlock(ring);
 }
 
 
@@ -223,13 +221,10 @@ handle_message(message_t * new_message)
 	switch (new_message->type) {
 		case START_SEARCH:
 
-			assert(ring_empty(from_search_thread));
 			/*
 			 * delete old msgs 
 			 */
-			pthread_mutex_lock(&ring_mutex);
 			drain_ring(from_search_thread);
-			pthread_mutex_unlock(&ring_mutex);
 			do_search((gid_list_t *) new_message->data, NULL);
 			active = 1;
 			search_active = 1;
@@ -331,14 +326,14 @@ sfind_search_main(void *foo)
 
 	while (1) {
 		any = 0;
-		message = (message_t *) ring_deq(to_search_thread);
+		message = (message_t *) g_async_queue_try_pop(to_search_thread);
 		if (message != NULL) {
 			any = 1;
 			handle_message(message);
 			free(message);
 		}
 		if ((active) && 
-			(ring_count(from_search_thread) < THUMBNAIL_DISPLAY_SIZE+1)) {
+			(g_async_queue_length(from_search_thread) < THUMBNAIL_DISPLAY_SIZE+1)) {
 			err = ls_next_object(shandle, &cur_obj, LSEARCH_NO_BLOCK);
 			if (err == ENOENT) {
 				fprintf(stderr, "No more objects \n");  /* XXX */
@@ -352,13 +347,7 @@ sfind_search_main(void *foo)
 				message->type = DONE_OBJECTS;
 				message->data = NULL;
 
-				pthread_mutex_lock(&ring_mutex);
-				err = ring_enq(from_search_thread, message);
-				pthread_mutex_unlock(&ring_mutex);
-				if (err) {
-					fprintf(stderr, "XXX failed to enq \n");
-					exit(1);
-				}
+				g_async_queue_push(from_search_thread, message);
 			} else if ((err != 0) && (err != EWOULDBLOCK)) {
 				/*
 				 * XXX 
@@ -372,22 +361,12 @@ sfind_search_main(void *foo)
 
 				message->type = NEXT_OBJECT;
 				message->data = cur_obj;
-				pthread_mutex_lock(&ring_mutex);
-				err = ring_enq(from_search_thread, message);
-				pthread_mutex_unlock(&ring_mutex);
-				if (err) {
-					/*
-					 * drop this on the floor 
-					 */
-					ls_release_object(shandle, cur_obj);
-					free(message);
-				} else {
-					astats.as_objs_queued++;
-				}
+				g_async_queue_push(from_search_thread, message);
+				astats.as_objs_queued++;
 			}
 		} 
 		err = ls_num_objects(shandle, &temp);
-		temp += ring_count(from_search_thread);
+		temp += g_async_queue_length(from_search_thread);
 
 		pend_obj_cnt = temp;
 		update_stats();

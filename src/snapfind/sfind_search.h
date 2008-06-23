@@ -15,6 +15,8 @@
 #ifndef _SFIND_SEARCH_H_
 #define _SFIND_SEARCH_H_	1
 
+#include <glib.h>
+
 
 #ifdef __cplusplus
 extern "C"
@@ -38,7 +40,7 @@ void close_ccontrol_win();
 
 void init_search();
 
-void drain_ring(ring_data_t *ring);
+void drain_ring(GAsyncQueue *ring);
 
 #ifdef __cplusplus
 }
