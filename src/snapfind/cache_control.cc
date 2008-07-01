@@ -35,8 +35,6 @@
 #include "sfind_search.h"
 #include "graph_win.h"
 #include "lib_dctl.h"
-#include "dctl_common.h"
-#include "lib_odisk.h"
 
 
 
