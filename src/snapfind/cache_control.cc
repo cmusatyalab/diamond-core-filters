@@ -34,7 +34,6 @@
 #include "lib_tools.h"
 #include "sfind_search.h"
 #include "graph_win.h"
-#include "lib_dctl.h"
 
 
 
@@ -128,43 +127,6 @@ set_for_each_device(ls_search_handle_t shandle, char *rem_string,
 		printf("ls_get_dev_list: %d ", err);
 		exit(1);
 	}
-
-#ifdef	XXX
-	/* for each of these devices */
-	for (i = 0; i < num_dev; i++) {
-		device_handle_t *dhandle;
-		/* XXX huge hack, find another way */
-		dhandle = (device_handle_t *) dev_list[i];
-
-
-		hent = gethostbyaddr(&dhandle->dev_id,
-		                     sizeof(dhandle->dev_id), AF_INET);
-		if (hent == NULL) {
-			struct in_addr in;
-			in.s_addr = dhandle->dev_id;
-			delim = inet_ntoa(in);
-			strcpy(node_name, delim);
-			/* replace all the '.' with '_' */
-			while ((delim = index(node_name, '.')) != NULL) {
-				*delim = '_';
-			}
-		} else {
-			delim = index(hent->h_name ,'.');
-			if (delim == NULL) {
-				len = strlen(hent->h_name);
-			} else {
-				len = delim - hent->h_name;
-			}
-			strncpy(node_name, hent->h_name , len);
-			node_name[len] = 0;
-		}
-
-		sprintf(big_buf, "%s.%s.%s", HOST_DEVICE_PATH,
-		        node_name, rem_string);
-
-		dctl_write_leaf(big_buf, len, val);
-	}
-#endif
 }
 
 
