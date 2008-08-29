@@ -39,7 +39,6 @@ search_name_t **active_end = &active_searches;
 
 search_set::search_set()
 {
-	ss_dep_list.erase(ss_dep_list.begin(), ss_dep_list.end());
 	return;
 
 }
@@ -53,7 +52,6 @@ search_set::~search_set()
 void
 search_set::add_search(img_search *new_search)
 {
-	new_search->set_parent(this);
 	ss_search_list.push_back(new_search);
 
 	/* invoke the update cb to tell everyone the set has changed */
@@ -67,39 +65,6 @@ search_set::remove_search(img_search *old_search)
 	/* XXX */
 	notify_update();
 }
-
-void
-search_set::add_dep(img_search *dep_search)
-{
-	img_search *check;
-	search_iter_t iter;
-
-	reset_dep_iter(&iter);
-	while((check = get_next_dep(&iter)) != NULL) {
-		if (*dep_search == *check) {
-			delete dep_search;
-			return;
-		}
-	}
-
-	dep_search->set_parent(this);
-	ss_dep_list.push_back(dep_search);
-}
-
-
-void
-search_set::clear_deps()
-{
-	img_search *old;
-
-	while (ss_dep_list.size() > 0) {
-		old = ss_dep_list.back();
-		ss_dep_list.pop_back();
-		delete old;
-	}
-}
-
-
 
 void
 search_set::reset_search_iter(search_iter_t *iter)
@@ -132,26 +97,6 @@ search_set::find_search(char *name, search_iter_t *iter)
       }
     }
     return(NULL);
-}
-
-void
-search_set::reset_dep_iter(search_iter_t *iter)
-{
-	*iter = ss_dep_list.begin();
-}
-
-
-img_search *
-search_set::get_next_dep(search_iter_t *iter)
-{
-	img_search  *	dsearch;
-
-	if (*iter == ss_dep_list.end()) {
-		return(NULL);
-	}
-	dsearch = **iter;
-	(*iter)++;
-	return(dsearch);
 }
 
 int
@@ -278,13 +223,9 @@ search_set::build_filter_spec(char *tmp_file)
 		return(NULL);
 	}
 
-	/* clear the dependancies */
-	clear_deps();
-
      	ifac = find_rgbimage_factory("rgb_image");
         assert(ifac != NULL);
         rgb = ifac->create("RGB image");
-	add_dep(rgb);
 
 	clear_search_list();
 
@@ -298,11 +239,7 @@ search_set::build_filter_spec(char *tmp_file)
 		}
 	}
 
-	/* write dependency list */
-	reset_dep_iter(&iter);
-	while ((srch = get_next_dep(&iter)) != NULL) {
-		srch->write_fspec(fspec);
-	}
+	rgb->write_fspec(fspec);
 
 	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
 	fprintf(fspec, "REQUIRES  RGB  # dependancies \n");

@@ -40,9 +40,6 @@ public:
 	int				is_selected();
 	int				is_hl_selected();
 
-	void		set_parent(search_set *);
-	search_set *	get_parent();
-
 	const char *			get_name() const;
 	int			set_name(const char *new_name);
 
@@ -74,7 +71,6 @@ private:
 	char *	descript;
 	int		search_selected;
 	int		hl_selected;
-	search_set *	parent_set;
 	GtkWidget *	name_entry;
 	GtkWidget *	search_label;
 	GtkWidget *	adjust_label;

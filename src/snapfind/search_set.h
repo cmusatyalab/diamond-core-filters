@@ -50,16 +50,6 @@ public:
 
 	img_search     *find_search(char *name, search_iter_t *iter);
 
-	/* calls to add new dependency or reset the list */
-	void		add_dep(img_search *dep_search);
-	void		clear_deps();
-
-
-	/* get pointers to the current iteration */
-	/* XXX this can probably be done better.  */
-	void 		reset_dep_iter(search_iter_t *iter);
-	img_search *get_next_dep(search_iter_t *iter);
-
 	/* get the number of searches in the set */
 	int		get_search_count();
 
@@ -78,7 +68,6 @@ public:
 
 private:
 	list<img_search *>		ss_search_list;
-	list<img_search *>		ss_dep_list;
 	vector<sset_notify_fn>	ss_cb_vector;
 };
 
