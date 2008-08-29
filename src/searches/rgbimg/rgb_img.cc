@@ -40,7 +40,7 @@ search_init()
 
         fac = new rgb_img_factory;
 
-        factory_register_support(fac);
+        factory_register_rgbimage(fac);
 
 }
 

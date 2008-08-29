@@ -30,13 +30,13 @@
 
 
 static factory_map_t * fmap = NULL;
-static factory_map_t * support_fmap = NULL;
+static factory_map_t * rgbimage_fmap = NULL;
 
 void add_new_search_type(img_factory *fact);
 
 
 void
-factory_register_support(img_factory *factory)
+factory_register_rgbimage(img_factory *factory)
 {
 	factory_map_t *new_map;
 
@@ -44,8 +44,8 @@ factory_register_support(img_factory *factory)
 	assert(new_map != NULL);
 
 	new_map->fm_factory = factory;
-	new_map->fm_next = support_fmap;
-	support_fmap = new_map;
+	new_map->fm_next = rgbimage_fmap;
+	rgbimage_fmap = new_map;
 }
 
 
@@ -69,18 +69,18 @@ factory_register(img_factory *factory)
 }
 
 img_factory *
-find_support_factory(const char *name)
+find_rgbimage_factory(const char *name)
 {
 	factory_map_t *cur_map;
 
-	for (cur_map = support_fmap; cur_map != NULL;
+	for (cur_map = rgbimage_fmap; cur_map != NULL;
 	    cur_map = cur_map->fm_next) {
 		if (strcmp(name, cur_map->fm_factory->get_description()) == 0) {
 			return(cur_map->fm_factory);
 		}
 	}
 
-	fprintf(stderr, "Could not find a support factory for %s.\n", name);
+	fprintf(stderr, "Could not find a rgbimage factory for %s.\n", name);
 	fprintf(stderr, "Is the PLUGIN_DIR configuration setting correct\n");
 	fprintf(stderr, "in your snapfindrc file?\n");
 

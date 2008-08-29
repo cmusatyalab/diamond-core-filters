@@ -281,7 +281,7 @@ search_set::build_filter_spec(char *tmp_file)
 	/* clear the dependancies */
 	clear_deps();
 
-     	ifac = find_support_factory("rgb_image");
+     	ifac = find_rgbimage_factory("rgb_image");
         assert(ifac != NULL);
         rgb = ifac->create("RGB image");
 	add_dep(rgb);

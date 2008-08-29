@@ -24,9 +24,9 @@ typedef struct factory_map {
 
 
 void factory_register(img_factory *factory);
-void factory_register_support(img_factory *factory);
+void factory_register_rgbimage(img_factory *factory);
 img_factory * find_factory(const char *name);
-img_factory * find_support_factory(const char *name);
+img_factory * find_rgbimage_factory(const char *name);
 img_factory * get_first_factory(void **cookie);
 img_factory * get_next_factory(void **cookie);
 
