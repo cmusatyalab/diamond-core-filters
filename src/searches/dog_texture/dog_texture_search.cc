@@ -392,8 +392,6 @@ texture_search::write_fspec(FILE *ostream)
 	RGBImage	*rimg;
 	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
 	example_patch_t	*cur_patch;
-	img_search *	rgb;
-	img_factory *	ifac;
 	int num_samples;
 	int		i = 0;
 
@@ -467,11 +465,6 @@ texture_search::write_fspec(FILE *ostream)
 	}
 	fprintf(ostream, "REQUIRES  RGB # dependencies \n");
 	fprintf(ostream, "MERIT  100 # some relative cost \n");
-
-	ifac = find_support_factory("rgb_image");
-        assert(ifac != NULL);
-        rgb = ifac->create("RGB image");
-        (this->get_parent())->add_dep(rgb);
 }
 
 

@@ -563,8 +563,6 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 void
 gabor_texture_search::write_fspec(FILE *ostream)
 {
-	img_search *	rgb;
-	img_factory *	ifac;
 	int		i = 0;
 	int 		j;
 	int		err;
@@ -625,11 +623,6 @@ gabor_texture_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "REQUIRES  RGB # dependencies \n");
 	fprintf(ostream, "MERIT  100 # some relative cost \n");
-
-	ifac = find_support_factory("rgb_image");
-	assert(ifac != NULL);
-	rgb = ifac->create("RGB image");
-	(this->get_parent())->add_dep(rgb);
 }
 
 void

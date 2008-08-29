@@ -369,8 +369,6 @@ rgb_histo_search::write_fspec(FILE *ostream)
 {
 	Histo 	hgram;
 	example_patch_t	*cur_patch;
-	img_search	*	img_srch;
-	img_factory *	 ifac;
 	int		i = 0;
 
 	save_edits();
@@ -438,13 +436,6 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "MERIT  200  # merit value \n");
 	fprintf(ostream, "ARG  4  # dependancies \n");
 	fprintf(ostream, "ARG  %d  # dependancies \n", HISTO_INTERPOLATED);
-
-
-
-        ifac = find_support_factory("rgb_image");
-        assert(ifac != NULL);
-        img_srch = ifac->create("RGB image");
-        (this->get_parent())->add_dep(img_srch);
 }
 
 

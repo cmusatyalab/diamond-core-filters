@@ -351,9 +351,6 @@ ocv_search::save_edits()
 void
 ocv_search::write_fspec(FILE *ostream)
 {
-	img_search *	rgb;
-	img_factory *	ifac;
-
 	/*
 	 * Write the remainder of the header.
 	 */
@@ -373,11 +370,6 @@ ocv_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
 	fprintf(ostream, "MERIT  10  # some relative cost \n");
 	fprintf(ostream, "\n");
-
-        ifac = find_support_factory("rgb_image");
-        assert(ifac != NULL);
-        rgb = ifac->create("RGB image");
-        (this->get_parent())->add_dep(rgb);
 }
 
 

@@ -322,9 +322,6 @@ img_diff::save_edits()
 void
 img_diff::write_fspec(FILE *ostream)
 {
-	img_search *	rgb;
-	img_factory *	ifac;
-
 	save_edits();
 
 	/*
@@ -340,11 +337,6 @@ img_diff::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  %f  # distance \n", distance);
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
 	fprintf(ostream, "MERIT  10  # some relative cost \n\n");
-
-	ifac = find_support_factory("rgb_image");
-	assert(ifac != NULL);
-	rgb = ifac->create("RGB image");
-	(this->get_parent())->add_dep(rgb);
 
 	return;
 }
