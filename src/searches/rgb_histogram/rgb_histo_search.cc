@@ -38,21 +38,14 @@ extern "C" {
 	void search_init();
 }
 
-/*
- * Here we register the factories for both the rgb_histo and the histo_ii
- */
 void
 search_init()
 {
 	rgb_histo_factory *fac;
-	histo_ii_factory *iifac;
 
 	fac = new rgb_histo_factory;
 
 	factory_register(fac);
-
-	iifac = new histo_ii_factory;
-	factory_register_support(iifac);
 }
 
 
@@ -431,10 +424,21 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "MERIT 200  # some merit \n");
 	fprintf(ostream, "\n");
 
-        ifac = find_support_factory("histo_ii");
-        assert(ifac != NULL);
-        img_srch = ifac->create("Histo II");
-        (this->get_parent())->add_dep(img_srch);
+
+	/*
+	 * This search actually relies on two different filters.
+	 */
+	fprintf(ostream, "\n");
+	fprintf(ostream, "FILTER  HISTO_II  # name \n");
+	fprintf(ostream, "THRESHOLD  1  # threshold \n");
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_hintegrate  # evan fn \n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_hintegrate  # init fn \n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_hintegrate  # fini fn \n");
+	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
+	fprintf(ostream, "MERIT  200  # merit value \n");
+	fprintf(ostream, "ARG  4  # dependancies \n");
+	fprintf(ostream, "ARG  %d  # dependancies \n", HISTO_INTERPOLATED);
+
 
 
         ifac = find_support_factory("rgb_image");

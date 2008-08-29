@@ -75,39 +75,6 @@ public:
 };
 
 
-class histo_ii: public img_search {
-public:
-        histo_ii(const char *name, char *descr);
-        ~histo_ii(void);
-
-        void    save_edits();
-        void    edit_search();
-        void    write_fspec(FILE* stream);
-        void    write_config(FILE* stream, const char *data_dir);
-        virtual int     handle_config(int num_conf, char **datav);
-        virtual void    region_match(RGBImage *img, bbox_list_t *blist);
-
-private:
-};
-
-
-class histo_ii_factory: public img_factory {
-public:
-	histo_ii_factory() {
-		set_name("Histo II");
-		set_description("histo_ii");
-	}
-	img_search *create(const char *name) {
-		return new histo_ii(name, "Histo II");
-	}
-	int 	is_example() {
-		return(0);
-	}
-};
-
-
-
-
 #ifdef __cplusplus
 extern "C"
 {

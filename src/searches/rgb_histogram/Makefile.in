@@ -30,9 +30,9 @@ FILTER_LIB_OBJS =  fil_rgb_histo.o rgb_histo.o
 
 SEARCHLET_LIBS += -lm 
 
-SEARCH_LIB_SRCS = rgb_histo.c rgb_histo_search.cc histo_ii.cc
+SEARCH_LIB_SRCS = rgb_histo.c rgb_histo_search.cc
 
-SEARCH_LIB_OBJS = rgb_histo.o rgb_histo_search.o histo_ii.o
+SEARCH_LIB_OBJS = rgb_histo.o rgb_histo_search.o
 
 SEARCH_LIB_LIBS += 
 
