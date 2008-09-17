@@ -1686,7 +1686,9 @@ redo:
 		snap_searchset->add_search(ssearch);
 
 		/* popup the new search edit box */
-		ssearch->edit_search();
+		if (ssearch->is_editable()) {
+			ssearch->edit_search();
+		}
 	}
 	gtk_widget_destroy(dialog);
 

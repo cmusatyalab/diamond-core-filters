@@ -36,6 +36,7 @@ public:
 	virtual int 	is_example();
 	virtual void 	save_edits();
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist) = 0;
+	virtual bool	is_editable() = 0;
 
 	int				is_selected();
 	int				is_hl_selected();

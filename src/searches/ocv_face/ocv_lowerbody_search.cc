@@ -119,3 +119,8 @@ ocv_lowerbody_search::matches_filter(char *name)
 	return ((int) initfn);
 }
 
+bool
+ocv_lowerbody_search::is_editable(void)
+{
+	return true;
+}

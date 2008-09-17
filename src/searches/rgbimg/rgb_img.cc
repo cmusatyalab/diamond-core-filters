@@ -131,3 +131,8 @@ rgb_img::region_match(RGBImage *img, bbox_list_t *blist)
 	return;
 }
 
+bool
+rgb_img::is_editable(void)
+{
+	return false;
+}

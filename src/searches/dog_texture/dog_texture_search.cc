@@ -576,3 +576,8 @@ texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
 	return;
 }
 
+bool
+texture_search::is_editable(void)
+{
+	return true;
+}

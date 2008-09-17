@@ -120,3 +120,8 @@ ocv_upperbody_search::matches_filter(char *name)
 }
 
 
+bool
+ocv_upperbody_search::is_editable(void)
+{
+	return true;
+}

@@ -339,6 +339,7 @@ img_search::get_edit_widget()
 
 	/* create the display label */
 	ebutton = gtk_button_new_with_label("Edit");
+	gtk_widget_set_sensitive(ebutton, is_editable());
 	g_signal_connect(G_OBJECT(ebutton), "clicked",
 	                 G_CALLBACK(edit_search_cb), this);
 	GTK_WIDGET_SET_FLAGS(ebutton, GTK_CAN_DEFAULT);

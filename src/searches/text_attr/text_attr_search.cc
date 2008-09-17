@@ -304,3 +304,8 @@ text_attr_search::region_match(RGBImage *img, bbox_list_t *blist)
 	return;
 }
 
+bool
+text_attr_search::is_editable(void)
+{
+	return true;
+}

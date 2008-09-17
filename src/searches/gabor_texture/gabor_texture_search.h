@@ -31,6 +31,8 @@ public:
 	void	save_edits();
 	void 	write_fspec(FILE* stream);
 	void	write_config(FILE* stream, const char *data_dir);
+	bool	is_editable(void);
+
 
 	virtual void 	edit_search();
 	virtual void	close_edit_win();

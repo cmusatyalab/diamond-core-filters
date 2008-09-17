@@ -510,3 +510,8 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 
 
 
+bool
+rgb_histo_search::is_editable(void)
+{
+	return true;
+}

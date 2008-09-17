@@ -36,6 +36,7 @@ public:
 	void	save_edits();
 	void 	write_fspec(FILE* stream);
 	void	write_config(FILE* stream, const char *data_dir);
+	bool	is_editable(void);
 
 	/* set the simularity metric, either via string or double */
 	void 		set_simularity(char *data);

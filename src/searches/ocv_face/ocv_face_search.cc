@@ -120,3 +120,8 @@ ocv_face_search::matches_filter(char *name)
 	return ((int) initfn);
 }
 
+bool
+ocv_face_search::is_editable(void)
+{
+	return true;
+}

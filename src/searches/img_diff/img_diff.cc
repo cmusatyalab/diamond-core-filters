@@ -375,3 +375,8 @@ int img_diff::matches_filter(char *name)
 	return ((int) initfn);
 }
 
+bool
+img_diff::is_editable(void)
+{
+	return true;
+}

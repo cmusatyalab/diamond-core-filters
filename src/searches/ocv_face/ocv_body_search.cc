@@ -116,3 +116,9 @@ ocv_body_search::matches_filter(char *name)
 	
 	return ((int) initfn);
 }
+
+bool
+ocv_body_search::is_editable(void)
+{
+	return true;
+}

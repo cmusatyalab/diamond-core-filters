@@ -370,3 +370,9 @@ void match_3D::getQueryAttr(char *querryAttrFilename, int size,float *q)
 	fclose(fid);
 }
 
+
+bool
+match_3D::is_editable(void)
+{
+	return true;
+}
