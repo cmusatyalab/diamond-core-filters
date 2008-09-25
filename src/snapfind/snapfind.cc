@@ -984,6 +984,7 @@ write_search_config(const char *dirname, search_set *set
 static GtkWidget *search_frame;
 static GtkListStore *codec_model;
 static GtkWidget *codec_selector;
+static GtkWidget *codec_table;
 
 static void
 update_search_entry(search_set *cur_set)
@@ -992,6 +993,36 @@ update_search_entry(search_set *cur_set)
 	config_table = cur_set->build_edit_table();
 	gtk_container_add(GTK_CONTAINER(search_frame), config_table);
 	gtk_widget_show_all(search_frame);
+}
+
+static img_search *current_codec = NULL;
+
+static
+void codec_changed_cb (GtkComboBox *widget, gpointer user_data)
+{
+  GtkTreeIter iter;
+  img_factory *ifac;
+  gchar *name;
+
+  /* get the active item */
+  gint active = gtk_combo_box_get_active(widget);
+  printf("active: %d\n", active);
+  gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(codec_model),
+				&iter, NULL, active);
+  gtk_tree_model_get(GTK_TREE_MODEL(codec_model),
+		     &iter,
+		     1, &ifac,
+		     0, &name,
+		     -1);
+  printf(" name: %s\n", name);
+
+  /* create a new one */
+  delete current_codec;
+  current_codec = ifac->create("RGB");
+
+  /* get the edit button and plug it in */
+  GtkWidget *edit_button = current_codec->get_edit_widget();
+  gtk_table_attach_defaults(GTK_TABLE(codec_table), edit_button, 0, 1, 1, 2);
 }
 
 
@@ -1011,6 +1042,7 @@ create_search_window()
 
 	/* Codec selector */
 	codec_frame = gtk_frame_new("Codec");
+	codec_table = gtk_table_new(2, 1, FALSE);
 	gtk_box_pack_start(GTK_BOX(box1), codec_frame, FALSE, FALSE, 10);
 	codec_model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 	codec_selector = gtk_combo_box_new_with_model(GTK_TREE_MODEL(codec_model));
@@ -1019,8 +1051,11 @@ create_search_window()
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (codec_selector), renderer,
 					"text", 0,
 					NULL);
+	gtk_table_attach_defaults(GTK_TABLE(codec_table), codec_selector, 0, 1, 0, 1);
+	gtk_container_add(GTK_CONTAINER(codec_frame), codec_table);
 
-	gtk_container_add(GTK_CONTAINER(codec_frame), codec_selector);
+	g_signal_connect(G_OBJECT(codec_selector), "changed",
+			 G_CALLBACK(codec_changed_cb), NULL);
 
 	gtk_widget_show_all(codec_frame);
 
