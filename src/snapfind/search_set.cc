@@ -200,8 +200,6 @@ search_set::build_filter_spec(char *tmp_file)
 	int			err;
 	int         fd;
 	img_search *		srch;
-	img_search *		rgb;
-	img_factory *		ifac;
 	search_iter_t		iter;
 
 	/* XXX who frees this ?? */
@@ -231,10 +229,6 @@ search_set::build_filter_spec(char *tmp_file)
 		return(NULL);
 	}
 
-     	ifac = find_rgbimage_factory("rgb_image");
-        assert(ifac != NULL);
-        rgb = ifac->create("RGB image");
-
 	clear_search_list();
 
 	for (iter = ss_search_list.begin(); iter != ss_search_list.end(); 
@@ -247,7 +241,8 @@ search_set::build_filter_spec(char *tmp_file)
 		}
 	}
 
-	rgb->write_fspec(fspec);
+	get_current_codec()->write_fspec(fspec);
+
 
 	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
 	fprintf(fspec, "REQUIRES  RGB  # dependancies \n");

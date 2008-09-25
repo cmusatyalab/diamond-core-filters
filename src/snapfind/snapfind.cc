@@ -997,6 +997,11 @@ update_search_entry(search_set *cur_set)
 
 static img_search *current_codec = NULL;
 
+img_search *get_current_codec(void)
+{
+  return current_codec;
+}
+
 static
 void codec_changed_cb (GtkComboBox *widget, gpointer user_data)
 {

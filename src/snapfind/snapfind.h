@@ -60,6 +60,8 @@ typedef struct user_stats {
 
 extern user_stats_t user_measurement;
 
+img_search *get_current_codec(void);
+
 #ifdef __cplusplus
 extern "C"
 {
