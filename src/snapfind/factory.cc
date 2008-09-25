@@ -30,13 +30,14 @@
 
 
 static factory_map_t * fmap = NULL;
-static factory_map_t * rgbimage_fmap = NULL;
+static factory_map_t * codec_fmap = NULL;
 
 void add_new_search_type(img_factory *fact);
+void add_new_codec(img_factory *fact);
 
 
 void
-factory_register_rgbimage(img_factory *factory)
+factory_register_codec(img_factory *factory)
 {
 	factory_map_t *new_map;
 
@@ -44,8 +45,10 @@ factory_register_rgbimage(img_factory *factory)
 	assert(new_map != NULL);
 
 	new_map->fm_factory = factory;
-	new_map->fm_next = rgbimage_fmap;
-	rgbimage_fmap = new_map;
+	new_map->fm_next = codec_fmap;
+	codec_fmap = new_map;
+
+	add_new_codec(factory);
 }
 
 
@@ -69,18 +72,20 @@ factory_register(img_factory *factory)
 }
 
 img_factory *
-find_rgbimage_factory(const char *name)
+find_codec_factory(const char *name)
 {
 	factory_map_t *cur_map;
 
-	for (cur_map = rgbimage_fmap; cur_map != NULL;
+	printf("**** find_codec_factory\n");
+
+	for (cur_map = codec_fmap; cur_map != NULL;
 	    cur_map = cur_map->fm_next) {
 		if (strcmp(name, cur_map->fm_factory->get_description()) == 0) {
 			return(cur_map->fm_factory);
 		}
 	}
 
-	fprintf(stderr, "Could not find a rgbimage factory for %s.\n", name);
+	fprintf(stderr, "Could not find a codec factory for %s.\n", name);
 	fprintf(stderr, "Is the PLUGIN_DIR configuration setting correct\n");
 	fprintf(stderr, "in your snapfindrc file?\n");
 
