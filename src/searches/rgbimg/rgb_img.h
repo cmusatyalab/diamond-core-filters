@@ -41,11 +41,11 @@ private:
 class rgb_img_factory: public img_factory {
 public:
 	rgb_img_factory() {
-		set_name("RGB Image");
+		set_name("Built-in");
 		set_description("rgb_image");
 	}
 	img_search *create(const char *name) {
-		return new rgb_img(name, "RGB Image");
+		return new rgb_img(name, "Built-in");
 	}
 	int 	is_example() {
 		return(0);

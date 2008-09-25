@@ -1853,7 +1853,7 @@ add_new_codec(img_factory *factory)
 					   0, name,
 					   1, factory,
 					   -1);
-	if (strcmp(name, "RGB Image") == 0) {
+	if (strcmp(name, "Built-in") == 0) {
 	  printf (" setting active\n");
 	  gtk_combo_box_set_active(GTK_COMBO_BOX(codec_selector), 0);
 	}
