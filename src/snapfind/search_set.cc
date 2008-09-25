@@ -67,6 +67,14 @@ search_set::remove_search(img_search *old_search)
 }
 
 void
+search_set::add_codec(img_search *new_codec)
+{
+	ss_codec_list.push_back(new_codec);
+
+	notify_update();
+}
+
+void
 search_set::reset_search_iter(search_iter_t *iter)
 {
 	*iter = ss_search_list.begin();

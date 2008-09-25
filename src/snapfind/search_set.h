@@ -45,6 +45,8 @@ public:
 	void		add_search(img_search *new_search);
 	void		remove_search(img_search *old_search);
 
+	void		add_codec(img_search *new_codec);
+
 	void		reset_search_iter(search_iter_t *iter);
 	img_search *get_next_search(search_iter_t *iter);
 
@@ -67,6 +69,7 @@ public:
 	GtkWidget *     build_edit_table();
 
 private:
+	list<img_search *>            ss_codec_list;
 	list<img_search *>		ss_search_list;
 	vector<sset_notify_fn>	ss_cb_vector;
 };

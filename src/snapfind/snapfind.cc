@@ -982,6 +982,8 @@ write_search_config(const char *dirname, search_set *set
 
 
 static GtkWidget *search_frame;
+static GtkListStore *codec_model;
+static GtkWidget *codec_selector;
 
 static void
 update_search_entry(search_set *cur_set)
@@ -999,10 +1001,30 @@ create_search_window()
 	GtkWidget *box2, *box1;
 	GtkWidget *separator;
 
+	GtkWidget *codec_frame;
+	GtkCellRenderer *renderer;
+
 	GUI_THREAD_CHECK();
 
 	box1 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (box1);
+
+	/* Codec selector */
+	codec_frame = gtk_frame_new("Codec");
+	gtk_box_pack_start(GTK_BOX(box1), codec_frame, FALSE, FALSE, 10);
+	codec_model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+	codec_selector = gtk_combo_box_new_with_model(GTK_TREE_MODEL(codec_model));
+	renderer = gtk_cell_renderer_text_new();
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (codec_selector), renderer, TRUE);
+	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (codec_selector), renderer,
+					"text", 0,
+					NULL);
+
+	gtk_container_add(GTK_CONTAINER(codec_frame), codec_selector);
+
+	gtk_widget_show_all(codec_frame);
+
+
 
 	search_frame = gtk_frame_new("Searches");
 	config_table = snap_searchset->build_edit_table();
@@ -1785,6 +1807,23 @@ add_new_search_type(img_factory *factory)
 
 	gtk_item_factory_create_item(item_factory, &entry, factory, 1);
 }
+
+void
+add_new_codec(img_factory *factory)
+{
+	GtkTreeIter iter;
+	const char *name = factory->get_name();
+	printf ("adding codec %s\n", name);
+	gtk_list_store_insert_with_values (codec_model, &iter, 0,
+					   0, name,
+					   1, factory,
+					   -1);
+	if (strcmp(name, "RGB Image") == 0) {
+	  printf (" setting active\n");
+	  gtk_combo_box_set_active(GTK_COMBO_BOX(codec_selector), 0);
+	}
+}
+
 
 
 /*
