@@ -996,6 +996,7 @@ update_search_entry(search_set *cur_set)
 }
 
 static img_search *current_codec = NULL;
+static GtkWidget *current_codec_edit_button = NULL;
 
 img_search *get_current_codec(void)
 {
@@ -1022,12 +1023,15 @@ void codec_changed_cb (GtkComboBox *widget, gpointer user_data)
   printf(" name: %s\n", name);
 
   /* create a new one */
-  delete current_codec;
+  if (current_codec) {
+    gtk_widget_destroy(current_codec_edit_button);
+    delete current_codec;
+  }
   current_codec = ifac->create("RGB");
 
   /* get the edit button and plug it in */
-  GtkWidget *edit_button = current_codec->get_edit_widget();
-  gtk_table_attach_defaults(GTK_TABLE(codec_table), edit_button, 0, 1, 1, 2);
+  current_codec_edit_button = current_codec->get_edit_widget();
+  gtk_table_attach_defaults(GTK_TABLE(codec_table), current_codec_edit_button, 0, 1, 1, 2);
 }
 
 
