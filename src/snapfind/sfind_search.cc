@@ -202,7 +202,7 @@ set_user_state(user_state_t state)
 	err = ls_set_user_state(shandle, state);
 	if (err) {
 		printf("failed to set user state: %d", err);
-		exit(1);
+		//exit(1);
 	}
 }
 
