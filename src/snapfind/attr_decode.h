@@ -100,6 +100,14 @@ public:
 private:
 };
 
+class double_decode: public attr_decode {
+public:
+	double_decode():attr_decode("double") {};
+	int decode(unsigned char *data, size_t datalen, 
+	    char *buf, size_t buflen);
+	int is_type(unsigned char *data, size_t datalen);
+private:
+};
 
 
 #endif	/* !_ATTR_DECODE_H_ */

@@ -257,3 +257,20 @@ patches_decode::is_type(unsigned char *data, size_t dlen)
 	return(0);
 }
 
+int
+double_decode::decode(unsigned char *data, size_t dlen, char *string, size_t slen)
+{
+	double d = *((double *)data);
+
+	snprintf(string, slen, "%g", d);
+	return(0);
+}
+
+int
+double_decode::is_type(unsigned char *data, size_t dlen)
+{
+	if (dlen == sizeof(double)) {
+		return(5);
+	}
+	return(0);
+}

@@ -66,6 +66,8 @@ decoders_init()
 	new_decode = new patches_decode();
 	decoder_register(new_decode);
 
+	new_decode = new double_decode();
+	decoder_register(new_decode);
 }
 
 void
