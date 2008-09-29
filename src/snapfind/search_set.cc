@@ -278,6 +278,14 @@ search_set::write_blobs(ls_search_handle_t shandle)
 		}
 	}
 
+	img_search *cc = get_current_codec();
+	if (cc->get_auxiliary_data() != NULL) {
+		if (ls_set_blob(shandle, (char *)cc->get_name(),
+				cc->get_auxiliary_data_length(),
+				cc->get_auxiliary_data())) {
+		  fprintf(stderr, "failed to write blob \n");
+		}
+	}
 }
 
 GtkWidget *
