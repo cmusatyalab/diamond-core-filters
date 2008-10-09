@@ -20,7 +20,7 @@
 #include <vector>
 #include "attr_ent.h"
 
-#define	DUMP_WIDTH	60
+#define	DUMP_WIDTH	PATH_MAX
 #define	MAX_DISP_ATTR	40
 
 using namespace	std;
