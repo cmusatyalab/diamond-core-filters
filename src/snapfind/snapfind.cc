@@ -167,15 +167,6 @@ image_control_t;
 
 typedef struct
 {
-	GtkWidget *	parent_box;
-	GtkWidget *	info_box1;
-	GtkWidget *	info_box2;
-	GtkWidget *	name_tag;
-	GtkWidget *	name_label;
-	GtkWidget *	dev_label;
-	GtkWidget *	count_tag;
-	GtkWidget *	count_label;
-
 	GtkWidget *     qsize_label; /* no real need to save this */
 	GtkWidget *     tobjs_label; /* Total objs being searche */
 	GtkWidget *     sobjs_label; /* Total objects searched */
@@ -273,43 +264,6 @@ make_gimage(RGBImage *img, int dest_width, int dest_height)
 }
 
 
-
-
-static void
-clear_image_info(image_info_t *img_info)
-{
-	char	data[BUFSIZ];
-
-	GUI_THREAD_CHECK();
-
-	sprintf(data, "%-60s", " ");
-	gtk_label_set_text(GTK_LABEL(img_info->name_label), data);
-
-	sprintf(data, "%-60s", " ");
-	gtk_label_set_text(GTK_LABEL(img_info->dev_label), data);
-
-	sprintf(data, "%-3s", " ");
-	gtk_label_set_text(GTK_LABEL(img_info->count_label), data);
-
-	//gtk_label_set_text(GTK_LABEL(img_info->qsize_label), data);
-
-}
-
-
-static void
-write_image_info(image_info_t *img_info, char *name, char *device)
-{
-	char	txt[BUFSIZ];
-
-	GUI_THREAD_CHECK();
-
-	sprintf(txt, "%-60s", name);
-	gtk_label_set_text(GTK_LABEL(img_info->name_label), txt);
-
-	sprintf(txt, "%-60s", device);
-	gtk_label_set_text(GTK_LABEL(img_info->dev_label), txt);
-
-}
 
 
 /*
@@ -686,8 +640,6 @@ display_thumbnail(ls_obj_handle_t ohandle)
 static void
 clear_thumbnails()
 {
-	clear_image_info(&image_information);
-
 	pthread_mutex_lock(&thumb_mutex);
 	TAILQ_FOREACH(cur_thumbnail, &thumbnails, link) {
 		if (cur_thumbnail->img) { /* cleanup */
@@ -1374,76 +1326,6 @@ cb_toggle_ccontrol(gpointer callback_data, guint callback_action,
 /* ********************************************************************** */
 /* widget setup functions */
 /* ********************************************************************** */
-
-static void
-create_image_info(GtkWidget *container_box, image_info_t *img_info)
-{
-	char		data[BUFSIZ];
-	GtkWidget *	box;
-	GtkWidget *	label;
-
-	GUI_THREAD_CHECK();
-
-	/*
-	 * Now create another region that display info about
-	 * the current image.
-	 */
-
-	img_info->parent_box = container_box;
-	img_info->info_box1 = gtk_vbox_new(FALSE, 10);
-
-	GtkWidget *frame;
-	frame = gtk_frame_new("Image Info");
-	gtk_container_add(GTK_CONTAINER(frame), img_info->info_box1);
-
-	gtk_box_pack_start(GTK_BOX(img_info->parent_box),
-	                   frame, TRUE, TRUE, 0);
-
-
-	/* info about the device */
-	box = gtk_hbox_new(FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(img_info->info_box1),
-	                   box, TRUE, TRUE, 10);
-
-	label = gtk_label_new("Device:");
-	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
-
-	sprintf(data, "%-60s:", " ");
-	img_info->dev_label = gtk_label_new(data);
-	gtk_box_pack_start(GTK_BOX(box), img_info->dev_label, TRUE, TRUE, 0);
-
-	/*
-	 * Place holder and blank spot for the number of bounding
-	 * boxes found.
-	 */
-	sprintf(data, "%-3s", " ");
-	img_info->count_label = gtk_label_new(data);
-	gtk_box_pack_end (GTK_BOX(box), img_info->count_label, FALSE, FALSE, 0);
-
-	img_info->count_tag = gtk_label_new("Num Matches:");
-	gtk_box_pack_end(GTK_BOX(box), img_info->count_tag, FALSE, FALSE, 0);
-
-	/*
-	 * image name info
-	 */
-
-	box = gtk_hbox_new(FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(img_info->info_box1),
-	                   box, TRUE, TRUE, 0);
-
-	img_info->name_tag = gtk_label_new("Name:");
-	gtk_box_pack_start(GTK_BOX(box), img_info->name_tag, FALSE, FALSE, 0);
-
-
-	sprintf(data, "%-60s:", " ");
-	img_info->name_label = gtk_label_new(data);
-	gtk_box_pack_start (GTK_BOX(box), img_info->name_label, TRUE, TRUE, 0);
-
-
-	gtk_widget_show_all(frame);
-}
-
-
 static void
 cb_next_image(GtkButton* item, gpointer data)
 {
@@ -1462,28 +1344,6 @@ cb_next_image(GtkButton* item, gpointer data)
 	pthread_cond_signal(&display_cond);
 	pthread_mutex_unlock(&display_mutex);
 
-}
-
-
-static void
-cb_img_info(GtkWidget *widget, gpointer data)
-{
-	thumbnail_t *thumb;
-
-	GUI_CALLBACK_ENTER();
-	thumb = (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
-
-	/* the data gpointer passed in seems to not be the data
-	 * pointer we gave gtk. instead, we save a pointer in the
-	 * widget. -RW */
-
-	//fprintf(stderr, "thumb=%p\n", thumb);
-
-	if(thumb->img) {
-		write_image_info(&image_information, thumb->name,
-		                 thumb->device);
-	}
-	GUI_CALLBACK_LEAVE();
 }
 
 
@@ -1558,7 +1418,6 @@ create_display_region(GtkWidget *main_box)
 {
 
 	GtkWidget *	box2;
-	GtkWidget *	separator;
 	GtkWidget *	x;
 
 	GUI_THREAD_CHECK();
@@ -1576,13 +1435,6 @@ create_display_region(GtkWidget *main_box)
 	gtk_container_set_border_width(GTK_CONTAINER(result_box), 0);
 	gtk_box_pack_start(GTK_BOX(x), result_box, TRUE, TRUE, 0);
 	gtk_widget_show(result_box);
-
-	/* create the image information area */
-	create_image_info(result_box, &image_information);
-
-	separator = gtk_hseparator_new ();
-	gtk_box_pack_start (GTK_BOX(result_box), separator, FALSE, FALSE, 0);
-	gtk_widget_show (separator);
 
 	/*
 	 * Create the region that will hold the current results
@@ -1633,10 +1485,6 @@ create_display_region(GtkWidget *main_box)
 			 * instead */
 			gtk_object_set_user_data(GTK_OBJECT(eb), thumb);
 			gtk_signal_connect(GTK_OBJECT(eb),
-			                   "enter-notify-event",
-			                   GTK_SIGNAL_FUNC(cb_img_info),
-			                   (gpointer)thumb);
-			gtk_signal_connect(GTK_OBJECT(eb),
 			                   "button-press-event",
 			                   GTK_SIGNAL_FUNC(cb_img_popup),
 			                   (gpointer)thumb);
@@ -1649,7 +1497,6 @@ create_display_region(GtkWidget *main_box)
 	create_image_control(result_box, &image_information, &image_controls);
 
 
-	clear_image_info(&image_information);
 	disable_image_control(&image_controls);
 }
 
