@@ -1106,11 +1106,18 @@ do_img_popup(GtkWidget *widget, search_set *set)
 
 		GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
 		GtkWidget * ainfo_widget = popup_window.ainfo->get_display();
-		
+
 		gtk_scrolled_window_add_with_viewport(
 			GTK_SCROLLED_WINDOW(scroll), ainfo_widget);
 
-		gtk_paned_pack2(GTK_PANED(pane2), scroll, TRUE, TRUE);
+		GtkWidget *box = gtk_vbox_new(FALSE, 10);
+		gtk_paned_pack2(GTK_PANED(pane2), box, TRUE, TRUE);
+
+		gtk_box_pack_start(GTK_BOX(box), scroll, TRUE, TRUE, 0);
+
+		GtkWidget *ainfo_save_button = gtk_button_new_from_stock(GTK_STOCK_SAVE);
+		gtk_box_pack_start(GTK_BOX(box), ainfo_save_button,
+				 FALSE, FALSE, 0);
 
 		gtk_widget_show_all(popup_window.window);
 		sset->register_update_fn(popup_update_searches);
