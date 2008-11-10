@@ -39,6 +39,8 @@ public:
 
 	GtkWidget * 	get_display();
 
+	char *          create_string();
+
 private:
 	GtkWidget *	get_table();
 

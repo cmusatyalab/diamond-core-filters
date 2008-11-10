@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <gtk/gtk.h>
 #include <assert.h>
+#include <sstream>
 #include "lib_searchlet.h"
 #include "lib_filter.h"
 #include "attr_info.h"
@@ -152,4 +153,21 @@ attr_info::get_display()
 	gtk_box_pack_start(GTK_BOX(container), display_table, FALSE, FALSE, 0);
 	gtk_widget_show_all(container);
 	return(container);
+}
+
+char *
+attr_info::create_string()
+{
+  std::ostringstream s;
+
+  for (attr_iter_t iter = attr_list.begin(); iter != attr_list.end(); iter++) {
+    const char *name = (*iter)->get_name();
+    const char *dstring = (*iter)->get_dstring();
+
+    s << strlen(name) << std::endl << name << std::endl
+      << strlen(dstring) << std::endl << dstring << std::endl
+      << std::endl;
+  }
+
+  return strdup(s.str().c_str());
 }
