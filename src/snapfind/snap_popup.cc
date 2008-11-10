@@ -182,8 +182,11 @@ cb_attr_info_save_button_clicked(GtkButton *button, gpointer data)
 
       filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 
-      // TODO
+      char *attr_dump = popup_window.ainfo->create_string();
 
+      g_file_set_contents(filename, attr_dump, -1, NULL);
+
+      free(attr_dump);
       g_free (filename);
     }
 
