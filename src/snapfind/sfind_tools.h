@@ -41,12 +41,6 @@ void ih_drop_ref(image_hooks_t *ptr);
 
 /* ********************************************************************** */
 
-double compute_scale(RGBImage *img, int xdim, int ydim);
-
-/* ********************************************************************** */
-
-
-
 void img_constrain_bbox(bbox_t *bbox, RGBImage *img);
 
 

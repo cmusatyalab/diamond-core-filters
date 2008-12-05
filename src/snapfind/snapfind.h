@@ -18,9 +18,7 @@
 
 #include "sfind_tools.h"	/* XXX can I remove this ??? */
 #include "snapfind_config.h"
-
-static const int THUMBSIZE_X = 200;
-static const int THUMBSIZE_Y = 150;
+#include "snapfind_consts.h"
 
 // number of thumbnails displayed per screen
 static const int THUMBNAIL_DISPLAY_SIZE = 6;  

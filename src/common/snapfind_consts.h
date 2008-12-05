@@ -4,6 +4,7 @@
  *  Version 1
  *
  *  Copyright (c) 2002-2005 Intel Corporation
+ *  Copyright (c) 2008 Carnegie Mellon University
  *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
@@ -57,6 +58,10 @@
  */
 #define	SNAPFIND_CONF_EXTENSION		".sf_conf"
 
+/* thumbnail attribute name and default size */
+#define THUMBNAIL_ATTR			"thumbnail.rgbimg"
+#define THUMBSIZE_X			200
+#define THUMBSIZE_Y			150
 
 #endif	/* ! _SNAPFIND_CONSTS_H_ */
 

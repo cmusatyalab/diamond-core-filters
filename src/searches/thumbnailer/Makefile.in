@@ -1,0 +1,62 @@
+#
+#  SnapFind
+#  An interactive image search application
+#  Version 1
+#
+#  Copyright (c) 2002-2005 Intel Corporation
+#  All Rights Reserved.
+#
+#  This software is distributed under the terms of the Eclipse Public
+#  License, Version 1.0 which can be found in the file named LICENSE.
+#  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+#  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+#
+
+ROOTDIR = @top_srcdir@
+VPATH = @srcdir@
+SRCDIR = @srcdir@
+OBJROOT = @OBJROOT@
+
+STATIC_LIBS += $(BUILD_LIB_PATH)/libsfimage.a
+STATIC_LIBS += @STATIC_LIBS@
+
+CPPFLAGS += @GTK_CFLAGS@
+
+
+# objects used to build the searchlet(s)
+FILTER_LIB_SRCS = fil_thumb.c
+
+FILTER_LIB_OBJS = fil_thumb.o
+
+SEARCH_LIB_SRCS = thumbnailer.cc
+
+SEARCH_LIB_OBJS = thumbnailer.o
+
+SEARCH_LIB_LIBS += -lm
+
+SEARCHLET_LIBS += -lm
+
+#
+# All the source files that are needed for depend.
+#
+SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+
+#
+# Other objects to cleanup
+CLEAN_OTHERS +=
+
+TARGETS = fil_thumb.so thumbnailer.so
+
+SHARED_LIB += fil_thumb.so thumbnailer.so $(SRCDIR)/thumbnailer.sf_conf
+
+include ${OBJROOT}/Makefile.template
+
+fil_thumb.so: $(FILTER_LIB_OBJS)
+	$(SO_COMMAND)
+
+thumbnailer.so: $(SEARCH_LIB_OBJS)
+	$(SO_COMMAND)
+
+default: $(TARGETS)
+

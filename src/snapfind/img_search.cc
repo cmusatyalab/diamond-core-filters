@@ -421,3 +421,19 @@ int
 img_search::matches_filter(char *name) {
   return 0;
 }
+
+
+static img_search *thumbnail_filter;
+
+void set_thumbnail_filter(img_search *f)
+{
+    if (thumbnail_filter)
+	    delete thumbnail_filter;
+    thumbnail_filter = f;
+}
+
+img_search *get_thumbnail_filter(void)
+{
+    return thumbnail_filter;
+}
+

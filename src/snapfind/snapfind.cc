@@ -89,11 +89,6 @@ thumbnail_t *cur_thumbnail = NULL;
 int thumbnail_size_x = THUMBSIZE_X;
 int thumbnail_size_y = THUMBSIZE_Y;
 
-/* XXX move these later to common header */
-#define	TO_SEARCH_RING_SIZE		512
-#define	FROM_SEARCH_RING_SIZE		512
-
-
 int expert_mode = 0;		/* global (also used in face_widgets.c) */
 char *dump_spec_file = NULL;		/* dump spec file and exit */
 int dump_objects = 0;		/* just dump all the objects and exit (no gui) */
@@ -209,7 +204,7 @@ static pthread_mutex_t	thumb_mutex = PTHREAD_MUTEX_INITIALIZER;
 void draw_patches(RGBImage *img, int scale, RGBPixel color, RGBPixel mask,
     img_patches_t *ipatches);
 
-static GtkWidget *make_gimage(RGBImage *img, int w, int h);
+static GtkWidget *make_gimage(RGBImage *img);
 
 
 /* ********************************************************************** */
@@ -238,18 +233,18 @@ struct collection_t collections[MAX_ALBUMS+1] =
  * make a gtk image from an img
  */
 static GtkWidget *
-make_gimage(RGBImage *img, int dest_width, int dest_height)
+make_gimage(RGBImage *img)
 {
 	GdkPixbuf *pbuf; // *scaled_pbuf;
 
 	GUI_THREAD_CHECK();
 
 	pbuf = gdk_pixbuf_new_from_data((const guchar *)&img->data[0],
-	                                GDK_COLORSPACE_RGB, 1, 8,
-	                                img->columns, img->rows,
-	                                (img->columns*sizeof(RGBPixel)),
-	                                NULL,
-	                                NULL);
+					GDK_COLORSPACE_RGB, 1, 8,
+					img->columns, img->rows,
+					(img->columns*sizeof(RGBPixel)),
+					NULL,
+					NULL);
 	if (pbuf == NULL) {
 		printf("failed to allocate pbuf\n");
 		exit(1);
@@ -482,8 +477,10 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	char            name[COMMON_MAX_NAME];
 	char            device[COMMON_MAX_NAME];
 	size_t		bsize;
+	size_t		img_size = 0;
 	int		err;
 	search_name_t *	cur;
+	double		scale;
 
 	while(image_controls.cur_op == CNTRL_WAIT) {
 		fprintf(stderr, "GOT WAIT. waiting...\n");
@@ -532,13 +529,22 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	assert(rgbimg);
 	assert(rgbimg->width);
 
-	int scale = (int)ceil(compute_scale(rgbimg, thumbnail_size_x, thumbnail_size_y));
-	scaledimg = image_gen_image_scale(rgbimg, scale);
+	/* read thumbnail image data */
+	err = lf_read_attr(ohandle, THUMBNAIL_ATTR, &img_size, NULL);
+	assert(!err || err == ENOMEM);
+
+	scaledimg = (RGBImage *)malloc(img_size);
 	assert(scaledimg);
 
+	err = lf_read_attr(ohandle, THUMBNAIL_ATTR, &img_size,
+			   (unsigned char *)scaledimg);
+	assert(!err);
+
+	scale = 1.0;
+	scale = max(scale, (double)rgbimg->width / (double)scaledimg->width);
+	scale = max(scale, (double)rgbimg->height / (double)scaledimg->height);
 
 	/* find out the set of results to highlight */
-
 
 	/* 
 	 * for each of the active searches look for a set of
@@ -548,21 +554,18 @@ display_thumbnail(ls_obj_handle_t ohandle)
 		img_patches_t *ipatch;
 		ipatch = get_patches(ohandle, cur->sn_name);
 		if (ipatch) {
-			draw_patches(scaledimg, scale, green, 
-			    colorMask, ipatch);
-		}	
-
-
+			draw_patches(scaledimg, scale, green,
+				     colorMask, ipatch);
+		}
 	}
-		
 	user_measurement.total_seen++;
 
 	GUI_THREAD_ENTER();
 
 	/*
-	 * Build image the new data
+	 * Build image from the thumbnail image data
 	 */
-	GtkWidget *image = make_gimage(scaledimg, thumbnail_size_x, thumbnail_size_y);
+	GtkWidget *image = make_gimage(scaledimg);
 	assert(image);
 
 	/*
@@ -659,48 +662,43 @@ clear_thumbnails()
 static void *
 display_thread(void *data)
 {
-	message_t *		message;
-	struct timespec timeout;
+	message_t *message;
+	int done = 0;
 
-	while (1) {
-		message = (message_t *)g_async_queue_try_pop(from_search_thread);
+	while (!done) {
+		message = (message_t *)g_async_queue_pop(from_search_thread);
+		if (!message) break;
 
-		if (message != NULL) {
-			switch (message->type) {
+		switch (message->type) {
+		case NEXT_OBJECT:
+			display_thumbnail((ls_obj_handle_t) message->data);
+			break;
 
-				case NEXT_OBJECT:
-					display_thumbnail(
-					    (ls_obj_handle_t) message->data);
-					break;
+		case DONE_OBJECTS:
+			done = 1;
+			break;
 
-				case DONE_OBJECTS:
-					/*
-					* We are done recieving objects.
-					* We need to disable the thread
-					* image controls and enable start
-					* search button.
-					*/
-
-					free(message);
-					gtk_widget_set_sensitive(gui.start_button, TRUE);
-					gtk_widget_set_sensitive(gui.scope_button, TRUE);
-					gtk_widget_set_sensitive(gui.stop_button, FALSE);
-					display_thread_running = 0;
-					pthread_exit(0);
-					break;
-
-				default:
-					break;
-
-			}
-			free(message);
-		} else {
-			timeout.tv_sec = 0;
-			timeout.tv_nsec = 100000000; /* 100 ms */
-			nanosleep(&timeout, NULL);
+		default:
+			break;
 		}
+		free(message);
 	}
-	return 0;
+
+	/*
+	 * We are done receiving objects. We need to disable the thread image
+	 * controls and enable start search button.
+	 */
+	gtk_widget_set_sensitive(gui.start_button, TRUE);
+	gtk_widget_set_sensitive(gui.scope_button, TRUE);
+	gtk_widget_set_sensitive(gui.stop_button, FALSE);
+
+	/* we should not be messing with the default. this is here so
+	 * that we can trigger a search from the text entry without a
+	 * return-pressed handler.  XXX */
+	gtk_widget_grab_default (gui.start_button);
+
+	display_thread_running = 0;
+	pthread_exit(0);
 }
 
 static void
@@ -723,19 +721,17 @@ define_scope()
 static void
 stop_search()
 {
-	message_t *		message;
+	message_t *message;
 
-	/*
-	 * Toggle the start and stop buttons.
-	 */
+	/* Toggle the start and stop buttons. */
 	gtk_widget_set_sensitive(gui.start_button, TRUE);
 	gtk_widget_set_sensitive(gui.scope_button, TRUE);
+	gtk_widget_set_sensitive(gui.stop_button, FALSE);
 
 	/* we should not be messing with the default. this is here so
 	 * that we can trigger a search from the text entry without a
 	 * return-pressed handler.  XXX */
 	gtk_widget_grab_default (gui.start_button);
-	gtk_widget_set_sensitive(gui.stop_button, FALSE);
 
 	message = (message_t *)malloc(sizeof(*message));
 	if (message == NULL) {
@@ -1965,3 +1961,4 @@ main(int argc, char *argv[])
 
 	return(0);
 }
+

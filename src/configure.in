@@ -103,6 +103,7 @@ AC_CONFIG_FILES([Makefile
 		searches/rgb_histogram/Makefile
 		searches/3D_match/Makefile
 		searches/img_diff/Makefile
+		searches/thumbnailer/Makefile
 		lib/Makefile
 		lib/libsfimage/Makefile
 		lib/libresults/Makefile

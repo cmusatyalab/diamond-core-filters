@@ -222,5 +222,8 @@ private:
 };
 
 
+void set_thumbnail_filter(img_search *f);
+img_search *get_thumbnail_filter(void);
+
 
 #endif	/* !_IMG_SEARCH_H_ */

@@ -90,12 +90,17 @@ image_gen_image_scale(RGBImage * data, int scale)
 	double          diff;
 	u_char          red, green, blue;
 	int             x_scale, y_scale;
+	int		columns, rows, nbytes;
 
 	assert(data->rows);
 	assert(data->columns);
 
-	/* XXX compute new real size */
-	img = (RGBImage *) malloc(data->nbytes);
+	/* compute new real size */
+	columns = data->columns / scale;
+	rows = data->rows / scale;
+	nbytes = sizeof(RGBImage) + columns * rows * sizeof(RGBPixel);
+
+	img = (RGBImage *) malloc(nbytes);
 	if (img == NULL) {
 		/*
 		 * XXX log 
@@ -111,9 +116,9 @@ image_gen_image_scale(RGBImage * data, int scale)
 	 * for this image.
 	 */
 
-	img->columns = data->columns;
-	img->rows = data->rows;
-	img->nbytes = data->nbytes;
+	img->columns = columns;
+	img->rows = rows;
+	img->nbytes = nbytes;
 	img->type = data->type;
 	min_color = 0;
 	max_color = 255;
@@ -125,16 +130,7 @@ image_gen_image_scale(RGBImage * data, int scale)
 #ifdef VERBOSE
 
 	printf("min color %f max %f diff %f \n", min_color, max_color, diff);
-	printf("orig row %d col %d \n", img->columns, img->rows);
-#endif
-
-	/*
-	 * scaling
-	 */
-	img->columns = img->columns / scale;
-	img->rows = img->rows / scale;
-#ifdef VERBOSE
-
+	printf("orig row %d col %d \n", data->columns, data->rows);
 	printf("scaled row %d col %d \n", img->columns, img->rows);
 #endif
 

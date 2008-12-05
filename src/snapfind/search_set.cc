@@ -241,6 +241,8 @@ search_set::build_filter_spec(char *tmp_file)
 		}
 	}
 
+	get_thumbnail_filter()->write_fspec(fspec);
+
 	get_current_codec()->write_fspec(fspec);
 
 
@@ -275,6 +277,15 @@ search_set::write_blobs(ls_search_handle_t shandle)
 			     srch->get_auxiliary_data())) {
 				fprintf(stderr, "failed to write blob \n");
 			}
+		}
+	}
+
+	img_search *tf = get_thumbnail_filter();
+	if (tf->get_auxiliary_data() != NULL) {
+		if (ls_set_blob(shandle, (char *)tf->get_name(),
+				tf->get_auxiliary_data_length(),
+				tf->get_auxiliary_data())) {
+		  fprintf(stderr, "failed to write blob \n");
 		}
 	}
 

@@ -76,20 +76,3 @@ ih_drop_ref(image_hooks_t * ptr)
 	pthread_mutex_unlock(&ih_mutex);
 }
 
-static inline double
-max(double a, double b)
-{
-	return a > b ? a : b;
-}
-
-double
-compute_scale(RGBImage * img, int xdim, int ydim)
-{
-	double          scale = 1.0;
-
-	scale = max(scale, (double) img->width / xdim);
-	scale = max(scale, (double) img->height / ydim);
-
-	return scale;
-}
-

@@ -220,10 +220,6 @@ handle_message(message_t * new_message)
 
 	switch (new_message->type) {
 		case START_SEARCH:
-
-			/*
-			 * delete old msgs 
-			 */
 			drain_ring(from_search_thread);
 			do_search((gid_list_t *) new_message->data, NULL);
 			active = 1;
@@ -248,7 +244,7 @@ handle_message(message_t * new_message)
 		case SET_USER_BUSY:
 			set_user_state(USER_BUSY);
 			break;
-		
+
 		case SET_USER_WAITING:
 			set_user_state(USER_WAITING);
 			break;
@@ -332,8 +328,9 @@ sfind_search_main(void *foo)
 			handle_message(message);
 			free(message);
 		}
-		if ((active) && 
-			(g_async_queue_length(from_search_thread) < THUMBNAIL_DISPLAY_SIZE+1)) {
+		if (active &&
+		    g_async_queue_length(from_search_thread) < THUMBNAIL_DISPLAY_SIZE)
+		{
 			err = ls_next_object(shandle, &cur_obj, LSEARCH_NO_BLOCK);
 			if (err == ENOENT) {
 				fprintf(stderr, "No more objects \n");  /* XXX */
@@ -364,7 +361,7 @@ sfind_search_main(void *foo)
 				g_async_queue_push(from_search_thread, message);
 				astats.as_objs_queued++;
 			}
-		} 
+		}
 		err = ls_num_objects(shandle, &temp);
 		temp += g_async_queue_length(from_search_thread);
 
