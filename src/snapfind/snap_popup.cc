@@ -1071,20 +1071,25 @@ do_img_popup(GtkWidget *widget, search_set *set)
 	 * pointer we gave gtk. instead, we save a pointer in the
 	 * widget. (maybe the prototype didn't match) -RW */
 
-	if (!thumb->img_id)
+	if (!thumb->img_id) {
+		fprintf(stderr, "missing thumbnail object handle\n");
 		goto done;
+	}
 
 	/* XXX how do we know shandle is still valid? */
 	err = ls_reexecute_filters(shandle, thumb->img_id, NULL, &ohandle);
-	if (err) goto done;
+	if (err) {
+		fprintf(stderr, "filter reexecution failed: %d\n", err);
+		goto done;
+	}
 
 	if(!popup_window.window) {
 		popup_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title(GTK_WINDOW(popup_window.window), "Image");
-		gtk_window_set_default_size(GTK_WINDOW(popup_window.window), 
-			POPUP_XSIZE, POPUP_YSIZE); 
+		gtk_window_set_default_size(GTK_WINDOW(popup_window.window),
+			POPUP_XSIZE, POPUP_YSIZE);
 		g_signal_connect(G_OBJECT(popup_window.window), "destroy",
-		                 G_CALLBACK(cb_popup_window_close), NULL);
+				 G_CALLBACK(cb_popup_window_close), NULL);
 
 		GtkWidget *box1 = gtk_vbox_new(FALSE, 0);
 
@@ -1106,7 +1111,7 @@ do_img_popup(GtkWidget *widget, search_set *set)
 
 		popup_window.histo_cb_area = gtk_vbox_new(FALSE, 0);
 		gtk_box_pack_start(GTK_BOX (box3),
-		                   popup_window.histo_cb_area, FALSE, FALSE, 0);
+				   popup_window.histo_cb_area, FALSE, FALSE, 0);
 
 		/*
 		 * Refinement
@@ -1181,7 +1186,6 @@ do_img_popup(GtkWidget *widget, search_set *set)
 		popup_window.ainfo =  new attr_info();
 
 
-
 		GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
 		GtkWidget * ainfo_widget = popup_window.ainfo->get_display();
 
@@ -1207,7 +1211,7 @@ do_img_popup(GtkWidget *widget, search_set *set)
 	} else {
 		kill_highlight_thread(0);
 		gtk_container_remove(GTK_CONTAINER(popup_window.image_area),
-		                     popup_window.scroll);
+				     popup_window.scroll);
 		ih_drop_ref(popup_window.hooks);
 		gdk_window_raise(GTK_WIDGET(popup_window.window)->window);
 	}
