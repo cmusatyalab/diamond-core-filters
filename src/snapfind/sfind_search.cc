@@ -93,7 +93,7 @@ do_search(gid_list_t * main_region, char *fspec)
 	search_iter_t iter;
 
 	if (!fspec) {
-		fspec = sset->build_filter_spec(NULL);
+		fspec = sset->build_filter_spec(shandle, NULL);
 		if (fspec == NULL) {
 			printf("failed to build filter specification \n");
 			exit(1);
@@ -133,11 +133,11 @@ do_search(gid_list_t * main_region, char *fspec)
 
 	/* Attach auxiliary data for this search.  */
 	sset->write_blobs(shandle);
-	  
+
 	/* reset application statistics */
 	astats.as_objs_queued = 0;
 	astats.as_objs_presented = 0;
-	  
+
 	/* Go ahead and start the search.  */
 	err = ls_start_search(shandle);
 	if (err) {

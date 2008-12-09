@@ -228,6 +228,7 @@ struct collection_t collections[MAX_ALBUMS+1] =
 /* utility functions */
 /* ********************************************************************** */
 
+static void free_rgbimage(guchar *pixels, gpointer data) { free(data); }
 
 /*
  * make a gtk image from an img
@@ -243,8 +244,7 @@ make_gimage(RGBImage *img)
 					GDK_COLORSPACE_RGB, 1, 8,
 					img->columns, img->rows,
 					(img->columns*sizeof(RGBPixel)),
-					NULL,
-					NULL);
+					free_rgbimage, img);
 	if (pbuf == NULL) {
 		printf("failed to allocate pbuf\n");
 		exit(1);
@@ -473,13 +473,11 @@ user_waiting()
 static void
 display_thumbnail(ls_obj_handle_t ohandle)
 {
-	RGBImage        *rgbimg, *scaledimg;
-	char            name[COMMON_MAX_NAME];
-	char            device[COMMON_MAX_NAME];
-	size_t		bsize;
-	size_t		img_size = 0;
+	RGBImage	*scaledimg;
+	size_t		len;
 	int		err;
 	search_name_t *	cur;
+	int32_t		width, height;
 	double		scale;
 
 	while(image_controls.cur_op == CNTRL_WAIT) {
@@ -494,57 +492,24 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	assert(image_controls.cur_op == CNTRL_NEXT ||
 	       image_controls.cur_op == CNTRL_ELEV);
 
-
-	/* get path */
-	bsize = COMMON_MAX_NAME;
-	err = lf_read_attr(ohandle, DISPLAY_NAME, &bsize,
-	    (unsigned char *)name);
-	if (err) {
-		err = lf_read_attr(ohandle, OBJ_PATH, &bsize, 
-		    (unsigned char *)name);
-	}
-	if (err) {
-		sprintf(name, "%s", "unknown");
-		bsize = strlen(name);
-	}
-	name[bsize] = '\0';	/* terminate string */
-
-	bsize = COMMON_MAX_NAME;
-	err = lf_read_attr(ohandle, DEVICE_NAME, &bsize,
-	    (unsigned char *)device);
-	if (err) {
-		sprintf(name, "%s", "unknown");
-		bsize = strlen(device);
-	}
-	/* make sure string is terminated - can be a object bug not app */
-	device[bsize] = '\0';
-
-
-	/* get the img */
-	rgbimg = (RGBImage*)ft_read_alloc_attr(ohandle, RGB_IMAGE);
-	if (rgbimg == NULL) {
-		//rgbimg = get_attr_rgb_img(ohandle, "DATA0");
-		rgbimg = get_rgb_img(ohandle);
-	}
-	assert(rgbimg);
-	assert(rgbimg->width);
-
 	/* read thumbnail image data */
-	err = lf_read_attr(ohandle, THUMBNAIL_ATTR, &img_size, NULL);
-	assert(!err || err == ENOMEM);
-
-	scaledimg = (RGBImage *)malloc(img_size);
+	scaledimg = (RGBImage *)ft_read_alloc_attr(ohandle, THUMBNAIL_ATTR);
 	assert(scaledimg);
 
-	err = lf_read_attr(ohandle, THUMBNAIL_ATTR, &img_size,
-			   (unsigned char *)scaledimg);
+	/* find out the set of results to highlight */
+
+	/* calculate the scale factor */
+	len = sizeof(int32_t);
+	err = lf_read_attr(ohandle, COLS, &len, (unsigned char *)&width);
+	assert(!err);
+
+	len = sizeof(int32_t);
+	err = lf_read_attr(ohandle, ROWS, &len, (unsigned char *)&height);
 	assert(!err);
 
 	scale = 1.0;
-	scale = max(scale, (double)rgbimg->width / (double)scaledimg->width);
-	scale = max(scale, (double)rgbimg->height / (double)scaledimg->height);
-
-	/* find out the set of results to highlight */
+	scale = max(scale, (double)width / (double)scaledimg->width);
+	scale = max(scale, (double)height / (double)scaledimg->height);
 
 	/* 
 	 * for each of the active searches look for a set of
@@ -577,20 +542,17 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	if(!cur_thumbnail) {
 		cur_thumbnail = TAILQ_FIRST(&thumbnails);
 	}
-	if (cur_thumbnail->img) { /* cleanup */
+	if (cur_thumbnail->gimage) { /* cleanup */
 		gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport),
 		                     cur_thumbnail->gimage);
-		free(cur_thumbnail->img); /* XXX */
-		ih_drop_ref(cur_thumbnail->hooks);
+		free((void *)cur_thumbnail->img_id);
 	}
 	gtk_frame_set_label(GTK_FRAME(cur_thumbnail->frame), "");
 	cur_thumbnail->marked = 0;
-	cur_thumbnail->img = scaledimg;
 	cur_thumbnail->gimage = image;
-	strcpy(cur_thumbnail->name, name);
-	strcpy(cur_thumbnail->device, device);
-	cur_thumbnail->hooks = ih_new_ref(rgbimg, ohandle);
-	cur_thumbnail->img_obj = ohandle;
+
+	ls_get_objectid(shandle, ohandle, &cur_thumbnail->img_id);
+	ls_release_object(shandle, ohandle);
 
 	gtk_container_add(GTK_CONTAINER(cur_thumbnail->viewport), image);
 	gtk_widget_show_now(image);
@@ -635,8 +597,6 @@ display_thumbnail(ls_obj_handle_t ohandle)
 		pthread_mutex_unlock(&thumb_mutex);
 		GUI_THREAD_LEAVE();
 	}
-
-
 }
 
 
@@ -645,12 +605,12 @@ clear_thumbnails()
 {
 	pthread_mutex_lock(&thumb_mutex);
 	TAILQ_FOREACH(cur_thumbnail, &thumbnails, link) {
-		if (cur_thumbnail->img) { /* cleanup */
+		if (cur_thumbnail->gimage) { /* cleanup */
 			gtk_container_remove(GTK_CONTAINER(cur_thumbnail->viewport),
 			                     cur_thumbnail->gimage);
-			free(cur_thumbnail->img); /* XXX */
-			ih_drop_ref(cur_thumbnail->hooks);
-			cur_thumbnail->img = NULL;
+			free((void *)cur_thumbnail->img_id);
+			cur_thumbnail->img_id = NULL;
+			cur_thumbnail->gimage = NULL;
 		}
 
 	}
@@ -841,7 +801,7 @@ cb_write_fspec_to_file(GtkWidget *widget, gpointer user_data)
 
 	len = snprintf(buf, BUFSIZ, "%s", selected_filename);
 	assert(len < BUFSIZ);
-	snap_searchset->build_filter_spec(buf);
+	snap_searchset->build_filter_spec(shandle, buf);
 
 	GUI_CALLBACK_LEAVE();
 }
@@ -1469,11 +1429,10 @@ create_display_region(GtkWidget *main_box)
 			thumbnail_t *thumb = (thumbnail_t *)malloc(
 			    sizeof(thumbnail_t));
 			thumb->marked = 0;
-			thumb->img = NULL;
+			thumb->img_id = NULL;
+			thumb->gimage = NULL;
 			thumb->viewport = widget;
 			thumb->frame = frame;
-			thumb->name[0] = '\0';
-			thumb->hooks = NULL;
 			TAILQ_INSERT_TAIL(&thumbnails, thumb, link);
 
 			/* the data pointer mechanism seems to be

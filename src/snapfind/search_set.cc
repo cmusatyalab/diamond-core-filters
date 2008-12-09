@@ -185,6 +185,38 @@ add_search_to_list(img_search *srch)
 	active_end = &cur->sn_next;
 }
 
+static void
+update_thumbnail_attrs(ls_search_handle_t shandle)
+{
+	search_name_t *cur;
+	char buf[BUFSIZ];
+	char **attributes;
+	int i = 0, n = 3; /* THUMBNAIL_ATTR, COLS, ROWS */
+
+	/* count nr of active searches */
+	for (cur = active_searches; cur; cur = cur->sn_next) n++;
+
+	attributes = (char **)malloc((n+1) * sizeof(char *));
+	assert(attributes != NULL);
+
+	attributes[i++] = strdup(THUMBNAIL_ATTR);
+	attributes[i++] = strdup(COLS);
+	attributes[i++] = strdup(ROWS);
+
+	for (cur = active_searches; i < n && cur; i++, cur = cur->sn_next)
+	{
+		snprintf(buf, BUFSIZ, FILTER_MATCHES, cur->sn_name);
+		attributes[i] = strdup(buf);
+	}
+	attributes[i] = NULL;
+
+	ls_set_push_attributes(shandle, (const char **)attributes);
+
+	for (i = 0; i < n && attributes[i]; i++)
+		free(attributes[i]);
+	free(attributes);
+}
+
 
 /*
  * Build the filters specification into the temp file name
@@ -193,14 +225,14 @@ add_search_to_list(img_search *srch)
  */
 
 char *
-search_set::build_filter_spec(char *tmp_file)
+search_set::build_filter_spec(ls_search_handle_t shandle, char *tmp_file)
 {
 	char * 		tmp_storage = NULL;
 	FILE *		fspec;
-	int			err;
-	int         fd;
-	img_search *		srch;
-	search_iter_t		iter;
+	int		err;
+	int		fd;
+	img_search	*srch, *thumb;
+	search_iter_t	iter;
 
 	/* XXX who frees this ?? */
 	tmp_storage = (char *)malloc(L_tmpnam);
@@ -241,7 +273,11 @@ search_set::build_filter_spec(char *tmp_file)
 		}
 	}
 
-	get_thumbnail_filter()->write_fspec(fspec);
+	update_thumbnail_attrs(shandle);
+
+	thumb = get_thumbnail_filter();
+	if (thumb)
+		thumb->write_fspec(fspec);
 
 	get_current_codec()->write_fspec(fspec);
 

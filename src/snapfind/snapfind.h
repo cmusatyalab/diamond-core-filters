@@ -26,14 +26,10 @@ static const int THUMBNAIL_DISPLAY_SIZE = 6;
 /* this is a misnomer; the thumbnail keeps everything we want to know
  * about an image */
 typedef struct thumbnail_t {
-	RGBImage 	*img;	/* the thumbnail image */
 	GtkWidget 	*viewport; /* the viewport that contains the image */
 	GtkWidget 	*gimage; /* the image widget */
 	TAILQ_ENTRY(thumbnail_t) link;
-	char 		name[COMMON_MAX_NAME];		/* name of image */
-	char 		device[COMMON_MAX_NAME];	/* name of device */
-	ls_obj_handle_t img_obj;	/* object being veiwed */
-	image_hooks_t   *hooks;
+	const char	*img_id; /* object being viewed */
 	int              marked; /* if the user 'marked' this thumbnail */
 	GtkWidget       *frame;
 } thumbnail_t;

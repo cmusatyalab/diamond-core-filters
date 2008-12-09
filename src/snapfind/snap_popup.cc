@@ -1060,18 +1060,23 @@ do_img_popup(GtkWidget *widget, search_set *set)
 	GtkWidget *frame;
 	GtkWidget *image;
 	GtkWidget *button;
+	RGBImage *rgbimg;
+	ls_obj_handle_t ohandle;
+	int err;
 
-	sset = set
-		       ;
+	sset = set;
 	thumb = (thumbnail_t *)gtk_object_get_user_data(GTK_OBJECT(widget));
 
 	/* the data gpointer passed in seems to not be the data
 	 * pointer we gave gtk. instead, we save a pointer in the
 	 * widget. (maybe the prototype didn't match) -RW */
 
-	if(!thumb->img) {
+	if (!thumb->img_id)
 		goto done;
-	}
+
+	/* XXX how do we know shandle is still valid? */
+	err = ls_reexecute_filters(shandle, thumb->img_id, NULL, &ohandle);
+	if (err) goto done;
 
 	if(!popup_window.window) {
 		popup_window.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -1207,27 +1212,37 @@ do_img_popup(GtkWidget *widget, search_set *set)
 		gdk_window_raise(GTK_WIDGET(popup_window.window)->window);
 	}
 
-	/* note there is a slight race condition here, if the thumb gets overwritten */
-	ih_get_ref(thumb->hooks);
-	popup_window.hooks = thumb->hooks;
-	popup_window.layers[IMG_LAYER] = thumb->hooks->img;
+	rgbimg = (RGBImage *)ft_read_alloc_attr(ohandle, RGB_IMAGE);
+	assert(rgbimg);
+
+	popup_window.hooks = ih_new_ref(rgbimg, ohandle);
+	popup_window.layers[IMG_LAYER] = rgbimg;
 	for(int i=IMG_LAYER+1; i<MAX_LAYERS; i++) {
-		popup_window.layers[i] = rgbimg_new(thumb->hooks->img); /* XXX */
+		popup_window.layers[i] = rgbimg_new(rgbimg); /* XXX */
 	}
 
-	popup_window.ainfo->update_obj(thumb->img_obj);
+	popup_window.ainfo->update_obj(ohandle);
 
-	char buf[SF_MAX_NAME];
-	sprintf(buf, "Image: %s", thumb->name);
-	gtk_window_set_title(GTK_WINDOW(popup_window.window), buf);
+	char buf[COMMON_MAX_NAME], title[SF_MAX_NAME];
+	size_t size;
+
+	size = COMMON_MAX_NAME;
+	err = lf_read_attr(ohandle, DISPLAY_NAME, &size, (unsigned char *)buf);
+	if (err && err != ENOMEM) {
+	    size = COMMON_MAX_NAME;
+	    err = lf_read_attr(ohandle, OBJ_PATH, &size, (unsigned char *)buf);
+	}
+	if (err) strcpy(buf, "unknown");
+
+	sprintf(title, "Image: %s", buf);
+	gtk_window_set_title(GTK_WINDOW(popup_window.window), title);
 
 	image = popup_window.drawing_area = gtk_drawing_area_new();
 	GTK_WIDGET_UNSET_FLAGS (image, GTK_CAN_DEFAULT);
 	gtk_drawing_area_size(GTK_DRAWING_AREA(image),
-	                      popup_window.hooks->img->width,
-	                      popup_window.hooks->img->height);
+	                      rgbimg->width, rgbimg->height);
 	gtk_signal_connect(GTK_OBJECT(image), "expose-event",
-	                   GTK_SIGNAL_FUNC(expose_event), popup_window.hooks->img);
+	                   GTK_SIGNAL_FUNC(expose_event), rgbimg);
 	gtk_signal_connect(GTK_OBJECT(image), "realize",
 	                   GTK_SIGNAL_FUNC(realize_event), NULL);
 
