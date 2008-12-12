@@ -1216,7 +1216,7 @@ do_img_popup(GtkWidget *widget, search_set *set)
 		gdk_window_raise(GTK_WIDGET(popup_window.window)->window);
 	}
 
-	rgbimg = (RGBImage *)ft_read_alloc_attr(ohandle, RGB_IMAGE);
+	rgbimg = get_rgb_img(ohandle);
 	assert(rgbimg);
 
 	popup_window.hooks = ih_new_ref(rgbimg, ohandle);

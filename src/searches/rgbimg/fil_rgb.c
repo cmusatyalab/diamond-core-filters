@@ -80,20 +80,19 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 	// so automatically -- should only do it if needed
 	/* rgb_normalize(img); */
 
-	/*
-	 * save some attribs 
-	 */
+	/* save some attribs */
 	lf_write_attr(ohandle, ROWS, sizeof(int), 
 	    (unsigned char *) &img->height);
 	lf_write_attr(ohandle, COLS, sizeof(int), 
 	    (unsigned char *) &img->width);
 
-	/*
-	 * save img as an attribute 
-	 */
+	/* save img as an attribute */
 	err = lf_write_attr(ohandle, RGB_IMAGE, img->nbytes,
 	    (unsigned char *) img);
 	ASSERT(!err);
+
+	/* but don't send it to the client */
+	lf_omit_attr(ohandle, RGB_IMAGE);
 done:
 	if (img)
 		free(img);
