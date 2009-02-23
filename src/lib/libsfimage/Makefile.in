@@ -16,9 +16,6 @@ ROOTDIR = @top_srcdir@
 SRCDIR = @srcdir@
 VPATH = @srcdir@
 OBJROOT = @OBJROOT@
-CVCPPFLAGS = @CVCPPFLAGS@
-CVLDFLAGS = @CVLDFLAGS@
-
 
 LIBSRCS += fil_image_tools.c image_draw.c image_tools.c
 LIBSRCS += readjpeg.c readtiff.c rgb.c

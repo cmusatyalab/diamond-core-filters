@@ -16,24 +16,18 @@ ROOTDIR = @top_srcdir@
 VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
-CVCPPFLAGS = @CVCPPFLAGS@
-CVLDFLAGS = @CVLDFLAGS@
-
-CPPFLAGS += ${CVCPPFLAGS}
-LDFLAGS += ${CVLDFLAGS}
 
 # to build these files.
 LIBS += -ldl -lfl -lpthread -lm
-LIBS += -lfl -lopendiamond -lkrb5
-LIBS += -lcv -lssl -lglib-2.0
-                                                                                
+LIBS += -lfl -lopendiamond
+LIBS += -lssl -lglib-2.0
 #
 
 
 OBJS = snap_bench.o bench_config.o
 SRCS = snap_bench.c bench_config.c
 
-TARGETS = snap_bench 
+TARGETS = snap_bench
 
 
 CLEAN_OTHERS += bench_config.c
@@ -44,7 +38,7 @@ include $(OBJROOT)/Makefile.template
 #
 
 snap_bench: $(OBJS)
-	$(CPLUSPLUS) $(CFLAGS) $(LDFLAGS) -o snap_bench -rdynamic $(OBJS) $(LIBS)
+	$(CPLUSPLUS) $(LDFLAGS) -o snap_bench -rdynamic $(OBJS) $(LIBS)
 
 
 

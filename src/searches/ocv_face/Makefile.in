@@ -21,6 +21,7 @@ STATIC_LIBS += ${BUILD_LIB_PATH}/libocvimage.a ${BUILD_LIB_PATH}/libsfimage.a
 STATIC_LIBS += ${BUILD_LIB_PATH}/libresults.a
 STATIC_LIBS += @CVLDFLAGS@
 STATIC_LIBS += @STATIC_LIBS@
+STATIC_LIBS += -Wl,-Bstatic -lgomp -Wl,-Bdynamic
 
 CPPFLAGS += @GTK_CFLAGS@
 CPPFLAGS += @CVCPPFLAGS@
