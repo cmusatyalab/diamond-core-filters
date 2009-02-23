@@ -1141,7 +1141,7 @@ do_img_popup(GtkWidget *widget, search_set *set)
 		gtk_scrolled_window_add_with_viewport(
 			GTK_SCROLLED_WINDOW(scroll), ainfo_widget);
 
-		GtkWidget *box = gtk_vbox_new(FALSE, 10);
+		box = gtk_vbox_new(FALSE, 0);
 		gtk_paned_pack2(GTK_PANED(pane2), box, TRUE, TRUE);
 
 		gtk_box_pack_start(GTK_BOX(box), scroll, TRUE, TRUE, 0);
