@@ -1127,8 +1127,15 @@ do_img_popup(GtkWidget *widget, search_set *set)
 		gtk_paned_pack2(GTK_PANED(pane), pane2, TRUE, TRUE);
 
 
+		GtkWidget *box = gtk_vbox_new(FALSE, 0);
 
-		gtk_paned_pack1(GTK_PANED(pane2), popup_window.image_area, 
+		gtk_box_pack_start(GTK_BOX(box), popup_window.image_area,
+				   TRUE, TRUE, 0);
+
+		GtkWidget *image_save_button = gtk_button_new_from_stock(GTK_STOCK_SAVE);
+		gtk_box_pack_start(GTK_BOX(box), image_save_button, FALSE, FALSE, 0);
+
+		gtk_paned_pack1(GTK_PANED(pane2), box,
 			TRUE, TRUE);
 
 		popup_window.ainfo =  new attr_info();
