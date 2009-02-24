@@ -162,6 +162,36 @@ done:
 }
 
 
+/* save image */
+static void
+cb_image_save_button_clicked(GtkButton *button, gpointer data)
+{
+  GtkWidget *dialog;
+
+  dialog = gtk_file_chooser_dialog_new ("Save Image as PNG",
+					GTK_WINDOW(popup_window.window),
+					GTK_FILE_CHOOSER_ACTION_SAVE,
+					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+					NULL);
+  gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
+
+  if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+
+      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+
+      GdkPixbuf *pb = popup_window.pixbufs[0];
+
+      gdk_pixbuf_save(pb, filename, "png", NULL, NULL);
+
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
+}
+
 /* save attributes */
 static void
 cb_attr_info_save_button_clicked(GtkButton *button, gpointer data)
@@ -1133,6 +1163,11 @@ do_img_popup(GtkWidget *widget, search_set *set)
 				   TRUE, TRUE, 0);
 
 		GtkWidget *image_save_button = gtk_button_new_from_stock(GTK_STOCK_SAVE);
+		g_signal_connect(G_OBJECT(image_save_button),
+				 "clicked",
+				 G_CALLBACK(cb_image_save_button_clicked),
+				 NULL);
+
 		gtk_box_pack_start(GTK_BOX(box), image_save_button, FALSE, FALSE, 0);
 
 		gtk_paned_pack1(GTK_PANED(pane2), box,
