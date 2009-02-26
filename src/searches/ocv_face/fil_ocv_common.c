@@ -79,7 +79,7 @@ f_init_opencv_detect(int numarg, char **args, int blob_len, void *blob_data,
 
 	// cvLoad requires the filename end in .xml, argh.
 	char *xml_name;
-	xml_name = malloc(strlen(template) + strlen(".xml"));
+	xml_name = malloc(strlen(template) + strlen(".xml") + 1);
 	strcpy(xml_name, template);
 	strcat(xml_name, ".xml");
 	rename(template, xml_name);
