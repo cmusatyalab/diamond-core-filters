@@ -479,6 +479,8 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	search_name_t *	cur;
 	int32_t		width, height;
 	double		scale;
+	unsigned char  *jpeg_data;
+	size_t		jpeg_len;
 
 	while(image_controls.cur_op == CNTRL_WAIT) {
 		fprintf(stderr, "GOT WAIT. waiting...\n");
@@ -493,7 +495,8 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	       image_controls.cur_op == CNTRL_ELEV);
 
 	/* read thumbnail image data */
-	scaledimg = (RGBImage *)ft_read_alloc_attr(ohandle, THUMBNAIL_ATTR);
+	assert(!lf_ref_attr(ohandle, THUMBNAIL_ATTR, &jpeg_len, &jpeg_data));
+	scaledimg = read_rgb_image(jpeg_data, jpeg_len);
 	assert(scaledimg);
 
 	/* find out the set of results to highlight */

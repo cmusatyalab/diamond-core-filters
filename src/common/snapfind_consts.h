@@ -59,9 +59,10 @@
 #define	SNAPFIND_CONF_EXTENSION		".sf_conf"
 
 /* thumbnail attribute name and default size */
-#define THUMBNAIL_ATTR			"thumbnail.rgbimg"
+#define THUMBNAIL_ATTR			"thumbnail.jpeg"
 #define THUMBSIZE_X			200
 #define THUMBSIZE_Y			150
+#define THUMBNAIL_JPEG_QUALITY          95
 
 #endif	/* ! _SNAPFIND_CONSTS_H_ */
 

@@ -17,6 +17,8 @@
 /*
  * Generate a thumbnail preview for an rgb image
  */
+
+#include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +30,8 @@
 #include "lib_filter.h"
 #include "lib_sfimage.h"
 #include "rgb.h"
+
+#include <jpeglib.h>
 
 
 #define ASSERT(exp)							\
@@ -73,6 +77,54 @@ static double dmax(double a, double b)
     return (a > b) ? a : b;
 }
 
+
+static void compress_rgbimage(RGBImage *img, FILE *f)
+{
+  int x;
+  struct jpeg_compress_struct cinfo;
+  struct jpeg_error_mgr jerr;
+
+  int w = img->width;
+  int h = img->height;
+
+  cinfo.err = jpeg_std_error(&jerr);
+  jpeg_create_compress(&cinfo);
+
+  cinfo.image_width = w;
+  cinfo.image_height = h;
+
+  cinfo.input_components = 3;
+  cinfo.in_color_space = JCS_RGB;
+
+  jpeg_set_defaults(&cinfo);
+  jpeg_set_quality(&cinfo, THUMBNAIL_JPEG_QUALITY, TRUE);
+
+  JSAMPROW row_pointer[1];
+  uint8_t *row = malloc (3 * w);
+  assert(row);
+  row_pointer[0] = row;
+
+  jpeg_stdio_dest(&cinfo, f);
+
+  jpeg_start_compress(&cinfo, TRUE);
+  while(cinfo.next_scanline < cinfo.image_height) {
+    int y = cinfo.next_scanline;
+    for (x = 0; x < w; x++) {
+      int i = x * 3;
+      RGBPixel *p = img->data + (y * w + x);
+      row[i] = p->r;
+      row[i + 1] = p->g;
+      row[i + 2] = p->b;
+    }
+
+    jpeg_write_scanlines(&cinfo, row_pointer, 1);
+  }
+
+  jpeg_finish_compress(&cinfo);
+  jpeg_destroy_compress(&cinfo);
+  free(row);
+}
+
 /*
  * filter eval function to create a thumbnail attribute
  */
@@ -85,6 +137,9 @@ f_eval_thumbnailer(lf_obj_handle_t ohandle, void *data)
 	int		err = 0;
 	double		scale = 1.0;
 	int		pass = 0;
+	FILE	       *memstream;
+	char	       *jpeg_data = NULL;
+	size_t		jpeg_len;
 
 	lf_log(LOGL_TRACE, "f_thumbnailer: enter");
 
@@ -107,14 +162,21 @@ f_eval_thumbnailer(lf_obj_handle_t ohandle, void *data)
 
 	scaledimg = image_gen_image_scale(img, (int)scale);
 
+	/* compress jpeg */
+	memstream = open_memstream(&jpeg_data, &jpeg_len);
+	ASSERT(memstream);
+	compress_rgbimage(scaledimg, memstream);
+	fclose(memstream);
+
 	/* save thumbnail as an attribute */
-	err = lf_write_attr(ohandle, THUMBNAIL_ATTR, scaledimg->nbytes,
-			    (unsigned char *)scaledimg);
+	err = lf_write_attr(ohandle, THUMBNAIL_ATTR, jpeg_len,
+			    (unsigned char *)jpeg_data);
 	ASSERT(!err);
 	pass = 1;
 done:
 	if (img) free(img);
 	if (scaledimg) free(scaledimg);
+	if (jpeg_data) free(jpeg_data);
 	lf_log(LOGL_TRACE, "f_thumbnailer: done");
 	return pass;
 }
