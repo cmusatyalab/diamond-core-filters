@@ -179,13 +179,13 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 
 	if (max <= 1.0) {
 		max += 0.1;
-		*adjp = gtk_adjustment_new(min, min, max, step, 0.1, 0.1);
+		*adjp = gtk_adjustment_new(min, min, max, step, 0.1, 0);
 	} else if (max < 50) {
 		max++;
-		*adjp = gtk_adjustment_new(min, min, max, step, 1.0, 1.0);
+		*adjp = gtk_adjustment_new(min, min, max, step, 1.0, 0);
 	} else {
 		max+= 10;
-		*adjp = gtk_adjustment_new(min, min, max, step, 10.0, 10.0);
+		*adjp = gtk_adjustment_new(min, min, max, step, 10.0, 0);
 	}
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(*adjp), initial);
 

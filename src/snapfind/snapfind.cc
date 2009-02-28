@@ -1356,7 +1356,7 @@ create_image_control(GtkWidget *container_box,
 	gtk_widget_show(img_info->dobjs_label);
 	gtk_timeout_add(500 /*ms*/, timeout_write_dobjs, img_info->dobjs_label);
 
-	adj = gtk_adjustment_new(2.0, 1.0, 10.0, 1.0, 1.0, 1.0);
+	adj = gtk_adjustment_new(2.0, 1.0, 10.0, 1.0, 1.0, 0);
 	img_cntrl->zlevel = 2;
 	img_cntrl->zbutton = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 0);
 	gtk_box_pack_start (GTK_BOX(img_cntrl->control_box),img_cntrl->zbutton,
