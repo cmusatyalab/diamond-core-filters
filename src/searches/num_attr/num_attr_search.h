@@ -34,7 +34,7 @@ struct num_attr_node {
 
 class num_attr_search: public img_search {
 public:
-	num_attr_search(const char *name, char *descr);
+	num_attr_search(const char *name, const char *descr);
 	~num_attr_search(void);
 
 	void	save_edits();

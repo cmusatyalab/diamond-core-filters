@@ -21,7 +21,7 @@
 
 class ocv_face_search: public ocv_search {
 public:
-	ocv_face_search(const char *name, char *descr);
+	ocv_face_search(const char *name, const char *descr);
 	virtual ~ocv_face_search();
 
 	void	write_config(FILE* stream, const char *data_dir);

@@ -22,7 +22,7 @@
 
 class ocv_search: public window_search {
 public:
-	ocv_search(const char *name, char *descr);
+	ocv_search(const char *name, const char *descr);
 	virtual ~ocv_search();
 
 	void	save_edits();
@@ -41,7 +41,7 @@ public:
 	void 		set_support(char *data);
 	void 		set_support(int new_count);
 
-	void            set_classifier(char *filename);
+	void            set_classifier(const char *filename);
 
 	virtual	int	handle_config(int num_conf, char **datav);
 

@@ -41,7 +41,7 @@
 #define	NUMFACE_ID	"NUMFACE"
 #define	SUPPORT_ID	"SUPPORT"
 
-ocv_search::ocv_search(const char *name, char *descr)
+ocv_search::ocv_search(const char *name, const char *descr)
 		: window_search(name, descr)
 {
 	set_count(1);
@@ -115,7 +115,7 @@ ocv_search::set_support(int new_count)
 
 
 void 
-ocv_search::set_classifier(char *name) 
+ocv_search::set_classifier(const char *name) 
 {
         int fd;
 	int rc;
@@ -163,7 +163,7 @@ ocv_search::set_classifier(char *name)
 }
 
 static GtkWidget *
-create_slider_entry(char *name, float min, float max, int dec, float initial,
+create_slider_entry(const char *name, float min, float max, int dec, float initial,
                     float step, GtkObject **adjp)
 {
 	GtkWidget *container;

@@ -1789,7 +1789,7 @@ main(int argc, char *argv[])
 
 	pthread_t 	search_thread;
 	int		err;
-	char *scapeconf = "histo/search_config";
+	const char *scapeconf = "histo/search_config";
 	int c;
 	static const char *optstring = "hes:f:";
 	struct option long_opt[] = {

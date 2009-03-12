@@ -54,7 +54,7 @@ search_init()
 
 
 
-gabor_texture_search::gabor_texture_search(const char *name, char *descr)
+gabor_texture_search::gabor_texture_search(const char *name, const char *descr)
 		: example_search(name, descr)
 {
 	edit_window = NULL;
@@ -253,7 +253,7 @@ gabor_texture_search::handle_config(int num_conf, char **confv)
 
 
 static GtkWidget *
-create_slider_entry(char *name, float min, float max, int dec, float initial,
+create_slider_entry(const char *name, float min, float max, int dec, float initial,
                     float step, GtkObject **adjp)
 {
 	GtkWidget *container;

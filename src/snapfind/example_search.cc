@@ -30,7 +30,7 @@
 /* tokens for the config file */
 #define	PATCH_ID	"PATCHFILE"
 
-example_search::example_search(const char *name, char * descr)
+example_search::example_search(const char *name, const char *descr)
 		: window_search(name, descr)
 {
 	TAILQ_INIT(&ex_plist);

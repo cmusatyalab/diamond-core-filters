@@ -20,7 +20,7 @@
 
 class text_attr_search: public img_search {
 public:
-	text_attr_search(const char *name, char *descr);
+	text_attr_search(const char *name, const char *descr);
 	~text_attr_search(void);
 
 	void	save_edits();

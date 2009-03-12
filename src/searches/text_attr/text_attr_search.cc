@@ -54,7 +54,7 @@ search_init()
 
 
 
-text_attr_search::text_attr_search(const char *name, char *descr)
+text_attr_search::text_attr_search(const char *name, const char *descr)
 		: img_search(name, descr)
 {
 	edit_window = NULL;

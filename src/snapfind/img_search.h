@@ -26,7 +26,7 @@ class search_set;
 
 class img_search {
 public:
-	img_search(const char *name, char *descr);
+	img_search(const char *name, const char *descr);
 	virtual ~img_search();
 	virtual	int 	handle_config(int num_conf, char **conf);
 	virtual	void 	edit_search() = 0;
@@ -115,7 +115,7 @@ private:
 
 class window_search: public img_search {
 public:
-	window_search(const char *name, char *descr);
+	window_search(const char *name, const char *descr);
 	virtual ~window_search();
 	virtual	int 	handle_config(int num_conf, char **conf);
 	virtual	void edit_search() = 0;
@@ -193,7 +193,7 @@ typedef	TAILQ_HEAD(example_list_t, example_patch)	example_list_t;
 
 class example_search: public window_search {
 public:
-	example_search(const char *name, char *descr);
+	example_search(const char *name, const char *descr);
 	virtual ~example_search();
 	virtual	int 	handle_config(int num_conf, char **conf);
 	int add_patch(RGBImage* img, bbox_t bbox);

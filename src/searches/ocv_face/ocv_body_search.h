@@ -21,7 +21,7 @@
 
 class ocv_body_search: public ocv_search {
 public:
-	ocv_body_search(const char *name, char *descr);
+	ocv_body_search(const char *name, const char *descr);
 	~ocv_body_search(void);
 
 	void	write_config(FILE* stream, const char *data_dir);

@@ -27,7 +27,7 @@
  */
 class rgb_histo_search: public example_search {
 public:
-	rgb_histo_search(const char *name, char *descr);
+	rgb_histo_search(const char *name, const char *descr);
 	~rgb_histo_search(void);
 
 	void 	add_patch();

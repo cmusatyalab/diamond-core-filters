@@ -35,7 +35,7 @@
 #include "lib_results.h"
 #include "img_search.h"
 
-img_search::img_search(const char *name, char *descr)
+img_search::img_search(const char *name, const char *descr)
 {
 	display_name = strdup(name);
 	assert(display_name != NULL);

@@ -28,7 +28,7 @@
  */
 class match_3D: public img_search {
 public:
-	match_3D(const char *name, char *descr);
+	match_3D(const char *name, const char *descr);
 	~match_3D(void);
 
 	virtual void 	edit_search();

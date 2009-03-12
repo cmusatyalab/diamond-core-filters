@@ -22,7 +22,7 @@
 
 class rgb_img: public img_search {
 public:
-	rgb_img(const char *name, char *descr);
+	rgb_img(const char *name, const char *descr);
 	~rgb_img(void);
 
 	void	save_edits();

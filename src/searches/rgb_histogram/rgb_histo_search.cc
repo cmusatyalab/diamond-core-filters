@@ -50,7 +50,7 @@ search_init()
 
 
 
-rgb_histo_search::rgb_histo_search(const char *name, char *descr)
+rgb_histo_search::rgb_histo_search(const char *name, const char *descr)
 		: example_search(name, descr)
 {
 	metric = 0;
@@ -123,7 +123,7 @@ cb_update_menu_select(GtkWidget* item, GtkUpdateType  policy)
 
 
 static GtkWidget *
-create_slider_entry(char *name, float min, float max, int dec, float initial,
+create_slider_entry(const char *name, float min, float max, int dec, float initial,
                     float step, GtkObject **adjp)
 {
 	GtkWidget *container;
@@ -169,7 +169,7 @@ create_slider_entry(char *name, float min, float max, int dec, float initial,
 }
 
 GtkWidget *
-make_menu_item (gchar* name, GCallback callback, gpointer  data)
+make_menu_item (const gchar* name, GCallback callback, gpointer  data)
 {
 	GtkWidget *item;
 

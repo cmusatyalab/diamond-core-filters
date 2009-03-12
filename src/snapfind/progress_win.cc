@@ -74,9 +74,9 @@ dump_stats(dev_stats_t * dstats)
 }
 
 
-static char    *name_unknown = "Unknown Name";
+static const char    name_unknown[] = "Unknown Name";
 
-char           *
+const char           *
 get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
 {
 	device_char_t   dchar;

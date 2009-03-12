@@ -30,7 +30,7 @@
 #define	SCALE_ID	"SCALE"
 #define	MATCH_ID	"MATCHES"
 
-window_search::window_search(const char *name, char *descr)
+window_search::window_search(const char *name, const char *descr)
 		: img_search(name, descr)
 {
 	scale = 1.0;
@@ -213,7 +213,7 @@ window_search::handle_config(int nconf, char **data)
 }
 
 static GtkWidget *
-create_slider_entry(char *name, float min, float max, int dec, float initial,
+create_slider_entry(const char *name, float min, float max, int dec, float initial,
                     float step, GtkObject **adjp)
 {
 	GtkWidget *container;

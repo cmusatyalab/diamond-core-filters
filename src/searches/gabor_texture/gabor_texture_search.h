@@ -23,7 +23,7 @@
 
 class gabor_texture_search: public example_search {
 public:
-	gabor_texture_search(const char *name, char *descr);
+	gabor_texture_search(const char *name, const char *descr);
 	~gabor_texture_search(void);
 
 	void 	add_patch();

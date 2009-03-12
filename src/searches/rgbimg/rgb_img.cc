@@ -46,7 +46,7 @@ search_init()
 
 
 
-rgb_img::rgb_img(const char *name, char *descr)
+rgb_img::rgb_img(const char *name, const char *descr)
 		: img_search(name, descr)
 {
 	return;

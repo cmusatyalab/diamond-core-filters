@@ -21,7 +21,7 @@
 
 class ocv_lowerbody_search: public ocv_search {
 public:
-	ocv_lowerbody_search(const char *name, char *descr);
+	ocv_lowerbody_search(const char *name, const char *descr);
 	virtual ~ocv_lowerbody_search();
 
 	void	write_config(FILE* stream, const char *data_dir);

@@ -56,7 +56,7 @@ search_init()
 }
 
 
-ocv_upperbody_search::ocv_upperbody_search(const char *name, char *descr)
+ocv_upperbody_search::ocv_upperbody_search(const char *name, const char *descr)
 		: ocv_search(name, descr)
 {
 	set_scale(1.20);

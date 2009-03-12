@@ -32,7 +32,7 @@
  */
 class img_diff: public img_search {
 public:
-	img_diff(const char *name, char *descr);
+	img_diff(const char *name, const char *descr);
 	~img_diff(void);
 
 	virtual void 	edit_search();

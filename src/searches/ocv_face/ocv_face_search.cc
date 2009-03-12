@@ -57,7 +57,7 @@ search_init()
 }
 
 
-ocv_face_search::ocv_face_search(const char *name, char *descr)
+ocv_face_search::ocv_face_search(const char *name, const char *descr)
 		: ocv_search(name, descr)
 {
 	set_scale(1.20);

@@ -22,7 +22,7 @@
 
 class texture_search: public example_search {
 public:
-	texture_search(const char *name, char *descr);
+	texture_search(const char *name, const char *descr);
 	~texture_search(void);
 
 	void 	add_patch();

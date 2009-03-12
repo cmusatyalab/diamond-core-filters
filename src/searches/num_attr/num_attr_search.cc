@@ -78,7 +78,7 @@ num_attr_search::add_num_attr_node()
 	num_attr_tail = temp;
 	
 }
-num_attr_search::num_attr_search(const char *name, char *descr)
+num_attr_search::num_attr_search(const char *name, const char *descr)
 		: img_search(name, descr)
 {
 	edit_window = NULL;

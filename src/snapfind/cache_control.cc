@@ -69,9 +69,9 @@ filt_data_t;
 
 
 
-static char    *name_unknown = "Unknown Name";
+static const char    name_unknown[] = "Unknown Name";
 
-static char           *
+static const char           *
 get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
 {
 	device_char_t   dchar;
@@ -107,7 +107,7 @@ get_dev_name(ls_search_handle_t shandle, ls_dev_handle_t dev_handle)
 #define	MAX_BUF		512
 
 void
-set_for_each_device(ls_search_handle_t shandle, char *rem_string,
+set_for_each_device(ls_search_handle_t shandle, const char *rem_string,
                     int len, char *val)
 {
 	int             num_dev;
