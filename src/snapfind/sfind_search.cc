@@ -91,6 +91,7 @@ do_search(gid_list_t * main_region, char *fspec)
 	char           *dir_name;
 	void 	       *cookie;
 	search_iter_t iter;
+	const char *attributes[] = { THUMBNAIL_ATTR, COLS, ROWS, NULL };
 
 	if (!fspec) {
 		fspec = sset->build_filter_spec(shandle, NULL);
@@ -111,6 +112,8 @@ do_search(gid_list_t * main_region, char *fspec)
 		printf("Failed to set searchlist on  err %d \n", err);
 		exit(1);
 	}
+
+	ls_set_push_attributes(shandle, attributes);
 
 	filter_name = first_searchlet_lib(&cookie);
 	if (filter_name == NULL) {
