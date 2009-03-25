@@ -77,6 +77,37 @@ init_search()
 	}
 }
 
+static void
+set_push_attributes(ls_search_handle_t shandle)
+{
+	search_name_t *cur;
+	char buf[BUFSIZ];
+	char **attributes;
+	int i = 0, n = 3; /* THUMBNAIL_ATTR, COLS, ROWS */
+
+	/* count nr of active searches */
+	for (cur = active_searches; cur; cur = cur->sn_next) n++;
+
+	attributes = (char **)malloc((n+1) * sizeof(char *));
+	assert(attributes != NULL);
+
+	attributes[i++] = strdup(THUMBNAIL_ATTR);
+	attributes[i++] = strdup(COLS);
+	attributes[i++] = strdup(ROWS);
+
+	for (cur = active_searches; i < n && cur; i++, cur = cur->sn_next)
+	{
+		snprintf(buf, BUFSIZ, FILTER_MATCHES, cur->sn_name);
+		attributes[i] = strdup(buf);
+	}
+	attributes[i] = NULL;
+
+	ls_set_push_attributes(shandle, (const char **)attributes);
+
+	for (i = 0; i < n && attributes[i]; i++)
+		free(attributes[i]);
+	free(attributes);
+}
 
 /*
  * This function initiates the search by building a filter
@@ -91,7 +122,6 @@ do_search(gid_list_t * main_region, char *fspec)
 	char           *dir_name;
 	void 	       *cookie;
 	search_iter_t iter;
-	const char *attributes[] = { THUMBNAIL_ATTR, COLS, ROWS, NULL };
 
 	if (!fspec) {
 		fspec = sset->build_filter_spec(shandle, NULL);
@@ -113,7 +143,7 @@ do_search(gid_list_t * main_region, char *fspec)
 		exit(1);
 	}
 
-	ls_set_push_attributes(shandle, attributes);
+	set_push_attributes(shandle);
 
 	filter_name = first_searchlet_lib(&cookie);
 	if (filter_name == NULL) {
