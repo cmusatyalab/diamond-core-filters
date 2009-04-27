@@ -160,7 +160,7 @@ f_eval_thumbnailer(lf_obj_handle_t ohandle, void *data)
 	scale = dmax(scale, (double)img->width / fargs->width);
 	scale = dmax(scale, (double)img->height / fargs->height);
 
-	scaledimg = image_gen_image_scale(img, (int)scale);
+	scaledimg = image_gen_image_scale(img, (int)ceil(scale));
 
 	/* compress jpeg */
 	memstream = open_memstream(&jpeg_data, &jpeg_len);

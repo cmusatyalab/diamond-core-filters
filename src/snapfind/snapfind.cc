@@ -513,18 +513,16 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	scale = 1.0;
 	scale = max(scale, (double)width / (double)scaledimg->width);
 	scale = max(scale, (double)height / (double)scaledimg->height);
+	scale = ceil(scale);
 
 	/* 
 	 * for each of the active searches look for a set of
 	 * result boxes with a well known name.
 	 */
 	for (cur = active_searches; cur != NULL; cur = cur->sn_next) {
-		img_patches_t *ipatch;
-		ipatch = get_patches(ohandle, cur->sn_name);
-		if (ipatch) {
-			draw_patches(scaledimg, scale, green,
-				     colorMask, ipatch);
-		}
+	    img_patches_t *ipatch = get_patches(ohandle, cur->sn_name);
+	    if (ipatch)
+		draw_patches(scaledimg, (int)scale, green, colorMask, ipatch);
 	}
 	user_measurement.total_seen++;
 
