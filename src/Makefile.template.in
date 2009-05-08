@@ -52,7 +52,7 @@ CFLAGS += -D_REENTRANT
 # general flags
 CFLAGS += -O2
 CFLAGS += -ggdb
-CFLAGS += -DDEBUG 
+CFLAGS += -DDEBUG
 CFLAGS += -Wall
 CFLAGS += -fPIC
 CFLAGS += -ffast-math
