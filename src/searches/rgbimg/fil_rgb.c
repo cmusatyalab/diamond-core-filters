@@ -14,7 +14,7 @@
  */
 
 /*
- * color histogram filter * rgb reader
+ * rgb reader
  */
 
 #include <limits.h>
