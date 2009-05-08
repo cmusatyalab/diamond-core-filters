@@ -32,6 +32,7 @@
 
 
 #include "snapfind_consts.h"
+#include "snapfind_config.h"
 
 /*
  * This file parses the snapfind RC file to find the local

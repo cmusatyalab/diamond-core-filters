@@ -36,6 +36,7 @@
 #define	CHANNEL_ID	"CHANNEL"
 
 extern "C" {
+	diamond_public
 	void search_init();
 }
 

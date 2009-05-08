@@ -23,8 +23,12 @@ typedef struct factory_map {
 } factory_map_t;
 
 
+diamond_public
 void factory_register(img_factory *factory);
+
+diamond_public
 void factory_register_codec(img_factory *factory);
+
 img_factory * find_factory(const char *name);
 img_factory * find_codec_factory(const char *name);
 img_factory * get_first_factory(void **cookie);

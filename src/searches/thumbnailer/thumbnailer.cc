@@ -29,7 +29,8 @@
 
 
 extern "C" {
-void search_init();
+	diamond_public
+	void search_init();
 }
 
 void

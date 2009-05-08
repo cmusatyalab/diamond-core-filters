@@ -37,10 +37,12 @@ extern "C"
 {
 #endif
 
-
+diamond_public
 int f_init_3D_match(int numarg, char **args, int blob_len, void *blob,
 			const char *fname, void **data);
+diamond_public
 int f_fini_3D_match(void *data);
+diamond_public
 int f_eval_3D_match(lf_obj_handle_t ihandle, void *user_data);
 
 int isNeighbor (float th, float *q, float *f, int size);

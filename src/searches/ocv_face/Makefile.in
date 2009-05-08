@@ -59,13 +59,11 @@ OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_ocv_face.so opencv_face_search.so fil_ocv_profile.so
-TARGETS += opencv_profile_search.so fil_ocv_body.so opencv_body_search.so 
-TARGETS += fil_ocv_upperbody.so opencv_upperbody_search.so 
-TARGETS += fil_ocv_lowerbody.so opencv_lowerbody_search.so
+TARGETS = fil_ocv.so opencv_face_search.so opencv_profile_search.so
+TARGETS += opencv_body_search.so opencv_upperbody_search.so
+TARGETS += opencv_lowerbody_search.so
 
-SHARED_LIB += fil_ocv_face.so fil_ocv_profile.so fil_ocv_body.so
-SHARED_LIB += fil_ocv_upperbody.so fil_ocv_lowerbody.so 
+SHARED_LIB += fil_ocv.so
 SHARED_LIB += opencv_face_search.so $(SRCDIR)/opencv_face.sf_conf 
 SHARED_LIB += $(SRCDIR)/haarcascade_frontalface_default.xml 
 SHARED_LIB += opencv_profile_search.so $(SRCDIR)/opencv_profile.sf_conf 
@@ -80,20 +78,8 @@ SHARED_LIB += $(SRCDIR)/haarcascade_lowerbody.xml
 include ${OBJROOT}/Makefile.template
 
 
-fil_ocv_face.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
-
-fil_ocv_profile.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
-
-fil_ocv_body.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
-
-fil_ocv_upperbody.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
-
-fil_ocv_lowerbody.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+fil_ocv.so: $(FILTER_LIB_OBJS)
+	$(FIL_SO_COMMAND)
 
 opencv_face_search.so: ocv_face_search.o $(SEARCH_LIB_COMMON)
 	$(SO_COMMAND)

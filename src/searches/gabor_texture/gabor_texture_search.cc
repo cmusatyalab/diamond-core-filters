@@ -41,7 +41,8 @@
 #define	MAX_FREQ_ID	"MAX_FREQ"
 
 extern "C" {
-void search_init();
+	diamond_public
+	void search_init();
 }
                                                                                 
 void

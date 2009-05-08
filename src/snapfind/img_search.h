@@ -24,7 +24,9 @@
 /* forward declaration to we can get a pointer */
 class search_set;
 
-class img_search {
+class
+diamond_public
+img_search {
 public:
 	img_search(const char *name, const char *descr);
 	virtual ~img_search();
@@ -82,7 +84,9 @@ private:
 
 
 /* factory class for creating new image searches */
-class img_factory {
+class
+diamond_public
+img_factory {
 public:
 	img_factory() {};
 	virtual ~img_factory() {};
@@ -113,7 +117,9 @@ private:
  * the image.  This is a subclass of img_search.
  */
 
-class window_search: public img_search {
+class
+diamond_public
+window_search: public img_search {
 public:
 	window_search(const char *name, const char *descr);
 	virtual ~window_search();
@@ -191,7 +197,9 @@ typedef	TAILQ_HEAD(example_list_t, example_patch)	example_list_t;
  * inheritence ...
  */
 
-class example_search: public window_search {
+class
+diamond_public
+example_search: public window_search {
 public:
 	example_search(const char *name, const char *descr);
 	virtual ~example_search();
@@ -222,7 +230,9 @@ private:
 };
 
 
+diamond_public
 void set_thumbnail_filter(img_search *f);
+
 img_search *get_thumbnail_filter(void);
 
 

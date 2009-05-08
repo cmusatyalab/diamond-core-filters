@@ -35,6 +35,7 @@
 #define	METRIC_ID	"METRIC"
 
 extern "C" {
+	diamond_public
 	void search_init();
 }
 

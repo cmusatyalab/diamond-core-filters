@@ -60,7 +60,7 @@ SHARED_LIB += $(SRCDIR)/dog_texture.sf_conf
 include ${OBJROOT}/Makefile.template
 
 fil_dog_texture.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+	$(FIL_SO_COMMAND)
 
 dog_texture_search.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

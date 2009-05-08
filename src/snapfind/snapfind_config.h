@@ -16,12 +16,15 @@
 #ifndef _SNAP_FIND_CONFIG_H_
 #define _SNAP_FIND_CONFIG_H_	1
 
+#include "diamond_features.h"
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
 /* From snapfind_config.l */
+diamond_public
 char * sfconf_get_plugin_dir();
 
 #ifdef __cplusplus

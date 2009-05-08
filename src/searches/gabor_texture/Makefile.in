@@ -49,7 +49,7 @@ SHARED_LIB += $(SRCDIR)/gabor_texture.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_gabor_texture.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+	$(FIL_SO_COMMAND)
 
 gabor_texture_search.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

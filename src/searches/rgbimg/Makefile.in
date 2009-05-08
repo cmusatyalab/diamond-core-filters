@@ -53,7 +53,7 @@ SHARED_LIB += fil_rgb.so rgb_img.so $(SRCDIR)/rgb_img.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_rgb.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+	$(FIL_SO_COMMAND)
 
 rgb_img.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

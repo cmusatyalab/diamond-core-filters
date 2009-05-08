@@ -27,9 +27,12 @@ typedef struct write_notify_context_t {
 extern "C"
 {
 #endif
+diamond_public
 int f_init_gab_texture(int numarg, char **args, int blob_len, void *blob,
 			const char *fname, void **data);
+diamond_public
 int f_fini_gab_texture(void *data);
+diamond_public
 int f_eval_gab_texture(lf_obj_handle_t ohandle, void *user_data);
 
 

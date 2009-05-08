@@ -47,7 +47,7 @@ SHARED_LIB = fil_num_attr.so num_attr_search.so $(SRCDIR)/num_attr.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_num_attr.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+	$(FIL_SO_COMMAND)
 
 num_attr_search.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

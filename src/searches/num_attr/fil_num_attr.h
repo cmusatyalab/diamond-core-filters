@@ -33,9 +33,12 @@ extern "C"
 {
 #endif
 
+diamond_public
 int f_init_num_attr(int numarg, char **args, int blob_len, void *blob,
 		const char *fname, void **fdatap);
+diamond_public
 int f_fini_num_attr(void *fdata);
+diamond_public
 int f_eval_num_attr(lf_obj_handle_t ohandle, void *fdata);
 
 #ifdef __cplusplus

@@ -36,9 +36,12 @@ int f_eval_pnm2rgb(lf_obj_handle_t ihandle, void *user_data);
 
 
 
+diamond_public
 int f_init_histo_detect(int numarg, char **args, int blob_len, void *blob,
 			const char *fname, void **data);
+diamond_public
 int f_fini_histo_detect(void *data);
+diamond_public
 int f_eval_histo_detect(lf_obj_handle_t ihandle, void *user_data);
 
 
@@ -48,9 +51,12 @@ int f_fini_hpass(void *data);
 int f_eval_hpass(lf_obj_handle_t ihandle, void *user_data);
 
 
+diamond_public
 int f_init_hintegrate(int numarg, char **args, int blob_len, void *blob,
 	                      const char *fname, void **data);
+diamond_public
 int f_fini_hintegrate(void *data);
+diamond_public
 int f_eval_hintegrate(lf_obj_handle_t ihandle, void *user_data);
 
 

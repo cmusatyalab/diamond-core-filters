@@ -53,7 +53,7 @@ SHARED_LIB += fil_thumb.so thumbnailer.so $(SRCDIR)/thumbnailer.sf_conf
 include ${OBJROOT}/Makefile.template
 
 fil_thumb.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+	$(FIL_SO_COMMAND)
 
 thumbnailer.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

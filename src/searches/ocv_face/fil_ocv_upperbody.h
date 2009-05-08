@@ -19,10 +19,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+diamond_public
 int f_eval_opencv_ubdetect(lf_obj_handle_t ohandle, void *fdata);
 
+diamond_public
 int f_fini_opencv_ubdetect(void *fdata);
 
+diamond_public
 int f_init_opencv_ubdetect(int numarg, char **args, int blob_len, 
 	void *blob_data, const char *fname, void **fdatap);
 

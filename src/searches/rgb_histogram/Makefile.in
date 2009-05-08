@@ -53,7 +53,7 @@ SHARED_LIB += fil_rgb_histo.so rgb_histo_search.so $(SRCDIR)/rgb_histo.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_rgb_histo.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+	$(FIL_SO_COMMAND)
 
 rgb_histo_search.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

@@ -42,6 +42,7 @@
 #define CLASSIFIER_NAME       "haarcascade_fullbody"
 
 extern "C" {
+	diamond_public
 	void search_init();
 }
 

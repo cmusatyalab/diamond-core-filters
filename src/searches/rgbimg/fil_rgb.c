@@ -28,6 +28,7 @@
 #include "lib_filter.h"
 #include "lib_sfimage.h"
 #include "rgb.h"
+#include "fil_rgb.h"
 
 
 

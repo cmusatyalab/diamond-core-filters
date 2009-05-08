@@ -12,25 +12,34 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	_FIL_OCV_BODY_H_
-#define	_FIL_OCV_BODY_H_ 1
+#ifndef	_FIL_RGBIMG_H_
+#define _FIL_RGBIMG_H_
+
+#include <stdint.h>
+#include "lib_filter.h"
+#include "snapfind_consts.h"
+#include <sys/queue.h>
+
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-diamond_public
-int f_eval_opencv_bdetect(lf_obj_handle_t ohandle, void *fdata);
 
 diamond_public
-int f_fini_opencv_bdetect(void *fdata);
+int f_init_img2rgb(int numarg, char **args, int blob_len, void *blob,
+		   const char *fname, void **data);
+diamond_public
+int f_fini_img2rgb(void *data);
 
 diamond_public
-int f_init_opencv_bdetect(int numarg, char **args, int blob_len, 
-	void *blob_data, const char *fname, void **fdatap);
+int f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data);
+
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* !_FIL_OCV_BODY_H_ */
+#endif	/* !defined _FIL_RGBIMG_H_ */

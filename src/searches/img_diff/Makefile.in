@@ -52,7 +52,7 @@ SHARED_LIB += fil_img_diff.so img_diff.so $(SRCDIR)/img_diff.sf_conf
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_img_diff.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+	$(FIL_SO_COMMAND)
 
 img_diff.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

@@ -43,6 +43,7 @@
 
 
 extern "C" {
+	diamond_public
 	void search_init();
 }
 

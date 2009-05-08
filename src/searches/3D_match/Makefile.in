@@ -49,7 +49,7 @@ SHARED_LIB += fil_3D_match.so match_3D.so
 SHARED_LIB += $(SRCDIR)/3D_match.sf_conf
 
 fil_3D_match.so: $(FILTER_LIB_OBJS)
-	$(SO_COMMAND)
+	$(FIL_SO_COMMAND)
 
 match_3D.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)
