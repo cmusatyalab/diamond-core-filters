@@ -137,7 +137,6 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 	texture_args_t  *targs = (texture_args_t *)f_datap;
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
-	int			rgb_alloc = 0;
 	unsigned char *	dptr;
 
 	lf_log(LOGL_TRACE, "f_texture_detect: enter");
@@ -145,12 +144,6 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	rgb_img = (RGBImage *)dptr;
 	assert(err == 0);
-	if (rgb_img == NULL) {
-		rgb_alloc = 1;
-		rgb_img = get_rgb_img(ohandle);
-	}
-	ASSERT(rgb_img);
-
 
 	if (targs->num_channels == 1) {
 		img = get_gray_ipl_image(rgb_img);
@@ -205,9 +198,6 @@ done:
 
 	if (img) {
 		cvReleaseImage(&img);
-	}
-	if (rgb_alloc) {
-		ft_free((char*)rgb_img);
 	}
 	return pass;
 }

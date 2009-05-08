@@ -181,7 +181,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	float           min_simularity;
 	HistoII        *ii = NULL;
 	bbox_t *	cur_box;
-	int		ii_alloc = 0, img_alloc = 0;
+	int		ii_alloc = 0;
 	size_t		len;
 	unsigned char *	dptr;
 	int             rv = 0;     /* return value */
@@ -194,10 +194,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	 */
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	img = (RGBImage *)dptr;
-	if (err != 0) {
-		img_alloc = 1;
-		img = get_rgb_img(ohandle);
-	}
 
 	err = lf_ref_attr(ohandle, HISTO_II, &len, &dptr);
 	ii = (HistoII *)dptr;
@@ -246,10 +242,6 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 
 	if (ii_alloc) {
 		ft_free((char *) ii);
-	}
-
-	if (img_alloc) {
-		ft_free((char *) img);
 	}
 
 	return rv;
@@ -363,7 +355,6 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	int             width,
 	height;
 	int             scalebits;
-	int				img_alloc = 0;
 	size_t			len;
 
 	assert(f_data != NULL);
@@ -375,12 +366,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	 * get the img 
 	 */
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
-	if (err != 0) {
-		img_alloc = 1;
-		img = get_rgb_img(ohandle);
-	} else {
-		img = (RGBImage *)dptr;
-	}
+	img = (RGBImage *)dptr;
 
 	ASSERT(img);
 
@@ -407,9 +393,6 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	    (unsigned char *) ii);
 	ASSERT(!err);
 done:
-	if (img_alloc) {
-		free(img);
-	}
 	if (ii) {
 		free(ii);
 	}

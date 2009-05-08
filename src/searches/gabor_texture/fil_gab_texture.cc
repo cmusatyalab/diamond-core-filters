@@ -134,7 +134,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	gtexture_args_t  *targs = (gtexture_args_t *)f_datap;
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
-	int			rgb_alloc = 0;
 	gabor_ii_img_t *	gii_img;
 	search_param_t param;
 
@@ -143,10 +142,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	assert(err == 0);
 	rgb_img = (RGBImage *)dptr;
-	if (rgb_img == NULL) {
-		rgb_alloc = 1;
-		rgb_img = get_rgb_img(ohandle);
-	}
 	assert(rgb_img);
 
 	/* Get the gabor II */
@@ -184,10 +179,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	} else {
 		/* XXX clean list ?? */
 		pass = 0;
-	}
-
-	if (rgb_alloc) {
-		free(rgb_img);
 	}
 
 	free(gii_img);
