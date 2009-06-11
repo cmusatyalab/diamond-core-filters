@@ -166,16 +166,13 @@ image_gen_image_scale(RGBImage * data, int scale)
 				avg_b = min_color;
 			}
 			if (avg_r > max_color) {
-				printf("avg too big: %f (max %f)\n", avg_r, max_color);
-				exit(1);
+				avg_r = max_color;
 			}
 			if (avg_g > max_color) {
-				printf("avg too big: %f (max %f)\n", avg_g, max_color);
-				exit(1);
+				avg_g = max_color;
 			}
 			if (avg_b > max_color) {
-				printf("avg too big: %f (max %f)\n", avg_b, max_color);
-				exit(1);
+				avg_b = max_color;
 			}
 
 			write_pixel(img, x, y, (u_char) avg_r, (u_char) avg_g,
