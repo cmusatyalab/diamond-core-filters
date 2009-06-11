@@ -208,23 +208,6 @@ static GtkWidget *make_gimage(RGBImage *img);
 
 
 /* ********************************************************************** */
-
-struct collection_t
-{
-	char *name;
-};
-
-struct collection_t collections[MAX_ALBUMS+1] =
-    {
-	    {
-		    NULL
-	    }
-    };
-
-
-
-
-/* ********************************************************************** */
 /* utility functions */
 /* ********************************************************************** */
 
@@ -288,48 +271,6 @@ enable_image_control(image_control_t *img_cntrl)
 	gtk_widget_set_sensitive(img_cntrl->next_button, TRUE);
 	gtk_widget_grab_default(img_cntrl->next_button);
 
-}
-
-
-
-static void
-get_gid_list(gid_list_t *main_region)
-{
-  int i, j;
-
-  for(i=0; i<MAX_ALBUMS && collections[i].name; i++) {
-    int err;
-    int num_gids = MAX_ALBUMS;
-    groupid_t gids[MAX_ALBUMS];
-
-    err = nlkup_lookup_collection(collections[i].name, &num_gids, gids);
-    assert(!err);
-
-    for (j=0; j < num_gids; j++)
-      main_region->gids[main_region->ngids++] = gids[j];
-  }
-}
-
-
-static void
-get_name_list()
-{
-  /*
-   * freshly read the list of collections
-   */
-
-  void *cookie;
-  char *name;
-  int err, pos;
-  
-  for(pos = 0, err = nlkup_first_entry(&name, &cookie);
-      (!err && pos < MAX_ALBUMS); pos++) {
-    collections[pos].name = name;
-    pos++;
-    err = nlkup_next_entry(&name, &cookie);
-  }
-  
-  collections[pos].name = NULL;
 }
 
 static void
@@ -743,12 +684,6 @@ cb_start_search(GtkButton* item, gpointer data)
 	/* reset user state */
 	user_state = USER_WAITING;
 
-	/* another global, ack!! this should be on the heap XXX */
-	static gid_list_t gid_list;
-	memset(&gid_list, 0, sizeof(gid_list_t));
-	get_name_list();
-	get_gid_list(&gid_list);
-
 	pthread_mutex_lock(&display_mutex);
 	image_controls.cur_op = CNTRL_NEXT;
 	pthread_mutex_unlock(&display_mutex);
@@ -766,7 +701,6 @@ cb_start_search(GtkButton* item, gpointer data)
 		exit(1);
 	}
 	message->type = START_SEARCH;
-	message->data = (void *)&gid_list;
 	g_async_queue_push(to_search_thread, message);
 
 	GUI_CALLBACK_LEAVE();	/* need to do this before signal (below) */
@@ -1874,8 +1808,6 @@ main(int argc, char *argv[])
 
 
 	snap_searchset = new search_set();
-
-	get_name_list();
 
 	/*
 	 * Create the main window.

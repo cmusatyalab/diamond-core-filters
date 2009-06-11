@@ -27,16 +27,6 @@
 
 
 
-/* this struct is used to send info from the GUI to the search
- * thread.  */
-typedef	struct gid_list
-{
-    int                     ngids;
-    groupid_t               gids[MAX_ALBUMS];
-}
-gid_list_t;
-
-
 typedef enum message_ops {
     START_SEARCH,
     TERM_SEARCH,
@@ -88,7 +78,7 @@ extern "C"
 
 void * sfind_search_main(void *);
 char *build_filter_spec(char *file);
-void do_search(gid_list_t *main_region, char *opt_filename);
+void do_search(char *opt_filename);
 
 
 

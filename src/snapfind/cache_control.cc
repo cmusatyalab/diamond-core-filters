@@ -112,15 +112,9 @@ set_for_each_device(ls_search_handle_t shandle, const char *rem_string,
 {
 	int             num_dev;
 	ls_dev_handle_t dev_list[SF_MAX_DEVICES];
-	int             i, err;
-	char	    big_buf[MAX_BUF];
-	char *	   delim;
-	char	    node_name[MAX_BUF];
-	struct hostent *hent;
+	int             err;
 
-	/*
-	    	 * Get a list of the devices.
-	    	 */
+	/* Get a list of the devices. */
 	num_dev = SF_MAX_DEVICES;
 	err = ls_get_dev_list(shandle, dev_list, &num_dev);
 	if (err != 0) {

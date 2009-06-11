@@ -27,9 +27,6 @@
 /* max number of regions that can be selected in zoomed window */
 #define MAX_SELECT 32
 
-/* number of albums we support */
-#define MAX_ALBUMS 32
-
 /* presumed max number of active filters */
 #define SF_MAX_FILTERS 	64
 

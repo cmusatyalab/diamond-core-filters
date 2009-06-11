@@ -115,7 +115,7 @@ set_push_attributes(ls_search_handle_t shandle)
  */
 
 void
-do_search(gid_list_t * main_region, char *fspec)
+do_search(char *fspec)
 {
 	int             err;
 	char           *filter_name;
@@ -134,13 +134,6 @@ do_search(gid_list_t * main_region, char *fspec)
 	dir_name = (char *) malloc(SF_MAX_PATH);
 	if (dir_name == NULL) {
 		exit(1);                /* XXX */
-	}
-
-	err = ls_set_searchlist(shandle, main_region->ngids,
-				main_region->gids);
-	if (err) {
-		printf("Failed to set searchlist on  err %d \n", err);
-		exit(1);
 	}
 
 	set_push_attributes(shandle);
@@ -187,7 +180,7 @@ define_scope(void *data)
 {
 	int             err;
 
-	err = ls_define_scope();
+	err = ls_define_scope(shandle);
 	if (err != 0) {
 		printf("XXX failed to define scope \n");
 	}
@@ -254,7 +247,7 @@ handle_message(message_t * new_message)
 	switch (new_message->type) {
 		case START_SEARCH:
 			drain_ring(from_search_thread);
-			do_search((gid_list_t *) new_message->data, NULL);
+			do_search(NULL);
 			active = 1;
 			search_active = 1;
 			search_number++;
