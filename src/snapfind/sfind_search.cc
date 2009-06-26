@@ -182,7 +182,7 @@ define_scope(void *data)
 
 	err = ls_define_scope(shandle);
 	if (err != 0) {
-		printf("XXX failed to define scope \n");
+		printf("Failed to define scope, cookie may have expired\n");
 	}
 }
 
