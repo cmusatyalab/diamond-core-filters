@@ -454,7 +454,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	scale = 1.0;
 	scale = max(scale, (double)width / (double)scaledimg->width);
 	scale = max(scale, (double)height / (double)scaledimg->height);
-	scale = ceil(scale);
+	scale = round(scale);
 
 	/* 
 	 * for each of the active searches look for a set of
