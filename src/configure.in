@@ -27,7 +27,7 @@ ADD_LIB_SEARCH([/lib])
 # Checks for libraries.
 
 # Look for the various diamond libraries that we need
-PKG_CHECK_MODULES(OPENDIAMOND, [opendiamond])
+PKG_CHECK_MODULES(OPENDIAMOND, [opendiamond >= 4.1.5])
 AC_SUBST(OPENDIAMOND_CFLAGS)
 AC_SUBST(OPENDIAMOND_LIBS)
 
