@@ -29,6 +29,7 @@
 #include <limits.h>
 #include <ctype.h> 
 #include <assert.h> 
+#include <unistd.h>
 #include "lib_searchlet.h"
 #include "lib_filter.h"
 #include "lib_log.h"

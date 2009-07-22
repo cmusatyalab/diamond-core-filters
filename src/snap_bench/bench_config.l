@@ -27,8 +27,18 @@
 #include <errno.h>
 #include <sys/queue.h>
 #include "lib_searchlet.h"
+#include "lib_results.h"
+#include "snapfind_consts.h"
 #include "snap_bench.h"
 #include "sys_attr.h"
+#include "lib_filter.h"
+#include <linux/limits.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <glib.h>
+#include <fcntl.h>
+#include <libgen.h>
+
 
 static char *eat_token(char *tok);
 static void init_search(char *tok);
@@ -46,6 +56,12 @@ static void think_ms(char *tok);
 static void run_script(char *tok);
 static void have_error(char *tok);
 
+
+void set_matches_stop(char *string);
+int object_matches(ls_obj_handle_t handle);
+void run_query(char *string);
+void cleanup_search(void);
+void reexecute_filters(void);
 
 extern int verbose;
 
@@ -81,11 +97,245 @@ think[ \t]+[[:digit:]].*\n			{think_ms(yytext);}
 run_script[ \t]+.*\n 				{run_script(yytext);}
 dump_filterstats[ \t]+.*\n 			{dump_filtstats();}
 all_objects[ \t]+.*\n 				{all_objects(yytext);}
+set_matches_stop[ \t]+[[:digit:]]+[ \t]+.*\n	{set_matches_stop(yytext);}
+run_query[ \t]+[[:digit:]]+.*\n			{run_query(yytext);}
+ls_reexecute_filters.*\n				{reexecute_filters();}
 [[:blank:]]
 \n
 . 		                              {have_error(yytext); }
 
 %%
+
+#define MAX_NAME		128
+#define IMAGES_PER_SCREEN	1
+long think_time		 =	1000; /*ms*/
+int cur_search_match_min =	0;
+char *cur_search_matches =	NULL;
+long cur_search_matches_len =	0;
+GHashTable *matches_hash = NULL;
+char *obj_id		= NULL;
+
+void set_matches_stop(char *string){
+   char *token;
+   char path[PATH_MAX], c;
+   int f;
+   long i;
+
+   token = eat_token(string);
+   if( sscanf(token, "%d", &cur_search_match_min) < 1){
+      fprintf(stderr, "set_matches_stop found invalid threshold %s.\n", token);
+      return;
+      }
+
+   token = eat_token(token);
+   if( sscanf(token, "%s\n", path) < 1){
+      fprintf(stderr, "set_matches_stop found invalid maches file: %s\n", token);
+      return;
+      }
+
+   f = open( path, O_RDONLY );
+   if( cur_search_matches != NULL){
+      /*free( cur_search_matches );*/
+      g_hash_table_destroy(matches_hash);
+      matches_hash = NULL;
+      }
+
+   /*
+   cur_search_matches_len = lseek(f, 0, SEEK_END);
+
+   cur_search_matches = malloc( sizeof(char) * (cur_search_matches_len + 1) );
+   lseek(f, 0, SEEK_SET);
+
+   if( read(f, cur_search_matches, cur_search_matches_len) < 0){
+      fprintf(stderr, "set_matches_stop could not read from matches file %s.\n", path);
+      return;
+      }
+
+   cur_search_matches[cur_search_matches_len] = '\0';
+   
+
+   for( i = 0 ; i < cur_search_matches_len; ++i)
+      if(cur_search_matches[i] == '\n')
+         cur_search_matches[i] = '\0';
+   */
+
+   matches_hash = g_hash_table_new(g_str_hash, g_str_equal);
+   i = 0;
+   while(read(f, &c, 1)){
+      if( c == '\n' ){
+         path[i] = '\0';
+         g_hash_table_insert( matches_hash, g_strdup( path ), "");
+         i = 0;
+         }
+      else{   
+          path[i]= c;
+          ++i;
+          }
+      if(i >= PATH_MAX)
+          i = 0;
+      }
+
+    if(i > 0 ){
+       path[i] = '\0';
+       g_hash_table_insert( matches_hash, g_strdup( path ) , "");
+       }
+
+
+   close(f);
+
+
+   fflush(stdout);
+   }
+
+int object_matches(ls_obj_handle_t handle){
+   char path[MAX_NAME], *cur, *name;
+   size_t size = MAX_NAME;
+   int err;
+   long len = 0;
+ 
+   err = lf_read_attr( handle, DISPLAY_NAME, &size,
+                       (unsigned char *)path);
+   name = basename( path );
+
+   /*print current file*/
+   dump_device( handle );
+
+   if(err)
+      fprintf(stdout, "name Unknown");
+   else {
+      printf( "name %s", name);
+
+      /*cur = cur_search_matches;
+      while( len < cur_search_matches_len ){
+         if(strcmp(name, cur) == 0){
+            printf( "... matches.\n" );
+            return 1;
+            }
+
+         cur = strchr( cur, '\0');
+         ++cur;
+         len = cur - cur_search_matches;
+         }
+        */
+      if( g_hash_table_lookup (matches_hash, name) != NULL){
+         printf( "... matches.\n" );
+         fflush(stdout);
+         return 1;
+         }
+      }
+
+   printf( "\n");
+   fflush(stdout);
+   return 0;
+   }
+
+
+void reexecute_filters(void){
+    ls_obj_handle_t obj;
+
+    ls_reexecute_filters(shandle, obj_id, NULL, &obj);
+
+    ls_release_object(shandle, obj);
+
+   }
+
+
+/*While query is on and Not EOS, fetch all objects and put on Q*/
+/*static void prefetch_objects(){
+
+  }*/
+
+/*TODO: start new thread?*/
+/* Keep getting an object from Q until we find target objects. *
+ * Response time is the time to fill screen with (6) objects.    */
+void run_query(char *string){
+   ls_obj_handle_t  objs[IMAGES_PER_SCREEN ];
+   int err, i;
+   int has_objs[IMAGES_PER_SCREEN]={0};
+   struct timeval start, end;
+   long long  response_t;
+   char sleep_cmd[18], *token;
+   int has_more = 1;
+
+   token = eat_token(string);
+
+   if( sscanf(token, "%ld", &think_time) < 1){
+      fprintf(stderr, "think_time specified is invalid %s.\n", token);
+      return;
+      }
+
+   /*Keep getting next object until I find required 
+     number of matching images*/
+   while( cur_search_match_min > 0 && has_more){
+      gettimeofday(&start, NULL); 
+      /*set_user_state( "ls_set_user_state id 0 state WAITING\n" );*/
+
+      /*fetch six objects at a time -- emulating Snapfind */
+      for( i = 0; i < IMAGES_PER_SCREEN; ++i){ 
+
+         err = ls_next_object(shandle, &objs[i], LSEARCH_NO_BLOCK);
+         if (err == ENOENT){
+            fprintf(stderr, "run_query: no more objects \n");
+            has_more = 0;
+            break;
+            }
+         else if (err == 0) {
+            /*all good...*/
+            has_objs[i] = 1;
+            } 
+         else if(err == EWOULDBLOCK)
+           --i;
+         else {
+            fprintf(stderr, "run_query: failed on %d \n", err);
+            has_more = 0;
+            break;
+            }
+
+         }
+
+    if( obj_id )
+       free( obj_id );
+    ls_get_objectid(shandle, objs[i - 1], &obj_id);
+
+     /* set_user_state( "ls_set_user_state id 0 state BUSY\n" );*/
+
+      gettimeofday(&end, NULL);
+      response_t = ((long long) (end.tv_sec - start.tv_sec) * 1000) 
+                 + (end.tv_usec - start.tv_usec) / 1000;
+
+      for( i = 0; i < IMAGES_PER_SCREEN; ++i){
+         if( has_objs[i] ){
+            if(object_matches(objs[i]) )
+               --cur_search_match_min;
+
+            ls_release_object(shandle, objs[i]);
+            }
+
+         has_objs[i] = 0;
+         }
+    
+      printf( "Response time: %lld ms\n", response_t );
+      fflush(stdout); 
+      /*Think -- I define it as time to look at screen*/
+      /*TODO: subtract obj matches overhead time*/
+      sprintf( sleep_cmd, "sleep %ld\n", think_time ); 
+      sleep_ms( sleep_cmd );
+      }
+   }
+
+void cleanup_search(void){
+   FILE *f;
+   /*fork first !!
+     int err = execl( "/bin/rm", "rm", "-r", "/tmp/DiamondCache", NULL );
+     fprintf(stderr, "Error cleaning up cache -- ");
+   */
+
+   f = popen( "/bin/rm -r /tmp/DiamondCache", "r" );
+   /*while(fgetc(f));*/
+   pclose( f );
+   fprintf( stderr, "/tmp/DiamondCache removed.\n");
+   }
+
 
 
 static void
@@ -153,7 +403,6 @@ set_searchlist(char *string)
 	char *		token;
 	int		gid_count = 0;
 	groupid_t       gid_list[MAX_GIDS];
-
 
 
 	token = eat_token(string);
@@ -268,6 +517,11 @@ void
 start_search(char *string)
 {
 	int	err;
+
+        const char *alist[] = {DISPLAY_NAME, DEVICE_NAME, 
+                               THUMBNAIL_ATTR, COLS, ROWS, NULL};
+        ls_set_push_attributes(shandle, alist);
+
         gettimeofday(&start, NULL);
 	err = ls_start_search(shandle);
         if (err) {
@@ -303,6 +557,8 @@ term_search(char *string)
           	fprintf(stdout, "stopping search at %lu.%06lu\n", 
     			end.tv_sec, end.tv_usec);
         }
+       /*cleanup diamond cache
+       cleanup_search();*/
 }
 
 void
@@ -420,7 +676,6 @@ next_object(char *string)
 	ls_obj_handle_t	cur_obj;
 	int		err;
 
-
  	err = ls_next_object(shandle, &cur_obj, 0);
 	if (err == ENOENT) {
 		fprintf(stderr, "get_next_obj: no more objects \n");
@@ -428,6 +683,7 @@ next_object(char *string)
 		fprintf(stdout, "get_next_obj: ");
 		dump_device(cur_obj);
 		dump_name(cur_obj);
+
 		fprintf(stdout, "\n");
 		fflush(stdout);
 		ls_release_object(shandle, cur_obj);
@@ -435,6 +691,7 @@ next_object(char *string)
 		fprintf(stderr, "get_next_obj: failed on %d \n", err);
 		exit(1);
 	}
+        
 
 }
 
