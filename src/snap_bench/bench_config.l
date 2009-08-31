@@ -113,9 +113,10 @@ int cur_search_match_min =	0;
 char *cur_search_matches =	NULL;
 long cur_search_matches_len =	0;
 GHashTable *matches_hash = NULL;
-char *obj_id		= NULL;
+const char *obj_id = NULL;
 
-void set_matches_stop(char *string){
+void set_matches_stop(char *string)
+{
    char *token;
    char path[PATH_MAX], c;
    int f;
@@ -188,10 +189,9 @@ void set_matches_stop(char *string){
    }
 
 int object_matches(ls_obj_handle_t handle){
-   char path[MAX_NAME], *cur, *name;
+   char path[MAX_NAME], *name;
    size_t size = MAX_NAME;
    int err;
-   long len = 0;
  
    err = lf_read_attr( handle, DISPLAY_NAME, &size,
                        (unsigned char *)path);
@@ -293,8 +293,8 @@ void run_query(char *string){
 
          }
 
-    if( obj_id )
-       free( obj_id );
+    if (obj_id)
+       free((char *)obj_id);
     ls_get_objectid(shandle, objs[i - 1], &obj_id);
 
      /* set_user_state( "ls_set_user_state id 0 state BUSY\n" );*/
