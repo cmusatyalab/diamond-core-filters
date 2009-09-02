@@ -60,7 +60,6 @@ static void have_error(char *tok);
 void set_matches_stop(char *string);
 int object_matches(ls_obj_handle_t handle);
 void run_query(char *string);
-void cleanup_search(void);
 void reexecute_filters(void);
 
 extern int verbose;
@@ -117,76 +116,42 @@ const char *obj_id = NULL;
 
 void set_matches_stop(char *string)
 {
-   char *token;
-   char path[PATH_MAX], c;
-   int f;
-   long i;
+    char *token;
+    char path[PATH_MAX];
+    gchar *data, **files;
+    unsigned int i;
+    int rc;
 
-   token = eat_token(string);
-   if( sscanf(token, "%d", &cur_search_match_min) < 1){
-      fprintf(stderr, "set_matches_stop found invalid threshold %s.\n", token);
-      return;
-      }
+    token = eat_token(string);
+    if (sscanf(token, "%d", &cur_search_match_min) < 1) {
+	fprintf(stderr, "set_matches_stop found invalid threshold %s.\n",
+		token);
+	return;
+    }
 
-   token = eat_token(token);
-   if( sscanf(token, "%s\n", path) < 1){
-      fprintf(stderr, "set_matches_stop found invalid maches file: %s\n", token);
-      return;
-      }
+    token = eat_token(token);
+    if (sscanf(token, "%s\n", path) < 1) {
+	fprintf(stderr, "set_matches_stop found invalid maches file: %s\n",
+		token);
+	return;
+    }
 
-   f = open( path, O_RDONLY );
-   if( cur_search_matches != NULL){
-      /*free( cur_search_matches );*/
-      g_hash_table_destroy(matches_hash);
-      matches_hash = NULL;
-      }
+    rc = g_file_get_contents(path, &data, NULL, NULL);
+    assert(rc);
 
-   /*
-   cur_search_matches_len = lseek(f, 0, SEEK_END);
+    files = g_strsplit(data, "\n", -1);
+    g_free(data);
 
-   cur_search_matches = malloc( sizeof(char) * (cur_search_matches_len + 1) );
-   lseek(f, 0, SEEK_SET);
+    if (cur_search_matches)
+	g_hash_table_destroy(matches_hash);
+    matches_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
+					 g_free, NULL);
 
-   if( read(f, cur_search_matches, cur_search_matches_len) < 0){
-      fprintf(stderr, "set_matches_stop could not read from matches file %s.\n", path);
-      return;
-      }
+    for (i = 0; files[i]; i++)
+	g_hash_table_insert(matches_hash, files[i], "");
 
-   cur_search_matches[cur_search_matches_len] = '\0';
-   
-
-   for( i = 0 ; i < cur_search_matches_len; ++i)
-      if(cur_search_matches[i] == '\n')
-         cur_search_matches[i] = '\0';
-   */
-
-   matches_hash = g_hash_table_new(g_str_hash, g_str_equal);
-   i = 0;
-   while(read(f, &c, 1)){
-      if( c == '\n' ){
-         path[i] = '\0';
-         g_hash_table_insert( matches_hash, g_strdup( path ), "");
-         i = 0;
-         }
-      else{   
-          path[i]= c;
-          ++i;
-          }
-      if(i >= PATH_MAX)
-          i = 0;
-      }
-
-    if(i > 0 ){
-       path[i] = '\0';
-       g_hash_table_insert( matches_hash, g_strdup( path ) , "");
-       }
-
-
-   close(f);
-
-
-   fflush(stdout);
-   }
+    g_free(files);
+}
 
 int object_matches(ls_obj_handle_t handle){
    char path[MAX_NAME], *name;
@@ -273,7 +238,7 @@ void run_query(char *string){
       /*fetch six objects at a time -- emulating Snapfind */
       for( i = 0; i < IMAGES_PER_SCREEN; ++i){ 
 
-         err = ls_next_object(shandle, &objs[i], LSEARCH_NO_BLOCK);
+         err = ls_next_object(shandle, &objs[i], 0);
          if (err == ENOENT){
             fprintf(stderr, "run_query: no more objects \n");
             has_more = 0;
@@ -322,21 +287,6 @@ void run_query(char *string){
       sleep_ms( sleep_cmd );
       }
    }
-
-void cleanup_search(void){
-   FILE *f;
-   /*fork first !!
-     int err = execl( "/bin/rm", "rm", "-r", "/tmp/DiamondCache", NULL );
-     fprintf(stderr, "Error cleaning up cache -- ");
-   */
-
-   f = popen( "/bin/rm -r /tmp/DiamondCache", "r" );
-   /*while(fgetc(f));*/
-   pclose( f );
-   fprintf( stderr, "/tmp/DiamondCache removed.\n");
-   }
-
-
 
 static void
 have_error(char *data) 
@@ -557,8 +507,6 @@ term_search(char *string)
           	fprintf(stdout, "stopping search at %lu.%06lu\n", 
     			end.tv_sec, end.tv_usec);
         }
-       /*cleanup diamond cache
-       cleanup_search();*/
 }
 
 void

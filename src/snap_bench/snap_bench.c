@@ -182,7 +182,9 @@ dump_filtstats()
 	ls_dev_handle_t dev_list[MAX_DEVS];
 	dev_stats_t    *dev_stats;
 	int             stat_len;
+	struct timeval  tv;
 
+	gettimeofday(&tv, NULL);
 
 	dev_count = MAX_DEVS;
 	err = ls_get_dev_list(shandle, dev_list, &dev_count);
@@ -191,6 +193,7 @@ dump_filtstats()
 		exit(1);
 	}
 
+	fprintf(stdout, "Current time: %ld.%06ld\n", tv.tv_sec, tv.tv_usec);
 	fprintf(stdout, "active devices %d \n", dev_count);
 	dev_stats = (dev_stats_t *) malloc(DEV_STATS_SIZE(MAX_FILTS));
 	assert(dev_stats != NULL);
