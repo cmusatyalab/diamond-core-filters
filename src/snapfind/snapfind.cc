@@ -80,20 +80,10 @@
 static const int TABLE_COLS = 3;
 static const int TABLE_ROWS = 2;
 
-static int default_min_faces = 0;
-static int default_face_levels = 37;
-
-
 thumblist_t thumbnails = TAILQ_HEAD_INITIALIZER(thumbnails);
 thumbnail_t *cur_thumbnail = NULL;
-int thumbnail_size_x = THUMBSIZE_X;
-int thumbnail_size_y = THUMBSIZE_Y;
 
-int expert_mode = 0;		/* global (also used in face_widgets.c) */
-char *dump_spec_file = NULL;		/* dump spec file and exit */
-int dump_objects = 0;		/* just dump all the objects and exit (no gui) */
 GtkTooltips *tooltips = NULL;
-char *read_spec_filename = NULL;
 
 user_state_t user_state = USER_WAITING;
 
@@ -108,9 +98,6 @@ typedef struct export_threshold_t
 	TAILQ_ENTRY(export_threshold_t) link;
 }
 export_threshold_t;
-
-
-TAILQ_HEAD(export_list_t, export_threshold_t) export_list = TAILQ_HEAD_INITIALIZER(export_list);
 
 
 static struct
@@ -1179,7 +1166,7 @@ cb_toggle_stats( gpointer   callback_data,
                  GtkWidget *menu_item )
 {
 	GUI_CALLBACK_ENTER();
-	toggle_stats_win(shandle, expert_mode);
+	toggle_stats_win(shandle, 1);
 	GUI_CALLBACK_LEAVE();
 }
 
@@ -1189,7 +1176,7 @@ cb_toggle_progress(gpointer callback_data, guint callback_action,
     GtkWidget *menu_item )
 {
 	GUI_CALLBACK_ENTER();
-	toggle_progress_win(shandle, expert_mode);
+	toggle_progress_win(shandle, 1);
 	GUI_CALLBACK_LEAVE();
 }
 
@@ -1208,7 +1195,7 @@ cb_toggle_ccontrol(gpointer callback_data, guint callback_action,
     GtkWidget *menu_item )
 {
 	GUI_CALLBACK_ENTER();
-	toggle_ccontrol_win(shandle, expert_mode);
+	toggle_ccontrol_win(shandle, 1);
 	GUI_CALLBACK_LEAVE();
 }
 
@@ -1353,8 +1340,8 @@ create_display_region(GtkWidget *main_box)
 			gtk_widget_show(frame);
 
 			widget = gtk_viewport_new(NULL, NULL);
-			gtk_widget_set_size_request(widget, thumbnail_size_x, 
-			    thumbnail_size_y);
+			gtk_widget_set_size_request(widget, THUMBSIZE_X, 
+			    THUMBSIZE_Y);
 			gtk_container_add(GTK_CONTAINER(frame), widget);
 			gtk_table_attach_defaults(GTK_TABLE(thumbnail_view), 
 			    eb, j, j+1, i, i+1);
@@ -1665,77 +1652,12 @@ create_main_window(void)
 
 
 
-static void
-usage(char **argv)
-{
-	fprintf(stderr, "usage: %s [options]\n", basename(argv[0]));
-	fprintf(stderr, "  -h        - help\n");
-	fprintf(stderr, "  -e        - expert mode\n");
-	fprintf(stderr, "  -s<file>  - histo index file\n");
-	fprintf(stderr, "  --similarity <filter>=<val>  - set default threshold (repeatable)\n");
-	fprintf(stderr, "  --min-faces=<num>       - set min number of faces \n");
-	fprintf(stderr, "  --face-levels=<num>     - set face detector levels \n");
-	fprintf(stderr, "  --dump-spec=<file>      - dump spec file and exit \n");
-	fprintf(stderr, "  --dump-objects          - start search and dump objects\n");
-	fprintf(stderr, "  --read-spec=<file>      - use spec file. requires dump-objects\n");
-	fprintf(stderr, "  --thumbnail-width=<num>     - thumbnail width in pixels\n");
-	fprintf(stderr, "  --thumbnail-height=<num>     - thumbnail height in pixels\n");
-}
-
-
-
-static int
-set_export_threshold(char *arg)
-{
-	char *s = arg;
-
-	while(*s && *s != '=') {
-		s++;
-	}
-	if(!*s)
-		return -1;		/* error */
-	*s++ = '\0';
-
-	export_threshold_t *et = (export_threshold_t *)malloc(sizeof(export_threshold_t));
-	assert(et);
-	et->name = arg;
-	double d = atof(s);
-	if(d > 1)
-		d /= 100.0;
-	if(d > 1 || d < 0) {
-		fprintf(stderr, "bad distance: %s\n", s);
-		return -1;
-	}
-	et->distance = 1.0 - d;	/* similarity */
-	et->index = -1;
-
-	TAILQ_INSERT_TAIL(&export_list, et, link);
-
-	return 0;
-}
-
-
 int
 main(int argc, char *argv[])
 {
 
 	pthread_t 	search_thread;
 	int		err;
-	const char *scapeconf = "histo/search_config";
-	int c;
-	static const char *optstring = "hes:f:";
-	struct option long_opt[] = {
-		                           {"dump-spec", required_argument, NULL, 0},
-		                           {"dump-objects", no_argument, NULL, 0},
-		                           {"read-spec", required_argument, NULL, 0},
-		                           {"similarity", required_argument, NULL, 'f'},
-		                           {"min-faces", required_argument, NULL, 0},
-		                           {"face-levels", required_argument, NULL, 0},
-					   {"thumbnail-width", required_argument, NULL, 0},
-					   {"thumbnail-height", required_argument, NULL, 0},
-		                           {0, 0, 0, 0}
-	                           };
-	int option_index = 0;
 
 	/*
 	 * Start the GUI
@@ -1746,51 +1668,6 @@ main(int argc, char *argv[])
 	gdk_rgb_init();
 	gtk_rc_parse("gtkrc");
 
-
-	while((c = getopt_long(argc, argv, optstring, long_opt, &option_index)) != -1) {
-		switch(c) {
-			case 0:
-				if(strcmp(long_opt[option_index].name, "dump-spec") == 0) {
-					dump_spec_file = optarg;
-				} else if(strcmp(long_opt[option_index].name, "dump-objects") == 0) {
-					dump_objects = 1;
-				} else if(strcmp(long_opt[option_index].name, "read-spec") == 0) {
-					read_spec_filename = optarg;
-				} else if(strcmp(long_opt[option_index].name, "min-faces") == 0) {
-					default_min_faces = atoi(optarg);
-				} else if(strcmp(long_opt[option_index].name, "face-levels") == 0) {
-					default_face_levels = atoi(optarg);
-				} else if(strcmp(long_opt[option_index].name, "thumbnail-width") == 0) {
-				        thumbnail_size_x = atoi(optarg);
-				} else if(strcmp(long_opt[option_index].name, "thumbnail-height") == 0) {
-				        thumbnail_size_y = atoi(optarg);
-				}
-				
-				break;
-			case 'e':
-				fprintf(stderr, "expert mode must now be turned on with the menu option\n");
-				//expert_mode = 1;
-				break;
-			case 's':
-				scapeconf = optarg;
-				break;
-			case 'f':
-				if(set_export_threshold(optarg) < 0) {
-					usage(argv);
-					exit(1);
-				}
-				break;
-			case ':':
-				fprintf(stderr, "missing parameter\n");
-				exit(1);
-			case 'h':
-			case '?':
-			default:
-				usage(argv);
-				exit(1);
-				break;
-		}
-	}
 
 	/*
 	 * Initialize communications rings with the thread
