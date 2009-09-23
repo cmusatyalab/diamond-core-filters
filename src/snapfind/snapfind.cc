@@ -80,6 +80,8 @@
 static const int TABLE_COLS = 3;
 static const int TABLE_ROWS = 2;
 
+static bool show_user_measurement = true;
+
 thumblist_t thumbnails = TAILQ_HEAD_INITIALIZER(thumbnails);
 thumbnail_t *cur_thumbnail = NULL;
 
@@ -272,8 +274,10 @@ do_img_mark(GtkWidget *widget)
 	/* adjust count */
 	user_measurement.total_marked += (thumb->marked ? 1 : -1);
 
-	printf("marked count = %d/%d\n", user_measurement.total_marked,
-	       user_measurement.total_seen);
+	if (show_user_measurement) {
+		printf("marked count = %d/%d\n", user_measurement.total_marked,
+		       user_measurement.total_seen);
+	}
 
 	gtk_frame_set_label(GTK_FRAME(thumb->frame),
 	                    (thumb->marked) ? "marked" : "");
@@ -842,7 +846,6 @@ void codec_changed_cb (GtkComboBox *widget, gpointer user_data)
 
   /* get the active item */
   gint active = gtk_combo_box_get_active(widget);
-  printf("active: %d\n", active);
   gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(codec_model),
 				&iter, NULL, active);
   gtk_tree_model_get(GTK_TREE_MODEL(codec_model),
@@ -850,7 +853,6 @@ void codec_changed_cb (GtkComboBox *widget, gpointer user_data)
 		     1, &ifac,
 		     0, &name,
 		     -1);
-  printf(" name: %s\n", name);
 
   /* create a new one */
   if (current_codec) {
@@ -1381,8 +1383,10 @@ create_display_region(GtkWidget *main_box)
 static void
 cb_quit()
 {
-	printf("MARKED: %d of %d seen\n", user_measurement.total_marked,
-	       user_measurement.total_seen);
+	if (show_user_measurement) {
+		printf("MARKED: %d of %d seen\n", user_measurement.total_marked,
+		       user_measurement.total_seen);
+	}
 	gtk_main_quit();
 }
 
@@ -1581,13 +1585,11 @@ add_new_codec(img_factory *factory)
 {
 	GtkTreeIter iter;
 	const char *name = factory->get_name();
-	printf ("adding codec %s\n", name);
 	gtk_list_store_insert_with_values (codec_model, &iter, 0,
 					   0, name,
 					   1, factory,
 					   -1);
 	if (strcmp(name, "Built-in") == 0) {
-	  printf (" setting active\n");
 	  gtk_combo_box_set_active(GTK_COMBO_BOX(codec_selector), 0);
 	}
 }
