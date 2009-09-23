@@ -1702,6 +1702,15 @@ main(int argc, char *argv[])
 	log_init("snapfind", NULL);
 
 	/*
+	 * Load all the plugins now.
+	 */
+	decoders_init();
+	load_attr_map();
+	load_plugins();
+	//	init_logging();
+
+
+	/*
 	 * initialize and start the background thread 
 	 */
 	init_search();
@@ -1714,13 +1723,8 @@ main(int argc, char *argv[])
 
 	/*
 	 * Display the main window
-	 * Load all the plugins now.
 	 */
 	gtk_widget_show(gui.main_window);
-	decoders_init();
-	load_attr_map();
-	load_plugins();
-	//	init_logging();
 
 	/*
 	 * Start the main loop processing for the GUI.
