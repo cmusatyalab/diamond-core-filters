@@ -16,6 +16,8 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+// keep lex from printing garbage to stdout
+#define ECHO
 
 #include <pthread.h>
 #include <sys/types.h>

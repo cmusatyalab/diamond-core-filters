@@ -16,6 +16,9 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+// keep lex from printing garbage to stdout
+#define ECHO
+
 #include <pthread.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -185,7 +188,6 @@ do_init()
 
 	yyin = sfconfig_open_config_file();
 	if (yyin == NULL) {
-		fprintf(stderr, "open_config: No snapfindrc file found, using default \n");
 		set_plugin_dir(SNAPFIND_PLUGIN_DIR);
 	} else {
 		ret = sfconflex();

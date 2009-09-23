@@ -16,6 +16,9 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
+// keep lex from printing garbage to stdout
+#define ECHO
+
 #include <string.h>
 #include <ctype.h>
 #include <assert.h> 
