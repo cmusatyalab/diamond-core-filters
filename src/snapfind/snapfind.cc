@@ -1646,8 +1646,6 @@ create_main_window(void)
 	gtk_widget_show (separator);
 
 	create_display_region(main_box);
-
-	gtk_widget_show(gui.main_window);
 }
 
 
@@ -1715,8 +1713,10 @@ main(int argc, char *argv[])
 	}
 
 	/*
+	 * Display the main window
 	 * Load all the plugins now.
 	 */
+	gtk_widget_show(gui.main_window);
 	decoders_init();
 	load_attr_map();
 	load_plugins();
