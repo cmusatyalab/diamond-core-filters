@@ -1750,19 +1750,31 @@ main(int argc, char *argv[])
 
 	if (sc(cmd, "run-gui")) {
 		run_gui();
+		return 0;
 	} else if (sc(cmd, "list-plugins")) {
 		list_plugins();
-	} else if (sc(cmd, "edit-plugin")) {
-
+		return 0;
+	} else if (sc(cmd, "get-plugin-initial-config")) {
+		// check parameters
+		if (argc < 4) {
+			printf("Missing arguments\n");
+			return 1;
+		}
+		return get_plugin_initial_config(argv[2], argv[3]);
+	} else if (sc(cmd, "edit-plugin-config")) {
+		// check parameters
+		if (argc < 4) {
+			printf("Missing arguments\n");
+			return 1;
+		}
+		return edit_plugin_config(argv[2], argv[3]);
 	} else if (sc(cmd, "run-plugin")) {
 
-	} else if (sc(cmd, "get-plugin-searchlet")) {
+	} else if (sc(cmd, "get-plugin-fspec")) {
 
 	} else {
 		printf("Unknown command: \"%s\"\n", cmd);
 		return 1;
 	}
-
-	return 0;
 }
 

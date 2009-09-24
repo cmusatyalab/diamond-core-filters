@@ -18,6 +18,11 @@
 #include "plugin-runner.h"
 #include "factory.h"
 
+static bool
+sc(const char *a, const char *b) {
+	return strcmp(a, b) == 0;
+}
+
 static void
 print_key_value(const char *key,
 		const char *value) {
@@ -52,4 +57,37 @@ list_plugins(void) {
 			print_plugin("codec", imgf);
 		} while((imgf = get_next_factory(&cookie)));
 	}
+}
+
+
+int
+get_plugin_initial_config(const char *type,
+			  const char *internal_name) {
+	img_factory *imgf;
+
+	// find plugin
+	if (sc(type, "filter")) {
+		imgf = find_factory(internal_name);
+	} else if (sc(type, "codec")) {
+		imgf = find_codec_factory(internal_name);
+	} else {
+		printf("Invalid type\n");
+		return 1;
+	}
+
+	if (imgf == NULL) {
+		printf("Can't find %s\n", internal_name);
+		return 1;
+	}
+
+	img_search *search = imgf->create("_");
+	search->write_config(stdout, NULL);
+
+	return 0;
+}
+
+int
+edit_plugin_config(const char *type,
+		   const char *internal_name) {
+  return 1;
 }
