@@ -107,11 +107,11 @@ find_factory(const char *name)
 
 
 img_factory *
-get_first_factory(void **cookie)
+get_first_factory(void **cookie, factory_map_t *map)
 {
 	factory_map_t *cur_map;
 
-	cur_map = fmap;
+	cur_map = map;
 	if (cur_map == NULL) {
 		*cookie = NULL;
 		return(NULL);
@@ -119,6 +119,18 @@ get_first_factory(void **cookie)
 		*cookie = (void *)cur_map;
 		return(cur_map->fm_factory);
 	}
+}
+
+img_factory *
+get_first_factory(void **cookie)
+{
+	return get_first_factory(cookie, fmap);
+}
+
+img_factory *
+get_first_codec_factory(void **cookie)
+{
+	return get_first_factory(cookie, codec_fmap);
 }
 
 img_factory *

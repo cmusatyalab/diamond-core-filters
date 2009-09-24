@@ -32,6 +32,7 @@ void factory_register_codec(img_factory *factory);
 img_factory * find_factory(const char *name);
 img_factory * find_codec_factory(const char *name);
 img_factory * get_first_factory(void **cookie);
+img_factory * get_first_codec_factory(void **cookie);
 img_factory * get_next_factory(void **cookie);
 
 #endif	/* ! _FACTORY_H_ */
