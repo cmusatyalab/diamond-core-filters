@@ -1640,26 +1640,40 @@ create_main_window(void)
 }
 
 
-
-
-
-int
-main(int argc, char *argv[])
+static void
+run_gui(void)
 {
-
 	pthread_t 	search_thread;
 	int		err;
 
 	/*
-	 * Start the GUI
+	 * initialize and start the background thread 
+	 */
+	init_search();
+	err = pthread_create(&search_thread, NULL, sfind_search_main,
+	                     snap_searchset);
+	if (err) {
+		perror("failed to create search thread");
+		exit(1);
+	}
+
+	/*
+	 * Display the main window
+	 */
+	gtk_widget_show(gui.main_window);
+
+	/*
+	 * Start the main loop processing for the GUI.
 	 */
 
-	GUI_THREAD_INIT();
-	gtk_init(&argc, &argv);
-	gdk_rgb_init();
-	gtk_rc_parse("gtkrc");
+	MAIN_THREADS_ENTER();
+	gtk_main();
+	MAIN_THREADS_LEAVE();
+}
 
-
+static void
+initialize_snapfind(void)
+{
 	/*
 	 * Initialize communications rings with the thread
 	 * that interacts with the search thread.
@@ -1699,31 +1713,24 @@ main(int argc, char *argv[])
 	load_attr_map();
 	load_plugins();
 	//	init_logging();
+}
 
 
+int
+main(int argc, char *argv[])
+{
 	/*
-	 * initialize and start the background thread 
-	 */
-	init_search();
-	err = pthread_create(&search_thread, NULL, sfind_search_main,
-	                     snap_searchset);
-	if (err) {
-		perror("failed to create search thread");
-		exit(1);
-	}
-
-	/*
-	 * Display the main window
-	 */
-	gtk_widget_show(gui.main_window);
-
-	/*
-	 * Start the main loop processing for the GUI.
+	 * Init GTK
 	 */
 
-	MAIN_THREADS_ENTER();
-	gtk_main();
-	MAIN_THREADS_LEAVE();
+	GUI_THREAD_INIT();
+	gtk_init(&argc, &argv);
+	gdk_rgb_init();
+	gtk_rc_parse("gtkrc");
+
+	initialize_snapfind();
+
+	run_gui();
 
 	return(0);
 }
