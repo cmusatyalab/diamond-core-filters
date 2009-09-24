@@ -76,7 +76,7 @@ find_codec_factory(const char *name)
 {
 	factory_map_t *cur_map;
 
-	printf("**** find_codec_factory\n");
+	//printf("**** find_codec_factory\n");
 
 	for (cur_map = codec_fmap; cur_map != NULL;
 	    cur_map = cur_map->fm_next) {
