@@ -34,15 +34,6 @@
 #define _GNU_SOURCE
 #endif
 
-#ifdef linux
-#include <getopt.h>
-#else
-#ifndef HAVE_DECL_GETOPT
-#define HAVE_DECL_GETOPT 1
-#endif
-#include <gnugetopt/getopt.h>
-#endif
-
 #include <glib.h>
 
 #include "lib_filter.h"

@@ -27,7 +27,6 @@
 #include <assert.h>
 #include <stdint.h>
 #include <signal.h>
-#include <getopt.h>
 
 #include "lib_filter.h"
 #include "lib_searchlet.h"
