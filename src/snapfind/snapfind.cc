@@ -1715,6 +1715,10 @@ initialize_snapfind(void)
 	//	init_logging();
 }
 
+static bool
+sc(const char *a, const char *b) {
+	return strcmp(a, b) == 0;
+}
 
 int
 main(int argc, char *argv[])
@@ -1730,8 +1734,23 @@ main(int argc, char *argv[])
 
 	initialize_snapfind();
 
-	run_gui();
+	/*
+	 * Decide what we are doing
+	 */
+	const char *cmd;
+	if (argc == 1) {
+		cmd = "gui";
+	} else {
+		cmd = argv[1];
+	}
 
-	return(0);
+	if (sc(cmd, "gui")) {
+		run_gui();
+	} else {
+		printf("Unknown command: \"%s\"\n", cmd);
+		return 1;
+	}
+
+	return 0;
 }
 
