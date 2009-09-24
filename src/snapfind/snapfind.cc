@@ -1739,13 +1739,23 @@ main(int argc, char *argv[])
 	 */
 	const char *cmd;
 	if (argc == 1) {
-		cmd = "gui";
+		cmd = "run-gui";
 	} else {
 		cmd = argv[1];
 	}
 
-	if (sc(cmd, "gui")) {
+	g_debug("cmd: %s", cmd);
+
+	if (sc(cmd, "run-gui")) {
 		run_gui();
+	} else if (sc(cmd, "list-plugins")) {
+		list_plugins();
+	} else if (sc(cmd, "edit-plugin")) {
+
+	} else if (sc(cmd, "run-plugin")) {
+
+	} else if (sc(cmd, "get-plugin-searchlet")) {
+
 	} else {
 		printf("Unknown command: \"%s\"\n", cmd);
 		return 1;
