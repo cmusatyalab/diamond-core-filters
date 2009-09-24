@@ -81,7 +81,9 @@ get_plugin_initial_config(const char *type,
 	}
 
 	img_search *search = imgf->create("_");
-	search->write_config(stdout, NULL);
+	if (search->is_editable()) {
+		search->write_config(stdout, NULL);
+	}
 
 	return 0;
 }
