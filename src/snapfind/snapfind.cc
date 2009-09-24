@@ -66,6 +66,7 @@
 #include "plugin.h"
 #include "attr_decode.h"
 #include "decoder.h"
+#include "factory.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -1714,6 +1715,28 @@ initialize_snapfind(void)
 	load_plugins();
 	//	init_logging();
 }
+
+static void
+list_plugins(void) {
+	void *cookie;
+
+	img_factory *imgf;
+
+	imgf = get_first_factory(&cookie);
+	if (imgf != NULL) {
+		do {
+			printf("%s\n", imgf->get_name());
+		} while((imgf = get_next_factory(&cookie)));
+	}
+
+	imgf = get_first_codec_factory(&cookie);
+	if (imgf != NULL) {
+		do {
+			printf("CODEC: %s\n", imgf->get_name());
+		} while((imgf = get_next_factory(&cookie)));
+	}
+}
+
 
 static bool
 sc(const char *a, const char *b) {
