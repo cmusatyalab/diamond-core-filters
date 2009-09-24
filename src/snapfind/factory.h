@@ -15,7 +15,7 @@
 #ifndef _FACTORY_H_
 #define _FACTORY_H_	1
 
-
+#include "img_search.h"
 
 typedef struct factory_map {
 	struct factory_map  *	fm_next;

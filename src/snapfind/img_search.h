@@ -18,6 +18,7 @@
 #include <gtk/gtk.h>
 #include "rgb.h"
 #include "snapfind_consts.h"
+#include "lib_results.h"
 #include <cstring>
 
 
