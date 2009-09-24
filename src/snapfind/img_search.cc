@@ -51,6 +51,7 @@ img_search::img_search(const char *name, const char *descr)
 	auxdata = NULL;
 	auxdatalen = 0;
 	example_name = NULL;
+	exit_gui_on_close_edit_win = false;
 }
 
 
@@ -328,6 +329,9 @@ img_search::close_edit_win()
 {
 	save_edits();
 	name_entry = NULL;
+	if (get_exit_gui_on_close_edit_win()) {
+		gtk_main_quit();
+	}
 }
 
 
@@ -409,6 +413,18 @@ void
 img_search::set_auxiliary_data(void *data) 
 {
   auxdata = data;
+}
+
+bool
+img_search::get_exit_gui_on_close_edit_win()
+{
+  return exit_gui_on_close_edit_win;
+}
+
+void
+img_search::set_exit_gui_on_close_edit_win(bool val)
+{
+  exit_gui_on_close_edit_win = val;
 }
 
 void 
