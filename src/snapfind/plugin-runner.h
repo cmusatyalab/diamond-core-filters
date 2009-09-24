@@ -19,6 +19,6 @@ void list_plugins(void);
 int get_plugin_initial_config(const char *type,
 			      const char *internal_name);
 int edit_plugin_config(const char *type,
-			      const char *internal_name);
+		       const char *internal_name);
 
 #endif  /* _PLUGIN_RUNNER_H_ */
