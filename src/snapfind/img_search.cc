@@ -330,7 +330,7 @@ img_search::close_edit_win()
 {
 	save_edits();
 	name_entry = NULL;
-	if (get_plugin_runner_mode()) {
+	if (is_plugin_runner_mode()) {
 		gtk_main_quit();
 	}
 }
@@ -417,7 +417,7 @@ img_search::set_auxiliary_data(void *data)
 }
 
 bool
-img_search::get_plugin_runner_mode()
+img_search::is_plugin_runner_mode()
 {
   return plugin_runner_mode;
 }

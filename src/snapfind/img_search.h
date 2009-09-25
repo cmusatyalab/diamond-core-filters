@@ -67,7 +67,7 @@ public:
 	int             get_auxiliary_data_length();
 	void            set_auxiliary_data_length(int len);
 
-	bool            get_plugin_runner_mode();
+	bool            is_plugin_runner_mode();
 	void            set_plugin_runner_mode(bool val);
 
 	img_search &operator=(const img_search &rhs);
