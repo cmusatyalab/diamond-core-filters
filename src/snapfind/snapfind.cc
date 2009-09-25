@@ -1767,9 +1767,12 @@ main(int argc, char *argv[])
 		}
 		return edit_plugin_config(argv[2], argv[3]);
 	} else if (sc(cmd, "run-plugin")) {
-
-	} else if (sc(cmd, "get-plugin-fspec")) {
-
+		// check parameters
+		if (argc < 4) {
+			printf("Missing arguments\n");
+			return 1;
+		}
+		// TODO
 	} else {
 		printf("Unknown command: \"%s\"\n", cmd);
 		return 1;
