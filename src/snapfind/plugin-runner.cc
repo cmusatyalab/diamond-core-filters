@@ -17,6 +17,7 @@
 
 #include "plugin-runner.h"
 #include "factory.h"
+#include "read_config.h"
 
 static bool
 sc(const char *a, const char *b) {
@@ -148,9 +149,22 @@ expect_token_get_size(char token) {
   return result;
 }
 
-static bool
+static void
 populate_search(img_search *search, GHashTable *user_config) {
-  return true;
+  struct len_data *ld;
+
+  // blob
+  ld = (struct len_data *) g_hash_table_lookup(user_config, "blob");
+  if (ld) {
+    search->set_auxiliary_data_length(ld->len);
+    search->set_auxiliary_data(ld->data);
+  }
+
+  // config
+  ld = (struct len_data *) g_hash_table_lookup(user_config, "config");
+  if (ld) {
+    read_search_config_for_plugin_runner(ld->data, ld->len, search);
+  }
 }
 
 static GHashTable *
@@ -192,7 +206,7 @@ read_key_value_pairs() {
     getchar();           // value is not null terminated
 
     // add entry
-    //    g_debug("key: %s, valuesize: %d", key, valuesize);
+    //fprintf(stderr, "key: %s, valuesize: %d\n", key, valuesize);
     struct len_data *ld = g_new(struct len_data, 1);
     ld->len = valuesize;
     ld->data = value;
@@ -231,9 +245,7 @@ edit_plugin_config(const char *type,
 	}
 
 	GHashTable *user_config = read_key_value_pairs();
-	if (!populate_search(search, user_config)) {
-	  return 1;
-	}
+	populate_search(search, user_config);
 
 	search->edit_search();
 	gtk_main();
