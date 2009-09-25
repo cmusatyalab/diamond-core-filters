@@ -105,7 +105,13 @@ print_search_config(img_search *search) {
 
 	// print config
 	if (search->is_editable()) {
-		search->write_config(stdout, NULL);
+		char *config;
+		size_t config_size;
+		FILE *memfile = open_memstream(&config, &config_size);
+		search->write_config(memfile, NULL);
+		fclose(memfile);
+		print_key_value("config", config_size, config);
+		free(config);
 	}
 }
 
