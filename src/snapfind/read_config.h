@@ -4,6 +4,7 @@
  *  Version 1
  *
  *  Copyright (c) 2002-2005 Intel Corporation
+ *  Copyright (c) 2009 Carnegie Mellon University
  *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
@@ -16,6 +17,7 @@
 #define _READ_CONFIG_H_	1
 
 int read_search_config(char *fname, search_set *read_set);
-
+int read_search_config_for_plugin_runner(void *mem, int len,
+					 img_search *search);
 
 #endif	/* ! _READ_CONFIG_H_ */

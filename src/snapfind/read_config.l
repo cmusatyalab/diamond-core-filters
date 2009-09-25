@@ -8,6 +8,7 @@
  *  Version 1
  *
  *  Copyright (c) 2002-2005 Intel Corporation
+ *  Copyright (c) 2009 Carnegie Mellon University
  *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
@@ -42,6 +43,7 @@ static void new_config(char *yyt);
 #define	MAX_ARG		64
 static img_search *cur_search = NULL;
 static search_set *set = NULL;
+static bool plugin_runner_mode = false;
 
 %}
 
@@ -148,6 +150,10 @@ new_search(char *str)
 	int		i, maxlen;
 	img_factory *	fac;
 
+	if (plugin_runner_mode) {
+		return;
+	}
+
 	maxlen = strlen(str) + 1;
 	for (i=0; i < maxlen; i++) {
 		if (isspace(str[i]) || (str[i] == '\0')) {
@@ -179,21 +185,46 @@ new_search(char *str)
 
 
 
+static void
+read_search_config_from_file_pointer(FILE *f, search_set *read_set)
+{
+	set = read_set;
+	yyin = f;
+	yylex();
+}
+
+
 /*
  * Read the search configuration file.
  */
 int
 read_search_config(char *fname, search_set *read_set)
 {
-	int err;
-
-	set = read_set;
-	yyin = fopen(fname, "r");
-	if(!yyin) {
+	FILE *f = fopen(fname, "r");
+	if(!f) {
 		perror(fname);
 		return 1;
 	}
-	err = yylex();
 
-	return(0);
+	plugin_runner_mode = false;
+	read_search_config_from_file_pointer(f, read_set);
+	fclose(f);
+	return 0;
+}
+
+
+int
+read_search_config_for_plugin_runner(void *mem, int len, img_search *search)
+{
+	FILE *f = fmemopen(mem, len, "r");
+	if(!f) {
+		perror("fmemopen");
+		return 1;
+	}
+
+	plugin_runner_mode = true;
+	cur_search = search;
+	read_search_config_from_file_pointer(f, NULL);
+	fclose(f);
+	return 0;
 }
