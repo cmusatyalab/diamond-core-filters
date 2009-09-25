@@ -1746,8 +1746,6 @@ main(int argc, char *argv[])
 		cmd = argv[1];
 	}
 
-	g_debug("cmd: %s", cmd);
-
 	if (sc(cmd, "run-gui")) {
 		run_gui();
 		return 0;
