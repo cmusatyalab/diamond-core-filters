@@ -112,6 +112,96 @@ print_search_config(img_search *search) {
 	}
 }
 
+struct len_data {
+  int len;
+  void *data;
+};
+
+static int
+expect_token_get_size(char token) {
+  char *line = NULL;
+  size_t n;
+  int result = -1;
+  int c;
+
+  // expect token
+  c = getchar();
+  //  g_debug("%c", c);
+  if (c != token) {
+    goto OUT;
+  }
+  c = getchar();
+  //  g_debug("%c", c);
+  if (c != ' ') {
+    goto OUT;
+  }
+
+  // read size
+  if (getline(&line, &n, stdin) == -1) {
+    goto OUT;
+  }
+  result = atoi(line);
+  //  g_debug("size: %d", result);
+
+ OUT:
+  free(line);
+  return result;
+}
+
+static bool
+populate_search(img_search *search, GHashTable *user_config) {
+  return true;
+}
+
+static GHashTable *
+read_key_value_pairs() {
+  GHashTable *ht = g_hash_table_new(g_str_hash, g_str_equal);
+
+  while(true) {
+    // read key size
+    int keysize = expect_token_get_size('K');
+    if (keysize == -1) {
+      break;
+    }
+
+    // read key + \n
+    char *key = (char *) g_malloc(keysize + 1);
+    if (keysize > 0) {
+      if (fread(key, keysize + 1, 1, stdin) != 1) {
+	g_free(key);
+	break;
+      }
+    }
+    key[keysize] = '\0';  // key is a string
+
+    // read value size
+    int valuesize = expect_token_get_size('V');
+    if (valuesize == -1) {
+      g_free(key);
+    }
+
+    // read value + \n
+    void *value = g_malloc(valuesize);
+    if (valuesize > 0) {
+      if (fread(value, valuesize, 1, stdin) != 1) {
+	g_free(key);
+	g_free(value);
+	break;
+      }
+    }
+    getchar();           // value is not null terminated
+
+    // add entry
+    //    g_debug("key: %s, valuesize: %d", key, valuesize);
+    struct len_data *ld = g_new(struct len_data, 1);
+    ld->len = valuesize;
+    ld->data = value;
+    g_hash_table_insert(ht, key, ld);
+  }
+
+  return ht;
+}
+
 int
 get_plugin_initial_config(const char *type,
 			  const char *internal_name) {
@@ -140,7 +230,10 @@ edit_plugin_config(const char *type,
 		return 1;
 	}
 
-	// TODO take in config from user
+	GHashTable *user_config = read_key_value_pairs();
+	if (!populate_search(search, user_config)) {
+	  return 1;
+	}
 
 	search->edit_search();
 	gtk_main();
