@@ -51,7 +51,7 @@ img_search::img_search(const char *name, const char *descr)
 	auxdata = NULL;
 	auxdatalen = 0;
 	example_name = NULL;
-	exit_gui_on_close_edit_win = false;
+	plugin_runner_mode = false;
 }
 
 
@@ -329,7 +329,7 @@ img_search::close_edit_win()
 {
 	save_edits();
 	name_entry = NULL;
-	if (get_exit_gui_on_close_edit_win()) {
+	if (get_plugin_runner_mode()) {
 		gtk_main_quit();
 	}
 }
@@ -416,15 +416,15 @@ img_search::set_auxiliary_data(void *data)
 }
 
 bool
-img_search::get_exit_gui_on_close_edit_win()
+img_search::get_plugin_runner_mode()
 {
-  return exit_gui_on_close_edit_win;
+  return plugin_runner_mode;
 }
 
 void
-img_search::set_exit_gui_on_close_edit_win(bool val)
+img_search::set_plugin_runner_mode(bool val)
 {
-  exit_gui_on_close_edit_win = val;
+  plugin_runner_mode = val;
 }
 
 void 

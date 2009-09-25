@@ -86,7 +86,9 @@ static img_search *get_plugin(const char *type,
 	  return NULL;
 	}
 
-	return imgf->create("filter");
+	img_search *search = imgf->create("filter");
+	search->set_plugin_runner_mode(true);
+	return search;
 }
 
 static void
@@ -137,7 +139,6 @@ edit_plugin_config(const char *type,
 
 	// TODO take in config from user
 
-	search->set_exit_gui_on_close_edit_win(true);
 	search->edit_search();
 	gtk_main();
 

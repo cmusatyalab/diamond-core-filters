@@ -66,8 +66,8 @@ public:
 	int             get_auxiliary_data_length();
 	void            set_auxiliary_data_length(int len);
 
-	bool            get_exit_gui_on_close_edit_win();
-	void            set_exit_gui_on_close_edit_win(bool val);
+	bool            get_plugin_runner_mode();
+	void            set_plugin_runner_mode(bool val);
 
 	img_search &operator=(const img_search &rhs);
 	int operator==(const img_search &rhs) const;
@@ -84,7 +84,7 @@ private:
 	void *          auxdata;
 	int             auxdatalen;
 	char *  example_name;
-	bool            exit_gui_on_close_edit_win;
+	bool            plugin_runner_mode;
 };
 
 
