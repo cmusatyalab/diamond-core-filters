@@ -176,6 +176,8 @@ rgb_write_image_file(RGBImage *img, FILE *fp)
 		err = fwrite(&img->data[i], 3, 1, fp);
 		assert(err == 1);
 	}
+
+	return 0;
 }
 
 
