@@ -18,6 +18,7 @@
 #define	_LIB_SFIMAGE_H_	1
 
 #include <stdint.h>
+#include <stdio.h>
 #include <errno.h>
 #include "rgb.h"
 
