@@ -15,6 +15,9 @@
 #ifndef _PLUGIN_RUNNER_H_
 #define _PLUGIN_RUNNER_H_  1
 
+void print_key_value(const char *key, const char *value);
+void print_key_value(const char *key, int value_len, void *value);
+
 void list_plugins(void);
 int get_plugin_initial_config(const char *type,
 			      const char *internal_name);

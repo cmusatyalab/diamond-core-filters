@@ -23,14 +23,14 @@ sc(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
 }
 
-static void
+void
 print_key_value(const char *key,
 		const char *value) {
 	printf("K %d\n%s\n", strlen(key), key);
 	printf("V %d\n%s\n", strlen(value), value);
 }
 
-static void
+void
 print_key_value(const char *key,
 		int value_len,
 		void *value) {
