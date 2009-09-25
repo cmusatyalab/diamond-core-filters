@@ -333,7 +333,9 @@ example_search::write_config(FILE *ostream, const char *dirname)
 			FILE *memfile = open_memstream(&ppm, &ppm_size);
 			rgb_write_image_file(cur_patch->patch_image, memfile);
 			fclose(memfile);
-			print_key_value(fname, ppm_size, ppm);
+			char *key = g_strdup_printf("patch-%s", fname);
+			print_key_value(key, ppm_size, ppm);
+			g_free(key);
 			free(ppm);
 		} else {
 			rgb_write_image(cur_patch->patch_image, fname, dirname);
