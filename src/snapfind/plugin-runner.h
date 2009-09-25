@@ -15,6 +15,8 @@
 #ifndef _PLUGIN_RUNNER_H_
 #define _PLUGIN_RUNNER_H_  1
 
+#include <cstdlib>
+
 void print_key_value(const char *key, const char *value);
 void print_key_value(const char *key, int value_len, void *value);
 
