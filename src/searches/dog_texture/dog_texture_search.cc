@@ -34,6 +34,8 @@
 /* config tokens */
 #define	METRIC_ID	"METRIC"
 #define	CHANNEL_ID	"CHANNEL"
+#define METHOD_ID	"METHOD"
+#define DISTANCE_METRIC_ID	"DISTANCEMETRIC"
 
 extern "C" {
 	diamond_public
@@ -118,6 +120,14 @@ texture_search::handle_config(int nconf, char **confv)
 	} else if (strcmp(CHANNEL_ID, confv[0]) == 0) {
 		assert(nconf > 1);
 		set_channels(confv[1]);
+		err = 0;
+	} else if (strcmp(METHOD_ID, confv[0]) == 0) {
+		assert(nconf > 1);
+		method = atoi(confv[1]);
+		err = 0;
+	} else if (strcmp(DISTANCE_METRIC_ID, confv[0]) == 0) {
+		assert(nconf > 1);
+		distance_metric = (texture_dist_t) atoi(confv[1]);
 		err = 0;
 	} else {
 		err = example_search::handle_config(nconf, confv);
@@ -479,6 +489,8 @@ texture_search::write_config(FILE *ostream, const char *dirname)
 	fprintf(ostream, "SEARCH texture %s\n", get_name());
 	fprintf(ostream, "%s %f \n", METRIC_ID, similarity);
 	fprintf(ostream, "%s %d \n", CHANNEL_ID, channels);
+	fprintf(ostream, "%s %d \n", METHOD_ID, method);
+	fprintf(ostream, "%s %d \n", DISTANCE_METRIC_ID, distance_metric);
 
 	example_search::write_config(ostream, dirname);
 	return;
