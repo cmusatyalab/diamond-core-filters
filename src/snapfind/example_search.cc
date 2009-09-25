@@ -26,6 +26,7 @@
 #include "gtk_image_tools.h"
 #include "img_search.h"
 #include "import_sample.h"
+#include "plugin-runner.h"
 
 /* tokens for the config file */
 #define	PATCH_ID	"PATCHFILE"
@@ -326,8 +327,17 @@ example_search::write_config(FILE *ostream, const char *dirname)
 			assert(0);
 		}
 
-		rgb_write_image(cur_patch->patch_image, fname, dirname);
-		/* XXX write out the file */
+		if (is_plugin_runner_mode()) {
+			char *ppm;
+			size_t ppm_size;
+			FILE *memfile = open_memstream(&ppm, &ppm_size);
+			rgb_write_image_file(cur_patch->patch_image, memfile);
+			fclose(memfile);
+			print_key_value(fname, ppm_size, ppm);
+			free(ppm);
+		} else {
+			rgb_write_image(cur_patch->patch_image, fname, dirname);
+		}
 
 		fprintf(ostream, "%s %s 0 0 %d %d \n", PATCH_ID, fname,
 		        cur_patch->xsize, cur_patch->ysize);
