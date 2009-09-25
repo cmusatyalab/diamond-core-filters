@@ -100,9 +100,6 @@ print_search_config(img_search *search) {
 	print_key_value("blob", search->get_auxiliary_data_length(),
 			search->get_auxiliary_data());
 
-	// newline separator
-	printf("\n");
-
 	// print config
 	if (search->is_editable()) {
 		char *config;
