@@ -101,7 +101,7 @@ print_search_config(img_search *search) {
 	print_key_value("blob", search->get_auxiliary_data_length(),
 			search->get_auxiliary_data());
 
-	// print config
+	// print config (also prints patches)
 	if (search->is_editable()) {
 		char *config;
 		size_t config_size;
@@ -111,6 +111,15 @@ print_search_config(img_search *search) {
 		print_key_value("config", config_size, config);
 		free(config);
 	}
+
+	// print fspec
+	char *fspec;
+	size_t fspec_size;
+	FILE *memfile = open_memstream(&fspec, &fspec_size);
+	search->write_fspec(memfile);
+	fclose(memfile);
+	print_key_value("fspec", fspec_size, fspec);
+	free(fspec);
 }
 
 struct len_data {
