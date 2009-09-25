@@ -5,6 +5,7 @@
  *
  *  Copyright (c) 2002-2005 Intel Corporation
  *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *  Copyright (c) 2009 Carnegie Mellon University
  *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
@@ -158,13 +159,31 @@ create_rgb_image(const char *filename)
 	return img;
 }
 
+int
+rgb_write_image_file(RGBImage *img, FILE *fp)
+{
+	int             err;
+	int             i;
+
+	/*
+	 * now we write out the header 
+	 */
+	fprintf(fp, "P6 \n");
+	fprintf(fp, "%d %d \n", img->width, img->height);
+	fprintf(fp, "255\n");
+
+	for (i = 0; i < (img->height * img->width); i++) {
+		err = fwrite(&img->data[i], 3, 1, fp);
+		assert(err == 1);
+	}
+}
+
 
 int
 rgb_write_image(RGBImage * img, const char *filename, const char *dir)
 {
 	int             err;
 	FILE           *fp;
-	int             i;
 	char            path[COMMON_MAX_PATH];
 
 
@@ -184,17 +203,7 @@ rgb_write_image(RGBImage * img, const char *filename, const char *dir)
 		return (EINVAL);
 	}
 
-	/*
-	 * now we write out the header 
-	 */
-	fprintf(fp, "P6 \n");
-	fprintf(fp, "%d %d \n", img->width, img->height);
-	fprintf(fp, "255\n");
-
-	for (i = 0; i < (img->height * img->width); i++) {
-		err = fwrite(&img->data[i], 3, 1, fp);
-		assert(err == 1);
-	}
+	rgb_write_image_file(img, fp);
 
 	fclose(fp);
 	return (0);

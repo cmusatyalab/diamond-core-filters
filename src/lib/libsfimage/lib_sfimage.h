@@ -5,6 +5,7 @@
  *
  *  Copyright (c) 2002-2005 Intel Corporation
  *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *  Copyright (c) 2009 Carnegie Mellon University
  *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
@@ -35,7 +36,7 @@ RGBImage	   *read_rgb_image(unsigned char *buf, size_t buflen);
 RGBImage 	*create_rgb_image(const char *filename);
 
 int rgb_write_image(RGBImage *img, const char *filename, const char *path);
-
+int rgb_write_image_file(RGBImage *img, FILE *fp);
 
 /*
  * some interfaces to read images from a bytestream
