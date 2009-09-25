@@ -303,7 +303,7 @@ rgb_histo_search::edit_search()
 	gtk_menu_shell_append (GTK_MENU_SHELL(menu), item);
 
 	gtk_option_menu_set_menu(GTK_OPTION_MENU (opt), menu);
-	gtk_box_pack_start(GTK_BOX(container), opt, FALSE, TRUE, 0);
+	//	gtk_box_pack_start(GTK_BOX(container), opt, FALSE, TRUE, 0);
 
 	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
 
