@@ -95,17 +95,14 @@ DIST_OBJS += .depend Makefile
 	@${MV} a.out $@
 
 
-%.c: %.l
-	${LEX} -o$@ $<
-
 %.cc: %.l
 	${LEX} -o$@ $<
 
-%.o: %.c
-	${CC} ${CPPFLAGS} ${CFLAGS} ${EXTRA_CFLAGS} -c $< -o $@
-
 %.o: %.cc
 	${CPLUSPLUS} ${CPPFLAGS} ${CFLAGS} -c $< -o $@
+
+%.o: %.c
+	${CC} ${CPPFLAGS} ${CFLAGS} ${EXTRA_CFLAGS} -c $< -o $@
 
 %.a: $(LIBOBJS)
 	rm -f $@ 

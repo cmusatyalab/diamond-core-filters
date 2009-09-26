@@ -43,7 +43,7 @@
  */
 
 static int  have_error();
-static int  set_plugin_dir(char *name);
+static int  set_plugin_dir(const char *name);
 
 static char * eat_token(char *str);
 static void do_init();
@@ -110,7 +110,7 @@ have_error()
  
 
 static int
-set_plugin_dir(char *dir)
+set_plugin_dir(const char *dir)
 {
 	sfconf->sf_plugin_dir = strdup(dir);
 	return(0);
@@ -183,7 +183,7 @@ do_init()
 		return;	
 	}
 
-	sfconf = malloc(sizeof(*sfconf));
+	sfconf = (snapfind_conf_t *) malloc(sizeof(*sfconf));
 	assert(sfconf != NULL);
 
 	yyin = sfconfig_open_config_file();
