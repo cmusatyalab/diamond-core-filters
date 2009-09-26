@@ -176,9 +176,17 @@ populate_search(img_search *search, GHashTable *user_config) {
   }
 }
 
+static void
+destroy_len_data(gpointer data) {
+  struct len_data *ld = (struct len_data *) data;
+  g_free(ld->data);
+  g_free(data);
+}
+
 static GHashTable *
 read_key_value_pairs() {
-  GHashTable *ht = g_hash_table_new(g_str_hash, g_str_equal);
+  GHashTable *ht = g_hash_table_new_full(g_str_hash, g_str_equal,
+					 g_free, destroy_len_data);
 
   while(true) {
     // read key size
@@ -255,6 +263,7 @@ edit_plugin_config(const char *type,
 
 	GHashTable *user_config = read_key_value_pairs();
 	populate_search(search, user_config);
+	g_hash_table_unref(user_config);
 
 	search->edit_search();
 	gtk_main();
