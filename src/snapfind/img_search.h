@@ -70,6 +70,9 @@ public:
 	bool            is_plugin_runner_mode();
 	void            set_plugin_runner_mode(bool val);
 
+	const char *	get_searchlet_lib_path() const;
+	void		set_searchlet_lib_path(const char *name);
+
 	img_search &operator=(const img_search &rhs);
 	int operator==(const img_search &rhs) const;
 	int operator<(const img_search &rhs) const;
@@ -86,6 +89,7 @@ private:
 	int             auxdatalen;
 	char *  example_name;
 	bool            plugin_runner_mode;
+	char *	searchlet_lib_path;
 };
 
 
@@ -104,16 +108,22 @@ public:
 	const char * get_name() {
 		return(fa_name);
 	};
+	const char * get_searchlet_lib_path() {
+		return fa_searchlet_lib_path;
+	}
 	void set_name(const char *name) {
 		fa_name = strdup(name);
 	}
 	void set_description(const char *descr) {
 		fa_descr = strdup(descr);
 	}
+	void set_searchlet_lib_path(const char *searchlet_lib_path) {
+		fa_searchlet_lib_path = strdup(searchlet_lib_path);
+	}
 private:
 	const char * fa_name;
 	const char * fa_descr;
-
+	const char * fa_searchlet_lib_path;
 };
 
 

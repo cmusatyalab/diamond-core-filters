@@ -36,6 +36,7 @@
 
 #include "snapfind_consts.h"
 #include "plugin.h"
+#include "factory.h"
 
 /*
  * This file parses the snapfind RC file to find the local
@@ -51,6 +52,9 @@ static char * eat_token(char *str);
 
 static int err = 0;
 static char *cur_dir;
+
+static char *gui_lib;
+static char *searchlet_lib;
 
 %}
 %pointer
@@ -121,17 +125,51 @@ load_library(char *libname)
 
  
 
+
 static void
 have_gui_lib(char *lib)
+{
+	assert(gui_lib == NULL);
+	gui_lib = strdup(lib);
+}
+
+static void
+have_searchlet_lib(char *lib)
+{
+	assert(searchlet_lib == NULL);
+	searchlet_lib = strdup(lib);
+}
+
+
+static void
+commit_libs()
 {
 	char	fname[SF_MAX_PATH];
 	int	len;
 
-	if (lib[0] == '/') {
-		load_library(lib);
+	assert(gui_lib);
+	assert(searchlet_lib);
+
+	if (searchlet_lib[0] == '/') {
+		register_searchlet_lib(searchlet_lib);
+		factory_set_searchlet_lib_path(searchlet_lib);
 	} else {
 	
-		len = snprintf(fname, SF_MAX_PATH, "%s/%s", cur_dir, lib);
+		len = snprintf(fname, SF_MAX_PATH, "%s/%s", cur_dir, searchlet_lib);
+		if (len >= (SF_MAX_PATH - 1)) {
+			fprintf(stderr, 
+				"plugin_conf: path exceeds SF_MAX_PATH\n");
+			return;
+		}
+		register_searchlet_lib(fname);
+		factory_set_searchlet_lib_path(fname);
+	}
+
+	if (gui_lib[0] == '/') {
+		load_library(gui_lib);
+	} else {
+	
+		len = snprintf(fname, SF_MAX_PATH, "%s/%s", cur_dir, gui_lib);
 		if (len >= (SF_MAX_PATH - 1)) {
 			fprintf(stderr, 
 				"plugin_conf: path exceeds SF_MAX_PATH\n");
@@ -139,28 +177,8 @@ have_gui_lib(char *lib)
 		}
 		load_library(fname);
 	}
-	return;
-} 
 
-static void
-have_searchlet_lib(char *lib)
-{
-	char	fname[SF_MAX_PATH];
-	int	len;
-
-	if (lib[0] == '/') {
-		register_searchlet_lib(lib);
-	} else {
-	
-		len = snprintf(fname, SF_MAX_PATH, "%s/%s", cur_dir, lib);
-		if (len >= (SF_MAX_PATH - 1)) {
-			fprintf(stderr, 
-				"plugin_conf: path exceeds SF_MAX_PATH\n");
-			return;
-		}
-		register_searchlet_lib(fname);
-	}
-	return;
+	factory_set_searchlet_lib_path(NULL);
 }
 
 
@@ -194,6 +212,15 @@ process_plugin_conf(char *dir, char *file)
 		fprintf(stderr, "process_plugin: error processing <%s> \n", 
 			fname);
 	}
+
+	/* commit */
+	commit_libs();
+
+	/* clean up names */
+	free(gui_lib);
+	gui_lib = NULL;
+	free(searchlet_lib);
+	searchlet_lib = NULL;
 
 	fclose(yyin);
 	return;

@@ -53,6 +53,7 @@ img_search::img_search(const char *name, const char *descr)
 	auxdatalen = 0;
 	example_name = NULL;
 	plugin_runner_mode = false;
+	searchlet_lib_path = NULL;
 }
 
 
@@ -62,6 +63,7 @@ img_search::~img_search()
 	free(descript);
 	if (example_name != NULL) 
 		free(example_name);
+	free(searchlet_lib_path);
 	return;
 }
 
@@ -71,6 +73,11 @@ img_search::get_example_name() const
 	return(example_name);
 }
 
+const char *
+img_search::get_searchlet_lib_path() const
+{
+	return searchlet_lib_path;
+}
 
 const char *
 img_search::get_name() const
@@ -111,6 +118,16 @@ img_search::set_example_name(const char *new_name)
 		free(example_name);
 	example_name = strdup(new_name);
 }
+
+void
+img_search::set_searchlet_lib_path(const char *name)
+{
+	if (searchlet_lib_path != NULL) {
+		free(searchlet_lib_path);
+	}
+	searchlet_lib_path = strdup(name);
+}
+
 
 int
 img_search::set_name(const char *new_name)

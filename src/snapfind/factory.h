@@ -17,6 +17,7 @@
 #define _FACTORY_H_	1
 
 #include "img_search.h"
+#include "search_set.h"
 
 typedef struct factory_map {
 	struct factory_map  *	fm_next;
@@ -29,6 +30,8 @@ void factory_register(img_factory *factory);
 
 diamond_public
 void factory_register_codec(img_factory *factory);
+
+void factory_set_searchlet_lib_path(char *name);
 
 img_factory * find_factory(const char *name);
 img_factory * find_codec_factory(const char *name);
