@@ -90,6 +90,7 @@ static img_search
 
 	img_search *search = imgf->create("filter");
 	search->set_plugin_runner_mode(true);
+	search->set_searchlet_lib_path(imgf->get_searchlet_lib_path());
 	return search;
 }
 
@@ -121,6 +122,9 @@ print_search_config(img_search *search) {
 	fclose(memfile);
 	print_key_value("fspec", fspec_size, fspec);
 	free(fspec);
+
+	// print diamond files
+	print_key_value("searchlet-lib-path", search->get_searchlet_lib_path());
 }
 
 struct len_data {
