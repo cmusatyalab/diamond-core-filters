@@ -70,8 +70,9 @@ list_plugins(void) {
 	}
 }
 
-static img_search *get_plugin(const char *type,
-			      const char *internal_name) {
+static img_search
+*get_plugin(const char *type,
+	    const char *internal_name) {
 	img_factory *imgf;
 
 	if (sc(type, "filter")) {
