@@ -277,3 +277,23 @@ edit_plugin_config(const char *type,
 
 	return 0;
 }
+
+int
+run_plugin(const char *type,
+	   const char *internal_name) {
+	img_search *search = get_plugin(type, internal_name);
+	if (search == NULL) {
+		printf("Can't find %s\n", internal_name);
+		return 1;
+	}
+
+	GHashTable *user_config = read_key_value_pairs();
+	populate_search(search, user_config);
+
+	// get the image to process
+	
+
+	g_hash_table_unref(user_config);
+
+	return 0;
+}

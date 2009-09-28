@@ -1772,10 +1772,9 @@ main(int argc, char *argv[])
 			printf("Missing arguments\n");
 			return 1;
 		}
-		// TODO
+		return run_plugin(argv[2], argv[3]);
 	} else {
 		printf("Unknown command: \"%s\"\n", cmd);
 		return 1;
 	}
 }
-
