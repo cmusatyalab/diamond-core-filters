@@ -261,17 +261,14 @@ edit_plugin_config(const char *type,
 		return 1;
 	}
 
-	if (!search->is_editable()) {
-		printf("Not editable");
-		return 1;
-	}
-
 	GHashTable *user_config = read_key_value_pairs();
 	populate_search(search, user_config);
 	g_hash_table_unref(user_config);
 
-	search->edit_search();
-	gtk_main();
+	if (search->is_editable()) {
+		search->edit_search();
+		gtk_main();
+	}
 
 	print_search_config(search);
 
