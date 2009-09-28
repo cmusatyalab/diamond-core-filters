@@ -77,7 +77,7 @@ OBJS = $(SNAPFIND_OBJS) $(SEARCHLET_OBJS)
 
 #
 # Other objects to cleanup
-CLEAN_OTHERS += read_config.cc 
+CLEAN_OTHERS += read_config.cc snapfind_config.cc attr_map.cc plugin_config.cc
 
 TARGETS =  snapfind 
 
@@ -85,7 +85,7 @@ SHARED_BIN += snapfind
 
 SHARED_LIB += 
 
-SHARED_HEADERS = img_search.h search_set.h factory.h snapfind_config.h
+SHARED_HEADERS = img_search.h search_set.h factory.h snapfind_config.h plugin-runner.h
 
 include ${OBJROOT}/Makefile.template
 
