@@ -196,6 +196,40 @@ populate_search(img_search *search, GHashTable *user_config) {
 	if (ld) {
 		read_search_config_for_plugin_runner(ld->data, ld->len, search);
 	}
+
+	// patches
+	ld = (struct len_data *) g_hash_table_lookup(user_config, "patch-count");
+	if (ld) {
+		char *value = (char *) g_malloc(ld->len + 1);
+		value[ld->len] = '\0';
+		memcpy(value, ld->data, ld->len);
+		int patch_count = atoi(value);
+		fprintf(stderr, "patch_count: %d\n", patch_count);
+		g_free(value);
+
+		for (int i = 0; i < patch_count; i++) {
+			char *key = g_strdup_printf("patch-%d", i);
+			fprintf(stderr, "looking up %s\n", key);
+			ld = (struct len_data *) g_hash_table_lookup(user_config, key);
+			g_free(key);
+			if (ld) {
+				RGBImage *img = read_rgb_image((unsigned char *) ld->data,
+							       ld->len);
+				if (img) {
+					bbox_t bbox;
+					bbox.distance = 0;
+					bbox.min_x = 0;
+					bbox.min_y = 0;
+					bbox.max_x = img->width;
+					bbox.max_y = img->height;
+
+					fprintf(stderr, "adding patch\n");
+					search->add_patch(img, bbox);
+				}
+				free(img);
+			}
+		}
+	}
 }
 
 static void

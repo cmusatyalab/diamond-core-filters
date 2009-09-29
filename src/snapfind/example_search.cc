@@ -321,29 +321,33 @@ example_search::write_config(FILE *ostream, const char *dirname)
 	/* for each of the samples write out the data */
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		err = sprintf(fname, "%s.ex%d.ppm", get_name(), i);
-		if (err >= COMMON_MAX_PATH) {
-			fprintf(stderr, "COMMON_MAX_PATH too short increase to %d \n", err);
-			assert(0);
-		}
-
 		if (is_plugin_runner_mode()) {
 			char *ppm;
 			size_t ppm_size;
 			FILE *memfile = open_memstream(&ppm, &ppm_size);
 			rgb_write_image_file(cur_patch->patch_image, memfile);
 			fclose(memfile);
-			char *key = g_strdup_printf("patch-%s", fname);
+			char *key = g_strdup_printf("patch-%d", i);
 			print_key_value(key, ppm_size, ppm);
 			g_free(key);
 			free(ppm);
 		} else {
-			rgb_write_image(cur_patch->patch_image, fname, dirname);
-		}
+			err = sprintf(fname, "%s.ex%d.ppm", get_name(), i);
+			if (err >= COMMON_MAX_PATH) {
+				fprintf(stderr, "COMMON_MAX_PATH too short increase to %d \n",
+					err);
+				assert(0);
+			}
 
-		fprintf(ostream, "%s %s 0 0 %d %d \n", PATCH_ID, fname,
-		        cur_patch->xsize, cur_patch->ysize);
+			rgb_write_image(cur_patch->patch_image, fname, dirname);
+			fprintf(ostream, "%s %s 0 0 %d %d \n", PATCH_ID, fname,
+				cur_patch->xsize, cur_patch->ysize);
+		}
 		i++;
+	}
+
+	if (is_plugin_runner_mode()) {
+		print_key_value("patch-count", i);
 	}
 	return;
 }
