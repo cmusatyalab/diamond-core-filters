@@ -204,12 +204,12 @@ populate_search(img_search *search, GHashTable *user_config) {
 		value[ld->len] = '\0';
 		memcpy(value, ld->data, ld->len);
 		int patch_count = atoi(value);
-		fprintf(stderr, "patch_count: %d\n", patch_count);
+		//fprintf(stderr, "patch_count: %d\n", patch_count);
 		g_free(value);
 
 		for (int i = 0; i < patch_count; i++) {
 			char *key = g_strdup_printf("patch-%d", i);
-			fprintf(stderr, "looking up %s\n", key);
+			//fprintf(stderr, "looking up %s\n", key);
 			ld = (struct len_data *) g_hash_table_lookup(user_config, key);
 			g_free(key);
 			if (ld) {
@@ -223,7 +223,7 @@ populate_search(img_search *search, GHashTable *user_config) {
 					bbox.max_x = img->width;
 					bbox.max_y = img->height;
 
-					fprintf(stderr, "adding patch\n");
+					//fprintf(stderr, "adding patch\n");
 					search->add_patch(img, bbox);
 				}
 				free(img);
