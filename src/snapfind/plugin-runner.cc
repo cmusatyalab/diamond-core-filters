@@ -18,6 +18,8 @@
 #include "plugin-runner.h"
 #include "factory.h"
 #include "read_config.h"
+#include "lib_results.h"
+#include "lib_sfimage.h"
 
 static bool
 sc(const char *a, const char *b) {
@@ -29,6 +31,21 @@ print_key_value(const char *key,
 		const char *value) {
 	printf("K %d\n%s\n", strlen(key), key);
 	printf("V %d\n%s\n", strlen(value), value);
+}
+
+void
+print_key_value(const char *key,
+		double d) {
+	char buf[G_ASCII_DTOSTR_BUF_SIZE];
+	print_key_value(key, g_ascii_dtostr(buf, sizeof (buf), d));
+}
+
+void
+print_key_value(const char *key,
+		int i) {
+	char *value = g_strdup_printf("%d", i);
+	print_key_value(key, value);
+	g_free(value);
 }
 
 void
@@ -278,6 +295,20 @@ edit_plugin_config(const char *type,
 	return 0;
 }
 
+static void
+print_bounding_boxes(bbox_list_t *bblist) {
+	bbox_t *cur_bb;
+
+	TAILQ_FOREACH(cur_bb, bblist, link) {
+	  print_key_value("min-x", cur_bb->min_x);
+	  print_key_value("min-y", cur_bb->min_y);
+	  print_key_value("max-x", cur_bb->max_x);
+	  print_key_value("max-y", cur_bb->max_y);
+	  print_key_value("distance", cur_bb->distance);
+	  printf("\n");
+	}
+}
+
 int
 run_plugin(const char *type,
 	   const char *internal_name) {
@@ -291,9 +322,30 @@ run_plugin(const char *type,
 	populate_search(search, user_config);
 
 	// get the image to process
-	
+	struct len_data *ld
+	  = (struct len_data *) g_hash_table_lookup(user_config, "target-image");
+	if (!ld) {
+		g_hash_table_unref(user_config);
+		printf("target-image not specified\n");
+		return 1;
+	}
 
+	// convert to RGBImage
+	RGBImage *img = read_rgb_image((unsigned char *) ld->data, ld->len);
+
+	// destroy the hash table now
 	g_hash_table_unref(user_config);
+
+	if (!img) {
+		printf("Can't read target-image\n");
+		return 1;
+	}
+
+	// run plugin
+	bbox_list_t bblist;
+	TAILQ_INIT(&bblist);
+	search->region_match(img, &bblist);
+	print_bounding_boxes(&bblist);
 
 	return 0;
 }
