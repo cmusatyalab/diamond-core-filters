@@ -73,6 +73,9 @@ public:
 	const char *	get_searchlet_lib_path() const;
 	void		set_searchlet_lib_path(const char *name);
 
+	GHashTable *	get_plugin_runner_config();
+	void		set_plugin_runner_config(GHashTable *config);
+
 	img_search &operator=(const img_search &rhs);
 	int operator==(const img_search &rhs) const;
 	int operator<(const img_search &rhs) const;
@@ -90,6 +93,7 @@ private:
 	char *  example_name;
 	bool            plugin_runner_mode;
 	char *	searchlet_lib_path;
+	GHashTable *	plugin_runner_config;
 };
 
 
