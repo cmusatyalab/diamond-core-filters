@@ -133,18 +133,12 @@ example_search::is_example()
 	return(1);
 }
 
-// for plugin runner config
-struct len_data {
-	int len;
-	void *data;
-};
-
 int
 example_search::add_patch(char *fname, char *xoff, char *yoff, char *xsize,
                           char *ysize)
 {
 	example_patch_t *	cur_patch;
-	RGBImage  *			img = NULL;
+	RGBImage  *			img;
 
 	num_patches++;
 	cur_patch = (example_patch_t *)malloc(sizeof(*cur_patch));
@@ -169,18 +163,7 @@ example_search::add_patch(char *fname, char *xoff, char *yoff, char *xsize,
 	 * We assume that the current working directory has been
 	 * changed, so we can use the relative path.
 	 */
-	if (is_plugin_runner_mode()) {
-		char *key = g_strdup_printf("patch-%s", cur_patch->file_name);
-		struct len_data *ld =
-		  (struct len_data *) g_hash_table_lookup(get_plugin_runner_config(),
-							  key);
-		g_free(key);
-		if (ld) {
-			img = read_rgb_image((unsigned char *) ld->data, ld->len);
-		}
-	} else {
-		img = create_rgb_image(cur_patch->file_name);
-	}
+	img = create_rgb_image(cur_patch->file_name);
 	/* XXX do popup and terminate ??? */
 	if (img == NULL) {
 		fprintf(stderr, "Failed to read patch file %s \n",

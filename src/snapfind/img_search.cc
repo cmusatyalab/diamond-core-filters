@@ -54,7 +54,6 @@ img_search::img_search(const char *name, const char *descr)
 	example_name = NULL;
 	plugin_runner_mode = false;
 	searchlet_lib_path = NULL;
-	plugin_runner_config = NULL;
 }
 
 
@@ -65,8 +64,6 @@ img_search::~img_search()
 	if (example_name != NULL) 
 		free(example_name);
 	free(searchlet_lib_path);
-	if (plugin_runner_config != NULL)
-		g_hash_table_unref(plugin_runner_config);
 	return;
 }
 
@@ -446,25 +443,6 @@ void
 img_search::set_plugin_runner_mode(bool val)
 {
   plugin_runner_mode = val;
-}
-
-GHashTable *
-img_search::get_plugin_runner_config()
-{
-  return plugin_runner_config;
-}
-
-void
-img_search::set_plugin_runner_config(GHashTable *config)
-{
-  if (plugin_runner_config) {
-    g_hash_table_unref(plugin_runner_config);
-  }
-
-  plugin_runner_config = config;
-  if (plugin_runner_config) {
-    g_hash_table_ref(plugin_runner_config);
-  }
 }
 
 void 

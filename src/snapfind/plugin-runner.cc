@@ -191,9 +191,6 @@ populate_search(img_search *search, GHashTable *user_config) {
 		search->set_auxiliary_data(ld->data);
 	}
 
-	// for patches and other things
-	search->set_plugin_runner_config(user_config);
-
 	// config
 	ld = (struct len_data *) g_hash_table_lookup(user_config, "config");
 	if (ld) {
