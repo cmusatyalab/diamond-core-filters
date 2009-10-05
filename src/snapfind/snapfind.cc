@@ -67,6 +67,7 @@
 #include "attr_decode.h"
 #include "decoder.h"
 #include "plugin-runner.h"
+#include "readme.h"
 
 /* number of thumbnails to show */
 static const int TABLE_COLS = 3;
@@ -1742,12 +1743,18 @@ main(int argc, char *argv[])
 	const char *cmd;
 	if (argc == 1) {
 		cmd = "run-gui";
+		printf("Running in GUI mode, run \"%s help\" for "
+		       "other options\n",
+		       argv[0]);
 	} else {
 		cmd = argv[1];
 	}
 
 	if (sc(cmd, "run-gui")) {
 		run_gui();
+		return 0;
+	} else if (sc(cmd, "help")) {
+		print_usage();
 		return 0;
 	} else if (sc(cmd, "list-plugins")) {
 		list_plugins();
