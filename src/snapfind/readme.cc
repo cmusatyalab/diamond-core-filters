@@ -20,7 +20,7 @@ print_usage() {
   printf(
 "SnapFind plugin-runner help\n"
 "===========================\n"
-"The SnapFind plugin-runner allows you to list, edit, and lorally run legacy\n"
+"The SnapFind plugin-runner allows you to list, edit, and locally run legacy\n"
 "SnapFind plugins in a programmatic way. The output of the plugin-runner\n"
 "provides enough information to allow the submission of searches to an\n"
 "OpenDiamond system.\n"
