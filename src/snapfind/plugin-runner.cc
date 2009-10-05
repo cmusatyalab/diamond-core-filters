@@ -184,13 +184,6 @@ static void
 populate_search(img_search *search, GHashTable *user_config) {
 	struct len_data *ld;
 
-	// blob
-	ld = (struct len_data *) g_hash_table_lookup(user_config, "blob");
-	if (ld) {
-		search->set_auxiliary_data_length(ld->len);
-		search->set_auxiliary_data(ld->data);
-	}
-
 	// config
 	ld = (struct len_data *) g_hash_table_lookup(user_config, "config");
 	if (ld) {
