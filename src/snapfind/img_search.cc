@@ -122,10 +122,12 @@ img_search::set_example_name(const char *new_name)
 void
 img_search::set_searchlet_lib_path(const char *name)
 {
-	if (searchlet_lib_path != NULL) {
-		free(searchlet_lib_path);
+	free(searchlet_lib_path);
+	if (name == NULL) {
+		searchlet_lib_path = NULL;
+	} else {
+		searchlet_lib_path = strdup(name);
 	}
-	searchlet_lib_path = strdup(name);
 }
 
 

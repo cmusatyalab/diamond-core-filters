@@ -41,7 +41,12 @@ void add_new_codec(img_factory *fact);
 void
 factory_set_searchlet_lib_path(char *name)
 {
-	searchlet_lib_path = name;
+	free(searchlet_lib_path);
+	if (name == NULL) {
+		searchlet_lib_path = NULL;
+	} else {
+		searchlet_lib_path = strdup(name);
+	}
 }
 
 void
