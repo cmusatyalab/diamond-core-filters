@@ -26,6 +26,7 @@
 #include "img_search.h"
 #include "thumbnailer.h"
 #include "snapfind_consts.h"
+#include "factory.h"
 
 
 extern "C" {
@@ -37,6 +38,7 @@ void
 search_init()
 {
 	thumbnailer *f = new thumbnailer();
+	f->set_searchlet_lib_path(factory_get_searchlet_lib_path());
 	set_thumbnail_filter(f);
 }
 

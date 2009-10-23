@@ -33,6 +33,9 @@ void factory_register_codec(img_factory *factory);
 
 void factory_set_searchlet_lib_path(char *name);
 
+diamond_public
+char *factory_get_searchlet_lib_path();
+
 img_factory * find_factory(const char *name);
 img_factory * find_codec_factory(const char *name);
 img_factory * get_first_factory(void **cookie);

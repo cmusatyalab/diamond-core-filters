@@ -49,6 +49,12 @@ factory_set_searchlet_lib_path(char *name)
 	}
 }
 
+char *
+factory_get_searchlet_lib_path()
+{
+	return searchlet_lib_path;
+}
+
 void
 factory_register_codec(img_factory *factory)
 {

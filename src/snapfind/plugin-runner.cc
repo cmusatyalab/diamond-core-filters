@@ -85,29 +85,45 @@ list_plugins(void) {
 			print_plugin("codec", imgf);
 		} while((imgf = get_next_factory(&cookie)));
 	}
+
+	img_search *thumb = get_thumbnail_filter();
+	if (thumb != NULL) {
+		print_key_value("type", "thumbnail");
+		print_key_value("display-name", "thumbnail");
+		print_key_value("internal-name", "thumbnail");
+	}
 }
 
 static img_search
 *get_plugin(const char *type,
 	    const char *internal_name) {
-	img_factory *imgf;
+	img_factory *imgf = NULL;
+	img_search *search = NULL;
 
 	if (sc(type, "filter")) {
 		imgf = find_factory(internal_name);
 	} else if (sc(type, "codec")) {
 		imgf = find_codec_factory(internal_name);
+	} else if (sc(type, "thumbnail")) {
+		search = get_thumbnail_filter();
 	} else {
 		printf("Invalid type\n");
 		return NULL;
 	}
 
-	if (!imgf) {
-	  return NULL;
+	if (imgf) {
+		search = imgf->create("filter");
 	}
 
-	img_search *search = imgf->create("filter");
+	if (!imgf && !search) {
+		return NULL;
+	}
+
+	if (imgf) {
+		search->set_searchlet_lib_path(imgf->get_searchlet_lib_path());
+	}
+
 	search->set_plugin_runner_mode(true);
-	search->set_searchlet_lib_path(imgf->get_searchlet_lib_path());
 	return search;
 }
 
