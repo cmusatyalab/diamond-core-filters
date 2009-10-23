@@ -107,10 +107,11 @@ load_searchlet(bench_config_t *bconfig)
 #define	MAX_FILTS	24
 
 void
-dump_dev_stats(dev_stats_t * dev_stats, int stat_len)
+dump_dev_stats(const char *name, dev_stats_t * dev_stats, int stat_len)
 {
 	int             i;
 
+	fprintf(stdout, "Device name: %s \n", name);
 	fprintf(stdout, "Total objects: %d \n", dev_stats->ds_objs_total);
 	fprintf(stdout, "Processed objects: %d \n", dev_stats->ds_objs_processed);
 	fprintf(stdout, "Dropped objects: %d \n", dev_stats->ds_objs_dropped);
@@ -199,14 +200,16 @@ dump_filtstats()
 	assert(dev_stats != NULL);
 
 	for (i = 0; i < dev_count; i++) {
+		const char *name;
 		stat_len = DEV_STATS_SIZE(MAX_FILTS);
+		name = ls_get_dev_name(shandle, dev_list[i]);
 		err = ls_get_dev_stats(shandle, dev_list[i], dev_stats,
 		    &stat_len);
 		if (err) {
 			fprintf(stderr, "Failed to get device list %d \n", err);
 			exit(1);
 		}
-		dump_dev_stats(dev_stats, stat_len);
+		dump_dev_stats(name, dev_stats, stat_len);
 	}
 
 	free(dev_stats);
