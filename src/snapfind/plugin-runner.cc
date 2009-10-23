@@ -100,19 +100,24 @@ static img_search
 	img_factory *imgf = NULL;
 	img_search *search = NULL;
 
+	const char *name;
+
 	if (sc(type, "filter")) {
 		imgf = find_factory(internal_name);
+		name = "filter";
 	} else if (sc(type, "codec")) {
 		imgf = find_codec_factory(internal_name);
+		name = "RGB";
 	} else if (sc(type, "thumbnail")) {
 		search = get_thumbnail_filter();
+		name = "thumbnail";
 	} else {
 		printf("Invalid type\n");
 		return NULL;
 	}
 
 	if (imgf) {
-		search = imgf->create("filter");
+		search = imgf->create(name);
 	}
 
 	if (!imgf && !search) {
