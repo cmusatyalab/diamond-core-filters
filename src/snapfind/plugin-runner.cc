@@ -21,6 +21,10 @@
 #include "lib_results.h"
 #include "lib_sfimage.h"
 
+static const char THUMBNAIL_NAME[] = "THUMBNAIL";
+static const char CODEC_NAME[] = "RGB";
+static const char FILTER_NAME[] = "*";
+
 static bool
 sc(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
@@ -104,13 +108,13 @@ static img_search
 
 	if (sc(type, "filter")) {
 		imgf = find_factory(internal_name);
-		name = "filter";
+		name = FILTER_NAME;
 	} else if (sc(type, "codec")) {
 		imgf = find_codec_factory(internal_name);
-		name = "RGB";
+		name = CODEC_NAME;
 	} else if (sc(type, "thumbnail")) {
 		search = get_thumbnail_filter();
-		name = "thumbnail";
+		name = THUMBNAIL_NAME;
 	} else {
 		printf("Invalid type\n");
 		return NULL;
@@ -333,6 +337,14 @@ edit_plugin_config(const char *type,
 	if (search->is_editable()) {
 		search->edit_search();
 		gtk_main();
+	}
+
+	if (sc(type, "filter")) {
+		search->set_name(FILTER_NAME);
+	} else if (sc(type, "codec")) {
+		search->set_name(CODEC_NAME);
+	} else if (sc(type, "thumbnail")) {
+		search->set_name(THUMBNAIL_NAME);
 	}
 
 	print_search_config(search);
