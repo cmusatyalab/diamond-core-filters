@@ -73,6 +73,8 @@ print_plugin(const char *type, img_factory *imgf) {
 	print_key_value("type", type);
 	print_key_value("display-name", imgf->get_name());
 	print_key_value("internal-name", imgf->get_description());
+	print_key_value("needs-patches", (bool) imgf->is_example());
+
 	printf("\n");
 }
 
@@ -101,6 +103,7 @@ list_plugins(void) {
 		print_key_value("type", "thumbnail");
 		print_key_value("display-name", "thumbnail");
 		print_key_value("internal-name", "thumbnail");
+		print_key_value("needs-patches", false);
 	}
 }
 
