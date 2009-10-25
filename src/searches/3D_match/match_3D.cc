@@ -61,7 +61,7 @@ match_3D::match_3D(const char *name, const char *descr)
 
 match_3D::~match_3D()
 {
-	printf("match_3D_destruct \n");
+	fprintf(stderr, "match_3D_destruct \n");
 	return;
 }
 

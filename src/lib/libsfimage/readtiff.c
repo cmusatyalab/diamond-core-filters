@@ -161,7 +161,7 @@ convertTIFFtoRGBImage(MyTIFF* tp)
 	for (dirs=1; TIFFReadDirectory(tif); dirs++) {
 		TIFFPrintDirectory(tif);
 	}
-	printf("dirs=%d\n", dirs);
+	fprintf(stderr, "dirs=%d\n", dirs);
 #endif // 0
 
 	uint32 w, h;

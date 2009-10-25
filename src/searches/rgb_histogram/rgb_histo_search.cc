@@ -66,7 +66,7 @@ rgb_histo_search::rgb_histo_search(const char *name, const char *descr)
 
 rgb_histo_search::~rgb_histo_search()
 {
-	printf("rgb_destruct \n");
+	fprintf(stderr, "rgb_destruct \n");
 	return;
 }
 
@@ -134,7 +134,7 @@ rgb_histo_search::handle_config(int nconf, char **data)
 static void
 cb_update_menu_select(GtkWidget* item, GtkUpdateType  policy)
 {
-	printf("policy %d \n", policy);
+	fprintf(stderr, "policy %d \n", policy);
 }
 
 

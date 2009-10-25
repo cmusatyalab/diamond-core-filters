@@ -69,7 +69,7 @@ ocv_upperbody_search::ocv_upperbody_search(const char *name, const char *descr)
 
 ocv_upperbody_search::~ocv_upperbody_search()
 {
-        printf("destroying OCV upperbody");
+        fprintf(stderr, "destroying OCV upperbody");
 	return;
 }
 

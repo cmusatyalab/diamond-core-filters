@@ -68,7 +68,7 @@ ocv_body_search::ocv_body_search(const char *name, const char *descr)
 
 ocv_body_search::~ocv_body_search()
 {
-  printf("destroying OCV body");
+  fprintf(stderr, "destroying OCV body");
 }
 
 void

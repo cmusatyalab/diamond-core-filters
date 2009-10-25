@@ -70,7 +70,7 @@ ocv_face_search::ocv_face_search(const char *name, const char *descr)
 
 ocv_face_search::~ocv_face_search()
 {
-        printf("destroying OCV face");
+        fprintf(stderr, "destroying OCV face");
 	return;
 }
 

@@ -69,7 +69,7 @@ ocv_profile_search::ocv_profile_search(const char *name, const char *descr)
 
 ocv_profile_search::~ocv_profile_search()
 {
-        printf("destroying OCV profile");
+        fprintf(stderr, "destroying OCV profile");
 	return;
 }
 

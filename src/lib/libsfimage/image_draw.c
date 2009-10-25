@@ -129,9 +129,9 @@ image_gen_image_scale(RGBImage * data, int scale)
 	diff = max_color - min_color;
 #ifdef VERBOSE
 
-	printf("min color %f max %f diff %f \n", min_color, max_color, diff);
-	printf("orig row %d col %d \n", data->columns, data->rows);
-	printf("scaled row %d col %d \n", img->columns, img->rows);
+	fprintf(stderr, "min color %f max %f diff %f \n", min_color, max_color, diff);
+	fprintf(stderr, "orig row %d col %d \n", data->columns, data->rows);
+	fprintf(stderr, "scaled row %d col %d \n", img->columns, img->rows);
 #endif
 
 	for (y = 0; y < img->rows; y++) {

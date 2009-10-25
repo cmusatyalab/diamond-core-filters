@@ -110,13 +110,13 @@ load_library(char *libname)
                                                                                 
         handle = dlopen(libname, RTLD_NOW);
         if (handle == NULL) {
-                printf("failed to open <%s>\n", libname);
+		fprintf(stderr, "failed to open <%s>\n", libname);
                 err = dlerror();
-                printf("err: %s \n", err);
+                fprintf(stderr, "err: %s \n", err);
         } else {
                 fp = (search_init_t) dlsym(handle, "search_init");
                 if (fp == NULL) {
-                        printf("Failed to find search_init\n");
+                        fprintf(stderr, "Failed to find search_init\n");
                 } else {
                         (*fp)();
                 }

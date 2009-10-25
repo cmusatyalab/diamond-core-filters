@@ -67,7 +67,7 @@ img_diff::img_diff(const char *name, const char *descr)
 img_diff::~img_diff()
 {
 	free((char *) get_auxiliary_data());
-	printf("img_diff_destruct \n");
+	fprintf(stderr, "img_diff_destruct \n");
 	return;
 }
 

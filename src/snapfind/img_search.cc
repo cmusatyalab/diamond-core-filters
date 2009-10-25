@@ -139,9 +139,6 @@ img_search::set_name(const char *new_name)
 	if (strcmp(new_name, display_name) != 0) {
 		newp = strdup(new_name);
 		modified = cleanup_name(newp);
-		if (modified) {
-			printf("old <%s> new <%s> \n", new_name, newp);
-		}
 		free(display_name);
 		display_name = newp;
 

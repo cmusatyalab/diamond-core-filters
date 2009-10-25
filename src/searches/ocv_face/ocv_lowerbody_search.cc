@@ -69,7 +69,7 @@ ocv_lowerbody_search::ocv_lowerbody_search(const char *name, const char *descr)
 
 ocv_lowerbody_search::~ocv_lowerbody_search()
 {
-        printf("destroying OCV lowerbody");
+        fprintf(stderr, "destroying OCV lowerbody");
 	return;
 }
 
