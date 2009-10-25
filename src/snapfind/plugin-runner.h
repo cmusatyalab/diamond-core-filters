@@ -17,6 +17,7 @@
 
 #include <cstdlib>
 
+void print_key_value(const char *key, bool value);
 void print_key_value(const char *key, double value);
 void print_key_value(const char *key, int value);
 void print_key_value(const char *key, const char *value);

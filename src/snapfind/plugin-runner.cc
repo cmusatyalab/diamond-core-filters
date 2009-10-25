@@ -39,6 +39,12 @@ print_key_value(const char *key,
 
 void
 print_key_value(const char *key,
+		bool b) {
+	print_key_value(key, b ? "true" : "false");
+}
+
+void
+print_key_value(const char *key,
 		double d) {
 	char buf[G_ASCII_DTOSTR_BUF_SIZE];
 	print_key_value(key, g_ascii_dtostr(buf, sizeof (buf), d));
@@ -139,7 +145,7 @@ static img_search
 static void
 print_search_config(img_search *search) {
 	// editable?
-	print_key_value("is-editable", search->is_editable() ? "true" : "false");
+	print_key_value("is-editable", (bool) search->is_editable());
 
 	// print blob
 	print_key_value("blob", search->get_auxiliary_data_length(),
