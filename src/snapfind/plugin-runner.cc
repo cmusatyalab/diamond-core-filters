@@ -113,24 +113,19 @@ static img_search
 	img_factory *imgf = NULL;
 	img_search *search = NULL;
 
-	const char *name;
-
 	if (sc(type, "filter")) {
 		imgf = find_factory(internal_name);
-		name = FILTER_NAME;
 	} else if (sc(type, "codec")) {
 		imgf = find_codec_factory(internal_name);
-		name = CODEC_NAME;
 	} else if (sc(type, "thumbnail")) {
 		search = get_thumbnail_filter();
-		name = THUMBNAIL_NAME;
 	} else {
 		printf("Invalid type\n");
 		return NULL;
 	}
 
 	if (imgf) {
-		search = imgf->create(name);
+		search = imgf->create(type);
 	}
 
 	if (!imgf && !search) {
@@ -146,9 +141,15 @@ static img_search
 }
 
 static void
-print_search_config(img_search *search) {
+print_search_config(img_search *search, const char *type) {
+	// save user given name
+	char *user_given_name = strdup(search->get_name());
+
 	// editable?
 	print_key_value("is-editable", (bool) search->is_editable());
+
+	// user-given name
+	print_key_value("name", user_given_name);
 
 	// print blob
 	print_key_value("blob", search->get_auxiliary_data_length(),
@@ -159,10 +160,20 @@ print_search_config(img_search *search) {
 		char *config;
 		size_t config_size;
 		FILE *memfile = open_memstream(&config, &config_size);
+		search->set_name("filter"); // so that we can always parse
 		search->write_config(memfile, NULL);
 		fclose(memfile);
 		print_key_value("config", config_size, config);
 		free(config);
+	}
+
+	// now override name with preset name, so someone can search/replace the fspec
+	if (sc(type, "filter")) {
+		search->set_name(FILTER_NAME);
+	} else if (sc(type, "codec")) {
+		search->set_name(CODEC_NAME);
+	} else if (sc(type, "thumbnail")) {
+		search->set_name(THUMBNAIL_NAME);
 	}
 
 	// print fspec
@@ -173,6 +184,10 @@ print_search_config(img_search *search) {
 	fclose(memfile);
 	print_key_value("fspec", fspec_size, fspec);
 	free(fspec);
+
+	// restore name
+	search->set_name(user_given_name);
+	free(user_given_name);
 
 	// print diamond files
 	print_key_value("searchlet-lib-path", search->get_searchlet_lib_path());
@@ -217,6 +232,16 @@ expect_token_get_size(char token) {
 static void
 populate_search(img_search *search, GHashTable *user_config) {
 	struct len_data *ld;
+
+	// name
+	ld = (struct len_data *) g_hash_table_lookup(user_config, "name");
+	if (ld) {
+	  char *name = (char *) g_malloc(ld->len + 1);
+	  name[ld->len] = '\0';
+	  memcpy(name, ld->data, ld->len);
+	  search->set_name(name);
+	  g_free(name);
+	}
 
 	// config
 	ld = (struct len_data *) g_hash_table_lookup(user_config, "config");
@@ -325,7 +350,7 @@ get_plugin_initial_config(const char *type,
 		return 1;
 	}
 
-	print_search_config(search);
+	print_search_config(search, type);
 
 	return 0;
 }
@@ -348,15 +373,7 @@ edit_plugin_config(const char *type,
 		gtk_main();
 	}
 
-	if (sc(type, "filter")) {
-		search->set_name(FILTER_NAME);
-	} else if (sc(type, "codec")) {
-		search->set_name(CODEC_NAME);
-	} else if (sc(type, "thumbnail")) {
-		search->set_name(THUMBNAIL_NAME);
-	}
-
-	print_search_config(search);
+	print_search_config(search, type);
 
 	return 0;
 }
