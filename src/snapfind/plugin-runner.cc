@@ -378,6 +378,23 @@ edit_plugin_config(const char *type,
 	return 0;
 }
 
+int
+normalize_plugin_config(const char *type,
+			const char *internal_name) {
+	img_search *search = get_plugin(type, internal_name);
+	if (search == NULL) {
+		printf("Can't find %s\n", internal_name);
+		return 1;
+	}
+
+	GHashTable *user_config = read_key_value_pairs();
+	populate_search(search, user_config);
+	g_hash_table_unref(user_config);
+	print_search_config(search, type);
+
+	return 0;
+}
+
 static void
 print_bounding_boxes(bbox_list_t *bblist) {
 	bbox_t *cur_bb;

@@ -1766,6 +1766,13 @@ main(int argc, char *argv[])
 			return 1;
 		}
 		return get_plugin_initial_config(argv[2], argv[3]);
+	} else if (sc(cmd, "normalize-plugin-config")) {
+		// check parameters
+		if (argc < 4) {
+			printf("Missing arguments\n");
+			return 1;
+		}
+		return normalize_plugin_config(argv[2], argv[3]);
 	} else if (sc(cmd, "edit-plugin-config")) {
 		// check parameters
 		if (argc < 4) {

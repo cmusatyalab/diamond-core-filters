@@ -28,6 +28,8 @@ int get_plugin_initial_config(const char *type,
 			      const char *internal_name);
 int edit_plugin_config(const char *type,
 		       const char *internal_name);
+int normalize_plugin_config(const char *type,
+			    const char *internal_name);
 int run_plugin(const char *type,
 	       const char *internal_name);
 
