@@ -441,6 +441,8 @@ rgb_histo_search::write_fspec(FILE *ostream)
 
 	/*
 	 * This search actually relies on two different filters.
+	 * The arguments are fixed, so it is ok to include this
+	 * multiple times??
 	 */
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER  HISTO_II  # name \n");
