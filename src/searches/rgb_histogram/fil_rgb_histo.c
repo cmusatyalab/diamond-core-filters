@@ -392,6 +392,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	err = lf_write_attr(ohandle, HISTO_II, ii->nbytes,
 	    (unsigned char *) ii);
 	ASSERT(!err);
+	lf_omit_attr(ohandle, HISTO_II);
 done:
 	if (ii) {
 		free(ii);
