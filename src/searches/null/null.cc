@@ -101,7 +101,7 @@ void
 null_codec::write_fspec(FILE *ostream)
 {
 	fprintf(ostream, "\n\n");
-	fprintf(ostream, "FILTER  NULL  # convert file to rgb \n");
+	fprintf(ostream, "FILTER  RGB  # generates dummy rgb image \n");
 	fprintf(ostream, "THRESHOLD  1  # this will always pass \n");
 	fprintf(ostream, "MERIT  500  # run this early hint \n");
 
@@ -124,7 +124,6 @@ null_codec::write_config(FILE *ostream, const char *dirname)
 void
 null_codec::region_match(RGBImage *img, bbox_list_t *blist)
 {
-	/* XXX do something useful -:) */
 	return;
 }
 

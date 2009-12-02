@@ -17,8 +17,7 @@ VPATH = @srcdir@
 SRCDIR = @srcdir@
 OBJROOT = @OBJROOT@
 
-CPPFLAGS += @GTK_CFLAGS@
-
+STATIC_LIBS += $(BUILD_LIB_PATH)/libsfimage.a
 
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_null.c
@@ -32,7 +31,7 @@ SEARCH_LIB_OBJS =  null.o
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_LIB_SRCS)
+SRCS = $(FILTER_LIB_SRCS) image.c
 OBJS = $(FILTER_LIB_OBJS)
 
 #
