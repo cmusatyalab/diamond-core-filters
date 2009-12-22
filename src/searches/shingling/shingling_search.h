@@ -34,10 +34,12 @@ public:
 
 private:
 	char *		search_string;
+	double		similarity;
 	int		shingle_size;	
 	GtkWidget	*edit_window;
 	GtkWidget	*string_entry;
 	GtkWidget	*shingle_size_cb;
+	GtkObject	*sim_adj;
 };
 
 

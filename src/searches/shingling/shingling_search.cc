@@ -29,6 +29,7 @@
 
 /* config file tokens that we write out */
 #define SEARCH_NAME     "shingling"
+#define METRIC_ID  	"METRIC"
 #define STRING_ID    	"STRING"
 #define SHINGLE_SIZE_ID	"SHINGLE_SIZE"
 
@@ -94,9 +95,10 @@ char *decode_hex(const char *buf)
 shingling_search::shingling_search(const char *name, const char *descr)
 		: img_search(name, descr)
 {
-	edit_window = NULL;
+	similarity = 0.90;
 	search_string = strdup("");
 	shingle_size = 4;
+	edit_window = NULL;
 }
 
 shingling_search::~shingling_search()
@@ -110,15 +112,21 @@ shingling_search::handle_config(int nconf, char **data)
 {
 	int err;
 
-	if (strcmp(STRING_ID, data[0]) == 0) {
-		assert(nconf >= 1);
-		free(search_string);
-		search_string = decode_hex(data[1]);
-		assert(search_string != NULL);
+	if (strcmp(METRIC_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		similarity = atof(data[1]);
+		if (similarity < 0.0) similarity = 0.0;
+		if (similarity > 1.0) similarity = 1.0;
 		err = 0;
 	} else if (strcmp(SHINGLE_SIZE_ID, data[0]) == 0) {
 		assert(nconf > 1);
 		shingle_size = atoi(data[1]);
+		err = 0;
+	} else if (strcmp(STRING_ID, data[0]) == 0) {
+		assert(nconf >= 1);
+		free(search_string);
+		search_string = decode_hex(data[1]);
+		assert(search_string != NULL);
 		err = 0;
 	} else {
 		err = img_search::handle_config(nconf, data);
@@ -150,6 +158,8 @@ shingling_search::edit_search()
 	GtkWidget *widget;
 	GtkWidget *box;
 	GtkWidget *hbox;
+	GtkWidget *frame;
+	GtkWidget *container;
 	GtkTextBuffer *buffer;
 	char name[MAX_DISPLAY_NAME];
 
@@ -179,15 +189,52 @@ shingling_search::edit_search()
 	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
 	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
 
-	/*
-	 * Get the controls from the img_search.
-	 */
+	/* Get the controls from the img_search. */
 	widget = img_search_display();
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
-	/* set the first row label and text entry for the search string */
-	widget = gtk_label_new("Search fragment");
-	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+	/* w-shingling parameters */
+	frame = gtk_frame_new("Shingling Parameters");
+	container = gtk_vbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(frame), container);
+	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
+
+	/* similarity setting */
+	hbox = gtk_hbox_new(FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(container), hbox, FALSE, TRUE, 0);
+
+	widget = gtk_label_new("Min Similarity");
+	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, FALSE, 0);
+
+	sim_adj =  gtk_adjustment_new(0.0, 0.0, 1.0, 0.05, 0.1, 0);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(sim_adj), similarity);
+
+	widget = gtk_hscale_new(GTK_ADJUSTMENT(sim_adj));
+	gtk_widget_set_size_request(GTK_WIDGET(widget), 200, -1);
+	gtk_range_set_update_policy(GTK_RANGE(widget), GTK_UPDATE_CONTINUOUS);
+	gtk_scale_set_draw_value(GTK_SCALE(widget), FALSE);
+	gtk_box_pack_start(GTK_BOX(hbox), widget, TRUE, TRUE, 0);
+	gtk_widget_set_size_request(GTK_WIDGET(widget), 120, 0);
+
+	widget = gtk_spin_button_new(GTK_ADJUSTMENT(sim_adj), 0.05, 2);
+	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, FALSE, 0);
+
+	/* shingle size */
+	hbox = gtk_hbox_new(FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(container), hbox, FALSE, TRUE, 0);
+
+	widget = gtk_label_new("Shingle size");
+	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
+
+        shingle_size_cb = gtk_spin_button_new_with_range(1.0, INT_MAX, 1.0);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(shingle_size_cb), shingle_size);
+	gtk_box_pack_start(GTK_BOX(hbox), shingle_size_cb, FALSE, TRUE, 0);
+
+	/* text entry for the search string */
+	frame = gtk_frame_new("Search Fragment");
+	container = gtk_vbox_new(FALSE, 10);
+	gtk_container_add(GTK_CONTAINER(frame), container);
+	gtk_box_pack_start(GTK_BOX(box), frame, FALSE, TRUE, 0);
 
 	string_entry = gtk_text_view_new();
 
@@ -199,17 +246,7 @@ shingling_search::edit_search()
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(widget), string_entry);
-	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
-
-	hbox = gtk_hbox_new(FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
-
-	widget = gtk_label_new("Shingle size");
-	gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
-
-        shingle_size_cb = gtk_spin_button_new_with_range(1.0, INT_MAX, 1.0);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(shingle_size_cb), shingle_size);
-	gtk_box_pack_start(GTK_BOX(hbox), shingle_size_cb, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 	/* make everything visible */
 	gtk_widget_show_all(edit_window);
@@ -233,6 +270,8 @@ shingling_search::save_edits()
 
 	if (search_string)
 		free(search_string);
+
+	similarity = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
 
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(string_entry));
 	gtk_text_buffer_get_bounds(buffer, &start, &end);
@@ -266,9 +305,10 @@ void
 shingling_search::write_fspec(FILE *ostream)
 {
 	fprintf(ostream, "\n");
-	fprintf(ostream, "FILTER  %s  # dependancies \n", get_name());
-	fprintf(ostream, "THRESHOLD  70  # similarity \n");
-	fprintf(ostream, "MERIT  1000  	# guess at cost \n");
+	fprintf(ostream, "FILTER %s  # dependancies \n", get_name());
+	fprintf(ostream, "THRESHOLD %d  # similarity \n",
+		(int)(100.0 * similarity));
+	fprintf(ostream, "MERIT 1000  	# guess at cost \n");
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_shingling  # eval function \n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_shingling  # init function \n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_shingling  # fini function \n");
@@ -286,8 +326,9 @@ shingling_search::write_config(FILE *ostream, const char *dirname)
 	char *fragment = encode_hex(search_string);
 
  	fprintf(ostream, "SEARCH %s %s\n", SEARCH_NAME, get_name());
- 	fprintf(ostream, "%s %s \n", STRING_ID, fragment);
+ 	fprintf(ostream, "%s %f \n", METRIC_ID, similarity);
  	fprintf(ostream, "%s %d \n", SHINGLE_SIZE_ID, shingle_size);
+ 	fprintf(ostream, "%s %s \n", STRING_ID, fragment);
 
 	free(fragment);
 }
