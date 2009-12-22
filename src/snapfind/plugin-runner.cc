@@ -151,10 +151,6 @@ print_search_config(img_search *search, const char *type) {
 	// user-given name
 	print_key_value("name", user_given_name);
 
-	// print blob
-	print_key_value("blob", search->get_auxiliary_data_length(),
-			search->get_auxiliary_data());
-
 	// print config (also prints patches)
 	if (search->is_editable()) {
 		char *config;
@@ -184,6 +180,10 @@ print_search_config(img_search *search, const char *type) {
 	fclose(memfile);
 	print_key_value("fspec", fspec_size, fspec);
 	free(fspec);
+
+	// print blob
+	print_key_value("blob", search->get_auxiliary_data_length(),
+			search->get_auxiliary_data());
 
 	// restore name
 	search->set_name(user_given_name);
