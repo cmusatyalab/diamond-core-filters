@@ -1,0 +1,2 @@
+GUI_LIB		./shingling_search.so
+SEARCHLET_LIB	./fil_shingling.so

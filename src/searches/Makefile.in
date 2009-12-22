@@ -19,7 +19,7 @@ OBJROOT = @OBJROOT@
 
 
 SUBDIRS = rgbimg gabor_texture ocv_face dog_texture rgb_histogram 3D_match
-SUBDIRS += num_attr text_attr img_diff thumbnailer null
+SUBDIRS += num_attr text_attr img_diff thumbnailer null shingling
 
 include $(OBJROOT)/Makefile.template
 
