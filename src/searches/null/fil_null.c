@@ -56,10 +56,17 @@ int
 f_eval_null(lf_obj_handle_t ohandle, void *data)
 {
     RGBImage *img = (RGBImage *)data;
+    //char *display = "icon";
+    char *display = "label";
+    //char *display = "icon-and-label";
+
     if (!img) {
 	lf_log(LOGL_TRACE, "f_eval_null: no rgb image data");
 	return 0;
     }
+
+    lf_write_attr(ohandle, "hyperfind.thumbnail-display",
+		  strlen(display)+1, (unsigned char *)display);
 
     lf_write_attr(ohandle, ROWS, sizeof(int), 
 		  (unsigned char *) &img->height);
