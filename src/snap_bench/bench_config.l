@@ -38,6 +38,7 @@
 #include <glib.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include "lib_scope.h"
 
 
 static char *eat_token(char *tok);
@@ -258,9 +259,10 @@ void run_query(char *string){
 
          }
 
-    if (obj_id)
-       free((char *)obj_id);
-    ls_get_objectid(shandle, objs[i - 1], &obj_id);
+    if (i) {
+	if (obj_id) free((char *)obj_id);
+	ls_get_objectid(shandle, objs[i - 1], &obj_id);
+    }
 
      /* set_user_state( "ls_set_user_state id 0 state BUSY\n" );*/
 
@@ -367,12 +369,14 @@ set_searchlist(char *string)
 				
 		token = eat_token(token);	
 	}
+#ifdef PRE_SCOPING
         err = ls_set_searchlist(shandle, gid_count, gid_list);
         if (err) {
                 fprintf(stderr, "Failed to set searchlist on  err %d \n", err);
                 exit(1);
         }
-
+#endif
+	ls_define_scope(shandle);
 }
 
 static void
