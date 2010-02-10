@@ -106,7 +106,7 @@ static int w_shingling(unsigned char *data, size_t len,
 
 	/* if we have not yet filled the search window, we shouldn't check
 	 * for similarity yet */
-	//if (n < tmp->len) continue;
+	if (n < tmp->len) continue;
 
 	/* remember the best match */
 	r = (double)I / (double)U;
@@ -114,7 +114,7 @@ static int w_shingling(unsigned char *data, size_t len,
     }
 
     /* update length in case we were generating the initial set */
-    if (n < tmp->len) tmp->len = n;
+    if (set->len == 0) tmp->len = n;
 
     return (int)(best_r * 100);
 }
@@ -190,8 +190,8 @@ int f_eval_shingling(lf_obj_handle_t ohandle, void *data)
 #include <unistd.h>
 #include <stdio.h>
 
-int lf_next_block(lf_obj_handle_t o, int m, size_t *l, unsigned char **c)
-    { return 0; }
+void lf_log(int level, const char *fmt, ...) { return; }
+int lf_next_block(lf_obj_handle_t o, int m, size_t *l, unsigned char **c) { return 0; }
 
 int main(int argc, char **argv)
 {
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
 
     n = read(0, example, sizeof(example));
     
-    shingling_init(1, &argv[1], n, example, "", (void**)&state);
+    f_init_shingling(1, &argv[1], n, example, "", (void**)&state);
 
     fd = open(argv[2], O_RDONLY);
     n = read(fd, example, sizeof(example));
@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 
     printf("similarity %d\n", R);
 
-    shingling_free(state);
+    f_fini_shingling(state);
     exit(0);
 }
 #endif

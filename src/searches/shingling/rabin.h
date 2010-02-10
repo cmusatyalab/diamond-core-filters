@@ -18,7 +18,8 @@
 #include <stdint.h>
 
 /* 64-bit irreducible polynomial */
-#define SNAPFIND_POLY 0xf00f00f00f00f001ULL
+#define SNAPFIND_POLY 0xd16a5bde9d0fd0c5ULL
+
 
 struct rabin_state {
     unsigned int windowsize;

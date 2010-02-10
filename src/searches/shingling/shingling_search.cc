@@ -51,22 +51,15 @@ search_init()
 	factory_register(fac);
 }
 
-static unsigned char encode_nibble(unsigned char c)
-{
-    c &= 0xf;
-    if (c > 9)	c += 'a' - 10;
-    else	c += '0';
-    return c;
-}
-
+static const char *encode_nibble = "0123456789abcdef";
 char *encode_hex(const char *buf)
 {
     size_t i, outlen = strlen(buf) * 2;
     char *out = (char *)malloc(outlen+1);
 
     for (i = 0; i < outlen; i += 2) {
-	out[i]   = encode_nibble(buf[i/2] >> 4);
-	out[i+1] = encode_nibble(buf[i/2]);
+	out[i]   = encode_nibble[(buf[i/2] >> 4) & 0xf];
+	out[i+1] = encode_nibble[(buf[i/2]) & 0xf];
     }
     out[outlen] = '\0';
     return out;
