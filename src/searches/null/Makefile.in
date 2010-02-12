@@ -19,6 +19,8 @@ OBJROOT = @OBJROOT@
 
 STATIC_LIBS += $(BUILD_LIB_PATH)/libsfimage.a
 
+CPPFLAGS += @GTK_CFLAGS@
+
 # objects used to build the searchlet(s)
 FILTER_LIB_SRCS = fil_null.c
 
