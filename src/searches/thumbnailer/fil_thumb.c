@@ -163,6 +163,12 @@ f_eval_thumbnailer(lf_obj_handle_t ohandle, void *data)
 
 	scaledimg = image_gen_image_scale(img, (int)ceil(scale));
 
+	if ((scaledimg->height == 0) || (scaledimg->width == 0)) {
+	  // fail
+	  pass = 1;
+	  goto done;
+	}
+
 	/* compress jpeg */
 	memstream = open_memstream(&jpeg_data, &jpeg_len);
 	ASSERT(memstream);
