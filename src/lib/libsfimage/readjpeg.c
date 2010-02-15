@@ -18,6 +18,7 @@
 #include <stdlib.h>	// for malloc
 #include <string.h>	// for memcpy
 #include <stdio.h>
+#include <setjmp.h>
 
 // For stat
 #include <sys/types.h>
@@ -67,6 +68,19 @@ term_source (j_decompress_ptr cinfo)
   // no work necessary here
 }
 
+struct my_error_mgr {
+  struct jpeg_error_mgr pub;
+  jmp_buf env;
+};
+
+
+static void my_error_exit(j_common_ptr cinfo) {
+  struct my_error_mgr *err = (struct my_error_mgr *) cinfo->err;
+
+  (cinfo->err->output_message) (cinfo);
+
+  longjmp(err->env, 1);
+}
 
 // --------------------------------------------------
 // Note that we malloc and return an RGBImage* so it is the
@@ -78,82 +92,94 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	assert(jp);
 
 	struct jpeg_decompress_struct cinfo;
-	struct jpeg_error_mgr jerr;
+	struct my_error_mgr err;
+
+	RGBImage* rgbimg = NULL;
+	u_char* scanline = NULL;
 
 	lf_log(LOGL_TRACE, "Entering convertJPEGtoRGBImage");
 
-	// XXX TODO XXX
-	// Maybe we could allocate these statically and not have
-	// to do it each time the object is called.
-	//
-	cinfo.err = jpeg_std_error(&jerr);
-	jpeg_create_decompress(&cinfo);
+	cinfo.err = jpeg_std_error(&err.pub);
+	cinfo.err->error_exit = my_error_exit;
 
-	// get_rgb_from_jpeg has already set up jp->buf and jp->bytes
-	// assert(cinfo.src);
-	struct jpeg_source_mgr source;
-	cinfo.src = &source;
-	cinfo.src->next_input_byte = jp->buf;
-	cinfo.src->bytes_in_buffer = jp->bytes;
-	cinfo.src->init_source = init_source;
-	cinfo.src->fill_input_buffer = fill_input_buffer;
-	cinfo.src->skip_input_data = skip_input_data;
-	cinfo.src->term_source = term_source;
+	if (setjmp(err.env) == 0) {
+	  // XXX TODO XXX
+	  // Maybe we could allocate these statically and not have
+	  // to do it each time the object is called.
+	  //
+	  jpeg_create_decompress(&cinfo);
 
-	jpeg_read_header(&cinfo, TRUE);
-	jpeg_start_decompress(&cinfo);
+	  // get_rgb_from_jpeg has already set up jp->buf and jp->bytes
+	  // assert(cinfo.src);
+	  struct jpeg_source_mgr source;
+	  cinfo.src = &source;
+	  cinfo.src->next_input_byte = jp->buf;
+	  cinfo.src->bytes_in_buffer = jp->bytes;
+	  cinfo.src->init_source = init_source;
+	  cinfo.src->fill_input_buffer = fill_input_buffer;
+	  cinfo.src->skip_input_data = skip_input_data;
+	  cinfo.src->term_source = term_source;
 
-	// at this point, the following variables are available:
-	// cinfo.output_width
-	// cinfo.output_height
-	// cinfo.output_components	(3 for RGB, 1 for greyscale)
-    // assert(cinfo.output_components == 3);
-    assert( (cinfo.output_components == 3) ||
-            (cinfo.output_components == 1) );
+	  jpeg_read_header(&cinfo, TRUE);
+	  jpeg_start_decompress(&cinfo);
 
-    int w = cinfo.output_width;
-    int h = cinfo.output_height;
-    RGBImage* rgbimg = rgbimg_blank_image(w, h);    // output image
+	  // at this point, the following variables are available:
+	  // cinfo.output_width
+	  // cinfo.output_height
+	  // cinfo.output_components	(3 for RGB, 1 for greyscale)
+	  // assert(cinfo.output_components == 3);
+	  assert( (cinfo.output_components == 3) ||
+		  (cinfo.output_components == 1) );
 
-    // XXX WARNING XXX
-    // This  might not be OK since it is called after
-    // jpeg_start_decompress()
-    //
-    // Note this is a funny datastructure.
-    // buffer is an array of size 1, containing a single scanline.
-//        u_char* scanline = (u_char*) malloc( w * 3 * sizeof(u_char));
-    u_char* scanline;
-    if (cinfo.output_components == 1) {     // monochrome
-        scanline = (u_char*) malloc( w * 1 * sizeof(u_char));
-    } else {                                // color jpeg
-        scanline = (u_char*) malloc( w * 3 * sizeof(u_char));
-    }
-    JSAMPARRAY buffer = &scanline;
+	  int w = cinfo.output_width;
+	  int h = cinfo.output_height;
+	  rgbimg = rgbimg_blank_image(w, h);    // output image
 
-    RGBPixel* outpix = rgbimg->data;
-    while (cinfo.output_scanline < h) {
-      // process a line
-      //
-      jpeg_read_scanlines(&cinfo, buffer, 1);
-      u_char* curpix = buffer[0];   // [0] refers to 1st scanline
-      int c;
-      for (c=0; c < w; c++) {       // write scanline [note 3*w]
+	  // XXX WARNING XXX
+	  // This  might not be OK since it is called after
+	  // jpeg_start_decompress()
+	  //
+	  // Note this is a funny datastructure.
+	  // buffer is an array of size 1, containing a single scanline.
+	  //        u_char* scanline = (u_char*) malloc( w * 3 * sizeof(u_char));
+	  if (cinfo.output_components == 1) {     // monochrome
+	    scanline = (u_char*) malloc( w * 1 * sizeof(u_char));
+	  } else {                                // color jpeg
+	    scanline = (u_char*) malloc( w * 3 * sizeof(u_char));
+	  }
+	  JSAMPARRAY buffer = &scanline;
 
-        if (cinfo.output_components == 1) { // monochrome
-            outpix->r = outpix->g = outpix->b = *curpix++;
-        } else {                            // color jpeg
-            // Note each curpix is a single R, G or B value
-            outpix->r = *curpix++;
-            outpix->g = *curpix++;
-            outpix->b = *curpix++;
-        }
-        outpix->a = 255;
-        outpix++;
-      }
-    }
+	  RGBPixel* outpix = rgbimg->data;
+	  while (cinfo.output_scanline < h) {
+	    // process a line
+	    //
+	    jpeg_read_scanlines(&cinfo, buffer, 1);
+	    u_char* curpix = buffer[0];   // [0] refers to 1st scanline
+	    int c;
+	    for (c=0; c < w; c++) {       // write scanline [note 3*w]
 
-	free(scanline);
-	scanline = NULL;
+	      if (cinfo.output_components == 1) { // monochrome
+		outpix->r = outpix->g = outpix->b = *curpix++;
+	      } else {                            // color jpeg
+		// Note each curpix is a single R, G or B value
+		outpix->r = *curpix++;
+		outpix->g = *curpix++;
+		outpix->b = *curpix++;
+	      }
+	      outpix->a = 255;
+	      outpix++;
+	    }
+	  }
+
+	  free(scanline);
+	  scanline = NULL;
+	} else {
+	  // setjmp returns again
+	  if (rgbimg == NULL) {
+	    rgbimg = rgbimg_blank_image(1, 1);
+	  }
+	  free(scanline);
+	}
 
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
