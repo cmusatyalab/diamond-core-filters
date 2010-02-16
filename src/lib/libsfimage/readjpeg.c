@@ -128,8 +128,11 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	  // cinfo.output_height
 	  // cinfo.output_components	(3 for RGB, 1 for greyscale)
 	  // assert(cinfo.output_components == 3);
-	  assert( (cinfo.output_components == 3) ||
-		  (cinfo.output_components == 1) );
+	  if (!(cinfo.output_components == 3) ||
+	      (cinfo.output_components == 1)) {
+	    jpeg_destroy_decompress(&cinfo);
+	    return NULL;
+	  }
 
 	  int w = cinfo.output_width;
 	  int h = cinfo.output_height;
