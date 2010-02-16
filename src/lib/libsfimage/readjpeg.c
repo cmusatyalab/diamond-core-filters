@@ -175,9 +175,6 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	  scanline = NULL;
 	} else {
 	  // setjmp returns again
-	  if (rgbimg == NULL) {
-	    rgbimg = rgbimg_blank_image(1, 1);
-	  }
 	  free(scanline);
 	}
 
