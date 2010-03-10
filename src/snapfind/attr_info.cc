@@ -58,11 +58,11 @@ attr_info::update_obj(ls_obj_handle_t ohandle)
 	attr_list.erase(attr_list.begin(), attr_list.end());
 
 	/* put in all the current attributes */
-	err = lf_first_attr(ohandle, &aname, &len, &data, &cookie);
+	err = ls_first_attr(ohandle, &aname, &len, &data, &cookie);
 	while (!err) {
 		aent = new attr_ent(aname, data, len);
 		attr_list.push_back(aent);
-		err = lf_next_attr(ohandle, &aname, &len, &data, &cookie);
+		err = ls_next_attr(ohandle, &aname, &len, &data, &cookie);
 	}
 
 	/* if active, update the window */
