@@ -179,7 +179,7 @@ int f_eval_shingling(lf_obj_handle_t ohandle, void *data)
     size_t obj_len;
     int ret;
 
-    ret = lf_next_block(ohandle, INT_MAX, &obj_len, &obj);
+    ret = lf_ref_attr(ohandle, "", &obj_len, &obj);
     assert(!ret);
 
     return w_shingling(obj, obj_len, state->rpoly, state->example, state->test);
@@ -191,7 +191,7 @@ int f_eval_shingling(lf_obj_handle_t ohandle, void *data)
 #include <stdio.h>
 
 void lf_log(int level, const char *fmt, ...) { return; }
-int lf_next_block(lf_obj_handle_t o, int m, size_t *l, unsigned char **c) { return 0; }
+int lf_ref_attr(lf_obj_handle_t o, const char *n, size_t *l, unsigned char **c) { return 0; }
 
 int main(int argc, char **argv)
 {

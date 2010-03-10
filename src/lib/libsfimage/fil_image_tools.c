@@ -231,7 +231,7 @@ get_rgb_img(lf_obj_handle_t ohandle)
 	unsigned char *	obj_data;
 	size_t		data_len;
 
-	err = lf_next_block(ohandle, INT_MAX, &data_len, &obj_data);
+	err = lf_ref_attr(ohandle, "", &data_len, &obj_data);
 	assert(!err);
 	
 	return read_rgb_image(obj_data, data_len);
