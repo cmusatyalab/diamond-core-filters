@@ -69,7 +69,7 @@ ih_drop_ref(image_hooks_t * ptr)
 	assert(ptr->refcount > 0);
 	ptr->refcount--;
 	if (ptr->refcount == 0) {
-		ft_free((char *) ptr->img);
+		free(ptr->img);
 		ls_release_object(NULL, ptr->ohandle);
 		free(ptr);
 	}

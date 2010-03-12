@@ -56,6 +56,8 @@ extern user_stats_t user_measurement;
 
 img_search *get_current_codec(void);
 
+img_patches_t * get_patches(lf_obj_handle_t ohandle, char *fname);
+
 #ifdef __cplusplus
 extern "C"
 {

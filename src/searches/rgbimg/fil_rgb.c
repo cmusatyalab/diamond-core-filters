@@ -66,11 +66,15 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 {
 	RGBImage       *img;
 	int             err = 0, pass = 1;
+	unsigned char * obj_data;
+	size_t          data_len;
 
 	lf_log(LOGL_TRACE, "f_pnm2rgb: enter");
 
 
-	img = get_rgb_img(ohandle);
+	err = lf_ref_attr(ohandle, "", &data_len, &obj_data);
+	assert(!err);
+	img = read_rgb_image(obj_data, data_len);
 	if (img == NULL) {
 		lf_log(LOGL_ERR, "f_pnm2rgb: failed to get rgb image");
 		return(0);

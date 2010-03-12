@@ -36,7 +36,6 @@
 
 #include <glib.h>
 
-#include "lib_filter.h"
 #include "lib_log.h"
 #include "sys_attr.h"
 #include "snapfind_consts.h"
@@ -420,7 +419,7 @@ display_thumbnail(ls_obj_handle_t ohandle)
 	       image_controls.cur_op == CNTRL_ELEV);
 
 	/* read thumbnail image data */
-	assert(!lf_ref_attr(ohandle, THUMBNAIL_ATTR, &jpeg_len, &jpeg_data));
+	assert(!ls_ref_attr(ohandle, THUMBNAIL_ATTR, &jpeg_len, &jpeg_data));
 	scaledimg = read_rgb_image(jpeg_data, jpeg_len);
 	assert(scaledimg);
 
@@ -428,11 +427,11 @@ display_thumbnail(ls_obj_handle_t ohandle)
 
 	/* calculate the scale factor */
 	len = sizeof(int32_t);
-	err = lf_read_attr(ohandle, COLS, &len, (unsigned char *)&width);
+	err = ls_read_attr(ohandle, COLS, &len, (unsigned char *)&width);
 	assert(!err);
 
 	len = sizeof(int32_t);
-	err = lf_read_attr(ohandle, ROWS, &len, (unsigned char *)&height);
+	err = ls_read_attr(ohandle, ROWS, &len, (unsigned char *)&height);
 	assert(!err);
 
 	scale = 1.0;
@@ -1584,6 +1583,26 @@ add_new_codec(img_factory *factory)
 					   -1);
 	if (strcmp(name, "Built-in") == 0) {
 	  gtk_combo_box_set_active(GTK_COMBO_BOX(codec_selector), 0);
+	}
+}
+
+
+img_patches_t * 
+get_patches(ls_obj_handle_t ohandle, char *fname)
+{
+        char            buf[BUFSIZ];
+	size_t		a_size;
+	int		err;
+	unsigned char *	dptr;
+	img_patches_t * patches;
+
+        sprintf(buf, FILTER_MATCHES, fname);
+        err = ls_ref_attr(ohandle, buf, &a_size, &dptr);
+	patches = (img_patches_t *)dptr;
+	if (err) {
+		return(NULL);
+	} else {
+		return(patches);
 	}
 }
 

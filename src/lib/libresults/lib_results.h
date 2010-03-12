@@ -134,18 +134,7 @@ typedef struct img_patches {
 extern "C" {
 #endif
 
-int write_param(lf_obj_handle_t ohandle, char *fmt,
-                        search_param_t *param, int i);
-int read_param(lf_obj_handle_t ohandle, char *fmt,
-                       search_param_t *param, int i);
-
-
-img_patches_t * get_patches(lf_obj_handle_t ohandle, char *fname);
 void save_patches(lf_obj_handle_t ohandle, char *fname, bbox_list_t *blist);
-
-
-char *ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name);
-void ft_free(char *ptr);
 
 
 #ifdef	__cplusplus

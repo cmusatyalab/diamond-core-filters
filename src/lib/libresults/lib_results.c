@@ -25,59 +25,6 @@
 #include "lib_results.h"
 
 
-int
-write_param(lf_obj_handle_t ohandle, char *fmt, search_param_t * param, int i)
-{
-        size_t           bsize;
-        char            buf[BUFSIZ];
-        int             err;
-
-        lf_log(LOGL_TRACE, "Found: ul=%ld,%ld ",
-               param->bbox.xmin, param->bbox.ymin, param->scale);
-
-        sprintf(buf, fmt, i);
-        bsize = sizeof(search_param_t);
-        err = lf_write_attr(ohandle, buf, bsize, (unsigned char *) param);
-
-        return err;
-}
-
-
-int
-read_param(lf_obj_handle_t ohandle, char *fmt,
-           search_param_t * param, int i)
-{
-        size_t           bsize;
-        char            buf[BUFSIZ];
-        int             err;
-
-        sprintf(buf, fmt, i);
-        bsize = sizeof(search_param_t);
-        err = lf_read_attr(ohandle, buf, &bsize, (unsigned char *) param);
-
-        return err;
-}
-
-img_patches_t * 
-get_patches(lf_obj_handle_t ohandle, char *fname)
-{
-        char            buf[BUFSIZ];
-	size_t		a_size;
-	int		err;
-	unsigned char *	dptr;
-	img_patches_t * patches;
-
-        sprintf(buf, FILTER_MATCHES, fname);
-        err = lf_ref_attr(ohandle, buf, &a_size, &dptr);
-	patches = (img_patches_t *)dptr;
-	if (err) {
-		return(NULL);
-	} else {
-		return(patches);
-	}
-}
-
-
 void
 save_patches(lf_obj_handle_t ohandle, char *fname, bbox_list_t *blist)
 {
@@ -115,47 +62,3 @@ save_patches(lf_obj_handle_t ohandle, char *fname, bbox_list_t *blist)
 	assert(err == 0);
 	free(ipatch);
 }
-
-
-char           *
-ft_read_alloc_attr(lf_obj_handle_t ohandle, const char *name)
-{
-        int             err;
-        char           *ptr;
-        size_t           bsize;
-
-        /*
-         * assume this attr > 0 size
-         */
-
-        bsize = 0;
-        err = lf_read_attr(ohandle, name, &bsize, (unsigned char *) NULL);
-        if (err != ENOMEM) {
-                // fprintf(stderr, "attribute lookup error: %s\n", name);
-                return NULL;
-        }
-
-        ptr = (char *)malloc(bsize);
-        if (ptr == NULL ) {
-                fprintf(stderr, "alloc error\n");
-                return (NULL);
-        }
-
-        err = lf_read_attr(ohandle, name, &bsize, (unsigned char *) ptr);
-        if (err) {
-                fprintf(stderr, "attribute read error: %s\n", name);
-                return NULL;
-        }
-
-        return ptr;
-}
-
-/* XXX remove ??? */
-void
-ft_free(char *ptr)
-{
-        free(ptr);
-        // assert(err == 0);
-}
-
-

@@ -241,7 +241,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	}
 
 	if (ii_alloc) {
-		ft_free((char *) ii);
+		free(ii);
 	}
 
 	return rv;

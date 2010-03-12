@@ -34,7 +34,6 @@
 #include "lib_searchlet.h"
 #include "gui_thread.h"
 
-#include "lib_filter.h"
 #include "lib_log.h"
 
 #include <sys/queue.h>

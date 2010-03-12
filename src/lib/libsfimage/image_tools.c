@@ -105,12 +105,12 @@ create_rgb_image(const char *filename)
 	 */
 	err = pnm_parse_header(buf, buflen, &width, &height, &magic, &headerlen);
 	if (err) {
-		lf_log(LOGL_ERR, "%s: parse error", filename);
+		fprintf(stderr, "%s: parse error\n", filename);
 		return NULL;
 	}
 
 	if (magic != IMAGE_PPM) {
-		lf_log(LOGL_ERR, "%s: only ppm format supported", filename);
+		fprintf(stderr, "%s: only ppm format supported\n", filename);
 		return NULL;
 	}
 
@@ -120,7 +120,7 @@ create_rgb_image(const char *filename)
 	bytes = sizeof(RGBImage) + width * height * sizeof(RGBPixel);
 	img = (RGBImage *) malloc(bytes);
 	if (!img) {
-		lf_log(LOGL_ERR, "out%s: only ppm format supported", filename);
+		fprintf(stderr, "out%s: only ppm format supported\n", filename);
 		return NULL;
 	}
 	img->nbytes = bytes;

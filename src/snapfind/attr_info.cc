@@ -25,7 +25,6 @@
 #include <assert.h>
 #include <sstream>
 #include "lib_searchlet.h"
-#include "lib_filter.h"
 #include "attr_info.h"
 
 attr_info::attr_info()

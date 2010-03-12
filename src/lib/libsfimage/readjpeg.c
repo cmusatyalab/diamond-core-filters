@@ -30,9 +30,6 @@
 #include "rgb.h"	// for RGBImage, RGBPixel
 #include "readjpeg.h"
 
-#include "lib_filter.h"	// for lf_log(...) debugging function
-#include "lib_log.h"	// for lf_log's defines like LOGL_TRACE
-
 // Function to call:
 // RGBImage* convertJPEGtoRGBImage(TIFF* tif);
 
@@ -96,8 +93,6 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 
 	RGBImage* rgbimg = NULL;
 	u_char* scanline = NULL;
-
-	lf_log(LOGL_TRACE, "Entering convertJPEGtoRGBImage");
 
 	cinfo.err = jpeg_std_error(&err.pub);
 	cinfo.err->error_exit = my_error_exit;

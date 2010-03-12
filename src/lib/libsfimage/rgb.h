@@ -100,7 +100,6 @@ RGBImage *create_rgb_subimage(RGBImage *old, int xoff, int yoff, int xsize,
 			      int ysize);
 void release_rgb_image(RGBImage *);
 
-RGBImage * get_rgb_img(lf_obj_handle_t ohandle);
 FGImage_t * rgb_to_fgimage(RGBImage *);
 
 RGBImage * rgbimg_blank_image(int width, int height);

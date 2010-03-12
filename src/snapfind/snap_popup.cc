@@ -29,7 +29,6 @@
 #include <stdint.h>
 #include <signal.h>
 
-#include "lib_filter.h"
 #include "searchlet_api.h"
 #include "gui_thread.h"
 
@@ -1051,6 +1050,51 @@ cb_popup_window_close(GtkWidget *window)
 }
 
 
+static RGBImage*
+get_rgb_img(ls_obj_handle_t ohandle)
+{
+	int		err = 0;
+	unsigned char *	obj_data;
+	size_t		data_len;
+
+	err = ls_ref_attr(ohandle, "", &data_len, &obj_data);
+	assert(!err);
+	
+	return read_rgb_image(obj_data, data_len);
+}
+
+static char           *
+ft_read_alloc_attr(ls_obj_handle_t ohandle, const char *name)
+{
+        int             err;
+        char           *ptr;
+        size_t           bsize;
+
+        /*
+         * assume this attr > 0 size
+         */
+
+        bsize = 0;
+        err = ls_read_attr(ohandle, name, &bsize, (unsigned char *) NULL);
+        if (err != ENOMEM) {
+                // fprintf(stderr, "attribute lookup error: %s\n", name);
+                return NULL;
+        }
+
+        ptr = (char *)malloc(bsize);
+        if (ptr == NULL ) {
+                fprintf(stderr, "alloc error\n");
+                return (NULL);
+        }
+
+        err = ls_read_attr(ohandle, name, &bsize, (unsigned char *) ptr);
+        if (err) {
+                fprintf(stderr, "attribute read error: %s\n", name);
+                return NULL;
+        }
+
+        return ptr;
+}
 
 void
 do_img_popup(GtkWidget *widget, search_set *set)
@@ -1233,10 +1277,10 @@ do_img_popup(GtkWidget *widget, search_set *set)
 	size_t size;
 
 	size = COMMON_MAX_NAME;
-	err = lf_read_attr(ohandle, DISPLAY_NAME, &size, (unsigned char *)buf);
+	err = ls_read_attr(ohandle, DISPLAY_NAME, &size, (unsigned char *)buf);
 	if (err && err != ENOMEM) {
 	    size = COMMON_MAX_NAME;
-	    err = lf_read_attr(ohandle, OBJ_PATH, &size, (unsigned char *)buf);
+	    err = ls_read_attr(ohandle, OBJ_PATH, &size, (unsigned char *)buf);
 	}
 	if (err) strcpy(buf, "unknown");
 

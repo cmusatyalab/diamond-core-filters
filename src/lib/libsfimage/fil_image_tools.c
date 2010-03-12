@@ -164,24 +164,24 @@ get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type)
 		case IMAGE_PBM:
 			err = pbm_read_data( (size - headerlen), &buf[headerlen], rgb);
 			if (err) {
-				lf_log(LOGL_ERR, "get_rgb_from_pnm: invalid pbm image");
+				fprintf(stderr, "get_rgb_from_pnm: invalid pbm image\n");
 			}
 			break;
 		case IMAGE_PGM:
 			err = pgm_read_data( (size - headerlen), &buf[headerlen], rgb);
 			if (err) {
-				lf_log(LOGL_ERR, "get_rgb_from_pnm: invalid pgm image");
+				fprintf(stderr, "get_rgb_from_pnm: invalid pgm image\n");
 			}
 			break;
 		case IMAGE_PPM:
 			err = ppm_read_data( (size - headerlen), &buf[headerlen], rgb);
 			if (err) {
-				lf_log(LOGL_ERR, "get_rgb_from_pnm: invalid ppm image");
+				fprintf(stderr, "get_rgb_from_pnm: invalid ppm image\n");
 			}
 			break;
 		default:
 			err = EINVAL;
-			lf_log(LOGL_ERR, "get_rgb_from_pnm: uknown type");
+			fprintf(stderr, "get_rgb_from_pnm: uknown type\n");
 			break;
 	}
 	if (err) {
@@ -224,19 +224,6 @@ get_rgb_from_png(u_char* buf, off_t size)
   return NULL;
 }
 
-RGBImage*
-get_rgb_img(lf_obj_handle_t ohandle)
-{
-	int		err = 0;
-	unsigned char *	obj_data;
-	size_t		data_len;
-
-	err = lf_ref_attr(ohandle, "", &data_len, &obj_data);
-	assert(!err);
-	
-	return read_rgb_image(obj_data, data_len);
-}
-
 RGBImage *
 read_rgb_image(unsigned char *buf, size_t buflen)
 {
@@ -259,7 +246,7 @@ read_rgb_image(unsigned char *buf, size_t buflen)
 	    img = get_rgb_from_png(buf, buflen);
 	    break;
 	  default:
-	    lf_log(LOGL_ERR, "Unknown image format!!", magic);
+	    fprintf(stderr, "Unknown image format!!\n", magic);
 	    break;
 	}
 	return img;
@@ -292,8 +279,6 @@ rgb_normalize(RGBImage* img)
 		if (b < bmin) { bmin = b; }
 		if (b > bmax) { bmax = b; }
 	}
-	lf_log(LOGL_TRACE, "rgb_normalize: r(%d,%d), g(%d,%d), b(%d,%d)\n",
-	    rmin,rmax, gmin,gmax, bmin,bmax);
 
 	if (rmin < rmax) {	// only normalize if channels differ
 	  rscale = (double)255.0/(rmax-rmin);

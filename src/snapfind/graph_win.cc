@@ -28,7 +28,6 @@
 #include <stdint.h>
 #include <signal.h>
 
-#include "lib_filter.h"
 #include "lib_searchlet.h"
 
 #include "gui_thread.h"

@@ -18,7 +18,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "lib_filter.h"
 #include "lib_log.h"
 #include "lib_results.h"
 #include "fil_rgb_histo.h"
@@ -739,14 +738,6 @@ histo_lessen(Histo * h1, const Histo * h2)
  ********************************************************************** */
 
 
-#define ASSERT(exp)							\
-if(!(exp)) {								\
-  lf_log(LOGL_ERR, "Assertion %s failed at ", #exp);		\
-  lf_log(LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
-  return;								\
-}
-
-
 void
 histo_compute_ii(const RGBImage * img, HistoII * ii, const int dx,
                  const int dy, histo_type_t htype)
@@ -759,13 +750,13 @@ histo_compute_ii(const RGBImage * img, HistoII * ii, const int dx,
 	y;
 	Histo           hgram;
 
-	ASSERT(dx);
-	ASSERT(dy);
+	assert(dx);
+	assert(dy);
 
-	ASSERT(ii->nbytes >=
+	assert(ii->nbytes >=
 	       ii->width * ii->height * sizeof(Histo) + sizeof(HistoII));
-	ASSERT(ii->width >= width / dx + 1);
-	ASSERT(ii->height >= height / dy + 1);
+	assert(ii->width >= width / dx + 1);
+	assert(ii->height >= height / dy + 1);
 
 	/*
 	 * zero row0, col0 
@@ -780,8 +771,8 @@ histo_compute_ii(const RGBImage * img, HistoII * ii, const int dx,
 
 	for (x = 0, xii = 1; x + dx <= width; x += dx, xii++) {
 		for (y = 0, yii = 1; y + dy <= height; y += dy, yii++) {
-			ASSERT(xii < ii->width);
-			ASSERT(yii < ii->height);
+			assert(xii < ii->width);
+			assert(yii < ii->height);
 
 			histo_fill_from_subimage(&hgram, img, x, y, dx, dy, htype);
 			histo_accum(&hgram, &(II_PROBE(ii, xii - 1, yii)));
