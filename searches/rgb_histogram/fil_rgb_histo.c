@@ -183,7 +183,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	bbox_t *	cur_box;
 	int		ii_alloc = 0;
 	size_t		len;
-	unsigned char *	dptr;
+	const void    *	dptr;
 	int             rv = 0;     /* return value */
 
 
@@ -350,7 +350,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	HistoII        *ii = NULL;
 	int             err;
 	size_t          nbytes;
-	unsigned char *	dptr;
+	const void    *	dptr;
 	hintegrate_data_t *fstate = (hintegrate_data_t *) f_data;
 	int             width,
 	height;

@@ -30,10 +30,6 @@
 #include <signal.h>
 
 
-#include "lib_searchlet.h"
-
-#include "lib_log.h"
-
 #include <sys/queue.h>
 
 #include "lib_results.h"

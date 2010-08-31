@@ -29,7 +29,6 @@
 #include "lib_filter.h"
 #include "snapfind_consts.h"
 #include "fil_3D_match.h"
-#include "sys_attr.h"
 
 
 int
@@ -86,7 +85,7 @@ f_eval_3D_match(lf_obj_handle_t ohandle, void *f_data)
 
 	lf_log(LOGL_TRACE, "f_eval_3D_match: enter");
 
-	err = lf_read_attr(ohandle, DISPLAY_NAME, &len, (unsigned char *) name); 
+	err = lf_read_attr(ohandle, "Display-Name", &len, (unsigned char *) name); 
 	name[len] = '\0';
 	suffix = strrchr((char *) name, '.');
 	strcpy(suffix, ".jpg.query");

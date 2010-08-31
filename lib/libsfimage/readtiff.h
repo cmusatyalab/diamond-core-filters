@@ -25,7 +25,7 @@
 // Pretends to be a file.
 //
 typedef struct {
-  u_char*	buf;	// data -- note this is in bytes
+  const u_char*	buf;	// data -- note this is in bytes
   toff_t	offset;	// current position in file (bytes)
   toff_t	bytes;	// number of bytes in buf
 } MyTIFF;

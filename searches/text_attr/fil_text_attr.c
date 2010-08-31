@@ -21,7 +21,6 @@
 #include <assert.h>
 #include <string.h>
 #include "lib_filter.h"
-#include "lib_log.h"
 #include "text_attr_priv.h"
 #include "fil_text_attr.h"
 
@@ -80,7 +79,7 @@ f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata)
 	fdata_text_attr_t  *fconfig = (fdata_text_attr_t *) fdata;
 	int             err;
 	size_t		bsize;
-	unsigned char *	buf; 
+	const void *	buf; 
 
 	err = lf_ref_attr(ohandle, fconfig->attr_name, &bsize, &buf);
 	/* handle case where attributed doesn't exist */

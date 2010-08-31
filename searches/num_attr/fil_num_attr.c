@@ -21,7 +21,6 @@
 #include <assert.h>
 #include <string.h>
 #include "lib_filter.h"
-#include "lib_log.h"
 #include "num_attr_priv.h"
 #include "fil_num_attr.h"
 
@@ -80,7 +79,7 @@ int
 f_eval_num_attr(lf_obj_handle_t ohandle, void *fdata)
 {
 	int 			i;
-	unsigned char *		data;
+	const void *		data;
 	size_t			dsize;
 	float			val;
 	fnum_attr_holder_t  *	fholder = (fnum_attr_holder_t *) fdata;

@@ -23,7 +23,6 @@
 #include <assert.h>
 #include <stdint.h>
 #include "lib_filter.h"
-#include "lib_log.h"
 #include "rgb.h"
 #include "lib_results.h"
 #include "fil_gab_texture.h"
@@ -127,7 +126,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	int		pass = 0;
 	int		err;
 	RGBImage      * rgb_img = NULL;
-	unsigned char * dptr;
+	const void    * dptr;
 	size_t 		bsize;
 	size_t 		len;
 	float			min_simularity;

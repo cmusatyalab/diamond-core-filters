@@ -66,7 +66,7 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 {
 	RGBImage       *img;
 	int             err = 0, pass = 1;
-	unsigned char * obj_data;
+	const void    * obj_data;
 	size_t          data_len;
 
 	lf_log(LOGL_TRACE, "f_pnm2rgb: enter");

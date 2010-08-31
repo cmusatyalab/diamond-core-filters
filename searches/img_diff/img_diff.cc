@@ -213,10 +213,6 @@ img_diff::close_edit_win()
 	  assert(0);
 	}
 
-	log_message(LOGT_APP, LOGL_TRACE, 
-				"auxiliary data: %s file %s buf %x len %d",
-				get_name(), get_example_name(), buf, nbytes);
-
 	set_auxiliary_data((void *) buf);
 	set_auxiliary_data_length(nbytes);
 

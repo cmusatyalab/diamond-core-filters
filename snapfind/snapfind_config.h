@@ -16,7 +16,7 @@
 #ifndef _SNAP_FIND_CONFIG_H_
 #define _SNAP_FIND_CONFIG_H_	1
 
-#include "diamond_features.h"
+#include <lib_filter.h>
 
 #ifdef __cplusplus
 extern "C"

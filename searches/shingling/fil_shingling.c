@@ -58,7 +58,7 @@ static void compact_set(struct multiset *set)
     }
 }
 
-static int w_shingling(unsigned char *data, size_t len,
+static int w_shingling(const void *void_data, size_t len,
 		       struct rabin_state *rpoly,
 		       struct multiset *set, struct multiset *tmp)
 {
@@ -66,6 +66,7 @@ static int w_shingling(unsigned char *data, size_t len,
     unsigned int n = 0, s = 0, idx;
     uint64_t old_fp, new_fp;
     double r, best_r = 0.0;
+    const unsigned char *data = void_data;
 
     if (tmp->len == 0) return 0;
 
@@ -175,7 +176,7 @@ diamond_public
 int f_eval_shingling(lf_obj_handle_t ohandle, void *data)
 {
     struct search_state *state = (struct search_state *)data;
-    unsigned char *obj;
+    const void *obj;
     size_t obj_len;
     int ret;
 

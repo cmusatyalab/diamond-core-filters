@@ -69,7 +69,7 @@ determine_image_type(const u_char* buf)
 }
 
 int
-pbm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
+pbm_read_data(off_t dlen, const u_char *buf,  RGBImage * img)
 {
 	int             pixels;
 	int		i;
@@ -96,7 +96,7 @@ pbm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
 }
 
 int
-pgm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
+pgm_read_data(off_t dlen, const u_char *buf,  RGBImage * img)
 {
 	int 	pixels;
 	int		i;
@@ -118,7 +118,7 @@ pgm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
 }
 
 int
-ppm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
+ppm_read_data(off_t dlen, const u_char *buf,  RGBImage * img)
 {
 	int     pixels;
 	int		i;
@@ -144,7 +144,7 @@ ppm_read_data(off_t dlen, u_char *buf,  RGBImage * img)
 }
 
 RGBImage*
-get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type)
+get_rgb_from_pnm(const u_char* buf, off_t size, image_type_t type)
 {
 	assert(buf);
 	assert((type==IMAGE_PBM) || (type==IMAGE_PGM) || (type==IMAGE_PPM));
@@ -193,7 +193,7 @@ get_rgb_from_pnm(u_char* buf, off_t size, image_type_t type)
 }
 
 RGBImage*
-get_rgb_from_tiff(u_char* buf, off_t size)
+get_rgb_from_tiff(const u_char* buf, off_t size)
 {
 	assert(buf);
 
@@ -206,7 +206,7 @@ get_rgb_from_tiff(u_char* buf, off_t size)
 }
 
 RGBImage*
-get_rgb_from_jpeg(u_char* buf, off_t size)
+get_rgb_from_jpeg(const u_char* buf, off_t size)
 {
   	assert(buf);
 
@@ -218,14 +218,14 @@ get_rgb_from_jpeg(u_char* buf, off_t size)
 }
 
 RGBImage*
-get_rgb_from_png(u_char* buf, off_t size)
+get_rgb_from_png(const u_char* buf, off_t size)
 {
   	// TODO
   return NULL;
 }
 
 RGBImage *
-read_rgb_image(unsigned char *buf, size_t buflen)
+read_rgb_image(const void *buf, size_t buflen)
 {
 	RGBImage*	img = NULL;
 		
@@ -246,7 +246,7 @@ read_rgb_image(unsigned char *buf, size_t buflen)
 	    img = get_rgb_from_png(buf, buflen);
 	    break;
 	  default:
-	    fprintf(stderr, "Unknown image format!!\n", magic);
+	    fprintf(stderr, "Unknown image format!!\n");
 	    break;
 	}
 	return img;

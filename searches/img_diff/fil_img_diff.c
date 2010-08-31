@@ -31,7 +31,6 @@
 #include "lib_results.h"
 #include "snapfind_consts.h"
 #include "fil_img_diff.h"
-#include "sys_attr.h"
 #include "lib_sfimage.h"
 
 double image_diff(const RGBImage* img1, const RGBImage* img2);
@@ -67,7 +66,7 @@ f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 	int             err;
 	int             rv = 0;     /* return value */
 	size_t 		len;
-	unsigned char *	dptr;	
+	const void *	dptr;	
 	double distance = 0.0;
 
 	lf_log(LOGL_TRACE, "f_eval_img_diff: enter");

@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <string.h>
 #include "lib_filter.h"
-#include "lib_log.h"
 #include "lib_results.h"
 #include "rgb.h"
 #include "gabor_tools.h"

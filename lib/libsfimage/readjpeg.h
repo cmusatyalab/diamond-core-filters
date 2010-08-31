@@ -28,7 +28,7 @@
 // Pretends to be a file.
 //
 typedef struct {
-  u_char*	buf;	// data -- note this is in bytes
+  const u_char*	buf;	// data -- note this is in bytes
   size_t	bytes;	// number of bytes in buf
 } MyJPEG;
 

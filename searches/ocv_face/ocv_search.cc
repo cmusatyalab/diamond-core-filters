@@ -150,11 +150,6 @@ ocv_search::set_classifier(const char *name)
 	  assert(0);
 	}
 
-	log_message(LOGT_APP, LOGL_TRACE, 
-				"auxiliary data: %s file %s buf %x len %d",
-				get_name(), cascade_file_name, cascade_bytes, 
-				nbytes);
-
 	set_auxiliary_data((void *) cascade_bytes);
 	set_auxiliary_data_length(nbytes);
 

@@ -21,7 +21,6 @@
 #include <assert.h>
 
 #include "lib_filter.h"
-#include "lib_log.h"	/* XXX fix this through lib_filter.h */
 #include "lib_results.h"
 
 

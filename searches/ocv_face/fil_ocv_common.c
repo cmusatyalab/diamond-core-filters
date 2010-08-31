@@ -27,7 +27,6 @@
 #include <opencv/cvaux.h>
 
 #include "lib_filter.h"
-#include "lib_log.h"
 #include "fil_ocv_common.h"
 #include "rgb.h"
 #include "opencv_face.h"

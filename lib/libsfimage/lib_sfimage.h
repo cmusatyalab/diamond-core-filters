@@ -31,7 +31,7 @@ extern "C"
  * some interfaces to read images from a path/file/buffer
  */
 
-RGBImage	   *read_rgb_image(unsigned char *buf, size_t buflen);
+RGBImage	   *read_rgb_image(const void *buf, size_t buflen);
 
 RGBImage 	*create_rgb_image(const char *filename);
 
