@@ -471,12 +471,7 @@ run_plugin(const char *type,
 int
 main(int argc, char *argv[])
 {
-	/*
-	 * Init GTK
-	 */
-
 	gtk_init(&argc, &argv);
-
 	load_plugins();
 
 	/*
