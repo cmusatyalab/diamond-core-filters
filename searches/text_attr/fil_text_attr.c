@@ -26,8 +26,9 @@
 
 
 int
-f_init_text_attr(int argc, char **args, int blob_len, void *blob_data,
-             const char *fname, void **fdatap)
+f_init_text_attr(int argc, const char * const *args,
+		 int blob_len, const void *blob_data,
+		 const char *fname, void **fdatap)
 {
 	fdata_text_attr_t  *fconfig;
 	int             err;

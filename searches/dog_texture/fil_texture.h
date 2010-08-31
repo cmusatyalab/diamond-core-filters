@@ -29,18 +29,13 @@ extern "C"
 {
 #endif
 diamond_public
-int f_init_texture_detect(int numarg, char **args, int blob_len, void *blob,
-	                          const char *name, void **data);
+int f_init_texture_detect(int numarg, const char * const *args,
+			  int blob_len, const void *blob,
+			  const char *name, void **data);
 diamond_public
 int f_fini_texture_detect(void *data);
 diamond_public
 int f_eval_texture_detect(lf_obj_handle_t ihandle, void *user_data);
-
-
-int f_init_tpass(int numarg, char **args, int blob_len, void *blob,
-		 void **data);
-int f_fini_tpass(void *data);
-int f_eval_tpass(lf_obj_handle_t ihandle, void *user_data);
 
 #ifdef __cplusplus
 }

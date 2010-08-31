@@ -40,11 +40,6 @@ typedef struct {
 	histo_type_t	type;
 } hintegrate_data_t;
 
-typedef struct {
-	int             num_hist;
-} hpass_data_t;
-
-
 
 #define ASSERT(exp)							\
 if(!(exp)) {								\
@@ -63,7 +58,8 @@ if(!(exp)) {								\
  * read in volatile state from args. also see patch_spec_write_args 
  */
 static int
-patch_spec_read_args(histo_config_t * hconfig, int argc, char **args)
+patch_spec_read_args(histo_config_t * hconfig, int argc,
+		     const char * const *args)
 {
 	int             i, j;
 	histo_patch_t   *histo_patch;
@@ -112,8 +108,9 @@ done:
  * Initialize filter to detect histograms.
  */
 int
-f_init_histo_detect(int numarg, char **args, int blob_len,
-                    void *blob, const char *fname, void **data)
+f_init_histo_detect(int numarg, const char * const *args,
+		    int blob_len, const void *blob,
+		    const char *fname, void **data)
 {
 	histo_config_t *hconfig;
 	int             err;
@@ -248,67 +245,11 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 }
 
 
-int
-f_init_hpass(int numarg, char **args, int blob_len, void *blob, 
-		const char *fname, void **data)
-{
-	hpass_data_t   *fstate;
-
-	fstate = (hpass_data_t *) malloc(sizeof(*fstate));
-	if (fstate == NULL) {
-		/*
-		 * XXX log 
-		 */
-		return (ENOMEM);
-	}
-
-	assert(numarg == 1);
-	fstate->num_hist = atoi(args[0]);
-
-	*data = fstate;
-	return (0);
-}
-
 
 int
-f_fini_hpass(void *data)
-{
-	hpass_data_t   *fstate = (hpass_data_t *) data;
-	free(fstate);
-
-	return (0);
-}
-
-
-int
-f_eval_hpass(lf_obj_handle_t ohandle, void *f_data)
-{
-	int             nhisto;
-	int             err,
-	pass;
-	size_t           bsize;
-	hpass_data_t   *fstate = (hpass_data_t *) f_data;
-	;
-
-
-	/*
-	 * get nhisto 
-	 */
-	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, NUM_HISTO, &bsize, 
-			(unsigned char *) &nhisto);
-	ASSERT(!err);
-
-	pass = (nhisto >= fstate->num_hist);
-
-done:
-	return pass;
-}
-
-
-int
-f_init_hintegrate(int numarg, char **args, int blob_len, void *blob,
-		const char *fname, void **data)
+f_init_hintegrate(int numarg, const char * const *args,
+		  int blob_len, const void *blob,
+		  const char *fname, void **data)
 {
 	hintegrate_data_t *fstate;
 

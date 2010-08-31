@@ -34,8 +34,9 @@ extern "C"
 #endif
 
 diamond_public
-int f_init_num_attr(int numarg, char **args, int blob_len, void *blob,
-		const char *fname, void **fdatap);
+int f_init_num_attr(int numarg, const char * const *args,
+		    int blob_len, const void *blob,
+		    const char *fname, void **fdatap);
 diamond_public
 int f_fini_num_attr(void *fdata);
 diamond_public

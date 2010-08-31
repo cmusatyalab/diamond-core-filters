@@ -42,8 +42,9 @@ if(!(exp)) {								\
 
 
 int
-f_init_img2rgb(int numarg, char **args, int blob_len, void *blob, 
-		const char *fname, void **data)
+f_init_img2rgb(int numarg, const char * const *args,
+	       int blob_len, const void *blob,
+	       const char *fname, void **data)
 {
 
 	assert(numarg == 0);

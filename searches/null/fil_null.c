@@ -22,7 +22,8 @@
 #include "image.c"
 
 int
-f_init_null(int numarg, char **args, int blob_len, void *blob,
+f_init_null(int numarg, const char * const *args,
+	    int blob_len, const void *blob,
 	    const char *fname, void **data)
 {
     RGBImage *img;

@@ -34,8 +34,9 @@ extern "C"
 
 
 diamond_public
-int f_init_img_diff(int numarg, char **args, int blob_len, void *blob,
-			const char *fname, void **data);
+int f_init_img_diff(int numarg, const char * const *args,
+		    int blob_len, const void *blob,
+		    const char *fname, void **data);
 diamond_public
 int f_fini_img_diff(void *data);
 diamond_public

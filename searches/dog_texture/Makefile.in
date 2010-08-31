@@ -28,7 +28,7 @@ CPPFLAGS += @CVCPPFLAGS@
 
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_texture.cc texture_tools.c
+FILTER_LIB_SRCS = fil_texture.c texture_tools.c
 
 FILTER_LIB_OBJS = fil_texture.o texture_tools.o
 

@@ -25,8 +25,9 @@ extern "C"
 #endif
 
 diamond_public
-int f_init_null(int numarg, char **args, int blob_len, void *blob,
-		   const char *fname, void **data);
+int f_init_null(int numarg, const char * const *args,
+		int blob_len, const void *blob,
+		const char *fname, void **data);
 diamond_public
 int f_fini_null(void *data);
 

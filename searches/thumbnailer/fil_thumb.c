@@ -49,7 +49,8 @@ struct filter_args {
 };
 
 int
-f_init_thumbnailer(int numarg, char **args, int blob_len, void *blob,
+f_init_thumbnailer(int numarg, const char * const *args,
+		   int blob_len, const void *blob,
 		   const char *fname, void **data)
 {
 	struct filter_args *fargs;

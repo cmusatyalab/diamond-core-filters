@@ -41,7 +41,7 @@ if(!(exp)) {								\
 
 static int
 read_texture_args(const char *fname, texture_args_t *texture_args,
-                  int argc, char **args)
+                  int argc, const char * const *args)
 {
 
 	int pass = 0;
@@ -89,8 +89,9 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
 
 
 int
-f_init_texture_detect(int numarg, char **args, int blob_len,
-                      void *blob, const char *filt_name, void **f_datap)
+f_init_texture_detect(int numarg, const char * const *args,
+		      int blob_len, const void *blob,
+		      const char *filt_name, void **f_datap)
 {
 	texture_args_t*	targs;
 	int				err;
@@ -199,67 +200,5 @@ done:
 	if (img) {
 		cvReleaseImage(&img);
 	}
-	return pass;
-}
-
-/* XXX move elsewhere */
-typedef struct {
-	int     num_req;
-} tpass_data_t;
-
-
-int
-f_init_tpass(int numarg, char **args, int blob_len, void *blob, 
-	const char *filt_name, void **f_datap)
-{
-	tpass_data_t *  fstate;
-
-	fstate = (tpass_data_t *)malloc(sizeof(*fstate));
-	if (fstate == NULL) {
-		/* XXX log */
-		return(ENOMEM);
-	}
-
-	assert(numarg == 1);
-	fstate->num_req = atoi(args[0]);
-
-	*f_datap = fstate;
-	return(0);
-}
-
-int
-f_fini_tpass(void *f_datap)
-{
-
-	tpass_data_t *  fstate = (tpass_data_t *)f_datap;
-	free(fstate);
-	return(0);
-}
-
-
-
-int
-f_eval_tpass(lf_obj_handle_t ohandle, void *f_data)
-{
-	int 			ntexture;
-	tpass_data_t*		tdata = (tpass_data_t *)f_data;
-	int 			err, pass;
-	size_t           	bsize;
-
-	/* get ntexture */
-	bsize = sizeof(int);
-	err = lf_read_attr(ohandle, NUM_TEXTURE, &bsize, 
-	    (unsigned char *)&ntexture);
-
-	ASSERT(!err);
-
-	pass = (ntexture >= tdata->num_req);
-
-done:
-
-	char buf[BUFSIZ];
-	sprintf(buf, "_texture_pass.int");
-	lf_write_attr(ohandle, buf, sizeof(int), (unsigned char *)&pass);
-
 	return pass;
 }

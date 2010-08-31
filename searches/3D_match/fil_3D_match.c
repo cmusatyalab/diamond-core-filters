@@ -32,8 +32,9 @@
 
 
 int
-f_init_3D_match(int numarg, char **args, int blob_len,
-                    void *blob, const char *fname, void **data)
+f_init_3D_match(int numarg, const char * const *args,
+		int blob_len, const void *blob,
+		const char *fname, void **data)
 {
 	match_config_t *fconfig;
 	int i;

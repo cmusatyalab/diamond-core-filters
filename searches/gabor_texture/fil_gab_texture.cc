@@ -35,7 +35,7 @@
 
 
 static int
-read_texture_args(const char *fname, gtexture_args_t *data, int argc, char **args)
+read_texture_args(const char *fname, gtexture_args_t *data, int argc, const char * const *args)
 {
 	int	i,j;
 	float *	respv;
@@ -83,8 +83,8 @@ read_texture_args(const char *fname, gtexture_args_t *data, int argc, char **arg
 
 
 int
-f_init_gab_texture(int numarg, char **args, int blob_len,
-                   void *blob, const char *fname, void **f_datap)
+f_init_gab_texture(int numarg, const char * const *args, int blob_len,
+                   const void *blob, const char *fname, void **f_datap)
 {
 	gtexture_args_t*	data;
 	int			err;
