@@ -14,21 +14,11 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include <math.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <string.h>
-#include <libgen.h>		/* dirname */
-#include <assert.h>
 #include <stdint.h>
-#include <signal.h>
-#include <dlfcn.h>
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -36,29 +26,19 @@
 
 #include <glib.h>
 
-#include "lib_log.h"
-#include "sys_attr.h"
 #include "snapfind_consts.h"
-#include "searchlet_api.h"
-#include "gui_thread.h"
 
 #include "factory.h"
-#include "lib_results.h"
-#include "lib_sfimage.h"
-#include <sys/queue.h>
-#include "sf_consts.h"
 
+#include "lib_sfimage.h"
 #include "lib_results.h"
-#include "rgb.h"
 #include "img_search.h"
 #include "sfind_tools.h"
 #include "search_support.h"
 #include "snapfind.h"
 #include "gtk_image_tools.h"
-#include "search_set.h"
 #include "read_config.h"
 #include "plugin.h"
-#include "attr_decode.h"
 #include "readme.h"
 
 static const char THUMBNAIL_NAME[] = "THUMBNAIL";
@@ -497,7 +477,6 @@ main(int argc, char *argv[])
 	 * Init GTK
 	 */
 
-	GUI_THREAD_INIT();
 	gtk_init(&argc, &argv);
 	gdk_rgb_init();
 	gtk_rc_parse("gtkrc");
