@@ -34,10 +34,6 @@ static factory_map_t * fmap = NULL;
 static factory_map_t * codec_fmap = NULL;
 static char * searchlet_lib_path = NULL;
 
-void add_new_search_type(img_factory *fact);
-void add_new_codec(img_factory *fact);
-
-
 void
 factory_set_searchlet_lib_path(char *name)
 {
@@ -68,8 +64,6 @@ factory_register_codec(img_factory *factory)
 	codec_fmap = new_map;
 
 	factory->set_searchlet_lib_path(searchlet_lib_path);
-
-	add_new_codec(factory);
 }
 
 
@@ -90,8 +84,6 @@ factory_register(img_factory *factory)
 	fmap = new_map;
 
 	factory->set_searchlet_lib_path(searchlet_lib_path);
-
-	add_new_search_type(factory);
 }
 
 img_factory *

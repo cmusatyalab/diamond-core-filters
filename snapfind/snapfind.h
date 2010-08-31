@@ -35,8 +35,6 @@ typedef struct thumbnail_t {
 } thumbnail_t;
 
 typedef TAILQ_HEAD(thumblist_t, thumbnail_t) thumblist_t;
-extern thumblist_t thumbnails;
-extern thumbnail_t *cur_thumbnail;
 
 /*
  * keep list of running searches.
