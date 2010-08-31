@@ -478,8 +478,6 @@ main(int argc, char *argv[])
 	 */
 
 	gtk_init(&argc, &argv);
-	gdk_rgb_init();
-	gtk_rc_parse("gtkrc");
 
 	load_plugins();
 
