@@ -1,5 +1,0 @@
-# 
-# The mapping of group ids to machines that hold the data.
-# The first entry is the 64-bit group id in colon seperated hex.  After
-# the entry is a list of machines.
-00:00:00:00:00:00:00:01   localhost
