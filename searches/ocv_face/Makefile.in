@@ -27,14 +27,11 @@ CPPFLAGS += @GTK_CFLAGS@
 CPPFLAGS += @CVCPPFLAGS@
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_ocv_face.c fil_ocv_profile.c fil_ocv_body.c 
-FILTER_LIB_SRCS += fil_ocv_upperbody.c fil_ocv_lowerbody.c
-FILTER_LIB_SRCS += fil_ocv_common.c opencv_face_tools.c
+FILTER_LIB_SRCS += fil_ocv.c opencv_face_tools.c
 
-FILTER_LIB_COMMON = fil_ocv_common.o opencv_face_tools.o
+FILTER_LIB_COMMON = fil_ocv.o opencv_face_tools.o
 
-FILTER_LIB_OBJS = ${FILTER_LIB_COMMON} fil_ocv_face.o fil_ocv_profile.o 
-FILTER_LIB_OBJS += fil_ocv_body.o fil_ocv_upperbody.o fil_ocv_lowerbody.o 
+FILTER_LIB_OBJS = ${FILTER_LIB_COMMON} fil_ocv.o
 
 SEARCH_LIB_SRCS = ocv_search.cc ocv_face_search.cc opencv_face_tools.c 
 SEARCH_LIB_SRCS += ocv_body_search.cc ocv_upperbody_search.cc 

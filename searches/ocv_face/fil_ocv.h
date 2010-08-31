@@ -12,25 +12,26 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	_FIL_OCV_BODY_H_
-#define	_FIL_OCV_BODY_H_ 1
+#ifndef	_FIL_OCV_COMMON_H_
+#define	_FIL_OCV_COMMON_H_ 1
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 diamond_public
-int f_eval_opencv_bdetect(lf_obj_handle_t ohandle, void *fdata);
+int f_eval_opencv_detect(lf_obj_handle_t ohandle, void *fdata);
 
 diamond_public
-int f_fini_opencv_bdetect(void *fdata);
+int f_fini_opencv_detect(void *fdata);
 
 diamond_public
-int f_init_opencv_bdetect(int numarg, char **args, int blob_len, 
-	void *blob_data, const char *fname, void **fdatap);
+int f_init_opencv_detect(int numarg, const char * const *args,
+			 int blob_len, const void *blob_data,
+			 const char *fname, void **fdatap);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* !_FIL_OCV_BODY_H_ */
+#endif	/* !_FIL_OCV_COMMON_H_ */

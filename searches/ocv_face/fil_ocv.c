@@ -27,7 +27,7 @@
 #include <opencv/cvaux.h>
 
 #include "lib_filter.h"
-#include "fil_ocv_common.h"
+#include "fil_ocv.h"
 #include "rgb.h"
 #include "opencv_face.h"
 #include "opencv_face_tools.h"
@@ -36,8 +36,9 @@
 
 
 int
-f_init_opencv_detect(int numarg, char **args, int blob_len, void *blob_data,
- 			const char *fname, void **fdatap)
+f_init_opencv_detect(int numarg, const char * const *args,
+		     int blob_len, const void *blob_data,
+		     const char *fname, void **fdatap)
 {
 
 	opencv_fdetect_t *fconfig;
@@ -108,7 +109,7 @@ int
 f_eval_opencv_detect(lf_obj_handle_t ohandle, void *fdata)
 {
 	int             	pass = 0;
-	unsigned char *		dptr;
+	const void *		dptr;
 	RGBImage *		img;
 	opencv_fdetect_t *	fconfig = (opencv_fdetect_t *) fdata;
 	int             	err;
