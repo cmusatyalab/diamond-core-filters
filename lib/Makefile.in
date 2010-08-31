@@ -17,7 +17,7 @@ SRCDIR = @srcdir@
 VPATH = @srcdir@
 OBJROOT = @OBJROOT@
 
-SUBDIRS =  libresults libsfimage libsfgtk libocvimage
+SUBDIRS =  libresults libsfimage libocvimage
 
 include $(OBJROOT)/Makefile.template
 

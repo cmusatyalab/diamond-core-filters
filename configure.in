@@ -108,7 +108,6 @@ AC_CONFIG_FILES([Makefile
 		lib/Makefile
 		lib/libsfimage/Makefile
 		lib/libresults/Makefile
-		lib/libsfgtk/Makefile
 		lib/libocvimage/Makefile
 		target/Makefile
 		target/bin/Makefile

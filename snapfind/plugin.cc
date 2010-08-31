@@ -31,7 +31,6 @@
 
 
 #include "lib_searchlet.h"
-#include "gui_thread.h"
 
 #include "lib_log.h"
 
