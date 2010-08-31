@@ -47,7 +47,6 @@
 #include "lib_sfimage.h"
 #include <sys/queue.h>
 #include "sf_consts.h"
-#include "attr_info.h"
 
 #include "lib_results.h"
 #include "rgb.h"
