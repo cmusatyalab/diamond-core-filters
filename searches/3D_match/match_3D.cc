@@ -24,7 +24,6 @@
 #include "match_3D.h"
 #include "img_search.h"
 #include "fil_3D_match.h"
-#include "search_set.h"
 #include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64

@@ -44,7 +44,7 @@ SNAPFIND_SRCS += read_config.cc
 SNAPFIND_SRCS += factory.cc  example_search.cc
 SNAPFIND_SRCS += gtk_image_tools.c
 SNAPFIND_SRCS += window_search.cc img_search.cc
-SNAPFIND_SRCS += search_set.cc plugin.cc
+SNAPFIND_SRCS += plugin.cc
 SNAPFIND_SRCS += readme.cc
 
 SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
@@ -52,7 +52,7 @@ SNAPFIND_OBJS += snapfind.o read_config.o
 SNAPFIND_OBJS += factory.o example_search.o
 SNAPFIND_OBJS += gtk_image_tools.o
 SNAPFIND_OBJS += window_search.o img_search.o
-SNAPFIND_OBJS += search_set.o snapfind_config.o plugin.o plugin_conf.o
+SNAPFIND_OBJS += snapfind_config.o plugin.o plugin_conf.o
 SNAPFIND_OBJS += readme.o
 
 
@@ -78,7 +78,7 @@ SHARED_BIN += snapfind
 
 SHARED_LIB += 
 
-SHARED_HEADERS = img_search.h search_set.h factory.h snapfind_config.h
+SHARED_HEADERS = img_search.h factory.h snapfind_config.h
 
 include ${OBJROOT}/Makefile.template
 

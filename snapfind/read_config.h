@@ -16,7 +16,6 @@
 #ifndef _READ_CONFIG_H_
 #define _READ_CONFIG_H_	1
 
-int read_search_config(char *fname, search_set *read_set);
 int read_search_config_for_plugin_runner(void *mem, int len,
 					 img_search *search);
 

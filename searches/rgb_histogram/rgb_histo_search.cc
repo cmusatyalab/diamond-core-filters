@@ -26,7 +26,6 @@
 #include "rgb_histo_search.h"
 #include "img_search.h"
 #include "fil_rgb_histo.h"
-#include "search_set.h"
 #include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64

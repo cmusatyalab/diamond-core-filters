@@ -31,7 +31,6 @@
 #include "img_search.h"
 #include "ocv_search.h"
 #include "opencv_face_tools.h"
-#include "search_set.h"
 #include "factory.h"
 #include "snapfind_config.h"
 

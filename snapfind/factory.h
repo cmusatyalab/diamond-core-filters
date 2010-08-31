@@ -17,7 +17,6 @@
 #define _FACTORY_H_	1
 
 #include "img_search.h"
-#include "search_set.h"
 
 typedef struct factory_map {
 	struct factory_map  *	fm_next;

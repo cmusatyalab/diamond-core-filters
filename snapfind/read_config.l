@@ -28,12 +28,10 @@
 #include <sys/queue.h>
 #include "lib_results.h"
 #include "img_search.h"
-#include "search_set.h"
 #include "read_config.h"
 #include "factory.h"
 
 static char *eat_token(char *tok);
-static void new_search(char *tok);
 static void error();
 static void new_config(char *yyt);
 
@@ -41,8 +39,6 @@ static void new_config(char *yyt);
 
 #define	MAX_ARG		64
 static img_search *cur_search = NULL;
-static search_set *set = NULL;
-static bool plugin_runner_mode = false;
 
 %}
 
@@ -55,7 +51,7 @@ FNAME (([0-9]*"."[0-9]+)|([0-9]+))
 
 %%
 #.*\n
-SEARCH[ \t]+[[:alnum:]_]+[ \t]+[[:alnum:]_]+ {new_search(eat_token(yytext));}
+SEARCH[ \t]+[[:alnum:]_]+[ \t]+[[:alnum:]_]+
 [[:blank:]]
 \n	
 .*				{ new_config(yytext);}
@@ -141,77 +137,6 @@ new_config(char *yyt)
 
 
 
-static void
-new_search(char *str)
-{
-	char *name;
-	char *type;
-	int		i, maxlen;
-	img_factory *	fac;
-
-	if (plugin_runner_mode) {
-		return;
-	}
-
-	maxlen = strlen(str) + 1;
-	for (i=0; i < maxlen; i++) {
-		if (isspace(str[i]) || (str[i] == '\0')) {
-			break;
-		}
-	}
-	if (i > maxlen) {
-		printf("no end of string \n");
-		assert(0);
-	}
-	type = (char *)malloc(i + 1);
-	assert(type != NULL);
-
-	strncpy(type, str, i);
-	type[i] = '\0';
-	name = eat_token(str);		
-
-
-	fac = find_factory(type);
-	/* XXX more graceful way to handle */
-	assert(fac != NULL);
-
-	cur_search = fac->create(name);	
-    	assert(cur_search != NULL);
-
-	set->add_search(cur_search);
-}
-
-
-
-
-static void
-read_search_config_from_file_pointer(FILE *f, search_set *read_set)
-{
-	set = read_set;
-	yyin = f;
-	yylex();
-}
-
-
-/*
- * Read the search configuration file.
- */
-int
-read_search_config(char *fname, search_set *read_set)
-{
-	FILE *f = fopen(fname, "r");
-	if(!f) {
-		perror(fname);
-		return 1;
-	}
-
-	plugin_runner_mode = false;
-	read_search_config_from_file_pointer(f, read_set);
-	fclose(f);
-	return 0;
-}
-
-
 int
 read_search_config_for_plugin_runner(void *mem, int len, img_search *search)
 {
@@ -221,9 +146,9 @@ read_search_config_for_plugin_runner(void *mem, int len, img_search *search)
 		return 1;
 	}
 
-	plugin_runner_mode = true;
 	cur_search = search;
-	read_search_config_from_file_pointer(f, NULL);
+	yyin = f;
+	yylex();
 	fclose(f);
 	return 0;
 }

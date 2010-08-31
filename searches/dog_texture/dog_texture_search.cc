@@ -25,7 +25,6 @@
 #include "texture_tools.h"
 #include "img_search.h"
 #include "dog_texture_search.h"
-#include "search_set.h"
 #include "lib_ocvimage.h"
 #include "factory.h"
 

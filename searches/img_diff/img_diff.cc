@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dlfcn.h>
+#include <unistd.h>
 
 #include <sys/queue.h>
 #include "snapfind_consts.h"
@@ -29,7 +30,6 @@
 #include "img_diff.h"
 #include "img_search.h"
 #include "fil_img_diff.h"
-#include "search_set.h"
 #include "factory.h"
 
 #define	MAX_DISPLAY_NAME	64

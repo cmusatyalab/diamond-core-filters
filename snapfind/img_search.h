@@ -23,9 +23,6 @@
 #include <cstring>
 
 
-/* forward declaration to we can get a pointer */
-class search_set;
-
 class
 diamond_public
 img_search {

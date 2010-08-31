@@ -20,7 +20,6 @@
 #include <sys/queue.h>
 #include "lib_results.h"
 #include "rgb.h"
-#include "search_set.h"
 #include "gabor.h"
 #include "gabor_priv.h"
 #include "gabor_texture_search.h"
