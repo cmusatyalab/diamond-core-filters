@@ -46,7 +46,7 @@ SNAPFIND_SRCS += gtk_image_tools.c
 SNAPFIND_SRCS += window_search.cc img_search.cc search_support.cc 
 SNAPFIND_SRCS += search_set.cc plugin.cc attr_ent.cc attr_info.cc
 SNAPFIND_SRCS += decoder.cc  std_decoders.cc attr_decode.cc
-SNAPFIND_SRCS += attr_map.cc plugin-runner.cc readme.cc
+SNAPFIND_SRCS += attr_map.cc readme.cc
 
 SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
 SNAPFIND_OBJS += snapfind.o read_config.o 
@@ -56,7 +56,7 @@ SNAPFIND_OBJS += window_search.o img_search.o search_support.o
 SNAPFIND_OBJS += search_set.o snapfind_config.o plugin.o plugin_conf.o
 SNAPFIND_OBJS += attr_ent.o attr_info.o
 SNAPFIND_OBJS += decoder.o std_decoders.o attr_decode.o
-SNAPFIND_OBJS += attr_map.o plugin-runner.o readme.o
+SNAPFIND_OBJS += attr_map.o readme.o
 
 
 #

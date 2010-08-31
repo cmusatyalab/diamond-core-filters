@@ -244,7 +244,7 @@ search_set::build_filter_spec(ls_search_handle_t shandle, char *tmp_file)
 	if (thumb)
 		thumb->write_fspec(fspec);
 
-	get_current_codec()->write_fspec(fspec);
+	//	get_current_codec()->write_fspec(fspec);
 
 
 	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
@@ -290,6 +290,7 @@ search_set::write_blobs(ls_search_handle_t shandle)
 		}
 	}
 
+	/*
 	img_search *cc = get_current_codec();
 	if (cc->get_auxiliary_data() != NULL) {
 		if (ls_set_blob(shandle, (char *)cc->get_name(),
@@ -298,6 +299,7 @@ search_set::write_blobs(ls_search_handle_t shandle)
 		  fprintf(stderr, "failed to write blob \n");
 		}
 	}
+	*/
 }
 
 GtkWidget *

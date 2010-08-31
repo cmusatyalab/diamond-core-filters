@@ -68,5 +68,10 @@ void init_logging(void);
 }
 #endif
 
+void print_key_value(const char *key, bool value);
+void print_key_value(const char *key, double value);
+void print_key_value(const char *key, int value);
+void print_key_value(const char *key, const char *value);
+void print_key_value(const char *key, int value_len, void *value);
 
 #endif	/* ! _SNAP_FIND_H_ */

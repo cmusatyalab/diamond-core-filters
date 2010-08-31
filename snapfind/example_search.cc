@@ -25,7 +25,7 @@
 #include "lib_sfimage.h"
 #include "gtk_image_tools.h"
 #include "img_search.h"
-#include "plugin-runner.h"
+#include "snapfind.h"
 
 /* tokens for the config file */
 #define	PATCH_ID	"PATCHFILE"
