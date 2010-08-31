@@ -63,8 +63,6 @@ public:
 	/* method that tells all the callbacks when set is modified */
 	void		notify_update();
 
-	char *		build_filter_spec(ls_search_handle_t shandle,
-					  char *tmp_file);
 	void		write_blobs(ls_search_handle_t shandle);
 
 	GtkWidget *     build_edit_table();

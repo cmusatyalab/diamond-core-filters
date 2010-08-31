@@ -33,10 +33,6 @@
 #include "factory.h"
 #include "snapfind.h"
 
-/* global state allocation */
-search_name_t *	active_searches = NULL;
-search_name_t **active_end = &active_searches;
-
 search_set::search_set()
 {
 	return;
@@ -152,113 +148,6 @@ search_set::notify_update()
 		(**cur)(this);
 	}
 
-}
-
-static void
-clear_search_list()
-{
-	search_name_t	*cur;
-
-	while (active_searches != NULL) {
-		cur = active_searches;
-		active_searches = cur->sn_next;
-
-		free(cur->sn_name);
-		free(cur);
-	}
-	active_end = &active_searches;
-}
-
-static void
-add_search_to_list(img_search *srch)
-{
-	search_name_t	*cur;
-
-	cur = (search_name_t *)malloc(sizeof(*cur));
-	assert(cur != NULL);
-
-	cur->sn_name = strdup(srch->get_name());
-	assert(cur->sn_name != NULL);
-
-	cur->sn_next = NULL;
-	*active_end = cur;
-	active_end = &cur->sn_next;
-}
-
-/*
- * Build the filters specification into the temp file name
- * "tmp_file".  We walk through all the activated regions and
- * all the them to write out the file.
- */
-
-char *
-search_set::build_filter_spec(ls_search_handle_t shandle, char *tmp_file)
-{
-	char * 		tmp_storage = NULL;
-	FILE *		fspec;
-	int		err;
-	int		fd;
-	img_search	*srch, *thumb;
-	search_iter_t	iter;
-
-	/* XXX who frees this ?? */
-	tmp_storage = (char *)malloc(L_tmpnam);
-	if (tmp_storage == NULL) {
-		printf("XXX failed to alloc memory !!! \n");
-		return(NULL);
-	}
-
-	if(!tmp_file) {
-		tmp_file = tmp_storage;
-		sprintf(tmp_storage, "%sXXXXXX", "/tmp/filspec");
-		fd = mkstemp(tmp_storage);
-	} else {
-		fd = open(tmp_file, O_RDWR|O_CREAT|O_TRUNC, 0666);
-	}
-
-	if(fd < 0) {
-		perror(tmp_file);
-		free(tmp_storage);
-		return NULL;
-	}
-	fspec = fdopen(fd, "w+");
-	if (fspec == NULL) {
-		perror(tmp_file);
-		free(tmp_storage);
-		return(NULL);
-	}
-
-	clear_search_list();
-
-	for (iter = ss_search_list.begin(); iter != ss_search_list.end();
-	    iter++) {
-		srch = *iter;
-		if (srch->is_selected()) {
-			add_search_to_list(srch);
-			srch->save_edits();
-			srch->write_fspec(fspec);
-		}
-	}
-
-	thumb = get_thumbnail_filter();
-	if (thumb)
-		thumb->write_fspec(fspec);
-
-	//	get_current_codec()->write_fspec(fspec);
-
-
-	fprintf(fspec, "FILTER  APPLICATION  # dependancies \n");
-	fprintf(fspec, "REQUIRES  RGB  # dependancies \n");
-
-	/* close the file */
-	err = fclose(fspec);
-	if (err != 0) {
-		printf("XXX failed to close file \n");
-		free(tmp_storage);
-		return(NULL);
-	}
-
-	return(tmp_file);
 }
 
 void

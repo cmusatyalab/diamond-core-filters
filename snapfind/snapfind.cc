@@ -33,8 +33,6 @@
 #include "lib_sfimage.h"
 #include "lib_results.h"
 #include "img_search.h"
-#include "sfind_tools.h"
-#include "search_support.h"
 #include "snapfind.h"
 #include "gtk_image_tools.h"
 #include "read_config.h"
