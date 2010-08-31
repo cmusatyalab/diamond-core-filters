@@ -91,7 +91,6 @@ AC_CHECK_FUNCS([getcwd gethostbyaddr gettimeofday inet_ntoa memset mkdir pow reg
 AC_CONFIG_FILES([Makefile
 		Makefile.template
 		common/Makefile
-		snap_bench/Makefile
 		snapfind/Makefile
 		searches/Makefile
 		searches/text_attr/Makefile
