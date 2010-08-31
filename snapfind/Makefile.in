@@ -44,9 +44,8 @@ SNAPFIND_SRCS +=  read_config.cc
 SNAPFIND_SRCS += sfind_tools.c   factory.cc  example_search.cc
 SNAPFIND_SRCS += gtk_image_tools.c
 SNAPFIND_SRCS += window_search.cc img_search.cc search_support.cc 
-SNAPFIND_SRCS += search_set.cc plugin.cc attr_ent.cc
-SNAPFIND_SRCS += decoder.cc  std_decoders.cc attr_decode.cc
-SNAPFIND_SRCS += attr_map.cc readme.cc
+SNAPFIND_SRCS += search_set.cc plugin.cc
+SNAPFIND_SRCS += readme.cc
 
 SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
 SNAPFIND_OBJS += snapfind.o read_config.o 
@@ -54,9 +53,7 @@ SNAPFIND_OBJS += sfind_tools.o  factory.o example_search.o
 SNAPFIND_OBJS += gtk_image_tools.o
 SNAPFIND_OBJS += window_search.o img_search.o search_support.o
 SNAPFIND_OBJS += search_set.o snapfind_config.o plugin.o plugin_conf.o
-SNAPFIND_OBJS += attr_ent.o
-SNAPFIND_OBJS += decoder.o std_decoders.o attr_decode.o
-SNAPFIND_OBJS += attr_map.o readme.o
+SNAPFIND_OBJS += readme.o
 
 
 #
@@ -73,7 +70,7 @@ OBJS = $(SNAPFIND_OBJS) $(SEARCHLET_OBJS)
 
 #
 # Other objects to cleanup
-CLEAN_OTHERS += read_config.cc snapfind_config.cc attr_map.cc plugin_config.cc
+CLEAN_OTHERS += read_config.cc snapfind_config.cc plugin_config.cc
 
 TARGETS =  snapfind 
 
