@@ -24,24 +24,12 @@
 #define	COMMON_MAX_NAME		128
 #define SF_MAX_NAME 		COMMON_MAX_NAME
 
-/* max number of regions that can be selected in zoomed window */
-#define MAX_SELECT 32
-
-/* presumed max number of active filters */
-#define SF_MAX_FILTERS 	64
-
-/* presumed max number of active devices */
-#define SF_MAX_DEVICES 	64
-
 /*
  * some values for the configuratino information 
  */
 
 /* name of the snapfindrc file */
 #define	SNAPFIND_RC			"snapfindrc"
-
-/* name of the snapfindrc file */
-#define	SNAPFIND_AMAP			"attr_map"
 
 /* path relative to $HOME where we assume the SNAPFIND_RC is stored */
 #define	SNAPFIND_CONF_DEFAULT		".diamond/snapfind/"
