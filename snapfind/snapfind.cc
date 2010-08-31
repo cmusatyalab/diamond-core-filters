@@ -58,13 +58,11 @@
 #include "snap_popup.h"
 #include "search_support.h"
 #include "snapfind.h"
-#include "import_sample.h"
 #include "gtk_image_tools.h"
 #include "search_set.h"
 #include "read_config.h"
 #include "plugin.h"
 #include "attr_decode.h"
-#include "decoder.h"
 #include "plugin-runner.h"
 #include "readme.h"
 
@@ -136,15 +134,6 @@ int		dobj_cnt = 0;
 
 
 /*
- * some prototypes 
- */
-
-void draw_patches(RGBImage *img, int scale, RGBPixel color, RGBPixel mask,
-    img_patches_t *ipatches);
-
-
-
-/*
  * This disables all the buttons in the image control section
  * of the display.  This will be called when there is no active image
  * to manipulate.
@@ -192,18 +181,6 @@ get_patches(ls_obj_handle_t ohandle, char *fname)
 }
 
 
-static void
-initialize_snapfind(void)
-{
-	/*
-	 * Load all the plugins now.
-	 */
-	decoders_init();
-	load_attr_map();
-	load_plugins();
-}
-
-
 static bool
 sc(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
@@ -221,7 +198,7 @@ main(int argc, char *argv[])
 	gdk_rgb_init();
 	gtk_rc_parse("gtkrc");
 
-	initialize_snapfind();
+	load_plugins();
 
 	/*
 	 * Decide what we are doing

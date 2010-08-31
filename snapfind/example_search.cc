@@ -25,7 +25,6 @@
 #include "lib_sfimage.h"
 #include "gtk_image_tools.h"
 #include "img_search.h"
-#include "import_sample.h"
 #include "plugin-runner.h"
 
 /* tokens for the config file */

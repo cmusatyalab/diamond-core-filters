@@ -42,7 +42,6 @@
 #include "lib_sfimage.h"
 #include "img_search.h"
 #include "search_support.h"
-#include "import_sample.h"
 #include "search_set.h"
 #include "snapfind.h"
 #include "plugin.h"
