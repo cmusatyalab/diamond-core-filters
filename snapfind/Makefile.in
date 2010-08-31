@@ -42,7 +42,7 @@ SNAPFIND_SRCS = $(COMMON_APP_SRCS) $(COMMON_SHARED_SRCS)
 SNAPFIND_SRCS += snapfind.cc sfind_search.cc
 SNAPFIND_SRCS +=  read_config.cc  stats_win.c
 SNAPFIND_SRCS += progress_win.cc    
-SNAPFIND_SRCS += snap_popup.cc graph_win.cc cache_control.cc
+SNAPFIND_SRCS += graph_win.cc cache_control.cc
 SNAPFIND_SRCS += sfind_tools.c   factory.cc  example_search.cc
 SNAPFIND_SRCS += gtk_image_tools.c
 SNAPFIND_SRCS += window_search.cc img_search.cc search_support.cc 
@@ -52,7 +52,7 @@ SNAPFIND_SRCS += attr_map.cc plugin-runner.cc readme.cc
 
 SNAPFIND_OBJS = $(COMMON_APP_OBJS) $(COMMON_SHARED_OBJS)
 SNAPFIND_OBJS += snapfind.o sfind_search.o read_config.o 
-SNAPFIND_OBJS += progress_win.o snap_popup.o  stats_win.o
+SNAPFIND_OBJS += progress_win.o stats_win.o
 SNAPFIND_OBJS += graph_win.o cache_control.o
 SNAPFIND_OBJS += sfind_tools.o  factory.o example_search.o
 SNAPFIND_OBJS += gtk_image_tools.o

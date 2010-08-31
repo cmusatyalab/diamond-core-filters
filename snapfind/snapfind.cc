@@ -55,7 +55,6 @@
 #include "img_search.h"
 #include "sfind_search.h"
 #include "sfind_tools.h"
-#include "snap_popup.h"
 #include "search_support.h"
 #include "snapfind.h"
 #include "gtk_image_tools.h"
@@ -82,13 +81,6 @@ typedef struct export_threshold_t
 export_threshold_t;
 
 
-
-
-/*
- * state required to support popup window to show fullsize img
- */
-
-pop_win_t	 popup_window = {NULL, NULL, NULL};
 
 /* some stats for user study */
 user_stats_t user_measurement = { 0, 0 };
