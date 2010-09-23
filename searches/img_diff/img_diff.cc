@@ -355,20 +355,6 @@ void img_diff::region_match(RGBImage *img, bbox_list_t *blist)
 {
 }
 
-int img_diff::matches_filter(char *name) 
-{
-	void *handle;
-	void *initfn = NULL;
-                                                                                
-	handle = dlopen(name, RTLD_NOW);
-	if (handle) {
-		initfn = dlsym(handle, "f_init_img_diff");
-		dlclose(handle);
-	}
-	
-	return ((int) initfn);
-}
-
 bool
 img_diff::is_editable(void)
 {

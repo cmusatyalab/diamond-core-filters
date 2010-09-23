@@ -101,21 +101,6 @@ void ocv_face_search::write_fspec(FILE *ostream)
 	return;
 }
 
-int 
-ocv_face_search::matches_filter(char *name) 
-{
-	void *handle;
-	void *initfn = NULL;
-                                                                                
-	handle = dlopen(name, RTLD_NOW);
-	if (handle) {
-		initfn = dlsym(handle, "f_init_opencv_fdetect");
-		dlclose(handle);
-	}
-	
-	return ((int) initfn);
-}
-
 bool
 ocv_face_search::is_editable(void)
 {

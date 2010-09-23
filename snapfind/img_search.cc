@@ -415,12 +415,6 @@ img_search::set_auxiliary_data_length(int len)
   auxdatalen = len;
 }
 
-int
-img_search::matches_filter(char *name) {
-  return 0;
-}
-
-
 static img_search *thumbnail_filter;
 
 void set_thumbnail_filter(img_search *f)

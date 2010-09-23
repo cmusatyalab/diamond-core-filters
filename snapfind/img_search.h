@@ -57,7 +57,6 @@ public:
 	void 	    set_example_name(const char *new_name);
 	/* XXX need to free the above */
 
-	virtual int     matches_filter(char *name);
 	void *          get_auxiliary_data();
 	void            set_auxiliary_data(void *data);
 
