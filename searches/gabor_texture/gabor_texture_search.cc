@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <pthread.h>
 #include <gtk/gtk.h>
 #include <sys/queue.h>
 #include "lib_results.h"

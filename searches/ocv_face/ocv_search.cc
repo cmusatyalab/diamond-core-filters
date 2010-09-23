@@ -14,7 +14,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <dlfcn.h>

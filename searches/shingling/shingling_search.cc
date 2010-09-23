@@ -12,7 +12,6 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <gtk/gtk.h>

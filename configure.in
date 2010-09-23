@@ -47,11 +47,6 @@ AC_CHECK_LIB([cv], [cvResize])
 # standard system libraries.
 AC_CHECK_LIB([dl], [dlopen])
 AC_CHECK_LIB([m], [atan2])
-AC_CHECK_LIB([pthread], [pthread_create])
-AC_CHECK_LIB([ssl], [SSL_CTX_new])
-
-# XXXX
-AC_CHECK_LIB([wvlt], [main])
 
 OBJROOT=`pwd`
 AC_SUBST(OBJROOT)
@@ -64,7 +59,7 @@ AC_ARG_WITH(buildroot, [--with-buildroot=DIR set target build hierachy to DIR],
     ) 
 
 
-PKG_CHECK_MODULES(GTK, [gtk+-2.0, gthread-2.0])
+PKG_CHECK_MODULES(GTK, [gtk+-2.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
