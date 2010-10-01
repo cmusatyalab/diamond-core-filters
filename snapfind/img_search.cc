@@ -287,21 +287,6 @@ img_search::get_config_widget()
 	return(hbox);
 }
 
-static void
-name_changed_cb(GtkButton *item, gpointer data)
-{
-	static int	pending_change = 0;
-	if (pending_change != 0) {
-		return;
-	}
-
-	pending_change = 1;
-	img_search *obj = (img_search *)data;
-	obj->save_edits();
-	pending_change = 0;
-}
-
-
 GtkWidget *
 img_search::img_search_display()
 {
@@ -328,10 +313,6 @@ img_search::img_search_display()
 	name_entry = gtk_entry_new();
 	gtk_entry_set_text(GTK_ENTRY(name_entry), get_name());
 	gtk_box_pack_start(GTK_BOX(box), name_entry, FALSE, FALSE, 0);
-
-	/* put callback to update changes to the name box */
-	g_signal_connect(G_OBJECT(name_entry), "changed",
-	                 G_CALLBACK(name_changed_cb), this);
 
 	gtk_widget_show_all(frame);
 
