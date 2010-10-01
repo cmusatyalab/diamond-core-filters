@@ -52,7 +52,6 @@ img_search::img_search(const char *name, const char *descr)
 	auxdata = NULL;
 	auxdatalen = 0;
 	example_name = NULL;
-	plugin_runner_mode = false;
 	searchlet_lib_path = NULL;
 }
 
@@ -327,9 +326,7 @@ img_search::close_edit_win()
 {
 	save_edits();
 	name_entry = NULL;
-	if (is_plugin_runner_mode()) {
-		gtk_main_quit();
-	}
+	gtk_main_quit();
 }
 
 
@@ -411,18 +408,6 @@ void
 img_search::set_auxiliary_data(void *data) 
 {
   auxdata = data;
-}
-
-bool
-img_search::is_plugin_runner_mode()
-{
-  return plugin_runner_mode;
-}
-
-void
-img_search::set_plugin_runner_mode(bool val)
-{
-  plugin_runner_mode = val;
 }
 
 void 

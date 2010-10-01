@@ -154,7 +154,6 @@ static img_search
 		search->set_searchlet_lib_path(imgf->get_searchlet_lib_path());
 	}
 
-	search->set_plugin_runner_mode(true);
 	return search;
 }
 

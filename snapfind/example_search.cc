@@ -311,8 +311,10 @@ example_search::write_config(FILE *ostream, const char *dirname)
 {
 	example_patch_t *		cur_patch;
 	int				i;
-	int				err;
-	char				fname[COMMON_MAX_PATH];
+	char				*key;
+	char				*ppm;
+	size_t				ppm_size;
+	FILE				*memfile;
 
 
 	window_search::write_config(ostream, dirname);
@@ -320,34 +322,17 @@ example_search::write_config(FILE *ostream, const char *dirname)
 	/* for each of the samples write out the data */
 	i = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		if (is_plugin_runner_mode()) {
-			char *ppm;
-			size_t ppm_size;
-			FILE *memfile = open_memstream(&ppm, &ppm_size);
-			rgb_write_image_file(cur_patch->patch_image, memfile);
-			fclose(memfile);
-			char *key = g_strdup_printf("patch-%d", i);
-			print_key_value(key, ppm_size, ppm);
-			g_free(key);
-			free(ppm);
-		} else {
-			err = sprintf(fname, "%s.ex%d.ppm", get_name(), i);
-			if (err >= COMMON_MAX_PATH) {
-				fprintf(stderr, "COMMON_MAX_PATH too short increase to %d \n",
-					err);
-				assert(0);
-			}
-
-			rgb_write_image(cur_patch->patch_image, fname, dirname);
-			fprintf(ostream, "%s %s 0 0 %d %d \n", PATCH_ID, fname,
-				cur_patch->xsize, cur_patch->ysize);
-		}
+		memfile = open_memstream(&ppm, &ppm_size);
+		rgb_write_image_file(cur_patch->patch_image, memfile);
+		fclose(memfile);
+		key = g_strdup_printf("patch-%d", i);
+		print_key_value(key, ppm_size, ppm);
+		g_free(key);
+		free(ppm);
 		i++;
 	}
 
-	if (is_plugin_runner_mode()) {
-		print_key_value("patch-count", i);
-	}
+	print_key_value("patch-count", i);
 	return;
 }
 
