@@ -5,6 +5,7 @@
  *
  *  Copyright (c) 2002-2005 Intel Corporation
  *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
+ *  Copyright (c) 2011 Carnegie Mellon University
  *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
@@ -72,7 +73,7 @@ f_init_opencv_detect(int numarg, const char * const *args,
 	int fd;
 	size_t          nbytes;
 
-	tempdir = getenv("TEMPDIR");
+	tempdir = getenv("TMPDIR");
 	if (tempdir == NULL)
 		tempdir = "/tmp";
 	template = malloc(strlen(tempdir) + strlen(suffix) + 1);
