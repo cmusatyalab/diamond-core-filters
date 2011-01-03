@@ -66,10 +66,18 @@ f_init_opencv_detect(int numarg, const char * const *args,
 	// blob_data is the contents of the classifier file
 	assert(blob_len > 0);
 
-	char template[] = "/tmp/haarcascadeXXXXXX";
+	char *tempdir;
+	const char *suffix = "/haarcascadeXXXXXX";
+	char *template;
 	int fd;
 	size_t          nbytes;
 
+	tempdir = getenv("TEMPDIR");
+	if (tempdir == NULL)
+		tempdir = "/tmp";
+	template = malloc(strlen(tempdir) + strlen(suffix) + 1);
+	strcpy(template, tempdir);
+	strcat(template, suffix);
 	fd = mkstemp(template);
 	assert(fd >=0);
 
@@ -87,6 +95,7 @@ f_init_opencv_detect(int numarg, const char * const *args,
 	fconfig->haar_cascade = cvLoadHaarClassifierCascade(
 		xml_name, cvSize(fconfig->xsize, fconfig->ysize));
 
+	free(template);
 	free(xml_name);
 	*fdatap = fconfig;
 	return (0);
