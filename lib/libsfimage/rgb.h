@@ -41,15 +41,15 @@ typedef enum image_type_t {
 
 
 typedef struct {
-	image_type_t type;
-	size_t nbytes;			/* size of this var size struct */
+	uint32_t type;			/* image_type_t */
+	uint32_t nbytes;		/* size of this var size struct */
 	union {
-		int height;
-		int rows;
+		int32_t height;
+		int32_t rows;
 	};
 	union {
-		int width;
-		int columns;
+		int32_t width;
+		int32_t columns;
 	};
 	RGBPixel data[0];		/* var size struct */
 } RGBImage;
