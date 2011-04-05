@@ -109,8 +109,8 @@ DIST_OBJS += .depend Makefile
 	ar -csr $@  $^
 	cp -f $@ ${BUILD_LIB_PATH}
 
-FIL_SO_COMMAND=$(CPLUSPLUS) -o $@ $^ $(LD_SOFLAGS) $(STATIC_LIBS) $(SO_LIBS) $(LDPATH) -Wl,--gc-sections
-SO_COMMAND=$(CPLUSPLUS) -o $@ $^ $(LD_SOFLAGS) $(STATIC_LIBS) $(SO_LIBS) $(LDPATH)
+FIL_SO_COMMAND=$(CPLUSPLUS) -o $@ $^ $(LD_SOFLAGS) $(STATIC_LIBS) $(LDPATH) -Wl,--gc-sections
+SO_COMMAND=$(CPLUSPLUS) -o $@ $^ $(LD_SOFLAGS) $(STATIC_LIBS) $(LDPATH)
 
 # The common targets
 
