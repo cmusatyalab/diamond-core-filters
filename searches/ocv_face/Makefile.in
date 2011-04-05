@@ -27,11 +27,13 @@ CPPFLAGS += @GTK_CFLAGS@
 CPPFLAGS += @CVCPPFLAGS@
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS += fil_ocv.c opencv_face_tools.c
+FILTER_SRCS += fil_ocv.c opencv_face_tools.c
 
-FILTER_LIB_COMMON = fil_ocv.o opencv_face_tools.o
+FILTER_COMMON = fil_ocv.o opencv_face_tools.o
 
-FILTER_LIB_OBJS = ${FILTER_LIB_COMMON} fil_ocv.o
+FILTER_OBJS = ${FILTER_COMMON} fil_ocv.o
+
+FILTER_LIBS = -pthread
 
 SEARCH_LIB_SRCS = ocv_search.cc ocv_face_search.cc opencv_face_tools.c 
 SEARCH_LIB_SRCS += ocv_body_search.cc ocv_upperbody_search.cc 
@@ -49,18 +51,18 @@ SEARCHLET_LIBS += -lm -ltiff -ljpeg -lz
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS) 
+SRCS = $(FILTER_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
 
 #
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_ocv.so opencv_face_search.so opencv_profile_search.so
+TARGETS = fil_ocv opencv_face_search.so opencv_profile_search.so
 TARGETS += opencv_body_search.so opencv_upperbody_search.so
 TARGETS += opencv_lowerbody_search.so
 
-SHARED_LIB += fil_ocv.so
+SHARED_LIB += fil_ocv
 SHARED_LIB += opencv_face_search.so $(SRCDIR)/opencv_face.sf_conf 
 SHARED_LIB += $(SRCDIR)/haarcascade_frontalface_default.xml 
 SHARED_LIB += opencv_profile_search.so $(SRCDIR)/opencv_profile.sf_conf 
@@ -75,8 +77,8 @@ SHARED_LIB += $(SRCDIR)/haarcascade_lowerbody.xml
 include ${OBJROOT}/Makefile.template
 
 
-fil_ocv.so: $(FILTER_LIB_OBJS)
-	$(FIL_SO_COMMAND)
+fil_ocv: $(FILTER_OBJS)
+	$(FIL_COMMAND)
 
 opencv_face_search.so: ocv_face_search.o $(SEARCH_LIB_COMMON)
 	$(SO_COMMAND)

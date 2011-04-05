@@ -104,10 +104,7 @@ null_codec::write_fspec(FILE *ostream)
 	fprintf(ostream, "FILTER  RGB  # generates dummy rgb image \n");
 	fprintf(ostream, "THRESHOLD  1  # this will always pass \n");
 	fprintf(ostream, "MERIT  500  # run this early hint \n");
-
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_null  # eval function \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_null  # init function \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_null  # fini function \n");
+	fprintf(ostream, "SIGNATURE @\n");
 }
 
 void

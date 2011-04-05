@@ -22,23 +22,4 @@ typedef struct write_notify_context_t {
 	lf_obj_handle_t ohandle;
 } write_notify_context_t;
 
-
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-diamond_public
-int f_init_texture_detect(int numarg, const char * const *args,
-			  int blob_len, const void *blob,
-			  const char *name, void **data);
-diamond_public
-int f_fini_texture_detect(void *data);
-diamond_public
-int f_eval_texture_detect(lf_obj_handle_t ihandle, void *user_data);
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif	/* ! _FIL_TEXTURE_H_ */

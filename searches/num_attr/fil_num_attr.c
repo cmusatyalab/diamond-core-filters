@@ -25,7 +25,7 @@
 #include "fil_num_attr.h"
 
 
-int
+static int
 f_init_num_attr(int argc, const char * const *args,
 		int blob_len, const void *blob_data,
 		const char *fname, void **fdatap)
@@ -56,27 +56,9 @@ f_init_num_attr(int argc, const char * const *args,
 	return (0);
 }
 
-int
-f_fini_num_attr(void *fdata)
-{
-	fnum_attr_t  *		fconfig;
-	fnum_attr_holder_t *	fholder;
-	int 			i;
-
-	fholder = (fnum_attr_holder_t *) fdata;
-
-	for (i = 0; i< fholder->num_configs; i++) {
-		fconfig = &fholder->fconfigs[i];
-		free(fconfig->attr_name);
-	}
-	free(fholder->fconfigs);
-	free(fholder);
-	return (0);
-}
-
 /*
  */
-int
+static int
 f_eval_num_attr(lf_obj_handle_t ohandle, void *fdata)
 {
 	int 			i;
@@ -104,3 +86,5 @@ f_eval_num_attr(lf_obj_handle_t ohandle, void *fdata)
 	}
 	return(1);
 }
+
+LF_MAIN(f_init_num_attr, f_eval_num_attr)

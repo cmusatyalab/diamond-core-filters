@@ -32,7 +32,6 @@
 #include "snapfind_consts.h"
 #include "rgb.h"
 #include "rgb_histo.h"
-#include "fil_rgb_histo.h"
 
 
 typedef struct {
@@ -155,22 +154,6 @@ f_init_histo_detect(int numarg, const char * const *args,
 }
 
 static int
-f_fini_histo_detect(void *data)
-{
-	histo_patch_t        *histo_patch;
-	histo_config_t *hconfig = (histo_config_t *) data;
-
-	while ((histo_patch = TAILQ_FIRST(&hconfig->histo_patchlist))) {
-		TAILQ_REMOVE(&hconfig->histo_patchlist, histo_patch, link);
-		free(histo_patch);
-	}
-	free(hconfig);
-
-	return (0);
-}
-
-
-static int
 f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             pass = 0;
@@ -279,16 +262,6 @@ f_init_hintegrate(int numarg, const char * const *args,
 }
 
 static int
-f_fini_hintegrate(void *data)
-{
-	hintegrate_data_t *fstate = (hintegrate_data_t *) data;
-	free(fstate);
-	return (0);
-}
-
-
-
-static int
 f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             pass = 1;
@@ -348,7 +321,7 @@ done:
 }
 
 
-int f_init_histo(int numarg, const char * const *args,
+static int f_init_histo(int numarg, const char * const *args,
 			int blob_len, const void *blob,
 			const char *fname, void **data)
 {
@@ -371,20 +344,7 @@ int f_init_histo(int numarg, const char * const *args,
 	return ret;
 }
 
-int f_fini_histo(void *data)
-{
-	struct histo_data *hdata = data;
-	int ret;
-
-	if (hdata->hintegrate)
-		ret = f_fini_hintegrate(hdata->hintegrate);
-	else
-		ret = f_fini_histo_detect(hdata->hconfig);
-	free(hdata);
-	return ret;
-}
-
-int f_eval_histo(lf_obj_handle_t ihandle, void *user_data)
+static int f_eval_histo(lf_obj_handle_t ihandle, void *user_data)
 {
 	struct histo_data *hdata = user_data;
 
@@ -393,3 +353,5 @@ int f_eval_histo(lf_obj_handle_t ihandle, void *user_data)
 	else
 		return f_eval_histo_detect(ihandle, hdata->hconfig);
 }
+
+LF_MAIN(f_init_histo, f_eval_histo)

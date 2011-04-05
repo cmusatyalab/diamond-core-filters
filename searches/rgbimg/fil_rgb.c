@@ -28,7 +28,6 @@
 #include "lib_filter.h"
 #include "lib_sfimage.h"
 #include "rgb.h"
-#include "fil_rgb.h"
 
 
 
@@ -41,7 +40,7 @@ if(!(exp)) {								\
 }
 
 
-int
+static int
 f_init_img2rgb(int numarg, const char * const *args,
 	       int blob_len, const void *blob,
 	       const char *fname, void **data)
@@ -52,17 +51,11 @@ f_init_img2rgb(int numarg, const char * const *args,
 	return (0);
 }
 
-int
-f_fini_img2rgb(void *data)
-{
-	return (0);
-}
-
 /*
  * filter eval function to create an RGB_IMAGE attribute
  */
 
-int
+static int
 f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 {
 	RGBImage       *img;
@@ -106,3 +99,4 @@ done:
 	return pass;
 }
 
+LF_MAIN(f_init_img2rgb, f_eval_img2rgb)

@@ -102,9 +102,7 @@ thumbnailer::write_fspec(FILE *ostream)
 		"FILTER  THUMBNAIL  # generate thumbnail image\n"
 		"REQUIRES  RGB	# dependencies\n"
 		"THRESHOLD  1  # this will always pass\n"
-		"EVAL_FUNCTION  f_eval_thumbnailer  # eval function\n"
-		"INIT_FUNCTION  f_init_thumbnailer  # init function\n"
-		"FINI_FUNCTION  f_fini_thumbnailer  # fini function\n"
+		"SIGNATURE @\n"
 		"ARG  %u  # thumbnail image width\n"
 		"ARG  %u  # thumbnail image height\n\n",
 		width, height);

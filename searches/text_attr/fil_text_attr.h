@@ -24,22 +24,4 @@ typedef struct {
 	regex_t		regex;
 } fdata_text_attr_t;
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-diamond_public
-int f_init_text_attr(int numarg, const char * const *args,
-		     int blob_len, const void *blob,
-		     const char *fname, void **fdatap);
-diamond_public
-int f_fini_text_attr(void *fdata);
-diamond_public
-int f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata);
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif	/* !_FIL_TEXT_ATTR_H_ */

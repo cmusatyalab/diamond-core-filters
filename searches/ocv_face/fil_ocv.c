@@ -28,7 +28,6 @@
 #include <opencv/cvaux.h>
 
 #include "lib_filter.h"
-#include "fil_ocv.h"
 #include "rgb.h"
 #include "opencv_face.h"
 #include "opencv_face_tools.h"
@@ -36,7 +35,7 @@
 #include "lib_sfimage.h"
 
 
-int
+static int
 f_init_opencv_detect(int numarg, const char * const *args,
 		     int blob_len, const void *blob_data,
 		     const char *fname, void **fdatap)
@@ -103,19 +102,7 @@ f_init_opencv_detect(int numarg, const char * const *args,
 }
 
 
-int
-f_fini_opencv_detect(void *fdata)
-{
-	opencv_fdetect_t *fconfig = (opencv_fdetect_t *) fdata;
-
-	cvReleaseHaarClassifierCascade(&fconfig->haar_cascade);
-	free(fconfig->name);
-	free(fconfig);
-	return (0);
-}
-
-
-int
+static int
 f_eval_opencv_detect(lf_obj_handle_t ohandle, void *fdata)
 {
 	int             	pass = 0;
@@ -149,6 +136,4 @@ f_eval_opencv_detect(lf_obj_handle_t ohandle, void *fdata)
 	return pass;
 }
 
-
-
-
+LF_MAIN(f_init_opencv_detect, f_eval_opencv_detect)

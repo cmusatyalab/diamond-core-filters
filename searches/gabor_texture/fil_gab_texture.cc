@@ -82,7 +82,7 @@ read_texture_args(const char *fname, gtexture_args_t *data, int argc, const char
                                                                                 
 
 
-int
+static int
 f_init_gab_texture(int numarg, const char * const *args, int blob_len,
                    const void *blob, const char *fname, void **f_datap)
 {
@@ -100,27 +100,10 @@ f_init_gab_texture(int numarg, const char * const *args, int blob_len,
 }
 
 
-int
-f_fini_gab_texture(void *f_datap)
-{
-	gtexture_args_t  *data = (gtexture_args_t *)f_datap;
-	int		i;
-
-	delete data->gobj;
-
-	for (i=0; i < data->num_samples; i++) {
-		free(data->response_list[i]);
-	}
-	free(data->response_list);
-	free(data);
-	return(0);
-}
-
-
 /* XXX */
 #define RGB_IMAGE  "_rgb_image.rgbimage"
 
-int
+static int
 f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 {
 	int		pass = 0;
@@ -188,3 +171,5 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 
 	return pass;
 }
+
+LF_MAIN(f_init_gab_texture, f_eval_gab_texture)

@@ -120,10 +120,9 @@ static int w_shingling(const void *void_data, size_t len,
     return (int)(best_r * 100);
 }
 
-diamond_public
-int f_init_shingling(int numarg, const char * const *args,
-		     int blob_len, const void *blob,
-		     const char *fname, void **data)
+static int f_init_shingling(int numarg, const char * const *args,
+			    int blob_len, const void *blob,
+			    const char *fname, void **data)
 {
     struct search_state *state;
     struct multiset empty_set = { .len = 0 };
@@ -161,20 +160,7 @@ int f_init_shingling(int numarg, const char * const *args,
     return 0;
 }
 
-diamond_public
-int f_fini_shingling(void *data)
-{
-    struct search_state *state = (struct search_state *)data;
-
-    free(state->test);
-    free(state->example);
-    rabin_free(state->rpoly);
-    free(state);
-    return 0;
-}
-
-diamond_public
-int f_eval_shingling(lf_obj_handle_t ohandle, void *data)
+static int f_eval_shingling(lf_obj_handle_t ohandle, void *data)
 {
     struct search_state *state = (struct search_state *)data;
     const void *obj;
@@ -187,7 +173,12 @@ int f_eval_shingling(lf_obj_handle_t ohandle, void *data)
     return w_shingling(obj, obj_len, state->rpoly, state->example, state->test);
 }
 
-#ifdef TESTING
+#ifndef TESTING
+
+LF_MAIN(f_init_shingling, f_eval_shingling)
+
+#else
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -214,7 +205,6 @@ int main(int argc, char **argv)
 
     printf("similarity %d\n", R);
 
-    f_fini_shingling(state);
     exit(0);
 }
 #endif

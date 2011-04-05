@@ -17,11 +17,10 @@
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include "rgb.h"
-#include "fil_null.h"
 
 #include "image.c"
 
-int
+static int
 f_init_null(int numarg, const char * const *args,
 	    int blob_len, const void *blob,
 	    const char *fname, void **data)
@@ -46,14 +45,7 @@ f_init_null(int numarg, const char * const *args,
     return 0;
 }
 
-int
-f_fini_null(void *data)
-{
-    free(data);
-    return 0;
-}
-
-int
+static int
 f_eval_null(lf_obj_handle_t ohandle, void *data)
 {
     RGBImage *img = (RGBImage *)data;
@@ -83,3 +75,4 @@ f_eval_null(lf_obj_handle_t ohandle, void *data)
     return 1;
 }
 
+LF_MAIN(f_init_null, f_eval_null)

@@ -95,10 +95,7 @@ void ocv_upperbody_search::write_fspec(FILE *ostream)
 	save_edits();
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-
-	fprintf(ostream, "EVAL_FUNCTION  %s \n", "f_eval_opencv_detect");
-	fprintf(ostream, "INIT_FUNCTION  %s \n", "f_init_opencv_detect");
-	fprintf(ostream, "FINI_FUNCTION  %s \n", "f_fini_opencv_detect");
+	fprintf(ostream, "SIGNATURE @\n");
 
 	ocv_search::write_fspec(ostream);
 	return;

@@ -290,9 +290,7 @@ match_3D::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
 	fprintf(ostream, "THRESHOLD %d \n", 1);
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_3D_match \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_3D_match \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_3D_match \n");
+	fprintf(ostream, "SIGNATURE @\n");
 	fprintf(ostream, "ARG  %s  # name \n", get_name());
 	fprintf(ostream, "ARG  %f  # distance \n", distance);
 	

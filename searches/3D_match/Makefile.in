@@ -22,9 +22,9 @@ CPPFLAGS += @GTK_CFLAGS@
 
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_3D_match.c 
+FILTER_SRCS = fil_3D_match.c
 
-FILTER_LIB_OBJS =  fil_3D_match.o 
+FILTER_OBJS =  fil_3D_match.o
 
 SEARCHLET_LIBS += -lm 
 
@@ -36,20 +36,20 @@ SEARCH_LIB_OBJS = match_3D.o
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+SRCS = $(FILTER_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
 
 #
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_3D_match.so match_3D.so
+TARGETS = fil_3D_match match_3D.so
 
-SHARED_LIB += fil_3D_match.so match_3D.so
+SHARED_LIB += fil_3D_match match_3D.so
 SHARED_LIB += $(SRCDIR)/3D_match.sf_conf
 
-fil_3D_match.so: $(FILTER_LIB_OBJS)
-	$(FIL_SO_COMMAND)
+fil_3D_match: $(FILTER_OBJS)
+	$(FIL_COMMAND)
 
 match_3D.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

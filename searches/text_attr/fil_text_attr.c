@@ -21,11 +21,10 @@
 #include <assert.h>
 #include <string.h>
 #include "lib_filter.h"
-#include "text_attr_priv.h"
 #include "fil_text_attr.h"
 
 
-int
+static int
 f_init_text_attr(int argc, const char * const *args,
 		 int blob_len, const void *blob_data,
 		 const char *fname, void **fdatap)
@@ -58,23 +57,7 @@ f_init_text_attr(int argc, const char * const *args,
 	return (0);
 }
 
-int
-f_fini_text_attr(void *fdata)
-{
-	fdata_text_attr_t  *	fconfig = (fdata_text_attr_t *) fdata;
-
-	if (!fconfig->exact_match) {
-		regfree(&fconfig->regex);
-	}
-
-	free(fconfig->attr_name);
-	free(fconfig->string);
-	free(fconfig);
-
-	return (0);
-}
-
-int
+static int
 f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata)
 {
 	fdata_text_attr_t  *fconfig = (fdata_text_attr_t *) fdata;
@@ -110,3 +93,4 @@ f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata)
 	}
 }
 
+LF_MAIN(f_init_text_attr, f_eval_text_attr)

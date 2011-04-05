@@ -22,9 +22,9 @@ STATIC_LIBS = @STATIC_LIBS@
 CPPFLAGS += @GTK_CFLAGS@
                                                                                 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_num_attr.c
-FILTER_LIB_OBJS = fil_num_attr.o 
-FILTER_LIB_LIBS += -lm 
+FILTER_SRCS = fil_num_attr.c
+FILTER_OBJS = fil_num_attr.o
+FILTER_LIBS += -lm
 
 SEARCH_LIB_SRCS =  num_attr_search.cc
 SEARCH_LIB_OBJS =  num_attr_search.o 
@@ -33,21 +33,21 @@ SEARCH_LIB_LIBS +=
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+SRCS = $(FILTER_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
 
 #
 # Other objects to cleanup
 CLEAN_OTHERS += eead_config.cc $(COMMON_SRCS)
 
-TARGETS = fil_num_attr.so num_attr_search.so
+TARGETS = fil_num_attr num_attr_search.so
 
-SHARED_LIB = fil_num_attr.so num_attr_search.so $(SRCDIR)/num_attr.sf_conf
+SHARED_LIB = fil_num_attr num_attr_search.so $(SRCDIR)/num_attr.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_num_attr.so: $(FILTER_LIB_OBJS)
-	$(FIL_SO_COMMAND)
+fil_num_attr: $(FILTER_OBJS)
+	$(FIL_COMMAND)
 
 num_attr_search.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

@@ -88,7 +88,7 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
 }
 
 
-int
+static int
 f_init_texture_detect(int numarg, const char * const *args,
 		      int blob_len, const void *blob,
 		      const char *filt_name, void **f_datap)
@@ -109,22 +109,7 @@ f_init_texture_detect(int numarg, const char * const *args,
 }
 
 
-int
-f_fini_texture_detect(void *f_datap)
-{
-	texture_args_t  *targs = (texture_args_t *)f_datap;
-	int		i;
-
-	for (i=0; i<targs->num_samples; i++) {
-		free(targs->sample_values[i]);
-	}
-	free(targs->sample_values);
-	free(targs);
-	return(0);
-}
-
-
-int
+static int
 f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 {
 
@@ -202,3 +187,5 @@ done:
 	}
 	return pass;
 }
+
+LF_MAIN(f_init_texture_detect, f_eval_texture_detect)

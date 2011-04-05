@@ -328,9 +328,7 @@ img_diff::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
 	fprintf(ostream, "THRESHOLD 1\n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_img_diff \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_img_diff \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_img_diff \n");
+	fprintf(ostream, "SIGNATURE @\n");
 	fprintf(ostream, "ARG  %f  # distance \n", distance);
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
 	fprintf(ostream, "MERIT  10  # some relative cost \n\n");

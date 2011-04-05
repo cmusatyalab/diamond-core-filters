@@ -28,9 +28,11 @@ CPPFLAGS += @CVCPPFLAGS@
 
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_texture.c texture_tools.c
+FILTER_SRCS = fil_texture.c texture_tools.c
 
-FILTER_LIB_OBJS = fil_texture.o texture_tools.o
+FILTER_OBJS = fil_texture.o texture_tools.o
+
+FILTER_LIBS = -pthread
 
 SEARCHLET_LIBS += -lm -locvimage -lsfimage  -lresults
 
@@ -45,22 +47,22 @@ SEARCH_LIB_LIBS += -lm -locvimage
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+SRCS = $(FILTER_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
 
 #
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_dog_texture.so dog_texture_search.so
+TARGETS = fil_dog_texture dog_texture_search.so
 
-SHARED_LIB += fil_dog_texture.so dog_texture_search.so 
+SHARED_LIB += fil_dog_texture dog_texture_search.so
 SHARED_LIB += $(SRCDIR)/dog_texture.sf_conf
 
 include ${OBJROOT}/Makefile.template
 
-fil_dog_texture.so: $(FILTER_LIB_OBJS)
-	$(FIL_SO_COMMAND)
+fil_dog_texture: $(FILTER_OBJS)
+	$(FIL_COMMAND)
 
 dog_texture_search.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

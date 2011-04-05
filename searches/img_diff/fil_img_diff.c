@@ -35,7 +35,7 @@
 
 double image_diff(const RGBImage* img1, const RGBImage* img2);
 
-int
+static int
 f_init_img_diff(int numarg, const char * const *args,
 		int blob_len, const void *blob,
 		const char *fname, void **data)
@@ -52,16 +52,7 @@ f_init_img_diff(int numarg, const char * const *args,
 	return (0);
 }
 
-int
-f_fini_img_diff(void *data)
-{
-	img_diff_config_t *config = (img_diff_config_t *)data;
-	release_rgb_image(config->img);
-	free(config);
-	return (0);
-}
-
-int
+static int
 f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             err;
@@ -82,6 +73,8 @@ f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 
 	return rv;
 }
+
+LF_MAIN(f_init_img_diff, f_eval_img_diff)
 
 // Given 2 images of the same size, returns a number (0 to 1)
 // quantifying the pixel-wise image difference.  Zero means

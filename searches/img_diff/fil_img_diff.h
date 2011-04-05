@@ -27,24 +27,4 @@ typedef struct img_diff_config
 
 } img_diff_config_t;
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
-diamond_public
-int f_init_img_diff(int numarg, const char * const *args,
-		    int blob_len, const void *blob,
-		    const char *fname, void **data);
-diamond_public
-int f_fini_img_diff(void *data);
-diamond_public
-int f_eval_img_diff(lf_obj_handle_t ihandle, void *user_data);
-
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif	/* !defined _FIL_IMG_DIFF_H_ */

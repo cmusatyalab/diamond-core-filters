@@ -277,9 +277,7 @@ text_attr_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "FILTER  %s  # dependancies \n", get_name());
 	fprintf(ostream, "THRESHOLD  1  # number of hits ?? \n");
 	fprintf(ostream, "MERIT  10000  	# guess at cost \n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_text_attr  # eval function \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_text_attr  # init function \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_text_attr  # fini function \n");
+	fprintf(ostream, "SIGNATURE @\n");
 	fprintf(ostream, "ARG  %s  # attributes to search \n",attr_name );
 	fprintf(ostream, "ARG  %s  # string to match \n", search_string );
 	fprintf(ostream, "ARG  %d  # exact match  \n", exact_match );

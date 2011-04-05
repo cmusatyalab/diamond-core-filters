@@ -21,25 +21,4 @@ typedef struct write_notify_context_t {
 	lf_obj_handle_t ohandle;
 } write_notify_context_t;
 
-
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-diamond_public
-int f_init_gab_texture(int numarg, const char * const *args,
-		       int blob_len, const void *blob,
-		       const char *fname, void **data);
-diamond_public
-int f_fini_gab_texture(void *data);
-diamond_public
-int f_eval_gab_texture(lf_obj_handle_t ohandle, void *user_data);
-
-
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif	/* ! _FIL_GABOR_TEXTURE_H_ */

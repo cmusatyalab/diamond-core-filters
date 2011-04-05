@@ -28,22 +28,4 @@ typedef struct {
 	fnum_attr_t *	fconfigs;
 } fnum_attr_holder_t;
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-diamond_public
-int f_init_num_attr(int numarg, const char * const *args,
-		    int blob_len, const void *blob,
-		    const char *fname, void **fdatap);
-diamond_public
-int f_fini_num_attr(void *fdata);
-diamond_public
-int f_eval_num_attr(lf_obj_handle_t ohandle, void *fdata);
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif	/* !_FIL_NUM_ATTR_H_ */

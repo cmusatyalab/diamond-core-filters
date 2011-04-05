@@ -31,7 +31,7 @@
 #include "fil_3D_match.h"
 
 
-int
+static int
 f_init_3D_match(int numarg, const char * const *args,
 		int blob_len, const void *blob,
 		const char *fname, void **data)
@@ -61,17 +61,7 @@ f_init_3D_match(int numarg, const char * const *args,
 	return (0);
 }
 
-int
-f_fini_3D_match(void *data)
-{
-	match_config_t *fconfig = (match_config_t *) data;
-	free(fconfig);
-
-	return (0);
-}
-
-
-int
+static int
 f_eval_3D_match(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             err;
@@ -107,6 +97,7 @@ f_eval_3D_match(lf_obj_handle_t ohandle, void *f_data)
 	return rv;
 }
 
+LF_MAIN(f_init_3D_match, f_eval_3D_match)
 
 
 /*******************************************************************************

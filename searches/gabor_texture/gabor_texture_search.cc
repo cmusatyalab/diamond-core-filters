@@ -584,9 +584,7 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
 	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * simularity));
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_gab_texture \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_gab_texture \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_gab_texture \n");
+	fprintf(ostream, "SIGNATURE @\n");
 
 	/*
 	 * Next we write call the parent to write out the releated args,

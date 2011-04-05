@@ -302,9 +302,7 @@ shingling_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "THRESHOLD %d  # similarity \n",
 		(int)(100.0 * similarity));
 	fprintf(ostream, "MERIT 1000  	# guess at cost \n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_shingling  # eval function \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_shingling  # init function \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_shingling  # fini function \n");
+	fprintf(ostream, "SIGNATURE @\n");
 	fprintf(ostream, "ARG  %d  # shingle width  \n", shingle_size );
 	fprintf(ostream, "\n");
 	fprintf(ostream, "\n");

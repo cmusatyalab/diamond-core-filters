@@ -349,9 +349,7 @@ num_attr_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "FILTER  %s  # dependancies \n", get_name());
 	fprintf(ostream, "THRESHOLD  1  # boolean \n");
 	fprintf(ostream, "MERIT  10000  	# guess at cost \n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_num_attr  # eval function \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_num_attr  # init function \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_num_attr  # fini function \n");
+	fprintf(ostream, "SIGNATURE @\n");
 
 	
 	temp = num_attr;

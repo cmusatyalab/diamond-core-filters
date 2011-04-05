@@ -22,8 +22,8 @@ STATIC_LIBS += @STATIC_LIBS@
 
 CPPFLAGS += @GTK_CFLAGS@
                                                                                 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_gab_texture.cc gabor_tools.cc gabor.cc
-FILTER_LIB_OBJS = fil_gab_texture.o  gabor_tools.o gabor.o
+FILTER_SRCS = fil_gab_texture.cc gabor_tools.cc gabor.cc
+FILTER_OBJS = fil_gab_texture.o  gabor_tools.o gabor.o
 
 SEARCHLET_LIBS += -lm
 
@@ -34,22 +34,22 @@ SEARCH_LIB_LIBS +=
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+SRCS = $(FILTER_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
 
 #
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_gabor_texture.so gabor_texture_search.so
+TARGETS = fil_gabor_texture gabor_texture_search.so
 
-SHARED_LIB += fil_gabor_texture.so gabor_texture_search.so 
+SHARED_LIB += fil_gabor_texture gabor_texture_search.so
 SHARED_LIB += $(SRCDIR)/gabor_texture.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_gabor_texture.so: $(FILTER_LIB_OBJS)
-	$(FIL_SO_COMMAND)
+fil_gabor_texture: $(FILTER_OBJS)
+	$(FIL_COMMAND)
 
 gabor_texture_search.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

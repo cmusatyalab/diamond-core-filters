@@ -37,18 +37,7 @@ extern "C"
 {
 #endif
 
-diamond_public
-int f_init_3D_match(int numarg, const char * const *args,
-		    int blob_len, const void *blob,
-		    const char *fname, void **data);
-diamond_public
-int f_fini_3D_match(void *data);
-diamond_public
-int f_eval_3D_match(lf_obj_handle_t ihandle, void *user_data);
-
 int isNeighbor (float th, float *q, float *f, int size);
-void getQuerryAttr(const char *querryAttrFilename, int size,float *q);
-
 
 #ifdef __cplusplus
 }

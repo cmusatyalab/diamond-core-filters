@@ -24,9 +24,9 @@ CPPFLAGS += @GTK_CFLAGS@
 
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_rgb.c 
+FILTER_SRCS = fil_rgb.c
 
-FILTER_LIB_OBJS =  fil_rgb.o 
+FILTER_OBJS =  fil_rgb.o
 
 SEARCH_LIB_SRCS = rgb_img.cc
 
@@ -39,21 +39,21 @@ SEARCHLET_LIBS += -lm
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+SRCS = $(FILTER_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
 
 #
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_rgb.so rgb_img.so
+TARGETS = fil_rgb rgb_img.so
 
-SHARED_LIB += fil_rgb.so rgb_img.so $(SRCDIR)/rgb_img.sf_conf
+SHARED_LIB += fil_rgb rgb_img.so $(SRCDIR)/rgb_img.sf_conf
 
 include ${OBJROOT}/Makefile.template
                                                                                 
-fil_rgb.so: $(FILTER_LIB_OBJS)
-	$(FIL_SO_COMMAND)
+fil_rgb: $(FILTER_OBJS)
+	$(FIL_COMMAND)
 
 rgb_img.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

@@ -24,9 +24,9 @@ CPPFLAGS += @GTK_CFLAGS@
 
 
 # objects used to build the searchlet(s)
-FILTER_LIB_SRCS = fil_thumb.c
+FILTER_SRCS = fil_thumb.c
 
-FILTER_LIB_OBJS = fil_thumb.o
+FILTER_OBJS = fil_thumb.o
 
 SEARCH_LIB_SRCS = thumbnailer.cc
 
@@ -39,21 +39,21 @@ SEARCHLET_LIBS += -lm
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_LIB_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_LIB_OBJS) $(SEARCH_LIB_OBJS)
+SRCS = $(FILTER_SRCS) $(SEARCH_LIB_SRCS)
+OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
 
 #
 # Other objects to cleanup
 CLEAN_OTHERS +=
 
-TARGETS = fil_thumb.so thumbnailer.so
+TARGETS = fil_thumb thumbnailer.so
 
-SHARED_LIB += fil_thumb.so thumbnailer.so $(SRCDIR)/thumbnailer.sf_conf
+SHARED_LIB += fil_thumb thumbnailer.so $(SRCDIR)/thumbnailer.sf_conf
 
 include ${OBJROOT}/Makefile.template
 
-fil_thumb.so: $(FILTER_LIB_OBJS)
-	$(FIL_SO_COMMAND)
+fil_thumb: $(FILTER_OBJS)
+	$(FIL_COMMAND)
 
 thumbnailer.so: $(SEARCH_LIB_OBJS)
 	$(SO_COMMAND)

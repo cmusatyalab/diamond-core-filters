@@ -30,7 +30,6 @@
 #include "lib_filter.h"
 #include "lib_sfimage.h"
 #include "rgb.h"
-#include "fil_thumb.h"
 
 #include <jpeglib.h>
 
@@ -48,7 +47,7 @@ struct filter_args {
     int height;
 };
 
-int
+static int
 f_init_thumbnailer(int numarg, const char * const *args,
 		   int blob_len, const void *blob,
 		   const char *fname, void **data)
@@ -64,13 +63,6 @@ f_init_thumbnailer(int numarg, const char * const *args,
 	fargs->height = atoi(args[1]);
 
 	*data = fargs;
-	return 0;
-}
-
-int
-f_fini_thumbnailer(void *data)
-{
-	free(data);
 	return 0;
 }
 
@@ -130,7 +122,7 @@ static void compress_rgbimage(RGBImage *img, FILE *f)
 /*
  * filter eval function to create a thumbnail attribute
  */
-int
+static int
 f_eval_thumbnailer(lf_obj_handle_t ohandle, void *data)
 {
 	struct filter_args *fargs = (struct filter_args *)data;
@@ -189,3 +181,4 @@ done:
 	return pass;
 }
 
+LF_MAIN(f_init_thumbnailer, f_eval_thumbnailer)
