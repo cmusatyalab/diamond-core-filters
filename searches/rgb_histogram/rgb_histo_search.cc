@@ -396,9 +396,9 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
 	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * simularity));
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo_detect \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_histo_detect \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_histo_detect \n");
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo\n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_histo\n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_histo\n");
 	fprintf(ostream, "ARG  %s  # name \n", get_name());
 
 	/*
@@ -446,9 +446,9 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER  HISTO_II  # name \n");
 	fprintf(ostream, "THRESHOLD  1  # threshold \n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_hintegrate  # evan fn \n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_hintegrate  # init fn \n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_hintegrate  # fini fn \n");
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo\n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_histo\n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_histo\n");
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
 	fprintf(ostream, "MERIT  200  # merit value \n");
 	fprintf(ostream, "ARG  4  # dependancies \n");

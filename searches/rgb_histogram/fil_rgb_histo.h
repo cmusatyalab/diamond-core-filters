@@ -29,25 +29,13 @@ extern "C"
 #endif
 
 diamond_public
-int f_init_histo_detect(int numarg, const char * const *args,
+int f_init_histo(int numarg, const char * const *args,
 			int blob_len, const void *blob,
 			const char *fname, void **data);
 diamond_public
-int f_fini_histo_detect(void *data);
+int f_fini_histo(void *data);
 diamond_public
-int f_eval_histo_detect(lf_obj_handle_t ihandle, void *user_data);
-
-
-diamond_public
-int f_init_hintegrate(int numarg, const char * const *args,
-		      int blob_len, const void *blob,
-		      const char *fname, void **data);
-diamond_public
-int f_fini_hintegrate(void *data);
-diamond_public
-int f_eval_hintegrate(lf_obj_handle_t ihandle, void *user_data);
-
-
+int f_eval_histo(lf_obj_handle_t ihandle, void *user_data);
 
 #ifdef __cplusplus
 }

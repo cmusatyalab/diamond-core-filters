@@ -40,6 +40,11 @@ typedef struct {
 	histo_type_t	type;
 } hintegrate_data_t;
 
+struct histo_data {
+	histo_config_t *hconfig;
+	hintegrate_data_t *hintegrate;
+};
+
 
 #define ASSERT(exp)							\
 if(!(exp)) {								\
@@ -107,7 +112,7 @@ done:
 /*
  * Initialize filter to detect histograms.
  */
-int
+static int
 f_init_histo_detect(int numarg, const char * const *args,
 		    int blob_len, const void *blob,
 		    const char *fname, void **data)
@@ -149,7 +154,7 @@ f_init_histo_detect(int numarg, const char * const *args,
 	return (0);
 }
 
-int
+static int
 f_fini_histo_detect(void *data)
 {
 	histo_patch_t        *histo_patch;
@@ -165,7 +170,7 @@ f_fini_histo_detect(void *data)
 }
 
 
-int
+static int
 f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             pass = 0;
@@ -246,7 +251,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 
 
 
-int
+static int
 f_init_hintegrate(int numarg, const char * const *args,
 		  int blob_len, const void *blob,
 		  const char *fname, void **data)
@@ -273,7 +278,7 @@ f_init_hintegrate(int numarg, const char * const *args,
 	return (0);
 }
 
-int
+static int
 f_fini_hintegrate(void *data)
 {
 	hintegrate_data_t *fstate = (hintegrate_data_t *) data;
@@ -283,7 +288,7 @@ f_fini_hintegrate(void *data)
 
 
 
-int
+static int
 f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             pass = 1;
@@ -343,3 +348,48 @@ done:
 }
 
 
+int f_init_histo(int numarg, const char * const *args,
+			int blob_len, const void *blob,
+			const char *fname, void **data)
+{
+	struct histo_data *hdata;
+	int ret;
+
+	hdata = malloc(sizeof(*hdata));
+	memset(hdata, 0, sizeof(*hdata));
+	/* Decide which filter to run based on the argument count */
+	if (numarg == 2)
+		ret = f_init_hintegrate(numarg, args, blob_len, blob, fname,
+					&hdata->hintegrate);
+	else
+		ret = f_init_histo_detect(numarg, args, blob_len, blob, fname,
+					&hdata->hconfig);
+	if (ret)
+		free(hdata);
+	else
+		*data = hdata;
+	return ret;
+}
+
+int f_fini_histo(void *data)
+{
+	struct histo_data *hdata = data;
+	int ret;
+
+	if (hdata->hintegrate)
+		ret = f_fini_hintegrate(hdata->hintegrate);
+	else
+		ret = f_fini_histo_detect(hdata->hconfig);
+	free(hdata);
+	return ret;
+}
+
+int f_eval_histo(lf_obj_handle_t ihandle, void *user_data)
+{
+	struct histo_data *hdata = user_data;
+
+	if (hdata->hintegrate)
+		return f_eval_hintegrate(ihandle, hdata->hintegrate);
+	else
+		return f_eval_histo_detect(ihandle, hdata->hconfig);
+}
