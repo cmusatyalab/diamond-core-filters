@@ -37,9 +37,9 @@ public:
 	virtual void 	edit_search();
 	virtual void	close_edit_win();
 
-	/* set the simularity metric, either via string or double */	
-	void 		set_simularity(char *data);
-	void 		set_simularity(double sim);
+	/* set the similarity metric, either via string or double */
+	void 		set_similarity(char *data);
+	void 		set_similarity(double sim);
 
 	/* set number of channels via string or double */
 	void 		set_channels(char *data);
@@ -76,7 +76,7 @@ private:
  	void 	release_args(gtexture_args_t *gargs);
 
 	int			method;
-	double			simularity;
+	double			similarity;
 	int			channels;
 	int			num_angles;
 	int			num_freq;

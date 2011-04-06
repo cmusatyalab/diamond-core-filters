@@ -902,7 +902,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 					d = histo_distance(&histo_patch->histo, &h2);
 
 					histo_patch = TAILQ_NEXT(histo_patch, link);
-					if (d < (1.0 - hconfig->simularity)) {  /* found match */
+					if (d < (1.0 - hconfig->similarity)) {  /* found match */
 						bbox = (bbox_t *) malloc(sizeof(*bbox));
 						bbox->min_x = x;
 						bbox->min_y = y;
@@ -980,7 +980,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 					d = histo_distance(&histo_patch->histo, &h2);
 					histo_patch = TAILQ_NEXT(histo_patch, link);
 
-					if ((num_req < 10) && (d < (1.0 - hconfig->simularity))  &&
+					if ((num_req < 10) && (d < (1.0 - hconfig->similarity))  &&
 					    (d < best_box[num_req - 1].distance)) {  /* found match */
 
 						bbox_t	temp_box;
@@ -1002,7 +1002,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 							}
 						}
 					} else if ((num_req >= 10) &&
-					           (d < (1.0 - hconfig->simularity))) {  /* found match */
+					           (d < (1.0 - hconfig->similarity))) {  /* found match */
 						bbox = (bbox_t *) malloc(sizeof(*bbox));
 						bbox->min_x = x;
 						bbox->min_y = y;
@@ -1028,7 +1028,7 @@ histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 		}                       /* for y */
 	}                           /* for scale */
 
-	if ((num_req < 10) && (best_box[num_req - 1].distance < (1.0 - hconfig->simularity))) {
+	if ((num_req < 10) && (best_box[num_req - 1].distance < (1.0 - hconfig->similarity))) {
 		for (count = 0; count < num_req; count++) {
 			pass++;
 			bbox = (bbox_t *)malloc(sizeof(*bbox));
@@ -1109,7 +1109,7 @@ old_histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 					d = histo_distance(&histo_patch->histo, &h2);
 					histo_patch = TAILQ_NEXT(histo_patch, link);
 
-					if ((num_req == 1) && (d < (1.0 - hconfig->simularity))  &&
+					if ((num_req == 1) && (d < (1.0 - hconfig->similarity))  &&
 					    (d < best_box.distance)) {  /* found match */
 						best_box.min_x = x;
 						best_box.min_y = y;
@@ -1117,7 +1117,7 @@ old_histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 						best_box.max_y = y + ysiz;
 						best_box.distance = d;
 					} else if ((num_req > 1) &&
-					           (d < (1.0 - hconfig->simularity))) {  /* found match */
+					           (d < (1.0 - hconfig->similarity))) {  /* found match */
 						bbox = (bbox_t *) malloc(sizeof(*bbox));
 						bbox->min_x = x;
 						bbox->min_y = y;
@@ -1144,7 +1144,7 @@ old_histo_scan_image(char *filtername, RGBImage * img, HistoII * ii,
 		}                       /* for y */
 	}                           /* for scale */
 
-	if ((num_req == 1) && (best_box.distance < (1.0 - hconfig->simularity))) {
+	if ((num_req == 1) && (best_box.distance < (1.0 - hconfig->similarity))) {
 		pass++;
 		bbox = (bbox_t *)malloc(sizeof(*bbox));
 		assert(bbox != NULL);

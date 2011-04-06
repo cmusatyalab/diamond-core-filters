@@ -37,7 +37,7 @@ public:
 	void	write_config(FILE* stream, const char *data_dir);
 	bool	is_editable(void);
 
-	/* set the simularity metric, either via string or double */
+	/* set the similarity metric, either via string or double */
 	void 		set_distance(char *data);
 	void 		set_distance(double sim);
 

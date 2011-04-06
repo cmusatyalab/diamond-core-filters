@@ -31,7 +31,7 @@
 #define	SEARCH_NAME	"gabor_texture"
 
 /* key words for the config file */
-#define	SIMULARITY_ID	"SIMULARITY"
+#define	SIMILARITY_ID	"SIMILARITY"
 #define	CHANNEL_ID	"CHANNELS"
 #define	NANGLE_ID	"NUM_ANGLES"
 #define	NFREQ_ID	"NUM_FREQ"
@@ -58,7 +58,7 @@ gabor_texture_search::gabor_texture_search(const char *name, const char *descr)
 		: example_search(name, descr)
 {
 	edit_window = NULL;
-	simularity = 0.93;
+	similarity = 0.93;
 	channels = 3;
 	num_angles = 4;
 	num_freq = 2;
@@ -79,25 +79,25 @@ gabor_texture_search::~gabor_texture_search()
 
 
 void
-gabor_texture_search::set_simularity(char *data)
+gabor_texture_search::set_similarity(char *data)
 {
-	simularity = atof(data);
-	if (simularity < 0) {
-		simularity = 0.0;
-	} else if (simularity > 1.0) {
-		simularity = 1.0;
+	similarity = atof(data);
+	if (similarity < 0) {
+		similarity = 0.0;
+	} else if (similarity > 1.0) {
+		similarity = 1.0;
 	}
 	return;
 }
 
 void
-gabor_texture_search::set_simularity(double sim)
+gabor_texture_search::set_similarity(double sim)
 {
-	simularity = sim;
-	if (simularity < 0) {
-		simularity = 0.0;
-	} else if (simularity > 1.0) {
-		simularity = 1.0;
+	similarity = sim;
+	if (similarity < 0) {
+		similarity = 0.0;
+	} else if (similarity > 1.0) {
+		similarity = 1.0;
 	}
 	return;
 }
@@ -196,11 +196,11 @@ gabor_texture_search::handle_config(int num_conf, char **confv)
 {
 	int	err;
 
-	if (strcmp(SIMULARITY_ID, confv[0]) == 0) {
+	if (strcmp(SIMILARITY_ID, confv[0]) == 0) {
 		if (num_conf < 2) {
 			err = 1;
 		} else {
-			set_simularity(confv[1]);
+			set_similarity(confv[1]);
 			err = 0;
 		}
 	} else if (strcmp(CHANNEL_ID, confv[0]) == 0) {
@@ -379,8 +379,8 @@ gabor_texture_search::edit_search()
 	container = gtk_vbox_new(FALSE, 10);
 	gtk_container_add(GTK_CONTAINER(frame), container);
 
-	widget = create_slider_entry("Min Simularity", 0.0, 1.0, 2,
-	                             simularity, 0.05, &sim_adj);
+	widget = create_slider_entry("Min Similarity", 0.0, 1.0, 2,
+	                             similarity, 0.05, &sim_adj);
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 	widget = create_slider_entry("Radius", 0.0, 80.0, 0,
@@ -437,9 +437,9 @@ gabor_texture_search::save_edits()
 		return;
 	}
 
-	/* get the simularity and save */
+	/* get the similarity and save */
 	fval = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
-	set_simularity(fval);
+	set_similarity(fval);
 
 	ival = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(rad_adj));
 	set_radius(ival);
@@ -501,7 +501,7 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 	gargs->xdim = get_testx();
 	gargs->ydim = get_testy();
 	gargs->min_matches = get_matches();
-	gargs->max_distance = 1.0 - simularity;
+	gargs->max_distance = 1.0 - similarity;
 	gargs->num_angles = num_angles;
 	gargs->num_freq = num_freq;
 	gargs->radius = radius;
@@ -583,7 +583,7 @@ gabor_texture_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * simularity));
+	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * similarity));
 	fprintf(ostream, "SIGNATURE @\n");
 
 	/*
@@ -600,7 +600,7 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	 * as well as the linearized histograms.
 	 */
 
-	fprintf(ostream, "ARG  %f  # simularity \n", 0.0);
+	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
 	fprintf(ostream, "ARG  %d  # num_angles \n", gargs.num_angles);
 	fprintf(ostream, "ARG  %d  # num_freq \n", gargs.num_freq);
 	fprintf(ostream, "ARG  %d  # radius \n", gargs.radius);
@@ -630,7 +630,7 @@ gabor_texture_search::write_config(FILE *ostream, const char *dirname)
 
 	fprintf(ostream, "\n\n");
 	fprintf(ostream, "SEARCH %s %s\n", SEARCH_NAME, get_name());
-	fprintf(ostream, "%s %f \n", SIMULARITY_ID, simularity);
+	fprintf(ostream, "%s %f \n", SIMILARITY_ID, similarity);
 	fprintf(ostream, "%s %d \n", CHANNEL_ID, channels);
 	fprintf(ostream, "%s %d \n", NANGLE_ID, num_angles);
 	fprintf(ostream, "%s %d \n", NFREQ_ID, num_freq);

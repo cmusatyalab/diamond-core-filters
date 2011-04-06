@@ -112,7 +112,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	const void    * dptr;
 	size_t 		bsize;
 	size_t 		len;
-	float			min_simularity;
+	float			min_similarity;
 	gtexture_args_t  *targs = (gtexture_args_t *)f_datap;
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
@@ -144,19 +144,19 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	if (pass >= targs->min_matches) {
 
 		save_patches(ohandle, targs->name, &blist);
-		min_simularity = 2.0;
+		min_similarity = 2.0;
 		while (!(TAILQ_EMPTY(&blist))) {
 			cur_box = TAILQ_FIRST(&blist);
-			if ((1.0 - cur_box->distance) < min_simularity) {
-				min_simularity = 1.0 - param.distance;
+			if ((1.0 - cur_box->distance) < min_similarity) {
+				min_similarity = 1.0 - param.distance;
 			}
 			free(cur_box);
 		}
 
-		if (min_simularity == 2.0) {
+		if (min_similarity == 2.0) {
 			pass = 0;
 		} else {
-			pass = (int)(100.0 * min_simularity);
+			pass = (int)(100.0 * min_similarity);
 		}
 	} else {
 		/* XXX clean list ?? */

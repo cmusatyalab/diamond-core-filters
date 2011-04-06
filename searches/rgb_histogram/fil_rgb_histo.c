@@ -135,7 +135,7 @@ f_init_histo_detect(int numarg, const char * const *args,
 	hconfig->stride = atoi(args[4]);
 	hconfig->req_matches = atoi(args[5]);
 	hconfig->bins = atoi(args[6]);
-	hconfig->simularity = atof(args[7]);
+	hconfig->similarity = atof(args[7]);
 	hconfig->distance_type = atoi(args[8]);
 	hconfig->type = atoi(args[9]);
 	hconfig->num_patches = atoi(args[10]);
@@ -163,7 +163,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	bbox_list_t	blist;
 	histo_config_t *hconfig = (histo_config_t *) f_data;
 	int             nhisto;
-	float           min_simularity;
+	float           min_similarity;
 	HistoII        *ii = NULL;
 	bbox_t *	cur_box;
 	int		ii_alloc = 0;
@@ -209,20 +209,20 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	save_patches(ohandle, hconfig->name, &blist);
 
 
-	min_simularity = 2.0;
+	min_similarity = 2.0;
 	while (!(TAILQ_EMPTY(&blist))) {
 		cur_box = TAILQ_FIRST(&blist);
-		if ((1.0 - cur_box->distance) < min_simularity) {
-			min_simularity = 1.0 - cur_box->distance;
+		if ((1.0 - cur_box->distance) < min_similarity) {
+			min_similarity = 1.0 - cur_box->distance;
 		}
 		TAILQ_REMOVE(&blist, cur_box, link);
 		free(cur_box);
 	}
 
-	if (min_simularity == 2.0) {
+	if (min_similarity == 2.0) {
 		rv = 0;
 	} else {
-		rv = (int)(100.0 * min_simularity);
+		rv = (int)(100.0 * min_similarity);
 	}
 
 	if (ii_alloc) {

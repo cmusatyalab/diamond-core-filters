@@ -56,7 +56,7 @@ rgb_histo_search::rgb_histo_search(const char *name, const char *descr)
 		: example_search(name, descr)
 {
 	metric = 0;
-	simularity = 0.93;
+	similarity = 0.93;
 	bins = 3;
 	edit_window = NULL;
 	htype = HISTO_INTERPOLATED;
@@ -78,25 +78,25 @@ rgb_histo_search::set_bins(int new_bins)
 
 
 void
-rgb_histo_search::set_simularity(char *data)
+rgb_histo_search::set_similarity(char *data)
 {
-	simularity = atof(data);
-	if (simularity < 0) {
-		simularity = 0.0;
-	} else if (simularity > 1.0) {
-		simularity = 1.0;
+	similarity = atof(data);
+	if (similarity < 0) {
+		similarity = 0.0;
+	} else if (similarity > 1.0) {
+		similarity = 1.0;
 	}
 	return;
 }
 
 void
-rgb_histo_search::set_simularity(double sim)
+rgb_histo_search::set_similarity(double sim)
 {
-	simularity = sim;
-	if (simularity < 0) {
-		simularity = 0.0;
-	} else if (simularity > 1.0) {
-		simularity = 1.0;
+	similarity = sim;
+	if (similarity < 0) {
+		similarity = 0.0;
+	} else if (similarity > 1.0) {
+		similarity = 1.0;
 	}
 	return;
 }
@@ -109,7 +109,7 @@ rgb_histo_search::handle_config(int nconf, char **data)
 
 	if (strcmp(METRIC_ID, data[0]) == 0) {
 		assert(nconf > 1);
-		set_simularity(data[1]);
+		set_similarity(data[1]);
 		err = 0;
 	} else if (strcmp(BINS_ID, data[0]) == 0) {
 		assert(nconf > 1);
@@ -282,8 +282,8 @@ rgb_histo_search::edit_search()
 	container = gtk_vbox_new(FALSE, 10);
 	gtk_container_add(GTK_CONTAINER(frame), container);
 
-	widget = create_slider_entry("Min Simularity", 0.0, 1.0, 2,
-	                             simularity, 0.05, &sim_adj);
+	widget = create_slider_entry("Min Similarity", 0.0, 1.0, 2,
+	                             similarity, 0.05, &sim_adj);
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 	widget = create_slider_entry("Bins", 1, 20, 0,
@@ -359,9 +359,9 @@ rgb_histo_search::save_edits()
 	bins = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(bin_adj));
 	set_bins(bins);
 
-	/* get the simularity and save */
+	/* get the similarity and save */
 	sim = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
-	set_simularity(sim);
+	set_similarity(sim);
 
 	val = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(interpolated_box));
 	if (val) {
@@ -394,7 +394,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * simularity));
+	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * similarity));
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo\n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_histo\n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_histo\n");
@@ -415,7 +415,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	 */
 
 	fprintf(ostream, "ARG  %d  # num bins \n", HBINS);
-	fprintf(ostream, "ARG  %f  # simularity \n", 0.0);
+	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
 	fprintf(ostream, "ARG  %d  # distance metric \n", metric);
 	fprintf(ostream, "ARG  %d  # histo type \n", htype);
 	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
@@ -465,7 +465,7 @@ rgb_histo_search::write_config(FILE *ostream, const char *dirname)
 	fprintf(ostream, "SEARCH rgb_histogram %s\n", get_name());
 
 	/* write out the rgb parameters */
-	fprintf(ostream, "%s %f \n", METRIC_ID, simularity);
+	fprintf(ostream, "%s %f \n", METRIC_ID, similarity);
 	fprintf(ostream, "%s %d \n", BINS_ID, bins);
 	fprintf(ostream, "%s %d \n", INTERPOLATION_ID, htype);
 	fprintf(ostream, "%s %d \n", DISTANCE_METRIC_ID, metric);
@@ -495,7 +495,7 @@ rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
 	hconfig.ysize = get_testy();
 	hconfig.stride = get_stride();
 	hconfig.bins = HBINS;	/* XXX */
-	hconfig.simularity = simularity;
+	hconfig.similarity = similarity;
 	hconfig.distance_type = metric;
 	hconfig.type = htype;
 
