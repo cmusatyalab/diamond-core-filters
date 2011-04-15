@@ -20,8 +20,8 @@
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 
-#include <cv.h>
-#include <cvaux.h>
+#include <opencv/cv.h>
+#include <opencv/cvaux.h>
 
 #include <sys/queue.h>
 #include "rgb.h"
