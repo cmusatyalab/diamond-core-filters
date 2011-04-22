@@ -26,7 +26,6 @@ public:
 
 	void	write_config(FILE* stream, const char *data_dir);
 	void    write_fspec(FILE* stream);
-	int     matches_filter(char *name);
 	bool	is_editable(void);
 };
 

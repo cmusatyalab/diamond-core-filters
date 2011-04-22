@@ -47,8 +47,6 @@ public:
 
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
-	virtual int     matches_filter(char *name) = 0;
-
 private:
 	int			count;
 	int			support_matches;
