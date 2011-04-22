@@ -33,6 +33,7 @@ FILTER_SRCS = fil_texture.c texture_tools.c
 FILTER_OBJS = fil_texture.o texture_tools.o
 
 FILTER_LIBS = -pthread
+PLUGIN_LIBS = -pthread
 
 SEARCHLET_LIBS += -lm -locvimage -lsfimage  -lresults
 

@@ -110,7 +110,7 @@ DIST_OBJS += .depend Makefile
 	cp -f $@ ${BUILD_LIB_PATH}
 
 FIL_COMMAND=$(CPLUSPLUS) -o $@ $^ $(LDFLAGS) $(STATIC_LIBS) $(LDPATH) $(FILTER_LIBS) -Wl,--gc-sections @OPENDIAMOND_LIBS@
-SO_COMMAND=$(CPLUSPLUS) -o $@ $^ $(LD_SOFLAGS) $(STATIC_LIBS) $(LDPATH)
+SO_COMMAND=$(CPLUSPLUS) -o $@ $^ $(LD_SOFLAGS) $(STATIC_LIBS) $(LDPATH) $(PLUGIN_LIBS)
 
 # The common targets
 

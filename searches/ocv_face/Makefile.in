@@ -34,6 +34,7 @@ FILTER_COMMON = fil_ocv.o opencv_face_tools.o
 FILTER_OBJS = ${FILTER_COMMON} fil_ocv.o
 
 FILTER_LIBS = -pthread
+PLUGIN_LIBS = -pthread
 
 SEARCH_LIB_SRCS = ocv_search.cc ocv_face_search.cc opencv_face_tools.c 
 SEARCH_LIB_SRCS += ocv_body_search.cc ocv_upperbody_search.cc 
