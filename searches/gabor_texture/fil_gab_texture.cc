@@ -159,10 +159,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 
 	free(gii_img);
 
-	char buf[BUFSIZ];
-	sprintf(buf, "_texture_detect.int");
-	lf_write_attr(ohandle, buf, sizeof(int), (unsigned char *)&pass);
-
 	return pass;
 }
 
