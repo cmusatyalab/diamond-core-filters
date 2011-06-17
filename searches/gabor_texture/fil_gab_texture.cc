@@ -172,4 +172,8 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	return pass;
 }
 
-LF_MAIN(f_init_gab_texture, f_eval_gab_texture)
+int main(void)
+{
+	lf_main(f_init_gab_texture, f_eval_gab_texture);
+	return 0;
+}
