@@ -26,15 +26,8 @@ extern "C"
 #endif
 
 
-IplImage *create_gray_ipl_image(char *filename);
-IplImage *create_rgb_ipl_image(char *filename);
-
 IplImage *get_gray_ipl_image(RGBImage* rgb_img);
 IplImage *get_rgb_ipl_image(RGBImage* rgb_img);
-
-
-RGBImage * convert_ipl_to_rgb(IplImage * ipl);
-
 
 
 #ifdef __cplusplus
