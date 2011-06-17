@@ -19,17 +19,15 @@
 #
 BUILDROOT = @BUILDROOT@
 BUILD_LIB_PATH = $(BUILDROOT)/lib
-BUILD_INC_PATH = $(BUILDROOT)/include
 BUILD_BIN_PATH = $(BUILDROOT)/bin
 
 #  Install the directories
 INSTALLBASE=/usr/local/diamond
 INSTALLDIR_BIN=${INSTALLBASE}/bin
 INSTALLDIR_LIB=${INSTALLBASE}/lib
-INSTALLDIR_INCLUDE=${INSTALLBASE}/include
 
 CPPFLAGS += @CPPFLAGS@
-CPPFLAGS += -I${BUILD_INC_PATH} -I. -I${SRCDIR} -m32 \
+CPPFLAGS += -I@top_srcdir@/include -I. -I${SRCDIR} -m32 \
 	-DSNAPFIND_PLUGIN_DIR=\"${INSTALLDIR_LIB}\"
 
 # from the configure script
@@ -135,7 +133,7 @@ endif
 
 
 
-TARGETS += copyheader copybin copylib
+TARGETS += copybin copylib
 
 #  Rebuild everything, which is the program "PROG" and its 
 #	subdirectories "SUBDIRS" 
@@ -177,11 +175,6 @@ ifneq ($(strip ${OBJS} ${PROG} $(CLEAN_OTHERS) $(TARGETS) $(DIST_OBJS)),)
 endif
 	${do-subdirs}
 
-copyheader:
-	@for entry in ${SHARED_HEADERS}; do \
-		cp -fuv ${SRCDIR}/$${entry} ${BUILD_INC_PATH}; \
-	done
-                                                                                
 copybin:
 	@for entry in ${SHARED_BIN} ; do \
 		cp -fuv $${entry} ${BUILD_BIN_PATH}; \
@@ -202,11 +195,6 @@ copylib:
 install: installdirs
 ifneq ($(strip ${INSTALL_OTHERS}),)	
 	${INSTALL} ${INSTALL_OTHERS} ${INSTALLDIR}
-endif
-ifneq ($(strip ${INSTALL_HEADERS}),)	
-	@for entry in ${INSTALL_HEADERS} ; do \
-		${INSTALL} $${entry} ${INSTALLDIR_INCLUDE} ; \
-	done
 endif
 ifneq ($(strip ${INSTALL_LIBS}),)	
 	@for entry in ${INSTALL_LIBS} ; do \
@@ -236,7 +224,7 @@ endif
 
 #  Create the directories to install into
 
-ALL_INSTALLDIRS= ${INSTALLBASE} ${INSTALLDIR_BIN} ${INSTALLDIR_LIB} ${INSTALLDIR_INCLUDE}
+ALL_INSTALLDIRS= ${INSTALLBASE} ${INSTALLDIR_BIN} ${INSTALLDIR_LIB}
 installdirs:
 	${TESTROOT}
 	@for entry in ${ALL_INSTALLDIRS} ; do \

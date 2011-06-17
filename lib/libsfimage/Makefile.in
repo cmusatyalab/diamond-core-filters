@@ -26,8 +26,6 @@ LIBOBJS += readjpeg.o readtiff.o rgb.o
 SRCS = $(LIBSRCS)
 OBJS = $(LIBOBJS) 
 
-SHARED_HEADERS = rgb.h lib_sfimage.h
-
 SHARED_LIB = libsfimage.a 
 
 # Compilation Targets

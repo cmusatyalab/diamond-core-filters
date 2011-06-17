@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
-AC_CONFIG_SRCDIR([common/snapfind_consts.h]) AC_CONFIG_HEADER([config.h]) 
+AC_CONFIG_SRCDIR([include/snapfind_consts.h]) AC_CONFIG_HEADER([config.h])
 # Checks for the standard compile programs 
 AC_PROG_CXX
 AC_PROG_CC
@@ -84,7 +84,6 @@ AC_CHECK_FUNCS([getcwd gethostbyaddr gettimeofday inet_ntoa memset mkdir pow reg
 
 AC_CONFIG_FILES([Makefile
 		Makefile.template
-		common/Makefile
 		snapfind/Makefile
 		searches/Makefile
 		searches/text_attr/Makefile
@@ -105,6 +104,5 @@ AC_CONFIG_FILES([Makefile
 		lib/libocvimage/Makefile
 		target/Makefile
 		target/bin/Makefile
-		target/lib/Makefile
-		target/include/Makefile])
+		target/lib/Makefile])
 AC_OUTPUT

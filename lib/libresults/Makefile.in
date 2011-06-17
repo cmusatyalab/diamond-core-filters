@@ -27,8 +27,6 @@ LIBS +=
 SRCS = $(LIBSRCS)
 OBJS = $(LIBOBJS) 
 
-SHARED_HEADERS = lib_results.h 
-
 SHARED_LIB = libresults.a
 
 # Compilation Targets
