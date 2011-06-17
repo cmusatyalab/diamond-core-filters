@@ -144,6 +144,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 			if ((1.0 - cur_box->distance) < min_similarity) {
 				min_similarity = 1.0 - cur_box->distance;
 			}
+			TAILQ_REMOVE(&blist, cur_box, link);
 			free(cur_box);
 		}
 
