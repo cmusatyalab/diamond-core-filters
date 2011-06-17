@@ -74,11 +74,6 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 		return(0);
 	}
 
-	// Rahul TODO
-	// We can normalize the image here, but we should not do
-	// so automatically -- should only do it if needed
-	/* rgb_normalize(img); */
-
 	/* save some attribs */
 	lf_write_attr(ohandle, ROWS, sizeof(int), 
 	    (unsigned char *) &img->height);

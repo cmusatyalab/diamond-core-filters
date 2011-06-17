@@ -24,7 +24,6 @@
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include "lib_filter.h"
-#include "fil_texture.h"
 #include "texture_tools.h"
 #include "lib_ocvimage.h"
 

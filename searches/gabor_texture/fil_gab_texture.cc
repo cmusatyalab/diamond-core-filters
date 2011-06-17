@@ -25,8 +25,6 @@
 #include "lib_filter.h"
 #include "rgb.h"
 #include "lib_results.h"
-#include "fil_gab_texture.h"
-#include "gabor_priv.h"
 #include "gabor_tools.h"
 #include "gabor.h"
 
@@ -99,9 +97,6 @@ f_init_gab_texture(int numarg, const char * const *args, int blob_len,
 	return(0);
 }
 
-
-/* XXX */
-#define RGB_IMAGE  "_rgb_image.rgbimage"
 
 static int
 f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)

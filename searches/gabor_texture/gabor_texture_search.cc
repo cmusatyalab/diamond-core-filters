@@ -20,7 +20,6 @@
 #include "lib_results.h"
 #include "rgb.h"
 #include "gabor.h"
-#include "gabor_priv.h"
 #include "gabor_texture_search.h"
 #include "factory.h"
 

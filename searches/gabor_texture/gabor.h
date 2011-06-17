@@ -24,8 +24,6 @@ public:
 	~gabor(void);
 
 
-	//int get_responses(RGBImage* image, int x, int y, int size, float *rvec,
-	 //                 int normalize);
 	int get_responses(FGImage_t* image, int x, int y, int size, float *rvec,
 	                 int normalize);
 
