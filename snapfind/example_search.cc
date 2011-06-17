@@ -232,22 +232,13 @@ example_search::remove_patch(example_patch_t *patch)
 	update_display();
 }
 
-static void
-cb_import(GtkWidget *item, gpointer data)
-{
-	//open_import_window();
-}
-
-
 GtkWidget *
 example_search::example_display()
 {
 	GtkWidget *			window;
 	GtkWidget *			table;
 	GtkWidget *			hbox;
-	GtkWidget *			import_button;
 	GtkWidget *			label;
-	GtkWidget *			sep;
 
 	window = gtk_scrolled_window_new(NULL, NULL);
 
@@ -261,18 +252,6 @@ example_search::example_display()
 
 	label = gtk_label_new("Example Patches: ");
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 10);
-
-
-	import_button = gtk_button_new_with_label("Import");
-	g_signal_connect(G_OBJECT(import_button), "clicked",
-	                 G_CALLBACK(cb_import), this);
-
-	gtk_box_pack_start(GTK_BOX(hbox), import_button, FALSE,
-	                   TRUE, 10);
-
-
-	sep = gtk_hseparator_new();
-	gtk_box_pack_start(GTK_BOX(patch_holder), sep, FALSE, TRUE, 10);
 
 
 	table = build_patch_table();
