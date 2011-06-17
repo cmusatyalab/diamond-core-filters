@@ -187,8 +187,6 @@ private:
 
 
 typedef struct example_patch {
-	char *		file_name;
-	char *		source_name;
 	int			xoff;
 	int			yoff;
 	int			xsize;
@@ -215,10 +213,7 @@ example_search: public window_search {
 public:
 	example_search(const char *name, const char *descr);
 	virtual ~example_search();
-	virtual	int 	handle_config(int num_conf, char **conf);
 	int add_patch(RGBImage* img, bbox_t bbox);
-	int add_patch(char *fname, char *xoff, char *yoff, char *xsize,
-	              char *ysize);
 	void remove_patch(example_patch_t *patch);
 	virtual	void edit_search() = 0;
 	virtual	void write_fspec(FILE* stream);

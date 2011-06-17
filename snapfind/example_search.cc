@@ -27,9 +27,6 @@
 #include "img_search.h"
 #include "snapfind.h"
 
-/* tokens for the config file */
-#define	PATCH_ID	"PATCHFILE"
-
 example_search::example_search(const char *name, const char *descr)
 		: window_search(name, descr)
 {
@@ -104,8 +101,6 @@ example_search::add_patch(RGBImage *img, bbox_t bbox)
 	assert(cur_patch != NULL);
 
 
-	/* XXX file name history */
-	cur_patch->file_name = NULL;
 	cur_patch->xoff = bbox.min_x;
 	cur_patch->yoff = bbox.min_y;
 	cur_patch->xsize = bbox.max_x - bbox.min_x;
@@ -132,72 +127,6 @@ example_search::is_example()
 	return(1);
 }
 
-int
-example_search::add_patch(char *fname, char *xoff, char *yoff, char *xsize,
-                          char *ysize)
-{
-	example_patch_t *	cur_patch;
-	RGBImage  *			img;
-
-	num_patches++;
-	cur_patch = (example_patch_t *)malloc(sizeof(*cur_patch));
-	assert(cur_patch != NULL);
-
-	cur_patch->file_name = (char *)malloc(strlen(fname)+1);
-	assert(cur_patch->file_name != NULL);
-
-	strncpy(cur_patch->file_name, fname, (strlen(fname) + 1));
-	cur_patch->file_name[strlen(fname)] = '\0';
-
-
-	cur_patch->xoff = atoi(xoff);
-	cur_patch->yoff = atoi(yoff);
-	cur_patch->xsize = atoi(xsize);
-	cur_patch->ysize = atoi(ysize);
-
-	/* point to the base class */
-	cur_patch->parent = this;
-
-	/*
-	 * We assume that the current working directory has been
-	 * changed, so we can use the relative path.
-	 */
-	img = create_rgb_image(cur_patch->file_name);
-	/* XXX do popup and terminate ??? */
-	if (img == NULL) {
-		fprintf(stderr, "Failed to read patch file %s \n",
-		        cur_patch->file_name);
-		free(cur_patch);
-		return(0);
-	}
-
-	cur_patch->patch_image = create_rgb_subimage(img, cur_patch->xoff,
-	                         cur_patch->yoff, cur_patch->xsize, cur_patch->ysize);
-	/* XXX failure cases ??*/
-
-	release_rgb_image(img);
-
-	/* put it on the list */
-	TAILQ_INSERT_TAIL(&ex_plist, cur_patch, link);
-
-	return(0);
-}
-
-int
-example_search::handle_config(int nconf, char **data)
-{
-	int		err;
-
-	if (strcmp(PATCH_ID, data[0]) == 0) {
-		assert(nconf > 5);
-		add_patch(data[1], data[2], data[3], data[4], data[5]);
-		err = 0;
-	} else {
-		err = window_search::handle_config(nconf, data);
-	}
-	return(err);
-}
-
 void
 example_search::update_display(void)
 {
@@ -222,9 +151,6 @@ example_search::remove_patch(example_patch_t *patch)
 	TAILQ_REMOVE(&ex_plist, patch, link);
 
 	/* clean up the memory */
-	if (patch->file_name != NULL) {
-		free(patch->file_name);
-	}
 	free(patch);
 
 	num_patches--;
