@@ -153,17 +153,6 @@ convertTIFFtoRGBImage(MyTIFF* tp)
 	                           myTIFFsize, myTIFFmmap, myTIFFunmap);
 	assert(tif);
 
-#if 0
-	// Here is code for counting the number of directories in a
-	// TIFF file, in case future versions need it.
-	//
-	int dirs;
-	for (dirs=1; TIFFReadDirectory(tif); dirs++) {
-		TIFFPrintDirectory(tif);
-	}
-	fprintf(stderr, "dirs=%d\n", dirs);
-#endif // 0
-
 	uint32 w, h;
 	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &w);
 	TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h);

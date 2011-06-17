@@ -86,16 +86,6 @@ extern "C"
 
 
 
-/* make a new image the same size as src */
-RGBImage *rgbimg_new(RGBImage *srcimg);
-
-/* make a new image duplicating src */
-RGBImage *rgbimg_dup(RGBImage *srcimg);
-
-/* wipe image clean */
-void rgbimg_clear(RGBImage *img);
-
-
 RGBImage *create_rgb_subimage(RGBImage *old, int xoff, int yoff, int xsize,
 			      int ysize);
 void release_rgb_image(RGBImage *);

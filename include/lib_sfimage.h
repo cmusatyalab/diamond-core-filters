@@ -28,53 +28,21 @@ extern "C"
 #endif
 
 /*
- * some interfaces to read images from a path/file/buffer
+ * some interfaces to read images from a file/buffer
  */
 
 RGBImage	   *read_rgb_image(const void *buf, size_t buflen);
 
-RGBImage 	*create_rgb_image(const char *filename);
-
-int rgb_write_image(RGBImage *img, const char *filename, const char *path);
 int rgb_write_image_file(RGBImage *img, FILE *fp);
 
-/*
- * some interfaces to read images from a bytestream
- */
-typedef struct pnm_state_t {
-	RGBImage 	*img;
-	size_t 	bytes_remaining;
-	int 		parity;
-	uint8_t 	*img_cur;	/* XXX assumes structure of RGBPixel */
-} pnm_state_t;
-
-pnm_state_t *pnm_state_new(RGBImage *img);
-void pnm_state_delete(pnm_state_t *);
 int pnm_parse_header(char *fdata, size_t nb,
 		     int *width, int *height,
 		     image_type_t *magic, int *headerlen);
-int ppm_add_data(pnm_state_t *, char *fdata, size_t nb);
-
-void img_constrain_bbox(bbox_t * bbox, RGBImage * img);
 
                                                                                 
                                                                                 
 RGBImage* image_gen_image_scale(RGBImage *, int scale);
-
-
-void image_draw_bbox_scale(RGBImage *, bbox_t *bbox, int scale,
-    RGBPixel mask, RGBPixel color);
-
-void image_draw_patch_scale(RGBImage *, patch_t *patch, int scale,
-    RGBPixel mask, RGBPixel color);
                                                                                 
-void image_fill_bbox_scale(RGBImage *, bbox_t *bbox, int scale,
-                           RGBPixel mask, RGBPixel color);
-                                                                                
-
-/* In place image normalization */
-int rgb_normalize(RGBImage* img);
-
 #ifdef __cplusplus
 }
 #endif
