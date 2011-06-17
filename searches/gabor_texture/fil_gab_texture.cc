@@ -117,7 +117,6 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 	bbox_list_t		blist;
 	bbox_t	*		cur_box;
 	gabor_ii_img_t *	gii_img;
-	search_param_t param;
 
 	lf_log(LOGL_TRACE, "f_texture_detect: enter");
 
@@ -148,7 +147,7 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 		while (!(TAILQ_EMPTY(&blist))) {
 			cur_box = TAILQ_FIRST(&blist);
 			if ((1.0 - cur_box->distance) < min_similarity) {
-				min_similarity = 1.0 - param.distance;
+				min_similarity = 1.0 - cur_box->distance;
 			}
 			free(cur_box);
 		}
