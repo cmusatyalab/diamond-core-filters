@@ -162,6 +162,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 				min_similarity = 1.0 - cur_box->distance;
 			}
 			TAILQ_REMOVE(&blist, cur_box, link);
+			free(cur_box);
 		}
 
 		if (min_similarity == 2.0) {
@@ -173,6 +174,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 		while (!(TAILQ_EMPTY(&blist))) {
 			cur_box = TAILQ_FIRST(&blist);
 			TAILQ_REMOVE(&blist, cur_box, link);
+			free(cur_box);
 		}
 		pass = 0;
 	}
