@@ -45,8 +45,9 @@ f_init_img_diff(int numarg, const char * const *args,
 	config = (img_diff_config_t *)malloc(sizeof(img_diff_config_t));
 	assert(config);
 	
-	/* example image file stored in blob */
-	config->img = read_rgb_image((unsigned char *)blob, (size_t) blob_len);
+	/* example RGB image stored in blob */
+	assert (blob != NULL);
+	config->img = blob;
 	config->distance = atof(args[0]);
 	*data = (void *)config;
 	return (0);

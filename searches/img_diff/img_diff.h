@@ -30,7 +30,7 @@
  * The class for doing windowed searches over
  * the image.  This is a subclass of img_search.
  */
-class img_diff: public img_search {
+class img_diff: public example_search {
 public:
 	img_diff(const char *name, const char *descr);
 	~img_diff(void);
@@ -50,6 +50,8 @@ public:
 	void		close_edit_win();
 	
 private:
+	void		truncate_patch_list();
+
 	float		distance;
 	GtkObject *	sim_adj;
 	GtkWidget *	edit_window;

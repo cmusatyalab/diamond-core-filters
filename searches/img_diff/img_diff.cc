@@ -57,10 +57,13 @@ search_init()
 
 
 img_diff::img_diff(const char *name, const char *descr)
-		: img_search(name, descr)
+		: example_search(name, descr)
 {
 	distance = DEFAULT_DISTANCE;
 	edit_window = NULL;
+	set_scale_control(0);
+	set_size_control(0);
+	set_stride_control(0);
 }
 
 img_diff::~img_diff()
@@ -105,7 +108,7 @@ img_diff::handle_config(int nconf, char **data)
 		set_distance(data[1]);
 		err = 0;
 	} else {
-		err = img_search::handle_config(nconf, data);
+		err = example_search::handle_config(nconf, data);
 	}
 	return(err);
 }
@@ -167,6 +170,15 @@ make_menu_item (gchar* name, GCallback callback, gpointer  data)
 	return item;
 }
 
+void
+img_diff::truncate_patch_list()
+{
+	/* Only keep the most recent patch */
+	while (num_patches > 1) {
+		remove_patch(TAILQ_FIRST(&ex_plist));
+	}
+}
+
 static void
 cb_close_edit_window(GtkWidget* item, gpointer data)
 {
@@ -180,48 +192,13 @@ cb_close_edit_window(GtkWidget* item, gpointer data)
 void
 img_diff::close_edit_win()
 {
-	int fd;
-	int err;
-	ssize_t nbytes;
-	char *buf;
-	struct stat     stats;
-		
 	/* save any changes from the edit windows */
 	save_edits();
 
-	/* grab the example image */
-	fd = open(get_example_name(), O_RDONLY);
-	assert(fd >=0);
-
-	err = fstat(fd, &stats);
-
-	if (err < 0) {
-	  	close(fd);
-        assert(0);
-	}
-
-	buf = (char *) malloc(stats.st_size);
-	if (buf == NULL) {
-	  close(fd);
-	  assert(0);
-	}
-
-	nbytes = read(fd, buf, stats.st_size);
-	if (nbytes < stats.st_size) {
-	  close(fd);
-	  assert(0);
-	}
-
-	set_auxiliary_data((void *) buf);
-	set_auxiliary_data_length(nbytes);
-
-	close(fd);
-
 	/* call the parent class to give them chance to cleanup */
-	img_search::close_edit_win();
+	example_search::close_edit_win();
 
 	edit_window = NULL;
-
 }
 
 
@@ -238,6 +215,7 @@ void
 img_diff::edit_search()
 {
 	GtkWidget * widget;
+	GtkWidget * window_cntrl;
 	GtkWidget * box;
 	GtkWidget * hbox;
 	char	    name[MAX_DISPLAY_NAME];
@@ -249,6 +227,8 @@ img_diff::edit_search()
 		gdk_window_raise(GTK_WIDGET(edit_window)->window);
 		return;
 	}
+
+	truncate_patch_list();
 
 	edit_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	snprintf(name, MAX_DISPLAY_NAME - 1, "Edit %s", get_name());
@@ -283,9 +263,22 @@ img_diff::edit_search()
 	gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 	gtk_container_add(GTK_CONTAINER(edit_window), box);
 
-	/* make everything visible */
-	gtk_widget_show_all(edit_window);
+	/*
+	 * Get the controls from the window search class, even though the
+	 * filter doesn't actually use them.
+	 */
+	window_cntrl = get_window_cntrl();
+	gtk_box_pack_start(GTK_BOX(window_cntrl), widget, TRUE, TRUE, 0);
 
+	/*
+	 * Get the controls from the example search class.
+	 */
+	widget = example_display();
+	gtk_box_pack_start(GTK_BOX(box), widget, TRUE, TRUE, 0);
+
+	/* make everything visible except for window options */
+	gtk_widget_show_all(edit_window);
+	gtk_widget_hide(window_cntrl);
 }
 
 /*
@@ -298,6 +291,10 @@ img_diff::save_edits()
 {
 	double	sim;
 
+	// Patches may have been added even without an edit window, so do
+	// this unconditionally
+	truncate_patch_list();
+
 	/* no active edit window, so return */
 	if (edit_window == NULL) {
 		return;
@@ -307,7 +304,7 @@ img_diff::save_edits()
 	sim = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
 	set_distance((int) sim);
 
-	img_search::save_edits();
+	example_search::save_edits();
 }
 
 /*
@@ -318,6 +315,8 @@ img_diff::save_edits()
 void
 img_diff::write_fspec(FILE *ostream)
 {
+	example_patch_t *patch;
+
 	save_edits();
 
 	/*
@@ -330,9 +329,25 @@ img_diff::write_fspec(FILE *ostream)
 	fprintf(ostream, "SIGNATURE @\n");
 	fprintf(ostream, "ARG  %f  # distance \n", distance);
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
-	fprintf(ostream, "MERIT  10  # some relative cost \n\n");
 
-	return;
+	// window_search writes at least one unnecessary argument.
+	// Put it here where it won't matter.
+	example_search::write_fspec(ostream);
+
+	// Load the example patch into the blob argument.
+	patch = TAILQ_FIRST(&ex_plist);
+	if (patch != NULL) {
+		set_auxiliary_data(patch->patch_image);
+		set_auxiliary_data_length(patch->patch_image->nbytes);
+	} else {
+		set_auxiliary_data(NULL);
+		set_auxiliary_data_length(0);
+	}
+
+	/* call the parent class to give them chance to cleanup */
+	example_search::close_edit_win();
+
+	edit_window = NULL;
 }
 
 
@@ -348,7 +363,7 @@ img_diff::write_config(FILE *ostream, const char *dirname)
 	/* write out the parameters */
 	fprintf(ostream, "%s %f \n", METRIC_ID, distance);
 
-	return;
+	example_search::write_config(ostream, dirname);
 }
 
 void img_diff::region_match(RGBImage *img, bbox_list_t *blist) 
