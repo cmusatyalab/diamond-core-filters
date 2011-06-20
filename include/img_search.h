@@ -53,8 +53,6 @@ public:
 	GtkWidget *	get_highlight_widget();
 	GtkWidget *	get_edit_widget();
 	void		close_edit_win();
-	const char *get_example_name() const;
-	void 	    set_example_name(const char *new_name);
 	/* XXX need to free the above */
 
 	void *          get_auxiliary_data();
@@ -83,7 +81,6 @@ private:
 	GtkWidget *	adjust_label;
 	void *          auxdata;
 	int             auxdatalen;
-	char *  example_name;
 	bool            plugin_runner_mode;
 	char *	searchlet_lib_path;
 };

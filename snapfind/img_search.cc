@@ -50,7 +50,6 @@ img_search::img_search(const char *name, const char *descr)
 	adjust_label = NULL;
 	auxdata = NULL;
 	auxdatalen = 0;
-	example_name = NULL;
 	searchlet_lib_path = NULL;
 }
 
@@ -59,16 +58,8 @@ img_search::~img_search()
 {
 	free(display_name);
 	free(descript);
-	if (example_name != NULL) 
-		free(example_name);
 	free(searchlet_lib_path);
 	return;
-}
-
-const char *
-img_search::get_example_name() const
-{
-	return(example_name);
 }
 
 const char *
@@ -107,14 +98,6 @@ cleanup_name(char *name)
 		}
 	}
 	return(modified);
-}
-
-void
-img_search::set_example_name(const char *new_name)
-{
-	if (example_name != NULL)
-		free(example_name);
-	example_name = strdup(new_name);
 }
 
 void
