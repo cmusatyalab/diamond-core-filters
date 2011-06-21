@@ -114,7 +114,7 @@ done:
 static int
 f_init_histo_detect(int numarg, const char * const *args,
 		    int blob_len, const void *blob,
-		    const char *fname, void **data)
+		    const char *fname, histo_config_t **data)
 {
 	histo_config_t *hconfig;
 	int             err;
@@ -149,19 +149,17 @@ f_init_histo_detect(int numarg, const char * const *args,
 	/*
 	 * save the data pointer 
 	 */
-	*data = (void *) hconfig;
+	*data = hconfig;
 	return (0);
 }
 
 static int
-f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
+f_eval_histo_detect(lf_obj_handle_t ohandle, histo_config_t *hconfig)
 {
-	int             pass = 0;
 	int             err;
 	RGBImage       *img = NULL;
 	size_t   	bsize;
 	bbox_list_t	blist;
-	histo_config_t *hconfig = (histo_config_t *) f_data;
 	int             nhisto;
 	float           min_similarity;
 	HistoII        *ii = NULL;
@@ -203,7 +201,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 	 */
 
 	TAILQ_INIT(&blist);
-	pass = 	histo_scan_image(hconfig->name, img, ii, hconfig,
+	histo_scan_image(hconfig->name, img, ii, hconfig,
 	                         hconfig->req_matches, &blist);
 
 	save_patches(ohandle, hconfig->name, &blist);
@@ -237,7 +235,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, void *f_data)
 static int
 f_init_hintegrate(int numarg, const char * const *args,
 		  int blob_len, const void *blob,
-		  const char *fname, void **data)
+		  const char *fname, hintegrate_data_t **data)
 {
 	hintegrate_data_t *fstate;
 
@@ -262,7 +260,7 @@ f_init_hintegrate(int numarg, const char * const *args,
 }
 
 static int
-f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
+f_eval_hintegrate(lf_obj_handle_t ohandle, hintegrate_data_t *fstate)
 {
 	int             pass = 1;
 	RGBImage       *img = NULL;
@@ -270,14 +268,12 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, void *f_data)
 	int             err;
 	size_t          nbytes;
 	const void    *	dptr;
-	hintegrate_data_t *fstate = (hintegrate_data_t *) f_data;
 	int             width,
 	height;
 	int             scalebits;
 	size_t			len;
 
-	assert(f_data != NULL);
-	// printf("f_data: %p \n", f_data);
+	assert(fstate != NULL);
 	lf_log(LOGL_TRACE, "f_hintegrate: start");
 
 

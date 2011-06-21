@@ -23,7 +23,7 @@
 typedef struct img_diff_config
 {
   float   distance;   /* threshold on quality of match */
-  RGBImage *img;      /* image to compare against */
+  const RGBImage *img; /* image to compare against */
 
 } img_diff_config_t;
 
