@@ -68,8 +68,8 @@ f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	assert(err == 0);
 	distance = image_diff((RGBImage *)dptr, config->img);
-	/* return 1 if image exceeds distance threshold */
-	if (distance * 100.0 > config->distance)
+	/* return 1 if image is within distance threshold */
+	if (distance * 100.0 < config->distance)
 		rv = 1;
 
 	return rv;
