@@ -24,7 +24,7 @@
  * 0 means images are identical (no difference)
  */
 #define MAX_DISTANCE 100  
-#define DEFAULT_DISTANCE 0
+#define DEFAULT_DISTANCE 10
 
 /*
  * The class for doing windowed searches over
