@@ -250,51 +250,6 @@ gabor_texture_search::handle_config(int num_conf, char **confv)
 }
 
 
-static GtkWidget *
-create_slider_entry(const char *name, float min, float max, int dec, float initial,
-                    float step, GtkObject **adjp)
-{
-	GtkWidget *container;
-	GtkWidget *scale;
-	GtkWidget *button;
-	GtkWidget *label;
-
-	container = gtk_hbox_new(FALSE, 10);
-
-	label = gtk_label_new(name);
-	gtk_box_pack_start(GTK_BOX(container), label, FALSE, FALSE, 0);
-
-	if (max <= 1.0) {
-		max += 0.1;
-		*adjp = gtk_adjustment_new(min, min, max, step, 0.1, 0.1);
-	} else if (max < 50) {
-		max++;
-		*adjp = gtk_adjustment_new(min, min, max, step, 1.0, 1.0);
-	} else {
-		max+= 10;
-		*adjp = gtk_adjustment_new(min, min, max, step, 10.0, 10.0);
-	}
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(*adjp), initial);
-
-	scale = gtk_hscale_new(GTK_ADJUSTMENT(*adjp));
-	gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
-	gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
-	gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
-	gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
-	gtk_widget_set_size_request(scale, 120, 0);
-
-	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
-	gtk_box_pack_start(GTK_BOX(container), button, FALSE, FALSE, 0);
-
-	gtk_widget_show(container);
-	gtk_widget_show(label);
-	gtk_widget_show(scale);
-	gtk_widget_show(button);
-
-	return(container);
-}
-
-
 static void
 cb_close_edit_window(GtkWidget* item, gpointer data)
 {
