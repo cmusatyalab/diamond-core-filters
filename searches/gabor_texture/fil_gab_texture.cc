@@ -154,7 +154,11 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 			pass = (int)(100.0 * min_similarity);
 		}
 	} else {
-		/* XXX clean list ?? */
+		while (!(TAILQ_EMPTY(&blist))) {
+			cur_box = TAILQ_FIRST(&blist);
+			TAILQ_REMOVE(&blist, cur_box, link);
+			free(cur_box);
+		}
 		pass = 0;
 	}
 
