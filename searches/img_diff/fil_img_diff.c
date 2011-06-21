@@ -84,23 +84,23 @@ LF_MAIN(f_init_img_diff, f_eval_img_diff)
 double
 image_diff(const RGBImage* img1, const RGBImage* img2) {
   double diff = 0.0;
-  int i, pixels;
+  int x, y, width, height;
+  const RGBPixel *pixel1, *pixel2;
 
-  // Might want to die more gracefully
-  assert(img1->height == img2->height);
-  assert(img1->rows == img2->rows);
-  assert(img1->nbytes == img2->nbytes);
-
-  // Assumes identically-sized images
-  pixels = img1->height * img1->width;
-  for (i=0; i < pixels; i++) {
-  	diff += fabs(img1->data[i].r - img2->data[i].r) + 
-  			fabs(img1->data[i].g - img2->data[i].g) +
-  			fabs(img1->data[i].b - img2->data[i].b);
+  // Compare the top-left corners of the images
+  width = MIN(img1->width, img2->width);
+  height = MIN(img1->height, img2->height);
+  for (x=0; x < width; x++) {
+    for (y=0; y < height; y++) {
+      pixel1 = &img1->data[PIXEL_OFFSET(img1, x, y)];
+      pixel2 = &img2->data[PIXEL_OFFSET(img2, x, y)];
+      diff += fabs(pixel1->r - pixel2->r) + fabs(pixel1->g - pixel2->g) +
+			fabs(pixel1->b - pixel2->b);
+    }
   }
 
   // normalize to [0,1] 
-  diff /= (3 * pixels * 255);
+  diff /= (3 * width * height * 255);
 
   assert(diff >= 0.0);
   assert(diff <= 1.0);
