@@ -58,9 +58,9 @@ static void compact_set(struct multiset *set)
     }
 }
 
-static int w_shingling(const void *void_data, size_t len,
-		       struct rabin_state *rpoly,
-		       struct multiset *set, struct multiset *tmp)
+static double w_shingling(const void *void_data, size_t len,
+			  struct rabin_state *rpoly,
+			  struct multiset *set, struct multiset *tmp)
 {
     unsigned int I = 0, U = set->len;
     unsigned int n = 0, s = 0, idx;
@@ -117,7 +117,7 @@ static int w_shingling(const void *void_data, size_t len,
     /* update length in case we were generating the initial set */
     if (set->len == 0) tmp->len = n;
 
-    return (int)(best_r * 100);
+    return best_r * 100;
 }
 
 static int f_init_shingling(int numarg, const char * const *args,
@@ -160,7 +160,7 @@ static int f_init_shingling(int numarg, const char * const *args,
     return 0;
 }
 
-static int f_eval_shingling(lf_obj_handle_t ohandle, void *data)
+static double f_eval_shingling(lf_obj_handle_t ohandle, void *data)
 {
     struct search_state *state = (struct search_state *)data;
     const void *obj;
@@ -191,7 +191,8 @@ int main(int argc, char **argv)
     unsigned char example[65536];
     size_t n;
     struct search_state *state;
-    int fd, R;
+    int fd;
+    double R;
 
     n = read(0, example, sizeof(example));
     
@@ -203,7 +204,7 @@ int main(int argc, char **argv)
 
     R = w_shingling(example, n, state->rpoly, state->example, state->test);
 
-    printf("similarity %d\n", R);
+    printf("similarity %f\n", R);
 
     exit(0);
 }

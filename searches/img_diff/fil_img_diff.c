@@ -48,16 +48,14 @@ f_init_img_diff(int numarg, const char * const *args,
 	/* example RGB image stored in blob */
 	assert (blob != NULL);
 	config->img = blob;
-	config->distance = atof(args[0]);
 	*data = (void *)config;
 	return (0);
 }
 
-static int
+static double
 f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 {
 	int             err;
-	int             rv = 0;     /* return value */
 	size_t 		len;
 	const void *	dptr;	
 	double distance = 0.0;
@@ -68,11 +66,8 @@ f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	assert(err == 0);
 	distance = image_diff((RGBImage *)dptr, config->img);
-	/* return 1 if image is within distance threshold */
-	if (distance * 100.0 < config->distance)
-		rv = 1;
-
-	return rv;
+	/* return % similarity */
+	return 100 - distance * 100.0;
 }
 
 LF_MAIN(f_init_img_diff, f_eval_img_diff)

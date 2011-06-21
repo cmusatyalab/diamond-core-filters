@@ -268,9 +268,8 @@ img_diff::write_fspec(FILE *ostream)
 	 */
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD 1\n");
+	fprintf(ostream, "THRESHOLD %f\n", 100.0 - distance);
 	fprintf(ostream, "SIGNATURE @\n");
-	fprintf(ostream, "ARG  %f  # distance \n", distance);
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
 
 	// window_search writes at least one unnecessary argument.

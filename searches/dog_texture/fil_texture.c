@@ -111,8 +111,8 @@ f_init_texture_detect(int numarg, const char * const *args,
 static int
 f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 {
-
 	int		pass = 0;
+	double		score;
 	int		err;
 	IplImage 	*img = NULL;
 	IplImage 	*dst_img = NULL;
@@ -151,9 +151,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 		assert(0);
 	}
 	if (pass >= targs->min_matches) {
-
 		save_patches(ohandle, targs->name, &blist);
-
 
 		min_similarity = 2.0;
 		while (!(TAILQ_EMPTY(&blist))) {
@@ -166,9 +164,9 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 		}
 
 		if (min_similarity == 2.0) {
-			pass = 0;
+			score = 0;
 		} else {
-			pass = (int)(100.0 * min_similarity);
+			score = 100.0 * min_similarity;
 		}
 	} else {
 		while (!(TAILQ_EMPTY(&blist))) {
@@ -176,7 +174,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 			TAILQ_REMOVE(&blist, cur_box, link);
 			free(cur_box);
 		}
-		pass = 0;
+		score = 0;
 	}
 done:
 
@@ -186,7 +184,7 @@ done:
 	if (img) {
 		cvReleaseImage(&img);
 	}
-	return pass;
+	return score;
 }
 
 LF_MAIN(f_init_texture_detect, f_eval_texture_detect)

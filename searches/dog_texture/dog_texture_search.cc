@@ -352,7 +352,7 @@ texture_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * similarity));
+	fprintf(ostream, "THRESHOLD %f \n", 100.0 * similarity);
 	fprintf(ostream, "SIGNATURE @\n");
 
 	/*

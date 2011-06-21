@@ -298,8 +298,8 @@ shingling_search::write_fspec(FILE *ostream)
 {
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s  # dependancies \n", get_name());
-	fprintf(ostream, "THRESHOLD %d  # similarity \n",
-		(int)(100.0 * similarity));
+	fprintf(ostream, "THRESHOLD %f  # similarity \n",
+		100.0 * similarity);
 	fprintf(ostream, "MERIT 1000  	# guess at cost \n");
 	fprintf(ostream, "SIGNATURE @\n");
 	fprintf(ostream, "ARG  %d  # shingle width  \n", shingle_size );

@@ -335,7 +335,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "\n");
 	fprintf(ostream, "FILTER %s \n", get_name());
-	fprintf(ostream, "THRESHOLD %d \n", (int)(100.0 * similarity));
+	fprintf(ostream, "THRESHOLD %f \n", 100.0 * similarity);
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo\n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_histo\n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_histo\n");

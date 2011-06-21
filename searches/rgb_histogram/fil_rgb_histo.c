@@ -153,7 +153,7 @@ f_init_histo_detect(int numarg, const char * const *args,
 	return (0);
 }
 
-static int
+static double
 f_eval_histo_detect(lf_obj_handle_t ohandle, histo_config_t *hconfig)
 {
 	int             err;
@@ -167,7 +167,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, histo_config_t *hconfig)
 	int		ii_alloc = 0;
 	size_t		len;
 	const void    *	dptr;
-	int             rv = 0;     /* return value */
+	double          rv = 0;     /* return value */
 
 
 	lf_log(LOGL_TRACE, "f_histo_detect: enter");
@@ -220,7 +220,7 @@ f_eval_histo_detect(lf_obj_handle_t ohandle, histo_config_t *hconfig)
 	if (min_similarity == 2.0) {
 		rv = 0;
 	} else {
-		rv = (int)(100.0 * min_similarity);
+		rv = 100.0 * min_similarity;
 	}
 
 	if (ii_alloc) {
@@ -340,7 +340,7 @@ static int f_init_histo(int numarg, const char * const *args,
 	return ret;
 }
 
-static int f_eval_histo(lf_obj_handle_t ihandle, void *user_data)
+static double f_eval_histo(lf_obj_handle_t ihandle, void *user_data)
 {
 	struct histo_data *hdata = user_data;
 

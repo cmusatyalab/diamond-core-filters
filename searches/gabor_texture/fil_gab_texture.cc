@@ -98,10 +98,11 @@ f_init_gab_texture(int numarg, const char * const *args, int blob_len,
 }
 
 
-static int
+static double
 f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 {
 	int		pass = 0;
+	double		score;
 	int		err;
 	RGBImage      * rgb_img = NULL;
 	const void    * dptr;
@@ -149,9 +150,9 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 		}
 
 		if (min_similarity == 2.0) {
-			pass = 0;
+			score = 0;
 		} else {
-			pass = (int)(100.0 * min_similarity);
+			score = 100.0 * min_similarity;
 		}
 	} else {
 		while (!(TAILQ_EMPTY(&blist))) {
@@ -159,16 +160,16 @@ f_eval_gab_texture(lf_obj_handle_t ohandle, void *f_datap)
 			TAILQ_REMOVE(&blist, cur_box, link);
 			free(cur_box);
 		}
-		pass = 0;
+		score = 0;
 	}
 
 	free(gii_img);
 
-	return pass;
+	return score;
 }
 
 int main(void)
 {
-	lf_main(f_init_gab_texture, f_eval_gab_texture);
+	lf_main_double(f_init_gab_texture, f_eval_gab_texture);
 	return 0;
 }
