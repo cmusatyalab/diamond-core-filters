@@ -29,7 +29,6 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <stdint.h>
-#include <netdb.h>
 #include <assert.h>
 
 
