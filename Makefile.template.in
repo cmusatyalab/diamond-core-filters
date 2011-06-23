@@ -27,7 +27,7 @@ INSTALLDIR_BIN=${INSTALLBASE}/bin
 INSTALLDIR_LIB=${INSTALLBASE}/lib
 
 CPPFLAGS += @CPPFLAGS@
-CPPFLAGS += -I@top_srcdir@/include -I. -I${SRCDIR} -m32 \
+CPPFLAGS += -I@abs_top_srcdir@/include -I. -I${SRCDIR} -m32 \
 	-DSNAPFIND_PLUGIN_DIR=\"${INSTALLDIR_LIB}\"
 
 # from the configure script
