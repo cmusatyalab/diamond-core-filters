@@ -32,7 +32,6 @@
 #include "factory.h"
 
 static char *eat_token(char *tok);
-static void error();
 static void new_config(char *yyt);
 
 /* #define VERBOSE 1 */
@@ -55,16 +54,7 @@ SEARCH[ \t]+[[:alnum:]_]+[ \t]+[[:alnum:]_]+
 [[:blank:]]
 \n	
 .*				{ new_config(yytext);}
-.				{ error(); }
 %%
-
-
-static void
-error() 
-{
-	fprintf(stderr, "unknown token: %s\n", yytext);
-	exit(1);
-}
 
 
 static char *
