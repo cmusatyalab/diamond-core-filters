@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <math.h>
 #include <dlfcn.h>
 #include <gtk/gtk.h>
 #include <sys/stat.h>
@@ -36,17 +37,22 @@
 #define	MAX_DISPLAY_NAME	64
 
 /* config tokens  */
-#define	NUMFACE_ID	"NUMFACE"
+#define	MINFACE_ID	"MINFACE"
+#define	MAXFACE_ID	"MAXFACE"
 #define	SUPPORT_ID	"SUPPORT"
 
 ocv_search::ocv_search(const char *name, const char *descr)
 		: window_search(name, descr)
 {
-	set_count(1);
+	set_min_count(1);
+	set_max_count(INFINITY);
 	set_support(2);
 
 	edit_window = NULL;
-	count_widget = NULL;
+	min_count_widget = NULL;
+	min_count_checkbox = NULL;
+	max_count_widget = NULL;
+	max_count_checkbox = NULL;
 	support_widget = NULL;
 }
 
@@ -58,29 +64,51 @@ ocv_search::~ocv_search()
 	return;
 }
 
-int 
-ocv_search::get_count() 
+double
+ocv_search::get_min_count() 
 {
-	return(count);
+	return(min_count);
 }
 
 void
-ocv_search::set_count(char *data)
+ocv_search::set_min_count(char *data)
 {
-	int		new_count = atoi(data);
+	double		new_count = atof(data);
 
-	set_count(new_count);
+	set_min_count(new_count);
 	return;
 }
 
 void
-ocv_search::set_count(int new_count)
+ocv_search::set_min_count(double new_count)
 {
 	if (new_count < 0) {
 		new_count = 0;
 	}
 
-	count = new_count;
+	min_count = new_count;
+	return;
+}
+
+double
+ocv_search::get_max_count() 
+{
+	return(max_count);
+}
+
+void
+ocv_search::set_max_count(char *data)
+{
+	double		new_count = atof(data);
+
+	set_max_count(new_count);
+	return;
+}
+
+void
+ocv_search::set_max_count(double new_count)
+{
+	max_count = new_count;
 	return;
 }
 
@@ -238,8 +266,14 @@ ocv_search::edit_search()
 	container = gtk_vbox_new(FALSE, 10);
 	gtk_container_add(GTK_CONTAINER(frame), container);
 
-	widget = create_slider_entry("Number of Objects", 0.0, 20.0, 0,
-	                             count, 1.0, &count_widget);
+	widget = create_optional_slider_entry("Minimum Object Count", 0.0,
+				20.0, 0, min_count, 1.0, min_count != 0,
+				&min_count_widget, &min_count_checkbox);
+	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
+
+	widget = create_optional_slider_entry("Maximum Object Count", 0.0,
+				20.0, 0, max_count, 1.0, max_count != INFINITY,
+				&max_count_widget, &max_count_checkbox);
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
 	widget = create_slider_entry("Num Supporting", 0.0, 20.0, 0,
@@ -273,17 +307,32 @@ ocv_search::edit_search()
 void
 ocv_search::save_edits()
 {
-	int		val;
+	double		val;
 
 	/* no active edit window, so return */
 	if (edit_window == NULL) {
 		return;
 	}
 
-	val = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(count_widget));
-	set_count(val);
+	if (gtk_toggle_button_get_active(
+				GTK_TOGGLE_BUTTON(min_count_checkbox))) {
+		val = gtk_adjustment_get_value(
+					GTK_ADJUSTMENT(min_count_widget));
+	} else {
+		val = 0.0;
+	}
+	set_min_count(val);
 
-	val = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(support_widget));
+	if (gtk_toggle_button_get_active(
+				GTK_TOGGLE_BUTTON(max_count_checkbox))) {
+		val = gtk_adjustment_get_value(
+					GTK_ADJUSTMENT(max_count_widget));
+	} else {
+		val = INFINITY;
+	}
+	set_max_count(val);
+
+	val = gtk_adjustment_get_value(GTK_ADJUSTMENT(support_widget));
 	/* XXX use accessor method ?? */
 	support_matches = val;
 
@@ -302,7 +351,8 @@ ocv_search::write_fspec(FILE *ostream)
 	/*
 	 * Write the remainder of the header.
 	 */
-	fprintf(ostream, "THRESHOLD %d \n", count);
+	fprintf(ostream, "THRESHOLD %f \n", min_count);
+	fprintf(ostream, "UPPERTHRESHOLD %f \n", max_count);
 
 	/*
 	 * Next we write call the parent to write out the releated args,
@@ -353,9 +403,13 @@ int
 ocv_search::handle_config(int nconf, char **data)
 {
 	int	err;
-	if (strcmp(NUMFACE_ID, data[0]) == 0) {
+	if (strcmp(MINFACE_ID, data[0]) == 0) {
 		assert(nconf > 1);
-		set_count(data[1]);
+		set_min_count(data[1]);
+		err = 0;
+	} else if (strcmp(MAXFACE_ID, data[0]) == 0) {
+		assert(nconf > 1);
+		set_max_count(data[1]);
 		err = 0;
 	} else if (strcmp(SUPPORT_ID, data[0]) == 0) {
 		assert(nconf > 1);

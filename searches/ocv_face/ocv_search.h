@@ -32,9 +32,14 @@ public:
 	virtual void	close_edit_win();
 
 	/* min number of objects required */
-	int             get_count();
-	void 		set_count(char *data);
-	void 		set_count(int new_count);
+	double          get_min_count();
+	void 		set_min_count(char *data);
+	void 		set_min_count(double new_count);
+
+	/* max number of objects required */
+	double          get_max_count();
+	void 		set_max_count(char *data);
+	void 		set_max_count(double new_count);
 
 	/* min number of faces required */
 	int             get_support();
@@ -48,11 +53,15 @@ public:
 	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
 private:
-	int			count;
+	double			min_count;
+	double			max_count;
 	int			support_matches;
 
 	GtkWidget *	edit_window;
-	GtkObject *	count_widget;
+	GtkObject *	min_count_widget;
+	GtkObject *	min_count_checkbox;
+	GtkObject *	max_count_widget;
+	GtkObject *	max_count_checkbox;
 	GtkObject *	support_widget;
 
 	char *          cascade_file_name;

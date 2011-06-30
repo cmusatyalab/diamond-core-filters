@@ -37,7 +37,8 @@
 #define CLASSIFIER_NAME       "haarcascade_frontalface_default"
 
 /* config tokens  */
-#define	NUMFACE_ID	"NUMFACE"
+#define	MINFACE_ID	"MINFACE"
+#define	MAXFACE_ID	"MAXFACE"
 #define	SUPPORT_ID	"SUPPORT"
 
 
@@ -80,7 +81,8 @@ ocv_face_search::write_config(FILE *ostream, const char *dirname)
 	/* create the search configuration */
 	fprintf(ostream, "\n\n");
 	fprintf(ostream, "SEARCH %s %s\n", SEARCH_NAME, get_name());
-	fprintf(ostream, "%s %d \n", NUMFACE_ID, get_count());
+	fprintf(ostream, "%s %f \n", MINFACE_ID, get_min_count());
+	fprintf(ostream, "%s %f \n", MAXFACE_ID, get_max_count());
 	fprintf(ostream, "%s %d \n", SUPPORT_ID, get_support());
 	window_search::write_config(ostream, dirname);
 	return;
