@@ -75,6 +75,10 @@ protected:
 	static GtkWidget *create_slider_entry(const char *name, float min,
 				float max, int dec, float initial, float step,
 				GtkObject **adjp);
+	static GtkWidget *create_optional_slider_entry(const char *name,
+				float min, float max, int dec, float initial,
+				float step, bool enabled, GtkObject **adjp,
+				GtkObject **checkboxp);
 	static GtkWidget *make_menu_item(const gchar* name,
 				GCallback callback, gpointer data);
 

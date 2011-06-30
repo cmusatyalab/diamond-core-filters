@@ -398,20 +398,50 @@ img_search::set_auxiliary_data_length(int len)
   auxdatalen = len;
 }
 
-GtkWidget *
-img_search::create_slider_entry(const char *name, float min, float max,
-				int dec, float initial, float step,
-				GtkObject **adjp)
+struct slider_state {
+	GtkWidget *scale;
+	GtkWidget *button;
+};
+
+static
+void slider_toggled(GtkToggleButton *button, void *data)
 {
+	struct slider_state *state = (struct slider_state *) data;
+	bool enabled = gtk_toggle_button_get_active(button);
+
+	gtk_widget_set_sensitive(state->scale, enabled);
+	gtk_widget_set_sensitive(state->button, enabled);
+}
+
+GtkWidget *
+img_search::create_optional_slider_entry(const char *name, float min,
+			float max, int dec, float initial, float step,
+			bool enabled, GtkObject **adjp, GtkObject **checkboxp)
+{
+	struct slider_state *state;
+	GtkWidget *checkbox;
 	GtkWidget *container;
 	GtkWidget *scale;
 	GtkWidget *button;
 	GtkWidget *label;
 
+	state = g_slice_new(struct slider_state);
+
 	container = gtk_hbox_new(FALSE, 10);
 
 	label = gtk_label_new(name);
 	gtk_box_pack_start(GTK_BOX(container), label, FALSE, FALSE, 0);
+
+	if (checkboxp != NULL) {
+		checkbox = gtk_check_button_new();
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox),
+					enabled);
+		g_signal_connect(G_OBJECT(checkbox), "clicked",
+					G_CALLBACK(slider_toggled), state);
+		gtk_box_pack_start(GTK_BOX(container), checkbox, FALSE,
+					FALSE, 0);
+		*checkboxp = GTK_OBJECT(checkbox);
+	}
 
 	if (max <= 1.0) {
 		max += 0.1;
@@ -429,11 +459,16 @@ img_search::create_slider_entry(const char *name, float min, float max,
 	gtk_widget_set_size_request (GTK_WIDGET(scale), 200, -1);
 	gtk_range_set_update_policy (GTK_RANGE(scale), GTK_UPDATE_CONTINUOUS);
 	gtk_scale_set_draw_value (GTK_SCALE(scale), FALSE);
+	gtk_widget_set_sensitive(scale, enabled);
 	gtk_box_pack_start (GTK_BOX(container), scale, TRUE, TRUE, 0);
 	gtk_widget_set_size_request(scale, 120, 0);
 
 	button = gtk_spin_button_new(GTK_ADJUSTMENT(*adjp), step, dec);
+	gtk_widget_set_sensitive(button, enabled);
 	gtk_box_pack_start(GTK_BOX(container), button, FALSE, FALSE, 0);
+
+	state->scale = scale;
+	state->button = button;
 
 	gtk_widget_show(container);
 	gtk_widget_show(label);
@@ -441,6 +476,15 @@ img_search::create_slider_entry(const char *name, float min, float max,
 	gtk_widget_show(button);
 
 	return(container);
+}
+
+GtkWidget *
+img_search::create_slider_entry(const char *name, float min, float max,
+				int dec, float initial, float step,
+				GtkObject **adjp)
+{
+	return create_optional_slider_entry(name, min, max, dec, initial,
+				step, true, adjp, NULL);
 }
 
 GtkWidget *
