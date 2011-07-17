@@ -18,8 +18,6 @@
 #include <gtk/gtk.h>
 #include <sys/queue.h>
 #include "lib_results.h"
-#include "rgb.h"
-#include "gabor.h"
 #include "gabor_texture_search.h"
 #include "factory.h"
 
@@ -558,40 +556,6 @@ gabor_texture_search::write_config(FILE *ostream, const char *dirname)
 	return;
 }
 
-
-void
-gabor_texture_search::region_match(RGBImage *rimg, bbox_list_t *blist)
-{
-	int			pass;
-	size_t			bsize;
-	gabor_ii_img_t *	gii_img;
-	gtexture_args_t		gargs;
-
-	save_edits();
-
-	/* get the gabor argument data structure */
-	pass = gen_args(&gargs);
-	if (pass == 0) {
-		fprintf(stderr, "No patches of large enough size \n");
-		return;
-	}
-	gargs.min_matches = INT_MAX;	/* get all the matches */
-
-	bsize = (GII_SIZE(rimg->width, rimg->height, &gargs));
-
-  	gii_img = (gabor_ii_img_t *)malloc(bsize);
-
-        assert(gii_img != NULL);
-        gabor_init_ii_img(rimg->width, rimg->height, &gargs, gii_img);
-        gabor_compute_ii_img(rimg, &gargs, gii_img);
-
-	/* generate list of bounding boxes */
-	pass = gabor_test_image(gii_img, &gargs, blist);
-
-	/* cleanup */
-	release_args(&gargs);
-	return;
-}
 
 bool
 gabor_texture_search::is_editable(void)

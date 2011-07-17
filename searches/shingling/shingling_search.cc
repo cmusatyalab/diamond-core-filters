@@ -323,13 +323,6 @@ shingling_search::write_config(FILE *ostream, const char *dirname)
 	free(fragment);
 }
 
-/* Region match isn't meaninful for this search */
-void
-shingling_search::region_match(RGBImage *img, bbox_list_t *blist)
-{
-	return;
-}
-
 bool
 shingling_search::is_editable(void)
 {

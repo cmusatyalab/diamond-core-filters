@@ -31,7 +31,6 @@ public:
 	void	write_config(FILE* stream, const char *data_dir);
 	bool	is_editable(void);
 	virtual	int	handle_config(int num_conf, char **datav);
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
 private:
 };

@@ -118,13 +118,6 @@ thumbnailer::write_config(FILE *ostream, const char *dirname)
 	return;
 }
 
-void
-thumbnailer::region_match(RGBImage *img, bbox_list_t *blist)
-{
-	/* XXX do something useful -:) */
-	return;
-}
-
 bool
 thumbnailer::is_editable(void)
 {

@@ -20,17 +20,13 @@
 #include <dlfcn.h>
 #include <gtk/gtk.h>
 #include <sys/stat.h>
-
-#include <opencv/cv.h>
-#include <opencv/cvaux.h>
+#include <assert.h>
 
 #include <sys/queue.h>
-#include "rgb.h"
 #include "lib_results.h"
 #include "snapfind_consts.h"
 #include "img_search.h"
 #include "ocv_search.h"
-#include "opencv_face_tools.h"
 #include "factory.h"
 #include "snapfind_config.h"
 
@@ -370,34 +366,6 @@ ocv_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "\n");
 }
 
-
-void
-ocv_search::region_match(RGBImage *img, bbox_list_t *blist)
-{
-	opencv_fdetect_t fconfig;
-	int			pass;
-
-	save_edits();
-
-	fconfig.name = strdup(get_name());
-	assert(fconfig.name != NULL);
-
-	fconfig.scale_mult = get_scale();
-	fconfig.xsize = get_testx();
-	fconfig.ysize = get_testy();
-	fconfig.stride = get_stride();
-	fconfig.support = support_matches;
-
-	fconfig.haar_cascade = cvLoadHaarClassifierCascade(
-			cascade_file_name, cvSize(fconfig.xsize, fconfig.ysize));
-
-	pass = opencv_face_scan(img, blist, &fconfig);
-
-	cvReleaseHaarClassifierCascade(&fconfig.haar_cascade);
-	free(fconfig.name);
-
-	return;
-}
 
 int
 ocv_search::handle_config(int nconf, char **data)

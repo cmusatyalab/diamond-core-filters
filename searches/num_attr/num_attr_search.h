@@ -43,7 +43,6 @@ public:
 	void	write_config(FILE* stream, const char *data_dir);
 	virtual	int	handle_config(int num_conf, char **datav);
 	void	close_edit_win();
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 	bool	is_editable(void);
 
 	void add_num_attr_node(); /* add a blank node to the list */

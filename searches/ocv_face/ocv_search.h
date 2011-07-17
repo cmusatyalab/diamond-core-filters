@@ -50,8 +50,6 @@ public:
 
 	virtual	int	handle_config(int num_conf, char **datav);
 
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
-
 private:
 	double			min_count;
 	double			max_count;

@@ -45,7 +45,6 @@ public:
 	void 		set_distance(char *data);
 	void 		set_distance(int sim);
 
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 	virtual	int 	handle_config(int num_conf, char **conf);
 	void		close_edit_win();
 	

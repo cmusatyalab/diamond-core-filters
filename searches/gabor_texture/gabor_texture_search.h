@@ -63,8 +63,6 @@ public:
 	void		set_matches(char *matches);
 	void		set_matches(int matches);
 
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
-
 
 
 private:

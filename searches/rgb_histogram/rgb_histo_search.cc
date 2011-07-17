@@ -19,9 +19,7 @@
 #include <assert.h>
 #include <sys/queue.h>
 #include "snapfind_consts.h"
-#include "rgb.h"
 #include "lib_results.h"
-#include "rgb_histo.h"
 #include "rgb_histo_search.h"
 #include "img_search.h"
 #include "factory.h"
@@ -414,60 +412,6 @@ rgb_histo_search::write_config(FILE *ostream, const char *dirname)
 	example_search::write_config(ostream, dirname);
 	return;
 }
-
-void
-rgb_histo_search::region_match(RGBImage *img, bbox_list_t *blist)
-{
-	histo_config_t	hconfig;
-	histo_patch_t	*	hpatch;
-	example_patch_t* epatch;
-	int				i;
-	int				pass;
-	HistoII *		ii;
-
-	save_edits();
-
-	hconfig.name = strdup(get_name());
-	assert(hconfig.name != NULL);
-
-	hconfig.req_matches = 1;	/* XXX */
-	hconfig.scale = get_scale();
-	hconfig.xsize = get_testx();
-	hconfig.ysize = get_testy();
-	hconfig.stride = get_stride();
-	hconfig.bins = HBINS;	/* XXX */
-	hconfig.similarity = similarity;
-	hconfig.distance_type = metric;
-	hconfig.type = htype;
-
-	TAILQ_INIT(&hconfig.histo_patchlist);
-
-	i = 0;
-	TAILQ_FOREACH(epatch, &ex_plist, link) {
-		hpatch = (histo_patch_t *) malloc(sizeof(*hpatch));
-		histo_clear(&hpatch->histo);
-		assert(hpatch != NULL);
-
-		histo_fill_from_subimage(&hpatch->histo, epatch->patch_image,
-		                         0, 0,  epatch->xsize, epatch->ysize, htype);
-		normalize_histo(&hpatch->histo);
-		hpatch->histo.weight = 1.0;
-
-		TAILQ_INSERT_TAIL(&hconfig.histo_patchlist, hpatch, link);
-		i++;
-	}
-	hconfig.num_patches = i;
-
-	ii = histo_get_ii(&hconfig, img);
-	pass =  histo_scan_image(hconfig.name, img, ii, &hconfig,
-	                         INT_MAX /* XXX */, blist);
-
-	/* XXX cleanup */
-
-	return;
-}
-
-
 
 bool
 rgb_histo_search::is_editable(void)

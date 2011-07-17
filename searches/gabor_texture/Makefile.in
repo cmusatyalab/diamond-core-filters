@@ -27,8 +27,8 @@ FILTER_OBJS = fil_gab_texture.o  gabor_tools.o gabor.o
 
 SEARCHLET_LIBS += -lm
 
-SEARCH_LIB_SRCS = gabor_texture_search.cc gabor_tools.cc gabor.cc
-SEARCH_LIB_OBJS =  gabor_texture_search.o gabor_tools.o gabor.o
+SEARCH_LIB_SRCS = gabor_texture_search.cc
+SEARCH_LIB_OBJS =  gabor_texture_search.o
 SEARCH_LIB_LIBS +=  
 
 #

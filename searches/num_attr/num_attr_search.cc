@@ -382,13 +382,6 @@ num_attr_search::write_config(FILE *ostream, const char *dirname)
 	}
 }
 
-void
-num_attr_search::region_match(RGBImage *img, bbox_list_t *blist)
-{
-	/* XXX do something useful -:) */
-	return;
-}
-
 bool
 num_attr_search::is_editable(void)
 {

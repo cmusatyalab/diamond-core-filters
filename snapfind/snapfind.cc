@@ -412,61 +412,6 @@ normalize_plugin_config(const char *type,
 	return 0;
 }
 
-static void
-print_bounding_boxes(bbox_list_t *bblist) {
-	bbox_t *cur_bb;
-
-	TAILQ_FOREACH(cur_bb, bblist, link) {
-	  print_key_value("min-x", cur_bb->min_x);
-	  print_key_value("min-y", cur_bb->min_y);
-	  print_key_value("max-x", cur_bb->max_x);
-	  print_key_value("max-y", cur_bb->max_y);
-	  print_key_value("distance", cur_bb->distance);
-	  printf("\n");
-	}
-}
-
-static int
-run_plugin(const char *type,
-	   const char *internal_name) {
-	img_search *search = get_plugin(type, internal_name);
-	if (search == NULL) {
-		printf("Can't find %s\n", internal_name);
-		return 1;
-	}
-
-	GHashTable *user_config = read_key_value_pairs();
-	populate_search(search, user_config);
-
-	// get the image to process
-	struct len_data *ld
-	  = (struct len_data *) g_hash_table_lookup(user_config, "target-image");
-	if (!ld) {
-		g_hash_table_unref(user_config);
-		printf("target-image not specified\n");
-		return 1;
-	}
-
-	// convert to RGBImage
-	RGBImage *img = read_rgb_image((unsigned char *) ld->data, ld->len);
-
-	// destroy the hash table now
-	g_hash_table_unref(user_config);
-
-	if (!img) {
-		printf("Can't read target-image\n");
-		return 1;
-	}
-
-	// run plugin
-	bbox_list_t bblist;
-	TAILQ_INIT(&bblist);
-	search->region_match(img, &bblist);
-	print_bounding_boxes(&bblist);
-
-	return 0;
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -510,13 +455,6 @@ main(int argc, char *argv[])
 			return 1;
 		}
 		return edit_plugin_config(argv[2], argv[3]);
-	} else if (sc(cmd, "run-plugin")) {
-		// check parameters
-		if (argc < 4) {
-			printf("Missing arguments\n");
-			return 1;
-		}
-		return run_plugin(argv[2], argv[3]);
 	} else {
 		printf("Unknown command: \"%s\"\n", cmd);
 		return 1;

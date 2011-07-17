@@ -295,13 +295,6 @@ text_attr_search::write_config(FILE *ostream, const char *dirname)
  	fprintf(ostream, "%s %d \n", EXACT_MATCH_ID, exact_match);
 }
 
-/* Region match isn't meaninful for this search */
-void
-text_attr_search::region_match(RGBImage *img, bbox_list_t *blist)
-{
-	return;
-}
-
 bool
 text_attr_search::is_editable(void)
 {

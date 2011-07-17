@@ -121,13 +121,6 @@ rgb_img::write_config(FILE *ostream, const char *dirname)
 	return;
 }
 
-void
-rgb_img::region_match(RGBImage *img, bbox_list_t *blist)
-{
-	/* XXX do something useful -:) */
-	return;
-}
-
 bool
 rgb_img::is_editable(void)
 {

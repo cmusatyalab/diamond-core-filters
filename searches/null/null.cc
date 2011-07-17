@@ -117,12 +117,6 @@ null_codec::write_config(FILE *ostream, const char *dirname)
 	return;
 }
 
-void
-null_codec::region_match(RGBImage *img, bbox_list_t *blist)
-{
-	return;
-}
-
 bool
 null_codec::is_editable(void)
 {

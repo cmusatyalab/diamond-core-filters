@@ -308,10 +308,6 @@ img_diff::write_config(FILE *ostream, const char *dirname)
 	example_search::write_config(ostream, dirname);
 }
 
-void img_diff::region_match(RGBImage *img, bbox_list_t *blist) 
-{
-}
-
 bool
 img_diff::is_editable(void)
 {

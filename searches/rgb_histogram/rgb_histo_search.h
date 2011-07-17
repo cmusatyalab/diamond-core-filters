@@ -44,7 +44,6 @@ public:
 
 	virtual	int 	handle_config(int num_conf, char **conf);
 	void rgb_write_state(void);
-	virtual void 	region_match(RGBImage *img, bbox_list_t *blist);
 
 	void 		set_bins(int new_bins);
 	void		close_edit_win();
