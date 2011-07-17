@@ -41,10 +41,6 @@ public:
 	void 		set_similarity(char *data);
 	void 		set_similarity(double sim);
 
-	/* set number of channels via string or double */
-	void 		set_channels(char *data);
-	void 		set_channels(int num);
-
 	void 		set_radius(char *data);
 	void 		set_radius(int val);
 
@@ -77,7 +73,6 @@ private:
 
 	int			method;
 	double			similarity;
-	int			channels;
 	int			num_angles;
 	int			num_freq;
 	int			radius;

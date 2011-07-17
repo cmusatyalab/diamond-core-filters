@@ -30,7 +30,6 @@
 
 /* key words for the config file */
 #define	SIMILARITY_ID	"SIMILARITY"
-#define	CHANNEL_ID	"CHANNELS"
 #define	NANGLE_ID	"NUM_ANGLES"
 #define	NFREQ_ID	"NUM_FREQ"
 #define	RADIUS_ID	"RADIUS"
@@ -57,7 +56,6 @@ gabor_texture_search::gabor_texture_search(const char *name, const char *descr)
 {
 	edit_window = NULL;
 	similarity = 0.93;
-	channels = 3;
 	num_angles = 4;
 	num_freq = 2;
 	radius = 16;
@@ -98,22 +96,6 @@ gabor_texture_search::set_similarity(double sim)
 		similarity = 1.0;
 	}
 	return;
-}
-
-/* this is currently not used, but we may want to add it back in */
-void
-gabor_texture_search::set_channels(int num)
-{
-	assert((num == 1) || (num == 3));
-	channels = num;
-}
-
-void
-gabor_texture_search::set_channels(char *data)
-{
-	int	 num;
-	num = atoi(data);
-	set_channels(num);
 }
 
 void
@@ -199,13 +181,6 @@ gabor_texture_search::handle_config(int num_conf, char **confv)
 			err = 1;
 		} else {
 			set_similarity(confv[1]);
-			err = 0;
-		}
-	} else if (strcmp(CHANNEL_ID, confv[0]) == 0) {
-		if (num_conf < 2) {
-			err = 1;
-		} else {
-			set_channels(confv[1]);
 			err = 0;
 		}
 	} else if (strcmp(NANGLE_ID, confv[0]) == 0) {
@@ -409,18 +384,6 @@ gabor_texture_search::save_edits()
 	fval = gtk_adjustment_get_value(GTK_ADJUSTMENT(maxfreq_adj));
 	set_max_freq(fval);
 
-#ifdef	XXX
-	color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(rgb_widget));
-	if (color) {
-		set_channels(3);
-	} else {
-		set_channels(1);
-	}
-
-	distance_metric =
-	    (texture_dist_t)gtk_option_menu_get_history(GTK_OPTION_MENU(distance_menu));
-
-#endif
 	/* call the parent class */
 	example_search::save_edits();
 }
@@ -584,7 +547,6 @@ gabor_texture_search::write_config(FILE *ostream, const char *dirname)
 	fprintf(ostream, "\n\n");
 	fprintf(ostream, "SEARCH %s %s\n", SEARCH_NAME, get_name());
 	fprintf(ostream, "%s %f \n", SIMILARITY_ID, similarity);
-	fprintf(ostream, "%s %d \n", CHANNEL_ID, channels);
 	fprintf(ostream, "%s %d \n", NANGLE_ID, num_angles);
 	fprintf(ostream, "%s %d \n", NFREQ_ID, num_freq);
 	fprintf(ostream, "%s %d \n", RADIUS_ID, radius);
