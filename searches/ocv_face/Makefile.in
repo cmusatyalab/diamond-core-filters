@@ -24,6 +24,7 @@ STATIC_LIBS += @STATIC_LIBS@
 STATIC_LIBS += -Wl,-Bstatic -lgomp -Wl,-Bdynamic
 
 CPPFLAGS += @GTK_CFLAGS@
+CPPFLAGS += @CVCPPFLAGS@
 
 # objects used to build the searchlet(s)
 FILTER_SRCS += fil_ocv.c opencv_face_tools.c
