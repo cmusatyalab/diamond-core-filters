@@ -34,7 +34,7 @@
 #include "snapfind_config.h"
 
 #define	SEARCH_NAME	"ocv_face_search"
-#define CLASSIFIER_NAME       "haarcascade_frontalface_default"
+#define CLASSIFIER_NAME       "haarcascade_frontalface"
 
 /* config tokens  */
 #define	MINFACE_ID	"MINFACE"

@@ -64,7 +64,7 @@ TARGETS += opencv_lowerbody_search.so
 
 SHARED_LIB += fil_ocv
 SHARED_LIB += opencv_face_search.so $(SRCDIR)/opencv_face.sf_conf 
-SHARED_LIB += $(SRCDIR)/haarcascade_frontalface_default.xml 
+SHARED_LIB += $(SRCDIR)/haarcascade_frontalface.xml 
 SHARED_LIB += opencv_profile_search.so $(SRCDIR)/opencv_profile.sf_conf 
 SHARED_LIB += $(SRCDIR)/haarcascade_profileface.xml
 SHARED_LIB += opencv_body_search.so $(SRCDIR)/opencv_body.sf_conf 

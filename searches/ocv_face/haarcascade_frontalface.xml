@@ -43,7 +43,7 @@
  the use of this software, even if advised of the possibility of such damage.
 -->
 <opencv_storage>
-<haarcascade_frontalface_default type_id="opencv-haar-classifier">
+<haarcascade_frontalface type_id="opencv-haar-classifier">
   <size>24 24</size>
   <stages>
     <_>
@@ -35708,5 +35708,5 @@
             <right_val>3.6160000599920750e-003</right_val></_></_></trees>
       <stage_threshold>-2.9928278923034668</stage_threshold>
       <parent>23</parent>
-      <next>-1</next></_></stages></haarcascade_frontalface_default>
+      <next>-1</next></_></stages></haarcascade_frontalface>
 </opencv_storage>
