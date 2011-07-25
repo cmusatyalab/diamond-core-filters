@@ -232,7 +232,6 @@ ocv_search::edit_search()
 	snprintf(name, MAX_DISPLAY_NAME - 1, "Edit %s", get_name());
 	name[MAX_DISPLAY_NAME -1] = '\0';
 	gtk_window_set_title(GTK_WINDOW(edit_window), name);
-	//gtk_window_set_default_size(GTK_WINDOW(edit_window), 750, 350);
 	g_signal_connect(G_OBJECT(edit_window), "destroy",
 	                 G_CALLBACK(cb_close_edit_window), this);
 	box = gtk_vbox_new(FALSE, 10);
@@ -290,7 +289,6 @@ ocv_search::edit_search()
 
 	gtk_container_add(GTK_CONTAINER(edit_window), box);
 
-	//gtk_window_set_default_size(GTK_WINDOW(edit_window), 400, 500);
 	gtk_widget_show_all(edit_window);
 
 }
