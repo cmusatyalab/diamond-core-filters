@@ -47,8 +47,6 @@
         <argument option="testx"/>
         <argument option="testy"/>
         <argument option="stride"/>
-        <!-- filter ignores argument -->
-        <argument value="0"/>
         <argument option="support"/>
       </arguments>
       <blob option="blob"/>

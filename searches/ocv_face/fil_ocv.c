@@ -52,10 +52,7 @@ f_init_opencv_detect(int numarg, const char * const *args,
 	fconfig->xsize = atoi(args[1]);
 	fconfig->ysize = atoi(args[2]);
 	fconfig->stride = atoi(args[3]);
-	/*
-	 * XXX skip 4 for now ?? 
-	 */
-	fconfig->support = atoi(args[5]);
+	fconfig->support = atoi(args[4]);
 
 	if (fconfig->scale_mult <= 1) {
 		lf_log(LOGL_TRACE,
