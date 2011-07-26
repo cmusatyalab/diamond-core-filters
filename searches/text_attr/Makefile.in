@@ -24,31 +24,27 @@ FILTER_SRCS = fil_text_attr.c
 FILTER_OBJS = fil_text_attr.o
 FILTER_LIBS += -lm
 
-SEARCH_LIB_SRCS = text_attr_search.cc
-SEARCH_LIB_OBJS =  text_attr_search.o 
-SEARCH_LIB_LIBS += 
-
 #
 # All the source files that are needed for depend.
 #
-SRCS = $(FILTER_SRCS) $(SEARCH_LIB_SRCS)
-OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
+SRCS = $(FILTER_SRCS)
+OBJS = $(FILTER_OBJS)
 
 #
 # Other objects to cleanup
-CLEAN_OTHERS += eead_config.cc $(COMMON_SRCS)
+CLEAN_OTHERS +=
 
-TARGETS = fil_text_attr text_attr_search.so
+TARGETS = fil_text_attr text_attr.search
 
-SHARED_LIB = fil_text_attr text_attr_search.so $(SRCDIR)/text_attr.sf_conf
+SHARED_LIB = fil_text_attr text_attr.search
 
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_text_attr: $(FILTER_OBJS)
 	$(FIL_COMMAND)
 
-text_attr_search.so: $(SEARCH_LIB_OBJS)
-	$(SO_COMMAND)
+text_attr.search: text_attr.xml
+	$(BUNDLE_COMMAND)
 
 
 default: $(TARGETS)

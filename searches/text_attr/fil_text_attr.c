@@ -44,8 +44,8 @@ f_init_text_attr(int argc, const char * const *args,
 	fconfig->string = strdup(args[1]);
 	assert(fconfig->string != NULL);
 
-	fconfig->exact_match = atoi(args[2]);
-	fconfig->drop_missing = atoi(args[3]);
+	fconfig->exact_match = !strcasecmp(args[2], "true");
+	fconfig->drop_missing = !strcasecmp(args[3], "true");
 
 	if (!fconfig->exact_match) {
 		err = regcomp(&fconfig->regex, fconfig->string,
@@ -77,7 +77,6 @@ f_eval_text_attr(lf_obj_handle_t ohandle, void *fdata)
 	}
 
 	/* for exact match use strcmp */
-	/* handle wierd data XXX */
 	if (fconfig->exact_match) {
 		if (strcmp(fconfig->string, (char *)buf) == 0) {
 			return(1);

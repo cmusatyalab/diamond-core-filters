@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="Text Attribute">
+  <options>
+    <stringOption displayName="Attribute name" name="attr_name"/>
+    <stringOption displayName="String" name="search_string"/>
+    <booleanOption displayName="Drop missing" name="drop_missing"/>
+    <booleanOption displayName="Exact match (not regex)"
+        name="exact_match" default="true"/>
+  </options>
+  <filters>
+    <filter code="fil_text_attr">
+      <minScore value="1"/>
+      <arguments>
+        <argument option="attr_name"/>
+        <argument option="search_string"/>
+        <argument option="exact_match"/>
+        <argument option="drop_missing"/>
+      </arguments>
+    </filter>
+  </filters>
+</search>
