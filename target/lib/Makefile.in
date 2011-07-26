@@ -28,7 +28,7 @@ EXCLUDES = CVS Makefile Makefile.in
 # The reduced set
 INSTALL_LIBS = $(filter-out $(EXCLUDES), $(ALLFILES))
                                                                                 
-CLEAN_OTHERS += ${INSTALL_LIB}
+CLEAN_OTHERS += ${INSTALL_LIBS}
 
 -include $(OBJROOT)/Makefile.template
 
