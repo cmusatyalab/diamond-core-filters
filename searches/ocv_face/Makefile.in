@@ -48,11 +48,12 @@ CLEAN_OTHERS +=
 TARGETS = fil_ocv ocv.search
 
 SHARED_LIB += fil_ocv ocv.search
-SHARED_LIB += $(SRCDIR)/haarcascade_frontalface.xml 
-SHARED_LIB += $(SRCDIR)/haarcascade_profileface.xml
-SHARED_LIB += $(SRCDIR)/haarcascade_fullbody.xml 
-SHARED_LIB += $(SRCDIR)/haarcascade_upperbody.xml
-SHARED_LIB += $(SRCDIR)/haarcascade_lowerbody.xml
+
+DETECTORS  = $(SRCDIR)/haarcascade_frontalface.xml
+DETECTORS += $(SRCDIR)/haarcascade_profileface.xml
+DETECTORS += $(SRCDIR)/haarcascade_fullbody.xml
+DETECTORS += $(SRCDIR)/haarcascade_upperbody.xml
+DETECTORS += $(SRCDIR)/haarcascade_lowerbody.xml
 
 include ${OBJROOT}/Makefile.template
 
@@ -60,7 +61,7 @@ include ${OBJROOT}/Makefile.template
 fil_ocv: $(FILTER_OBJS)
 	$(FIL_COMMAND)
 
-ocv.search: ocv.xml
+ocv.search: ocv.xml $(DETECTORS)
 	$(BUNDLE_COMMAND)
 
 default: $(TARGETS)
