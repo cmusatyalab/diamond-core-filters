@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="Face/Body">
+  <options>
+    <optionGroup displayName="OpenCV Search">
+      <choiceOption displayName="Search type" name="blob">
+        <choice displayName="Face (front)"
+            value="haarcascade_frontalface.xml"/>
+        <choice displayName="Face (profile)"
+            value="haarcascade_profileface.xml"/>
+        <choice displayName="Body"
+            value="haarcascade_fullbody.xml"/>
+        <choice displayName="Body (upper)"
+            value="haarcascade_upperbody.xml"/>
+        <choice displayName="Body (lower)"
+            value="haarcascade_lowerbody.xml"/>
+      </choiceOption>
+      <numberOption displayName="Minimum object count" name="minface"
+          default="1" min="1" max="20"
+          initiallyEnabled="true" disabledValue="0"/>
+      <numberOption displayName="Maximum object count" name="maxface"
+          default="1" min="1" max="20"
+          initiallyEnabled="false" disabledValue="INF"/>
+      <numberOption displayName="Num supporting" name="support"
+          default="2" min="0" max="20"/>
+    </optionGroup>
+    <optionGroup displayName="Window Search">
+      <numberOption displayName="Scale" name="scale"
+          default="1.2" min="1" max="200" step=".25"/>
+      <numberOption displayName="Test X" name="testx"
+          default="24" min="1" max="100" step="1"/>
+      <numberOption displayName="Test Y" name="testy"
+          default="24" min="1" max="100" step="1"/>
+      <numberOption displayName="Stride" name="stride"
+          default="1" min="1" max="100"/>
+    </optionGroup>
+  </options>
+  <filters>
+    <filter code="fil_ocv">
+      <minScore option="minface"/>
+      <maxScore option="maxface"/>
+      <dependencies>
+        <dependency fixedName="RGB"/>
+      </dependencies>
+      <arguments>
+        <argument option="scale"/>
+        <argument option="testx"/>
+        <argument option="testy"/>
+        <argument option="stride"/>
+        <!-- filter ignores argument -->
+        <argument value="0"/>
+        <argument option="support"/>
+      </arguments>
+      <blob option="blob"/>
+    </filter>
+  </filters>
+</search>

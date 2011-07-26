@@ -58,11 +58,11 @@ OBJS = $(FILTER_OBJS) $(SEARCH_LIB_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_ocv opencv_face_search.so opencv_profile_search.so
+TARGETS = fil_ocv ocv.search opencv_face_search.so opencv_profile_search.so
 TARGETS += opencv_body_search.so opencv_upperbody_search.so
 TARGETS += opencv_lowerbody_search.so
 
-SHARED_LIB += fil_ocv
+SHARED_LIB += fil_ocv ocv.search
 SHARED_LIB += opencv_face_search.so $(SRCDIR)/opencv_face.sf_conf 
 SHARED_LIB += $(SRCDIR)/haarcascade_frontalface.xml 
 SHARED_LIB += opencv_profile_search.so $(SRCDIR)/opencv_profile.sf_conf 
@@ -79,6 +79,9 @@ include ${OBJROOT}/Makefile.template
 
 fil_ocv: $(FILTER_OBJS)
 	$(FIL_COMMAND)
+
+ocv.search: ocv.xml
+	$(BUNDLE_COMMAND)
 
 opencv_face_search.so: ocv_face_search.o $(SEARCH_LIB_COMMON)
 	$(SO_COMMAND)
