@@ -1,2 +1,0 @@
-GUI_LIB		./opencv_face_search.so
-SEARCHLET_LIB	./fil_ocv
