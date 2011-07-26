@@ -2,6 +2,7 @@
 *.a
 *.o
 *.so
+*.search
 
 /autom4te.cache
 /aclocal.m4
