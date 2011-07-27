@@ -6,7 +6,8 @@
         min="0" max="100" step="5"/>
     <numberOption displayName="Shingle size" name="shingle_size" default="4"
         min="1"/>
-    <stringOption displayName="Search fragment" name="fragment"/>
+    <stringOption displayName="Search fragment" name="fragment"
+        multiLine="true"/>
   </options>
   <filters>
     <filter code="fil_shingling">
