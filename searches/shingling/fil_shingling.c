@@ -126,11 +126,14 @@ static int f_init_shingling(int numarg, const char * const *args,
 {
     struct search_state *state;
     struct multiset empty_set = { .len = 0 };
-    unsigned int N, W;
+    unsigned int N, W, fragment_len;
+    const char *fragment;
 
     W = atoi(args[0]);
+    fragment = args[1];
+    fragment_len = strlen(fragment);
 
-    if (blob_len <= W) {
+    if (fragment_len <= W) {
 	lf_log(LOGL_TRACE, "fil_shingling: shingle size exceeds fragment size");
 	return 1;
     }
@@ -141,12 +144,13 @@ static int f_init_shingling(int numarg, const char * const *args,
     state->rpoly = rabin_init(SNAPFIND_POLY, W);
 
     /* allocate the example set */
-    N = blob_len - W;
+    N = fragment_len - W;
     state->example = malloc(sizeof(struct multiset) + N * sizeof(uint64_t));
     state->example->len = N;
 
     /* calculate initial set of fingerprints */
-    (void)w_shingling(blob, blob_len, state->rpoly, &empty_set, state->example);
+    (void)w_shingling(fragment, fragment_len, state->rpoly, &empty_set,
+	    state->example);
 
     /* allocate and equal sized set for the test window */
     N = state->example->len;

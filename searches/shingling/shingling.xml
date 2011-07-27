@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="W-Shingling">
+  <options>
+    <numberOption displayName="Min similarity" name="minscore" default="90"
+        min="0" max="100" step="5"/>
+    <numberOption displayName="Shingle size" name="shingle_size" default="4"
+        min="1"/>
+    <stringOption displayName="Search fragment" name="fragment"/>
+  </options>
+  <filters>
+    <filter code="fil_shingling">
+      <minScore option="minscore"/>
+      <arguments>
+        <argument option="shingle_size"/>
+        <argument option="fragment"/>
+      </arguments>
+    </filter>
+  </filters>
+</search>
