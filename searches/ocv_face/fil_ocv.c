@@ -55,7 +55,7 @@ f_init_opencv_detect(int numarg, const char * const *args,
 	fconfig->support = atoi(args[4]);
 
 	if (fconfig->scale_mult <= 1) {
-		lf_log(LOGL_TRACE,
+		lf_log(LOGL_CRIT,
 		       "scale multiplier must be > 1; got %f\n", fconfig->scale_mult);
 		return 1;
 	}

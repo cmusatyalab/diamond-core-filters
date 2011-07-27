@@ -27,13 +27,13 @@ f_init_null(int numarg, const char * const *args,
 {
     RGBImage *img;
     if (gimp_image.bytes_per_pixel != 4) {
-	lf_log(LOGL_TRACE, "f_init_null: source image missing alpha channel");
+	lf_log(LOGL_CRIT, "f_init_null: source image missing alpha channel");
 	return 1;
     }
 
     img = rgbimg_blank_image(gimp_image.width, gimp_image.height);
     if (!img) {
-	lf_log(LOGL_TRACE, "f_init_null: image allocation failed");
+	lf_log(LOGL_CRIT, "f_init_null: image allocation failed");
 	return 1;
     }
 

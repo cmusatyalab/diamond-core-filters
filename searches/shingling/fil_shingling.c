@@ -134,7 +134,7 @@ static int f_init_shingling(int numarg, const char * const *args,
     fragment_len = strlen(fragment);
 
     if (fragment_len <= W) {
-	lf_log(LOGL_TRACE, "fil_shingling: shingle size exceeds fragment size");
+	lf_log(LOGL_CRIT, "fil_shingling: shingle size exceeds fragment size");
 	return 1;
     }
 
