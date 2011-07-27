@@ -48,7 +48,7 @@ f_init_num_attr(int argc, const char * const *args,
 		fconfig->attr_name = strdup(args[0+4*i]);
 		fconfig->min_value = atof(args[1+4*i]);
 		fconfig->max_value = atof(args[2+4*i]);
-		fconfig->drop_missing = atoi(args[3+4*i]);
+		fconfig->drop_missing = !strcasecmp(args[3+4*i], "true");
 	}
 
 	*fdatap = fholder;

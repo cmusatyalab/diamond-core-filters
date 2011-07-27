@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="Numeric Attribute">
+  <options>
+    <stringOption displayName="Attribute name" name="attr_name"/>
+    <numberOption displayName="Min value" name="min_value"/>
+    <numberOption displayName="Max value" name="max_value"/>
+    <booleanOption displayName="Drop missing" name="drop_missing"/>
+  </options>
+  <filters>
+    <filter code="fil_num_attr">
+      <minScore value="1"/>
+      <arguments>
+        <!-- The filter can consider multiple attributes at once, but for
+             now we only specify one. -->
+        <argument option="attr_name"/>
+        <argument option="min_value"/>
+        <argument option="max_value"/>
+        <argument option="drop_missing"/>
+      </arguments>
+    </filter>
+  </filters>
+</search>
