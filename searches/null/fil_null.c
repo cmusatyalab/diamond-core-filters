@@ -28,13 +28,13 @@ f_init_null(int numarg, const char * const *args,
     RGBImage *img;
     if (gimp_image.bytes_per_pixel != 4) {
 	lf_log(LOGL_TRACE, "f_init_null: source image missing alpha channel");
-	return 0;
+	return 1;
     }
 
     img = rgbimg_blank_image(gimp_image.width, gimp_image.height);
     if (!img) {
 	lf_log(LOGL_TRACE, "f_init_null: image allocation failed");
-	return 0;
+	return 1;
     }
 
     GIMP_IMAGE_RUN_LENGTH_DECODE((unsigned char *)img->data,
@@ -52,11 +52,6 @@ f_eval_null(lf_obj_handle_t ohandle, void *data)
     //char *display = "icon";
     char *display = "label";
     //char *display = "icon-and-label";
-
-    if (!img) {
-	lf_log(LOGL_TRACE, "f_eval_null: no rgb image data");
-	return 0;
-    }
 
     lf_write_attr(ohandle, "hyperfind.thumbnail-display",
 		  strlen(display)+1, (unsigned char *)display);
