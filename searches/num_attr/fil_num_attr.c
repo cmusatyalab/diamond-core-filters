@@ -21,7 +21,6 @@
 #include <assert.h>
 #include <string.h>
 #include "lib_filter.h"
-#include "num_attr_priv.h"
 #include "fil_num_attr.h"
 
 
