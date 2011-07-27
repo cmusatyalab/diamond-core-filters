@@ -57,7 +57,7 @@ f_init_opencv_detect(int numarg, const char * const *args,
 	if (fconfig->scale_mult <= 1) {
 		lf_log(LOGL_TRACE,
 		       "scale multiplier must be > 1; got %f\n", fconfig->scale_mult);
-		exit(1);
+		return 1;
 	}
 
 	// blob_data is the contents of the classifier file
