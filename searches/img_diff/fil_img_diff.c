@@ -33,7 +33,8 @@
 #include "fil_img_diff.h"
 #include "lib_sfimage.h"
 
-double image_diff(const RGBImage* img1, const RGBImage* img2);
+double image_diff(const RGBImage* img1, const RGBImage* img2,
+	bbox_list_t *bbox);
 
 static int
 f_init_img_diff(int numarg, const char * const *args,
@@ -47,6 +48,7 @@ f_init_img_diff(int numarg, const char * const *args,
 	
 	/* example RGB image stored in blob */
 	assert (blob != NULL);
+	config->fname = strdup(fname);
 	config->img = blob;
 	*data = (void *)config;
 	return (0);
@@ -59,13 +61,25 @@ f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 	size_t 		len;
 	const void *	dptr;	
 	double distance = 0.0;
+	bbox_list_t	blist;
+	bbox_t *	cur_box;
 
 	lf_log(LOGL_TRACE, "f_eval_img_diff: enter");
 
 	img_diff_config_t *config = (img_diff_config_t *)f_data;
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	assert(err == 0);
-	distance = image_diff((RGBImage *)dptr, config->img);
+
+	TAILQ_INIT(&blist);
+	distance = image_diff((RGBImage *)dptr, config->img, &blist);
+	save_patches(ohandle, config->fname, &blist);
+
+	while (!(TAILQ_EMPTY(&blist))) {
+		cur_box = TAILQ_FIRST(&blist);
+		TAILQ_REMOVE(&blist, cur_box, link);
+		free(cur_box);
+	}
+
 	/* return % similarity */
 	return 100 - distance * 100.0;
 }
@@ -77,10 +91,11 @@ LF_MAIN(f_init_img_diff, f_eval_img_diff)
 // images are identical.
 //
 double
-image_diff(const RGBImage* img1, const RGBImage* img2) {
+image_diff(const RGBImage* img1, const RGBImage* img2, bbox_list_t *blist) {
   double diff = 0.0;
   int x, y, width, height;
   const RGBPixel *pixel1, *pixel2;
+  bbox_t *bb;
 
   // Compare the top-left corners of the images
   width = MIN(img1->width, img2->width);
@@ -99,6 +114,15 @@ image_diff(const RGBImage* img1, const RGBImage* img2) {
 
   assert(diff >= 0.0);
   assert(diff <= 1.0);
+
+  bb = malloc(sizeof(*bb));
+  bb->min_x = 0;
+  bb->min_y = 0;
+  bb->max_x = width - 1;
+  bb->max_y = height - 1;
+  bb->distance = diff;
+  TAILQ_INSERT_TAIL(blist, bb, link);
+
   return diff;
 }
 

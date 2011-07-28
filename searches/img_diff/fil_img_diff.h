@@ -22,6 +22,7 @@
 
 typedef struct img_diff_config
 {
+  const char *fname;
   const RGBImage *img; /* image to compare against */
 
 } img_diff_config_t;
