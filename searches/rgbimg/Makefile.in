@@ -36,16 +36,16 @@ OBJS = $(FILTER_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS += 
 
-TARGETS = fil_rgb rgb.codec
+TARGETS = fil_rgb rgb.search
 
-SHARED_LIB += fil_rgb rgb.codec
+SHARED_LIB += fil_rgb rgb.search
 
 include ${OBJROOT}/Makefile.template
                                                                                 
 fil_rgb: $(FILTER_OBJS)
 	$(FIL_COMMAND)
 
-rgb.codec: rgb.xml
+rgb.search: rgb.xml
 	$(BUNDLE_COMMAND)
 
 default: $(TARGETS)

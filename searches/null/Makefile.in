@@ -34,16 +34,16 @@ OBJS = $(FILTER_OBJS)
 # Other objects to cleanup
 CLEAN_OTHERS +=
 
-TARGETS = fil_null null.codec
+TARGETS = fil_null null.search
 
-SHARED_LIB += fil_null null.codec
+SHARED_LIB += fil_null null.search
 
 include ${OBJROOT}/Makefile.template
 
 fil_null: $(FILTER_OBJS)
 	$(FIL_COMMAND)
 
-null.codec: null.xml
+null.search: null.xml
 	$(BUNDLE_COMMAND)
 
 default: $(TARGETS)
