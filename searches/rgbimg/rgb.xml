@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="Built-in">
+  <filters>
+    <filter code="fil_rgb" fixedName="RGB">
+      <minScore value="1"/>
+    </filter>
+    <filter code="fil_thumb" fixedName="THUMBNAIL">
+      <minScore value="1"/>
+      <dependencies>
+        <dependency fixedName="RGB"/>
+      </dependencies>
+      <arguments>
+        <argument value="200"/>  <!-- Thumbnail width -->
+        <argument value="150"/>  <!-- Thumbnail height -->
+      </arguments>
+    </filter>
+  </filters>
+</search>

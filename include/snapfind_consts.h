@@ -45,8 +45,6 @@
 
 /* thumbnail attribute name and default size */
 #define THUMBNAIL_ATTR			"thumbnail.jpeg"
-#define THUMBSIZE_X			200
-#define THUMBSIZE_Y			150
 #define THUMBNAIL_JPEG_QUALITY          95
 
 #endif	/* ! _SNAPFIND_CONSTS_H_ */
