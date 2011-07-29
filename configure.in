@@ -38,6 +38,7 @@ AC_SUBST(DIAMOND_BUNDLE_SEARCH,
 #
 CHECK_STATIC_LIB([libtiff.a])
 CHECK_STATIC_LIB([libjpeg.a])
+CHECK_STATIC_LIB([libpng.a])
 CHECK_STATIC_LIB([libz.a])
 
 # deal with the cv stuff

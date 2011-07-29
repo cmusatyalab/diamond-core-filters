@@ -22,6 +22,7 @@
 #include "lib_sfimage.h"
 #include "readjpeg.h"
 #include "readtiff.h"
+#include "readpng.h"
 #include "assert.h"
 
 /*
@@ -220,8 +221,8 @@ get_rgb_from_jpeg(const u_char* buf, off_t size)
 RGBImage*
 get_rgb_from_png(const u_char* buf, off_t size)
 {
-  	// TODO
-  return NULL;
+	assert(buf);
+	return convertPNGtoRGBImage(buf, size);
 }
 
 RGBImage *
