@@ -337,7 +337,6 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo\n");
 	fprintf(ostream, "INIT_FUNCTION  f_init_histo\n");
 	fprintf(ostream, "FINI_FUNCTION  f_fini_histo\n");
-	fprintf(ostream, "ARG  %s  # name \n", get_name());
 
 	/*
 	 * Next we write call the parent to write out the releated args,

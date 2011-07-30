@@ -114,24 +114,24 @@ f_init_histo_detect(int numarg, const char * const *args,
 	assert(hconfig);
 
 	assert(numarg > 6);
-	hconfig->name = strdup(args[0]);
+	hconfig->name = strdup(fname);
 	assert(hconfig->name != NULL);
 
-	hconfig->scale = atof(args[1]);
-	hconfig->xsize = atoi(args[2]);
-	hconfig->ysize = atoi(args[3]);
-	hconfig->stride = atoi(args[4]);
-	hconfig->req_matches = atoi(args[5]);
-	hconfig->bins = atoi(args[6]);
-	hconfig->similarity = atof(args[7]);
-	hconfig->distance_type = atoi(args[8]);
-	hconfig->type = atoi(args[9]);
-	hconfig->num_patches = atoi(args[10]);
+	hconfig->scale = atof(args[0]);
+	hconfig->xsize = atoi(args[1]);
+	hconfig->ysize = atoi(args[2]);
+	hconfig->stride = atoi(args[3]);
+	hconfig->req_matches = atoi(args[4]);
+	hconfig->bins = atoi(args[5]);
+	hconfig->similarity = atof(args[6]);
+	hconfig->distance_type = atoi(args[7]);
+	hconfig->type = atoi(args[8]);
+	hconfig->num_patches = atoi(args[9]);
 
 	/*
 	 * read the histogram patches in 
 	 */
-	err = patch_spec_read_args(hconfig, numarg - 11, args + 11);
+	err = patch_spec_read_args(hconfig, numarg - 10, args + 10);
 	assert(err);
 
 	/*
