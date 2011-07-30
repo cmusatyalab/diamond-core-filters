@@ -40,6 +40,7 @@ CHECK_STATIC_LIB([libtiff.a])
 CHECK_STATIC_LIB([libjpeg.a])
 CHECK_STATIC_LIB([libpng.a])
 CHECK_STATIC_LIB([libz.a])
+CHECK_STATIC_LIB([libarchive.a])
 
 # deal with the cv stuff
 AC_CHECK_LIB([cxcore], [cvAlloc])

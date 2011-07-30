@@ -241,3 +241,25 @@ example_search::write_config(FILE *ostream, const char *dirname)
 	return;
 }
 
+void
+example_search::set_auxiliary_data_from_examples()
+{
+	example_list2_t			patches2;
+	example_patch_t			*patch;
+	example_patch2_t		*patch2;
+	size_t				size;
+
+	TAILQ_INIT(&patches2);
+	TAILQ_FOREACH(patch, &ex_plist, link) {
+		patch2 = (example_patch2_t *)malloc(sizeof(*patch2));
+		patch2->image = patch->patch_image;
+		TAILQ_INSERT_TAIL(&patches2, patch2, link);
+	}
+	set_auxiliary_data(save_examples(&patches2, &size));
+	set_auxiliary_data_length(size);
+	while (!(TAILQ_EMPTY(&patches2))) {
+		patch2 = TAILQ_FIRST(&patches2);
+		TAILQ_REMOVE(&patches2, patch2, link);
+		free(patch2);
+	}
+}

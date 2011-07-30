@@ -233,6 +233,8 @@ public:
 
 protected:
 
+	void set_auxiliary_data_from_examples();
+
 	example_list_t		ex_plist;
 	GtkWidget *		patch_holder;
 	int			num_patches;

@@ -27,6 +27,13 @@ extern "C"
 {
 #endif
 
+typedef struct example_patch2 {
+	RGBImage			*image;
+	TAILQ_ENTRY(example_patch2)	link;
+} example_patch2_t;
+
+typedef TAILQ_HEAD(example_list2_t, example_patch2) example_list2_t;
+
 /*
  * some interfaces to read images from a file/buffer
  */
@@ -42,6 +49,12 @@ int pnm_parse_header(char *fdata, size_t nb,
                                                                                 
                                                                                 
 RGBImage* image_gen_image_scale(RGBImage *, int scale);
+
+void load_examples(const void *data, size_t len, example_list2_t *examples);
+
+void *save_examples(example_list2_t *examples, size_t *len);
+
+void free_examples(example_list2_t *examples);
                                                                                 
 #ifdef __cplusplus
 }
