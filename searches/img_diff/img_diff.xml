@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="Image Difference">
+  <options>
+    <numberOption displayName="Min similarity" name="minScore"
+        default="90" min="0" max="100"/>
+    <exampleOption displayName="Examples" name="examples"/>
+  </options>
+  <filters>
+    <filter code="fil_img_diff">
+      <minScore option="minScore"/>
+      <dependencies>
+        <dependency fixedName="RGB"/>
+      </dependencies>
+      <blob>
+        <examples/>
+      </blob>
+    </filter>
+  </filters>
+</search>
