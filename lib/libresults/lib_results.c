@@ -25,7 +25,7 @@
 
 
 void
-save_patches(lf_obj_handle_t ohandle, char *fname, bbox_list_t *blist)
+save_patches(lf_obj_handle_t ohandle, const char *fname, bbox_list_t *blist)
 {
         char            buf[BUFSIZ];
 	int		err;

@@ -74,7 +74,8 @@ typedef struct img_patches {
 extern "C" {
 #endif
 
-void save_patches(lf_obj_handle_t ohandle, char *fname, bbox_list_t *blist);
+void save_patches(lf_obj_handle_t ohandle, const char *fname,
+                  bbox_list_t *blist);
 
 
 #ifdef	__cplusplus
