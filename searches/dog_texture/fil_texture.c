@@ -28,15 +28,6 @@
 
 #define VERBOSE 1
 
-#define ASSERT(exp)							\
-if(!(exp)) {								\
-  lf_log(LOGL_ERR, "Assertion %s failed at ", #exp);		\
-  lf_log(LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
-  pass = 0;								\
-  goto done;								\
-}
-
-
 static int
 read_texture_args(const char *fname, texture_args_t *texture_args,
                   int argc, const char * const *args)
@@ -134,7 +125,7 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 	} else if (targs->num_channels == 3) {
 		img = get_rgb_ipl_image(rgb_img);
 	}
-	ASSERT(img);
+	assert(img);
 
 	dst_img = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 1);
 
@@ -175,7 +166,6 @@ f_eval_texture_detect(lf_obj_handle_t ohandle, void *f_datap)
 		}
 		score = 0;
 	}
-done:
 
 	if (dst_img)
 		cvReleaseImage(&dst_img);
