@@ -42,14 +42,25 @@ f_init_img_diff(int numarg, const char * const *args,
 		const char *fname, void **data)
 {
 	img_diff_config_t *config;
+	example_list2_t examples;
+	example_patch2_t *patch;
 	
 	config = (img_diff_config_t *)malloc(sizeof(img_diff_config_t));
 	assert(config);
-	
-	/* example RGB image stored in blob */
-	assert (blob != NULL);
 	config->fname = strdup(fname);
-	config->img = blob;
+
+	/* load first example image from blob */
+	TAILQ_INIT(&examples);
+	load_examples(blob, blob_len, &examples);
+	assert(!TAILQ_EMPTY(&examples));
+	patch = TAILQ_FIRST(&examples);
+	config->img = patch->image;
+
+	/* free its wrapper and any remaining examples */
+	TAILQ_REMOVE(&examples, patch, link);
+	free(patch);
+	free_examples(&examples);
+
 	*data = (void *)config;
 	return (0);
 }

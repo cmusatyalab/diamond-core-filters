@@ -258,8 +258,6 @@ img_diff::save_edits()
 void
 img_diff::write_fspec(FILE *ostream)
 {
-	example_patch_t *patch;
-
 	save_edits();
 
 	/*
@@ -277,14 +275,7 @@ img_diff::write_fspec(FILE *ostream)
 	example_search::write_fspec(ostream);
 
 	// Load the example patch into the blob argument.
-	patch = TAILQ_FIRST(&ex_plist);
-	if (patch != NULL) {
-		set_auxiliary_data(patch->patch_image);
-		set_auxiliary_data_length(patch->patch_image->nbytes);
-	} else {
-		set_auxiliary_data(NULL);
-		set_auxiliary_data_length(0);
-	}
+	set_auxiliary_data_from_examples();
 
 	/* call the parent class to give them chance to cleanup */
 	example_search::close_edit_win();
