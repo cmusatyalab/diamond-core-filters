@@ -25,6 +25,8 @@
 #include <math.h>
 #include <assert.h>
 #include <unistd.h>
+
+#include "lib_ocvimage.h"
 #include <opencv/cvaux.h>
 
 #include "lib_filter.h"

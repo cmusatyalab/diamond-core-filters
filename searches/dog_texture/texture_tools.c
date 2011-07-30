@@ -13,10 +13,10 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#include <opencv/cv.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include "lib_ocvimage.h"
 #include "lib_results.h"
 #include "texture_tools.h"
 

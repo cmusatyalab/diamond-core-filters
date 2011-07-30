@@ -14,8 +14,7 @@
 
 #include <string.h>
 
-#include <opencv/cv.h>
-
+#include "lib_ocvimage.h"
 #include "rgb.h"
 
 

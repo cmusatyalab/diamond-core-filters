@@ -18,7 +18,6 @@
  * texture filter
  */
 
-#include <opencv/cv.h>
 #include <stdio.h>
 #include <stdint.h>
 #include "lib_results.h"

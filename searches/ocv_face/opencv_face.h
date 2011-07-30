@@ -16,7 +16,7 @@
 #define _OPENCV_FACE_H_
 
 #include <sys/types.h>
-#include <opencv/cv.h>
+#include "lib_ocvimage.h"
 #include <opencv/cvaux.h>
 #include "lib_results.h"
 #include <sys/queue.h>

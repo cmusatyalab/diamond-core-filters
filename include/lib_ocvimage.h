@@ -15,6 +15,27 @@
 #ifndef	_LIB_OCVIMAGE_H_
 #define	_LIB_OCVIMAGE_H_	1
 
+/*****************/
+/* Work around compiler warnings in the OpenCV headers.  Sources should
+   include this file rather than <opencv/cv.h>. */
+
+/* In C code, CV_INLINE functions are marked static, which causes a warning
+   when they're not used. */
+#ifndef __cplusplus
+#define CV_INLINE static inline
+#endif
+
+/* cvcompat.h has inline functions with unused variables.  Luckily, we can
+   avoid including it. */
+#define CV_NO_BACKWARD_COMPATIBILITY
+
+/* ...except that cvaux.h uses some deprecated names.  Copy the relevant
+   redefinitions from cvcompat.h. */
+#define CvPoint3D64d CvPoint3D64f
+#define CvPoint2D64d CvPoint2D64f
+/*****************/
+
+
 #include <stdint.h>
 #include <errno.h>
 #include <opencv/cv.h>
