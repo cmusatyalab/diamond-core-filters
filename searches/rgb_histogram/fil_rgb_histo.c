@@ -45,16 +45,6 @@ struct histo_data {
 };
 
 
-#define ASSERT(exp)							\
-if(!(exp)) {								\
-  lf_log(LOGL_ERR, "Assertion %s failed at ", #exp);		\
-  lf_log(LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
-  pass = -1;								\
-  goto done;								\
-}
-
-
-
 /*
  ********************************************************************** */
 
@@ -68,7 +58,6 @@ patch_spec_read_args(histo_config_t * hconfig, int argc,
 	int             i, j;
 	histo_patch_t   *histo_patch;
 	double          sum;
-	int             pass = 1;
 	int             nbins = HBINS * HBINS * HBINS;  /* XXX */
 
 	/*
@@ -79,11 +68,11 @@ patch_spec_read_args(histo_config_t * hconfig, int argc,
 	TAILQ_INIT(&hconfig->histo_patchlist);
 	for (i = 0; i < hconfig->num_patches; i++) {
 		histo_patch = (histo_patch_t *)malloc(sizeof(*histo_patch));
-		ASSERT(histo_patch);
+		assert(histo_patch);
 		histo_clear(&histo_patch->histo);
 
 		argc -= nbins;
-		ASSERT(argc >= 0);
+		assert(argc >= 0);
 
 		sum = 0.0;
 		for (j = 0; j < nbins; j++) {
@@ -98,8 +87,7 @@ patch_spec_read_args(histo_config_t * hconfig, int argc,
 		TAILQ_INSERT_TAIL(&hconfig->histo_patchlist, histo_patch, link);
 	}
 
-done:
-	return pass;
+	return 1;
 }
 
 
@@ -262,7 +250,6 @@ f_init_hintegrate(int numarg, const char * const *args,
 static int
 f_eval_hintegrate(lf_obj_handle_t ohandle, hintegrate_data_t *fstate)
 {
-	int             pass = 1;
 	RGBImage       *img = NULL;
 	HistoII        *ii = NULL;
 	int             err;
@@ -283,7 +270,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, hintegrate_data_t *fstate)
 	err = lf_ref_attr(ohandle, RGB_IMAGE, &len, &dptr);
 	img = (RGBImage *)dptr;
 
-	ASSERT(img);
+	assert(img);
 
 	/*
 	 * initialize a new ii 
@@ -295,7 +282,7 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, hintegrate_data_t *fstate)
 
 
 	ii = (HistoII *) malloc(nbytes); 
-	ASSERT(ii);
+	assert(ii);
 	ii->nbytes = nbytes;
 	ii->width = width;
 	ii->height = height;
@@ -306,14 +293,13 @@ f_eval_hintegrate(lf_obj_handle_t ohandle, hintegrate_data_t *fstate)
 
 	err = lf_write_attr(ohandle, HISTO_II, ii->nbytes,
 	    (unsigned char *) ii);
-	ASSERT(!err);
+	assert(!err);
 	lf_omit_attr(ohandle, HISTO_II);
-done:
 	if (ii) {
 		free(ii);
 	}
 	lf_log(LOGL_TRACE, "f_hintegrate: done");
-	return pass;
+	return 1;
 }
 
 

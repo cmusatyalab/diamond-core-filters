@@ -34,14 +34,6 @@
 #include <jpeglib.h>
 
 
-#define ASSERT(exp)							\
-if(!(exp)) {								\
-  lf_log(LOGL_ERR, "Assertion %s failed at ", #exp);		\
-  lf_log(LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
-  pass = -1;								\
-  goto done;								\
-}
-
 struct filter_args {
     int width;
     int height;
@@ -145,10 +137,10 @@ f_eval_thumbnailer(lf_obj_handle_t ohandle, void *data)
 	}
 
 	img = (RGBImage *)malloc(img_size);
-	ASSERT(img);
+	assert(img);
 
 	err = lf_read_attr(ohandle, RGB_IMAGE, &img_size, (unsigned char *)img);
-	ASSERT(!err);
+	assert(!err);
 
 	/* compute scale factor */
 	scale = dmax(scale, (double)img->width / fargs->width);
@@ -164,14 +156,14 @@ f_eval_thumbnailer(lf_obj_handle_t ohandle, void *data)
 
 	/* compress jpeg */
 	memstream = open_memstream(&jpeg_data, &jpeg_len);
-	ASSERT(memstream);
+	assert(memstream);
 	compress_rgbimage(scaledimg, memstream);
 	fclose(memstream);
 
 	/* save thumbnail as an attribute */
 	err = lf_write_attr(ohandle, THUMBNAIL_ATTR, jpeg_len,
 			    (unsigned char *)jpeg_data);
-	ASSERT(!err);
+	assert(!err);
 	pass = 1;
 done:
 	if (img) free(img);

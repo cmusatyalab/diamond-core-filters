@@ -31,15 +31,6 @@
 
 
 
-#define ASSERT(exp)							\
-if(!(exp)) {								\
-  lf_log(LOGL_ERR, "Assertion %s failed at ", #exp);		\
-  lf_log(LOGL_ERR, "%s, line %d.", __FILE__, __LINE__);	\
-  pass = -1;								\
-  goto done;								\
-}
-
-
 static int
 f_init_img2rgb(int numarg, const char * const *args,
 	       int blob_len, const void *blob,
@@ -59,7 +50,7 @@ static int
 f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 {
 	RGBImage       *img;
-	int             err = 0, pass = 1;
+	int             err = 0;
 	const void    * obj_data;
 	size_t          data_len;
 
@@ -83,15 +74,14 @@ f_eval_img2rgb(lf_obj_handle_t ohandle, void *user_data)
 	/* save img as an attribute */
 	err = lf_write_attr(ohandle, RGB_IMAGE, img->nbytes,
 	    (unsigned char *) img);
-	ASSERT(!err);
+	assert(!err);
 
 	/* but don't send it to the client */
 	lf_omit_attr(ohandle, RGB_IMAGE);
-done:
 	if (img)
 		free(img);
 	lf_log(LOGL_TRACE, "f_pnm2rgb: done");
-	return pass;
+	return 1;
 }
 
 LF_MAIN(f_init_img2rgb, f_eval_img2rgb)
