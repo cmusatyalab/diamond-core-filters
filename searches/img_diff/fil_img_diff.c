@@ -42,24 +42,14 @@ f_init_img_diff(int numarg, const char * const *args,
 		const char *fname, void **data)
 {
 	img_diff_config_t *config;
-	example_list2_t examples;
-	example_patch2_t *patch;
 	
 	config = (img_diff_config_t *)malloc(sizeof(img_diff_config_t));
 	assert(config);
 	config->fname = strdup(fname);
 
-	/* load first example image from blob */
-	TAILQ_INIT(&examples);
-	load_examples(blob, blob_len, &examples);
-	assert(!TAILQ_EMPTY(&examples));
-	patch = TAILQ_FIRST(&examples);
-	config->img = patch->image;
-
-	/* free its wrapper and any remaining examples */
-	TAILQ_REMOVE(&examples, patch, link);
-	free(patch);
-	free_examples(&examples);
+	/* load example images from blob */
+	TAILQ_INIT(&config->examples);
+	load_examples(blob, blob_len, &config->examples);
 
 	*data = (void *)config;
 	return (0);
@@ -71,9 +61,12 @@ f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 	int             err;
 	size_t 		len;
 	const void *	dptr;	
-	double distance = 0.0;
+	double		best_distance = 1.0;
+	double		cur_distance;
 	bbox_list_t	blist;
+	bbox_list_t	accepted;
 	bbox_t *	cur_box;
+	example_patch2_t *patch;
 
 	lf_log(LOGL_TRACE, "f_eval_img_diff: enter");
 
@@ -82,17 +75,34 @@ f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 	assert(err == 0);
 
 	TAILQ_INIT(&blist);
-	distance = image_diff((RGBImage *)dptr, config->img, &blist);
-	save_patches(ohandle, config->fname, &blist);
+	TAILQ_FOREACH(patch, &config->examples, link) {
+		cur_distance = image_diff((RGBImage *)dptr, patch->image,
+					&blist);
+		if (cur_distance < best_distance)
+			best_distance = cur_distance;
+	}
 
-	while (!(TAILQ_EMPTY(&blist))) {
+	/* Return only the patch(es) representing the best match */
+	TAILQ_INIT(&accepted);
+	while (!TAILQ_EMPTY(&blist)) {
 		cur_box = TAILQ_FIRST(&blist);
 		TAILQ_REMOVE(&blist, cur_box, link);
+		if (cur_box->distance == best_distance) {
+			TAILQ_INSERT_TAIL(&accepted, cur_box, link);
+		} else {
+			free(cur_box);
+		}
+	}
+	save_patches(ohandle, config->fname, &accepted);
+
+	while (!(TAILQ_EMPTY(&accepted))) {
+		cur_box = TAILQ_FIRST(&accepted);
+		TAILQ_REMOVE(&accepted, cur_box, link);
 		free(cur_box);
 	}
 
 	/* return % similarity */
-	return 100 - distance * 100.0;
+	return 100 - best_distance * 100.0;
 }
 
 LF_MAIN(f_init_img_diff, f_eval_img_diff)

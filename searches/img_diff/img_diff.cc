@@ -113,15 +113,6 @@ img_diff::handle_config(int nconf, char **data)
 	return(err);
 }
 
-void
-img_diff::truncate_patch_list()
-{
-	/* Only keep the most recent patch */
-	while (num_patches > 1) {
-		remove_patch(TAILQ_FIRST(&ex_plist));
-	}
-}
-
 static void
 cb_close_edit_window(GtkWidget* item, gpointer data)
 {
@@ -170,8 +161,6 @@ img_diff::edit_search()
 		gdk_window_raise(GTK_WIDGET(edit_window)->window);
 		return;
 	}
-
-	truncate_patch_list();
 
 	edit_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	snprintf(name, MAX_DISPLAY_NAME - 1, "Edit %s", get_name());
@@ -233,10 +222,6 @@ void
 img_diff::save_edits()
 {
 	double	sim;
-
-	// Patches may have been added even without an edit window, so do
-	// this unconditionally
-	truncate_patch_list();
 
 	/* no active edit window, so return */
 	if (edit_window == NULL) {

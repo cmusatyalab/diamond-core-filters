@@ -49,8 +49,6 @@ public:
 	void		close_edit_win();
 	
 private:
-	void		truncate_patch_list();
-
 	float		distance;
 	GtkObject *	sim_adj;
 	GtkWidget *	edit_window;

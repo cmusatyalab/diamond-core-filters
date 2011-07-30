@@ -19,11 +19,12 @@
 #include "lib_filter.h"
 #include "snapfind_consts.h"
 #include <sys/queue.h>
+#include "lib_sfimage.h"
 
 typedef struct img_diff_config
 {
   const char *fname;
-  const RGBImage *img; /* image to compare against */
+  example_list2_t examples;
 
 } img_diff_config_t;
 
