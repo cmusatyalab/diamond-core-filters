@@ -33,7 +33,6 @@ typedef struct
 	float weight;			// number of points in histogram
 }
 Histo;
-/* nb: there is code that relies on the above structure; see patch_spec_*_args() */
 
 typedef struct HistoII
 {
@@ -71,7 +70,6 @@ typedef struct histo_config
 	int   ysize;      /* patch y size */
 	int stride;         /* x and y strides */
 	float  similarity; /* similarity metric */
-	int 		num_patches;    /* num patches to match */
 	histo_type_t	type;	/* type of histogram */
 	histo_patchlist_t   histo_patchlist;
 } histo_config_t;

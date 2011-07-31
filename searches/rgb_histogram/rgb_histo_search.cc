@@ -290,10 +290,6 @@ rgb_histo_search::save_edits()
 void
 rgb_histo_search::write_fspec(FILE *ostream)
 {
-	Histo 	hgram;
-	example_patch_t	*cur_patch;
-	int		i = 0;
-
 	save_edits();
 
 	/*
@@ -341,20 +337,9 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
 	fprintf(ostream, "ARG  %s  # interpolated \n",
                         htype == HISTO_INTERPOLATED ? "true" : "false");
-	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
 
+	set_auxiliary_data_from_examples();
 
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		int	bins;
-		histo_fill_from_subimage(&hgram, cur_patch->patch_image,
-		                         0, 0, cur_patch->xsize, cur_patch->ysize, htype);
-		normalize_histo(&hgram);
-		for (bins=0; bins < (HBINS * HBINS * HBINS); bins++) {
-			fprintf(ostream, "ARG  %f  # sample %d val %d \n",
-			        hgram.data[bins], i, bins);
-		}
-		i++;
-	}
 	fprintf(ostream, "REQUIRES  HISTO_II # dependancies \n");
 	fprintf(ostream, "MERIT 200  # some merit \n");
 	fprintf(ostream, "\n");

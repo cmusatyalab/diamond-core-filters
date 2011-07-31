@@ -49,30 +49,34 @@ struct histo_data {
  ********************************************************************** */
 
 /*
- * read in volatile state from args. also see patch_spec_write_args 
+ * read and preprocess examples
  */
-static int
-patch_spec_read_args(histo_config_t * hconfig, int argc,
-		     const char * const *args)
+static void
+read_examples(histo_config_t * hconfig, const void *blob, int blob_len)
 {
-	int             i, j;
+	example_list2_t	examples;
+	example_patch2_t *patch;
+	int             i;
 	histo_patch_t   *histo_patch;
 	double          sum;
 	int             nbins = HBINS * HBINS * HBINS;  /* XXX */
 
+	TAILQ_INIT(&examples);
+	load_examples(blob, blob_len, &examples);
+
 	TAILQ_INIT(&hconfig->histo_patchlist);
-	for (i = 0; i < hconfig->num_patches; i++) {
+	TAILQ_FOREACH(patch, &examples, link) {
 		histo_patch = (histo_patch_t *)malloc(sizeof(*histo_patch));
 		assert(histo_patch);
 		histo_clear(&histo_patch->histo);
-
-		argc -= nbins;
-		assert(argc >= 0);
-
+		histo_fill_from_subimage(&histo_patch->histo,
+		                        patch->image, 0, 0,
+		                        patch->image->width,
+		                        patch->image->height, hconfig->type);
+		normalize_histo(&histo_patch->histo);
 		sum = 0.0;
-		for (j = 0; j < nbins; j++) {
-			histo_patch->histo.data[j] = atof(*args++);
-			sum += histo_patch->histo.data[j];
+		for (i = 0; i < nbins; i++) {
+			sum += histo_patch->histo.data[i];
 		}
 		histo_patch->histo.weight = 1.0;
 		/*
@@ -82,7 +86,7 @@ patch_spec_read_args(histo_config_t * hconfig, int argc,
 		TAILQ_INSERT_TAIL(&hconfig->histo_patchlist, histo_patch, link);
 	}
 
-	return 1;
+	free_examples(&examples);
 }
 
 
@@ -100,7 +104,6 @@ f_init_histo_detect(int numarg, const char * const *args,
 		    const char *fname, histo_config_t **data)
 {
 	histo_config_t *hconfig;
-	int             err;
 
 	/*
 	 * filter initialization
@@ -120,13 +123,11 @@ f_init_histo_detect(int numarg, const char * const *args,
 	hconfig->similarity = atof(args[5]);
 	hconfig->type = !strcasecmp(args[6], "true") ?
 				HISTO_INTERPOLATED : HISTO_SIMPLE;
-	hconfig->num_patches = atoi(args[7]);
 
 	/*
 	 * read the histogram patches in 
 	 */
-	err = patch_spec_read_args(hconfig, numarg - 8, args + 8);
-	assert(err);
+	read_examples(hconfig, blob, blob_len);
 
 	/*
 	 * save the data pointer 
