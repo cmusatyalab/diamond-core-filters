@@ -14,7 +14,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <gtk/gtk.h>
 #include "rgb.h"
 #include "assert.h"
 #include "gabor.h"

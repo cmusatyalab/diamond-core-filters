@@ -23,7 +23,6 @@ STATIC_LIBS += @CVLDFLAGS@
 STATIC_LIBS += @STATIC_LIBS@
 STATIC_LIBS += -Wl,-Bstatic -lgomp -Wl,-Bdynamic
 
-CPPFLAGS += @GTK_CFLAGS@
 CPPFLAGS += @CVCPPFLAGS@
 
 # objects used to build the searchlet(s)
