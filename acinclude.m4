@@ -17,13 +17,6 @@ AC_DEFUN([ADD_LIB_SEARCH],
        LIB_SEARCH_DIRS="${LIB_SEARCH_DIRS} $1"
     ])
 
-#
-# this is a work around for gcc 4.0.  There is a big design
-# flaw that does not let you link against static libraries when
-# building .so's to ship as the searchlets.  To get around this
-# we find all the libraries and include them as part of the link
-# instead of using the -l option.  Yuck, but until they fix the loader...
-#
 
 AC_DEFUN([CHECK_STATIC_LIB],
    [
