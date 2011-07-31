@@ -17,7 +17,7 @@ SRCDIR = @srcdir@
 VPATH = @srcdir@
 OBJROOT = @OBJROOT@
 
-SUBDIRS = bin lib
+SUBDIRS = lib
 
 include $(OBJROOT)/Makefile.template
 
