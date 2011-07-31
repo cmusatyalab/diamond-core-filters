@@ -116,6 +116,10 @@ f_init_histo_detect(int numarg, const char * const *args,
 	assert(hconfig->name != NULL);
 
 	hconfig->scale = atof(args[0]);
+	if (hconfig->scale == 1.0) {
+		/* XXX */
+		hconfig->scale = 100000.0;
+	}
 	hconfig->xsize = atoi(args[1]);
 	hconfig->ysize = atoi(args[2]);
 	hconfig->stride = atoi(args[3]);

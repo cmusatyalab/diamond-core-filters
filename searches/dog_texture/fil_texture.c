@@ -40,6 +40,10 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
 	assert(texture_args->name != NULL);
 
 	texture_args->scale = atof(args[0]);
+	if (texture_args->scale == 1.0) {
+		/* XXX */
+		texture_args->scale = 100000.0;
+	}
 	texture_args->box_width = atoi(args[1]);
 	texture_args->box_height = atoi(args[2]);
 	texture_args->step = atoi(args[3]);

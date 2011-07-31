@@ -51,6 +51,10 @@ f_init_opencv_detect(int numarg, const char * const *args,
 	fconfig->name = strdup(fname);
 	assert(fconfig->name != NULL);
 	fconfig->scale_mult = atof(args[0]);
+	if (fconfig->scale_mult == 1.0) {
+		/* XXX */
+		fconfig->scale_mult = 100000.0;
+	}
 	fconfig->xsize = atoi(args[1]);
 	fconfig->ysize = atoi(args[2]);
 	fconfig->stride = atoi(args[3]);

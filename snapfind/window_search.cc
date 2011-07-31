@@ -128,13 +128,7 @@ window_search::set_scale(char * data)
 double
 window_search::get_scale()
 {
-	float	local_scale;
-	if (scale == 1.0) {
-		local_scale = 100000.00;	/* some large number */
-	} else {
-		local_scale = scale;
-	}
-	return(local_scale);
+	return scale;
 }
 
 
