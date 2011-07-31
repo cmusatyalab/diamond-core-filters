@@ -65,7 +65,7 @@ f_eval_img_diff(lf_obj_handle_t ohandle, void *f_data)
 	bbox_list_t	blist;
 	bbox_list_t	accepted;
 	bbox_t *	cur_box;
-	example_patch2_t *patch;
+	example_patch_t	*patch;
 
 	lf_log(LOGL_TRACE, "f_eval_img_diff: enter");
 

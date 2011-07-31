@@ -35,8 +35,8 @@ read_texture_args(const char *fname, gtexture_args_t *data, int argc,
 			const char * const *args, const void *blob,
 			int blob_len)
 {
-	example_list2_t examples;
-	example_patch2_t *patch;
+	example_list_t examples;
+	example_patch_t *patch;
 	int i, err, patch_size, num_resp;
 
 	data->name = strdup(fname);

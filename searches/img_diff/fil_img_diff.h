@@ -23,7 +23,7 @@
 typedef struct img_diff_config
 {
   const char *fname;
-  example_list2_t examples;
+  example_list_t examples;
 
 } img_diff_config_t;
 

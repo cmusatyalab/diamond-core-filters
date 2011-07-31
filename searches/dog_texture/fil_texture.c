@@ -31,8 +31,8 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
                   int argc, const char * const *args, const void *blob,
                   int blob_len)
 {
-	example_list2_t	examples;
-	example_patch2_t *patch;
+	example_list_t examples;
+	example_patch_t *patch;
 	int s_index, f_vals;
 	const char *metric;
 

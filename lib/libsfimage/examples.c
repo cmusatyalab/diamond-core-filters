@@ -27,9 +27,9 @@
 
 #define EXAMPLE_DIR "examples"
 
-void load_examples(const void *data, size_t len, example_list2_t *examples)
+void load_examples(const void *data, size_t len, example_list_t *examples)
 {
-	example_patch2_t *patch;
+	example_patch_t *patch;
 	struct archive *arch;
 	struct archive_entry *ent;
 	const char *path;
@@ -80,9 +80,9 @@ void load_examples(const void *data, size_t len, example_list2_t *examples)
 		abort();
 }
 
-void free_examples(example_list2_t *examples)
+void free_examples(example_list_t *examples)
 {
-	example_patch2_t *patch;
+	example_patch_t *patch;
 
 	while (!TAILQ_EMPTY(examples)) {
 		patch = TAILQ_FIRST(examples);
