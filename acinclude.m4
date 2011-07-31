@@ -12,34 +12,9 @@
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
 
-AC_SUBST(CVCPPFLAGS)
-AC_SUBST(CVLDFLAGS)
-AC_SUBST(CVCFGXMLS)
-
 AC_DEFUN([ADD_LIB_SEARCH],
     [
        LIB_SEARCH_DIRS="${LIB_SEARCH_DIRS} $1"
-    ])
-
-AC_ARG_WITH(staticlib, 
-    [--with-staticlib=DIR - add DIR to search path for static libraries],
-    [ pfx="`(cd ${withval} ; pwd)`"
-      ADD_LIB_SEARCH(${pfx})
-    ])
-	
-
-
-AC_ARG_WITH(opencv, 
-    [--with-opencv=DIR - root of opencv install dir],
-    [ pfx="`(cd ${withval} ; pwd)`"
-      CVCPPFLAGS="-I${pfx}/include/ -I${pfx}/include/opencv/"
-      CVLDFLAGS=" ${pfx}/lib/libcvaux.a ${pfx}/lib/libcv.a ${pfx}/lib/libcxcore.a"
-      CVCFGXMLS="${pfx}/share/opencv/haarcascades"
-      ADD_LIB_SEARCH(${pfx}/lib)
-    ],
-    [ CVCPPFLAGS="-I/opt/diamond-filter-kit/include -I/opt/diamond-filter-kit/include/opencv"
-      CVLDFLAGS=" -L/opt/diamond-filter-kit/lib -lcvaux -lcv -lcxcore"
-      CVCFGXMLS="/opt/diamond-filter-kit/share/opencv/haarcascades"
     ])
 
 #
@@ -65,6 +40,3 @@ AC_DEFUN([CHECK_STATIC_LIB],
     fi
     AC_SUBST(STATIC_LIBS)
     ])
-
-
-
