@@ -46,13 +46,10 @@ HistoII;
 
 
 
-/* histogram build from file name, starting at minx, miny */
+/* histogram build from example */
 typedef struct histo_patch_t
 {
 	Histo     histo;
-	char          name[COMMON_MAX_PATH];
-	uint32_t         minx, miny;
-	float        threshold;  /* max distance allowed to declare similar */
 	TAILQ_ENTRY(histo_patch_t) link;
 }
 histo_patch_t;
