@@ -74,7 +74,6 @@ typedef struct histo_config
 	int   ysize;      /* patch y size */
 	int stride;         /* x and y strides */
 	float  similarity; /* similarity metric */
-	int 		distance_type;  /* XXX fix this */
 	int 		num_patches;    /* num patches to match */
 	histo_type_t	type;	/* type of histogram */
 	histo_patchlist_t   histo_patchlist;

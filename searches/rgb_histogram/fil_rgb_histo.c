@@ -118,14 +118,13 @@ f_init_histo_detect(int numarg, const char * const *args,
 	hconfig->stride = atoi(args[3]);
 	hconfig->req_matches = atoi(args[4]);
 	hconfig->similarity = atof(args[5]);
-	hconfig->distance_type = atoi(args[6]);
-	hconfig->type = atoi(args[7]);
-	hconfig->num_patches = atoi(args[8]);
+	hconfig->type = atoi(args[6]);
+	hconfig->num_patches = atoi(args[7]);
 
 	/*
 	 * read the histogram patches in 
 	 */
-	err = patch_spec_read_args(hconfig, numarg - 9, args + 9);
+	err = patch_spec_read_args(hconfig, numarg - 8, args + 8);
 	assert(err);
 
 	/*

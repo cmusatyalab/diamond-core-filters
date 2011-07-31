@@ -29,7 +29,6 @@
 /* These are the tokens used in the config files */
 #define	METRIC_ID	"METRIC"
 #define INTERPOLATION_ID	"INTERPOLATION"
-#define DISTANCE_METRIC_ID	"DISTANCEMETRIC"
 
 extern "C" {
 	diamond_public
@@ -51,7 +50,6 @@ search_init()
 rgb_histo_search::rgb_histo_search(const char *name, const char *descr)
 		: example_search(name, descr)
 {
-	metric = 0;
 	similarity = 0.93;
 	edit_window = NULL;
 	htype = HISTO_INTERPOLATED;
@@ -100,10 +98,6 @@ rgb_histo_search::handle_config(int nconf, char **data)
 	} else if (strcmp(INTERPOLATION_ID, data[0]) == 0) {
 		assert(nconf > 1);
 		htype = (histo_type_t) atoi(data[1]);
-		err = 0;
-	} else if (strcmp(DISTANCE_METRIC_ID, data[0]) == 0) {
-		assert(nconf > 1);
-		metric = atoi(data[1]);
 		err = 0;
 	} else {
 		err = example_search::handle_config(nconf, data);
@@ -329,7 +323,6 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	 */
 
 	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
-	fprintf(ostream, "ARG  %d  # distance metric \n", metric);
 	fprintf(ostream, "ARG  %d  # histo type \n", htype);
 	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
 
@@ -380,7 +373,6 @@ rgb_histo_search::write_config(FILE *ostream, const char *dirname)
 	/* write out the rgb parameters */
 	fprintf(ostream, "%s %f \n", METRIC_ID, similarity);
 	fprintf(ostream, "%s %d \n", INTERPOLATION_ID, htype);
-	fprintf(ostream, "%s %d \n", DISTANCE_METRIC_ID, metric);
 
 	example_search::write_config(ostream, dirname);
 	return;

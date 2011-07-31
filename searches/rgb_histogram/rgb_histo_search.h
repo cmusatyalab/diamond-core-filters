@@ -48,7 +48,6 @@ public:
 	void		close_edit_win();
 
 private:
-	int			metric;
 	histo_type_t		htype;
 	GtkObject *	bin_adj;
 	double		similarity;
