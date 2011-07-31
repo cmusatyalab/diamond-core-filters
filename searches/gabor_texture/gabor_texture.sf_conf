@@ -1,2 +1,0 @@
-GUI_LIB		./gabor_texture_search.so
-SEARCHLET_LIB	./fil_gabor_texture
