@@ -45,11 +45,9 @@ public:
 	virtual	int 	handle_config(int num_conf, char **conf);
 	void rgb_write_state(void);
 
-	void 		set_bins(int new_bins);
 	void		close_edit_win();
 
 private:
-	int			bins;
 	int			metric;
 	histo_type_t		htype;
 	GtkObject *	bin_adj;

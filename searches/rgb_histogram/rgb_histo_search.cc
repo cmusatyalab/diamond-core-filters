@@ -28,7 +28,6 @@
 
 /* These are the tokens used in the config files */
 #define	METRIC_ID	"METRIC"
-#define BINS_ID		"BINS"
 #define INTERPOLATION_ID	"INTERPOLATION"
 #define DISTANCE_METRIC_ID	"DISTANCEMETRIC"
 
@@ -54,7 +53,6 @@ rgb_histo_search::rgb_histo_search(const char *name, const char *descr)
 {
 	metric = 0;
 	similarity = 0.93;
-	bins = 3;
 	edit_window = NULL;
 	htype = HISTO_INTERPOLATED;
 }
@@ -64,15 +62,6 @@ rgb_histo_search::~rgb_histo_search()
 	fprintf(stderr, "rgb_destruct \n");
 	return;
 }
-
-void
-rgb_histo_search::set_bins(int new_bins)
-{
-	/* XXX any bounds checks */
-	bins = new_bins;
-	return;
-}
-
 
 void
 rgb_histo_search::set_similarity(char *data)
@@ -107,10 +96,6 @@ rgb_histo_search::handle_config(int nconf, char **data)
 	if (strcmp(METRIC_ID, data[0]) == 0) {
 		assert(nconf > 1);
 		set_similarity(data[1]);
-		err = 0;
-	} else if (strcmp(BINS_ID, data[0]) == 0) {
-		assert(nconf > 1);
-		bins = atoi(data[1]);
 		err = 0;
 	} else if (strcmp(INTERPOLATION_ID, data[0]) == 0) {
 		assert(nconf > 1);
@@ -225,10 +210,6 @@ rgb_histo_search::edit_search()
 	                             similarity, 0.05, &sim_adj);
 	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
 
-	widget = create_slider_entry("Bins", 1, 20, 0,
-	                             bins, 1, &bin_adj);
-	gtk_box_pack_start(GTK_BOX(container), widget, FALSE, TRUE, 0);
-
 
 	interpolated_box = gtk_check_button_new_with_label("Interpolated Histogram");
 	if (htype == HISTO_INTERPOLATED) {
@@ -285,7 +266,6 @@ rgb_histo_search::edit_search()
 void
 rgb_histo_search::save_edits()
 {
-	int		bins;
 	int		val;
 	double	sim;
 
@@ -293,10 +273,6 @@ rgb_histo_search::save_edits()
 	if (edit_window == NULL) {
 		return;
 	}
-
-	/* get the number of bins and save */
-	bins = (int)gtk_adjustment_get_value(GTK_ADJUSTMENT(bin_adj));
-	set_bins(bins);
 
 	/* get the similarity and save */
 	sim = gtk_adjustment_get_value(GTK_ADJUSTMENT(sim_adj));
@@ -352,7 +328,6 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	 * as well as the linearized histograms.
 	 */
 
-	fprintf(ostream, "ARG  %d  # num bins \n", HBINS);
 	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
 	fprintf(ostream, "ARG  %d  # distance metric \n", metric);
 	fprintf(ostream, "ARG  %d  # histo type \n", htype);
@@ -404,7 +379,6 @@ rgb_histo_search::write_config(FILE *ostream, const char *dirname)
 
 	/* write out the rgb parameters */
 	fprintf(ostream, "%s %f \n", METRIC_ID, similarity);
-	fprintf(ostream, "%s %d \n", BINS_ID, bins);
 	fprintf(ostream, "%s %d \n", INTERPOLATION_ID, htype);
 	fprintf(ostream, "%s %d \n", DISTANCE_METRIC_ID, metric);
 

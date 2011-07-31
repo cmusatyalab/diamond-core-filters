@@ -73,7 +73,6 @@ typedef struct histo_config
 	int   xsize;      /* patch x size */
 	int   ysize;      /* patch y size */
 	int stride;         /* x and y strides */
-	int bins;           /* number of histo bins */
 	float  similarity; /* similarity metric */
 	int 		distance_type;  /* XXX fix this */
 	int 		num_patches;    /* num patches to match */

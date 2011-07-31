@@ -60,11 +60,6 @@ patch_spec_read_args(histo_config_t * hconfig, int argc,
 	double          sum;
 	int             nbins = HBINS * HBINS * HBINS;  /* XXX */
 
-	/*
-	 * XXX for now until we allow variable amount of bins 
-	 */
-	assert(HBINS == hconfig->bins);
-
 	TAILQ_INIT(&hconfig->histo_patchlist);
 	for (i = 0; i < hconfig->num_patches; i++) {
 		histo_patch = (histo_patch_t *)malloc(sizeof(*histo_patch));
@@ -122,16 +117,15 @@ f_init_histo_detect(int numarg, const char * const *args,
 	hconfig->ysize = atoi(args[2]);
 	hconfig->stride = atoi(args[3]);
 	hconfig->req_matches = atoi(args[4]);
-	hconfig->bins = atoi(args[5]);
-	hconfig->similarity = atof(args[6]);
-	hconfig->distance_type = atoi(args[7]);
-	hconfig->type = atoi(args[8]);
-	hconfig->num_patches = atoi(args[9]);
+	hconfig->similarity = atof(args[5]);
+	hconfig->distance_type = atoi(args[6]);
+	hconfig->type = atoi(args[7]);
+	hconfig->num_patches = atoi(args[8]);
 
 	/*
 	 * read the histogram patches in 
 	 */
-	err = patch_spec_read_args(hconfig, numarg - 10, args + 10);
+	err = patch_spec_read_args(hconfig, numarg - 9, args + 9);
 	assert(err);
 
 	/*
