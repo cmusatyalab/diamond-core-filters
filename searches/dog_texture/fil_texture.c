@@ -26,14 +26,10 @@
 #include "texture_tools.h"
 #include "lib_ocvimage.h"
 
-#define VERBOSE 1
-
-static int
+static void
 read_texture_args(const char *fname, texture_args_t *texture_args,
                   int argc, const char * const *args)
 {
-
-	int pass = 0;
 	int s_index, f_index, f_vals;
 
 	texture_args->name = strdup(fname);
@@ -76,8 +72,6 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
 		}
 	}
 	texture_args->num_samples = s_index;
-	pass = 1;
-	return pass;
 }
 
 
@@ -87,15 +81,13 @@ f_init_texture_detect(int numarg, const char * const *args,
 		      const char *filt_name, void **f_datap)
 {
 	texture_args_t*	targs;
-	int				err;
 
 	lf_log(LOGL_TRACE, "f_init_texture_detect: filter name %s", 
 	     filt_name);
 	targs = (texture_args_t *)malloc(sizeof(*targs));
 	assert(targs);
 
-	err = read_texture_args(filt_name, targs, numarg, args);
-	assert(err);
+	read_texture_args(filt_name, targs, numarg, args);
 
 	*f_datap = targs;
 	return(0);
