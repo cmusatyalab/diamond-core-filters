@@ -31,6 +31,7 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
                   int argc, const char * const *args)
 {
 	int s_index, f_index, f_vals;
+	const char *metric;
 
 	texture_args->name = strdup(fname);
 	assert(texture_args->name != NULL);
@@ -50,7 +51,16 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
 
 	texture_args->num_channels = atoi(args[6]);
 
-	texture_args->texture_distance = (texture_dist_t) atoi(args[7]);
+	metric = args[7];
+	if (!strcasecmp("mahalanobis", metric)) {
+		texture_args->texture_distance = TEXTURE_DIST_MAHALANOBIS;
+	} else if (!strcasecmp("variance", metric)) {
+		texture_args->texture_distance = TEXTURE_DIST_VARIANCE;
+	} else if (!strcasecmp("pairwise", metric)) {
+		texture_args->texture_distance = TEXTURE_DIST_PAIRWISE;
+	} else {
+		abort();
+	}
 
 	texture_args->num_samples = atoi(args[8]);
 

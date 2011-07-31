@@ -339,6 +339,7 @@ texture_search::write_fspec(FILE *ostream)
 	IplImage	*img;
 	IplImage	*scale_img;
 	RGBImage	*rimg;
+	const char	*metric;
 	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
 	example_patch_t	*cur_patch;
 	int num_samples;
@@ -371,7 +372,20 @@ texture_search::write_fspec(FILE *ostream)
 
 	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
 	fprintf(ostream, "ARG  %d  # channels \n", channels);
-	fprintf(ostream, "ARG  %d  # distance type \n", distance_metric);
+	switch (distance_metric) {
+	case TEXTURE_DIST_MAHALANOBIS:
+		metric = "mahalanobis";
+		break;
+	case TEXTURE_DIST_VARIANCE:
+		metric = "variance";
+		break;
+	case TEXTURE_DIST_PAIRWISE:
+		metric = "pairwise";
+		break;
+	default:
+		abort();
+	}
+	fprintf(ostream, "ARG  %s  # distance type \n", metric);
 
 	num_samples = 0;
 	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
