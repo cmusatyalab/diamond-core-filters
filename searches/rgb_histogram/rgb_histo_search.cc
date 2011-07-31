@@ -323,7 +323,8 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	 */
 
 	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
-	fprintf(ostream, "ARG  %d  # histo type \n", htype);
+	fprintf(ostream, "ARG  %s  # interpolated \n",
+                        htype == HISTO_INTERPOLATED ? "true" : "false");
 	fprintf(ostream, "ARG  %d  # num examples \n", num_patches);
 
 
@@ -357,7 +358,7 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
 	fprintf(ostream, "MERIT  200  # merit value \n");
 	fprintf(ostream, "ARG  4  # dependancies \n");
-	fprintf(ostream, "ARG  %d  # dependancies \n", HISTO_INTERPOLATED);
+	fprintf(ostream, "ARG  true  # interpolated \n");
 }
 
 

@@ -118,7 +118,8 @@ f_init_histo_detect(int numarg, const char * const *args,
 	hconfig->stride = atoi(args[3]);
 	hconfig->req_matches = atoi(args[4]);
 	hconfig->similarity = atof(args[5]);
-	hconfig->type = atoi(args[6]);
+	hconfig->type = !strcasecmp(args[6], "true") ?
+				HISTO_INTERPOLATED : HISTO_SIMPLE;
 	hconfig->num_patches = atoi(args[7]);
 
 	/*
@@ -234,7 +235,8 @@ f_init_hintegrate(int numarg, const char * const *args,
 	 */
 	assert(numarg == 2);
 	fstate->scale = atoi(args[0]);
-	fstate->type = atoi(args[1]);
+	fstate->type = !strcasecmp(args[1], "true") ?
+				HISTO_INTERPOLATED : HISTO_SIMPLE;
 	// printf("fstate !!! %p \n", *data);
 	*data = fstate;
 	return (0);
