@@ -28,10 +28,6 @@
 #include "gabor_tools.h"
 #include "gabor.h"
 
-#define VERBOSE 1
-
-
-
 static int
 read_texture_args(const char *fname, gtexture_args_t *data, int argc, const char * const *args)
 {
