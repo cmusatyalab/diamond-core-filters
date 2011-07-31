@@ -87,7 +87,6 @@ AC_CHECK_FUNCS([memset pow regcomp sqrt strdup strtol])
 
 AC_CONFIG_FILES([Makefile
 		Makefile.template
-		snapfind/Makefile
 		searches/Makefile
 		searches/text_attr/Makefile
 		searches/num_attr/Makefile
