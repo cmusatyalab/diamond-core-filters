@@ -17,7 +17,7 @@
 #include "rgb.h"
 #include "assert.h"
 #include "gabor.h"
-
+#include "gabor_filter.h"
 
 #define	VAL_OFFSET(x, y)  (((y) * (gfilt_dim)) + (x))
 
