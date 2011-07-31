@@ -28,9 +28,12 @@
 
 static void
 read_texture_args(const char *fname, texture_args_t *texture_args,
-                  int argc, const char * const *args)
+                  int argc, const char * const *args, const void *blob,
+                  int blob_len)
 {
-	int s_index, f_index, f_vals;
+	example_list2_t	examples;
+	example_patch2_t *patch;
+	int s_index, f_vals;
 	const char *metric;
 
 	texture_args->name = strdup(fname);
@@ -62,26 +65,57 @@ read_texture_args(const char *fname, texture_args_t *texture_args,
 		abort();
 	}
 
-	texture_args->num_samples = atoi(args[8]);
+	/* Process examples */
+	TAILQ_INIT(&examples);
+	load_examples(blob, blob_len, &examples);
 
-	/* read in the arguments for each sample */
-	argc -= 9; args += 9;
-
-	texture_args->sample_values = (double **)
-      	    malloc(sizeof(double *) * texture_args->num_samples);
+	texture_args->num_samples = 0;
+	TAILQ_FOREACH(patch, &examples, link) {
+		texture_args->num_samples++;
+	}
+	texture_args->sample_values = malloc(sizeof(double *) *
+				texture_args->num_samples);
 	assert(texture_args->sample_values != NULL);
 
 	f_vals = NUM_LAP_PYR_LEVELS * texture_args->num_channels;
-	for (s_index = 0; s_index < texture_args->num_samples && argc >= f_vals;
-	     s_index++) {
-		texture_args->sample_values[s_index] =
-		    (double *)malloc(sizeof(double) * f_vals);
-		for (f_index = 0; f_index < f_vals; f_index++) {
-			texture_args->sample_values[s_index][f_index] = atof(*args);
-			argc--; args++;
+	s_index = 0;
+	TAILQ_FOREACH(patch, &examples, link) {
+		IplImage	*img;
+		IplImage	*scale_img;
+		RGBImage	*rimg;
+		int		xoff, yoff, size;
+
+		/* pick largest square that fits within the selected patch */
+		size = (patch->image->width < patch->image->height) ?
+			patch->image->width : patch->image->height;
+		xoff = (patch->image->width - size) / 2;
+		yoff = (patch->image->height - size) / 2;
+
+		rimg = create_rgb_subimage(patch->image, xoff, yoff, size,
+					size);
+
+		if (texture_args->num_channels == 1) {
+			img = get_gray_ipl_image(rimg);
+		} else {
+			img = get_rgb_ipl_image(rimg);
 		}
+		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U,
+					  texture_args->num_channels);
+		cvResize(img, scale_img, CV_INTER_LINEAR);
+
+		texture_args->sample_values[s_index] =
+					malloc(sizeof(double) * f_vals);
+		texture_get_lap_pyr_features_from_subimage(scale_img,
+					texture_args->num_channels, 0, 0,
+					32, 32,
+					texture_args->sample_values[s_index]);
+
+		release_rgb_image(rimg);
+		cvReleaseImage(&img);
+		cvReleaseImage(&scale_img);
+		s_index++;
 	}
-	texture_args->num_samples = s_index;
+	free_examples(&examples);
 }
 
 
@@ -97,7 +131,7 @@ f_init_texture_detect(int numarg, const char * const *args,
 	targs = (texture_args_t *)malloc(sizeof(*targs));
 	assert(targs);
 
-	read_texture_args(filt_name, targs, numarg, args);
+	read_texture_args(filt_name, targs, numarg, args, blob, blob_len);
 
 	*f_datap = targs;
 	return(0);

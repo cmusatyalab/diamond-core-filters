@@ -336,14 +336,7 @@ texture_search::save_edits()
 void
 texture_search::write_fspec(FILE *ostream)
 {
-	IplImage	*img;
-	IplImage	*scale_img;
-	RGBImage	*rimg;
 	const char	*metric;
-	double		feature_vals[NUM_LAP_PYR_LEVELS *TEXTURE_MAX_CHANNELS];
-	example_patch_t	*cur_patch;
-	int num_samples;
-	int		i = 0;
 
 	save_edits();
 	/*
@@ -387,45 +380,10 @@ texture_search::write_fspec(FILE *ostream)
 	}
 	fprintf(ostream, "ARG  %s  # distance type \n", metric);
 
-	num_samples = 0;
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		num_samples++;
-	}
-	fprintf(ostream, "ARG  %d  # num examples \n", num_samples);
-
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		int xoff, yoff, size, j;
-
-		/* pick largest square that fits within the selected patch */
-		size = (cur_patch->xsize < cur_patch->ysize) ?
-		    cur_patch->xsize : cur_patch->ysize;
-		xoff = (cur_patch->xsize - size) / 2;
-		yoff = (cur_patch->ysize - size) / 2;
-
-		rimg = create_rgb_subimage(cur_patch->patch_image,
-					xoff, yoff, size, size);
-
-		if (channels == 1) {
-			img = get_gray_ipl_image(rimg);
-		} else {
-			img = get_rgb_ipl_image(rimg);
-		}
-		scale_img = cvCreateImage(cvSize(32, 32), IPL_DEPTH_8U,
-					  channels);
-		cvResize(img, scale_img, CV_INTER_LINEAR);
-
-		texture_get_lap_pyr_features_from_subimage(scale_img, channels,
-							   0, 0, 32, 32,
-							   feature_vals);
-
-		for (j = 0; j < NUM_LAP_PYR_LEVELS * channels; j++) {
-			fprintf(ostream, "ARG  %f  # sample %d val %d \n",
-				feature_vals[j], i, j);
-		}
-		i++;	/* count thenumber of samples for debugging */
-	}
 	fprintf(ostream, "REQUIRES  RGB # dependencies \n");
 	fprintf(ostream, "MERIT  100 # some relative cost \n");
+
+	set_auxiliary_data_from_examples();
 }
 
 
