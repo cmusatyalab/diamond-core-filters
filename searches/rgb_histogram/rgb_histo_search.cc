@@ -297,6 +297,22 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	save_edits();
 
 	/*
+	 * This search actually relies on two different filters.
+	 * The arguments are fixed, so it is ok to include this
+	 * multiple times??
+	 */
+	fprintf(ostream, "\n");
+	fprintf(ostream, "FILTER  HISTO_II  # name \n");
+	fprintf(ostream, "THRESHOLD  1  # threshold \n");
+	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo\n");
+	fprintf(ostream, "INIT_FUNCTION  f_init_histo\n");
+	fprintf(ostream, "FINI_FUNCTION  f_fini_histo\n");
+	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
+	fprintf(ostream, "MERIT  200  # merit value \n");
+	fprintf(ostream, "ARG  4  # dependancies \n");
+	fprintf(ostream, "ARG  true  # interpolated \n");
+
+	/*
 		 * First we write the header section that corrspons
 		 * to the filter, the filter name, the assocaited functions.
 		 */
@@ -342,23 +358,6 @@ rgb_histo_search::write_fspec(FILE *ostream)
 	fprintf(ostream, "REQUIRES  HISTO_II # dependancies \n");
 	fprintf(ostream, "MERIT 200  # some merit \n");
 	fprintf(ostream, "\n");
-
-
-	/*
-	 * This search actually relies on two different filters.
-	 * The arguments are fixed, so it is ok to include this
-	 * multiple times??
-	 */
-	fprintf(ostream, "\n");
-	fprintf(ostream, "FILTER  HISTO_II  # name \n");
-	fprintf(ostream, "THRESHOLD  1  # threshold \n");
-	fprintf(ostream, "EVAL_FUNCTION  f_eval_histo\n");
-	fprintf(ostream, "INIT_FUNCTION  f_init_histo\n");
-	fprintf(ostream, "FINI_FUNCTION  f_fini_histo\n");
-	fprintf(ostream, "REQUIRES  RGB  # dependancies \n");
-	fprintf(ostream, "MERIT  200  # merit value \n");
-	fprintf(ostream, "ARG  4  # dependancies \n");
-	fprintf(ostream, "ARG  true  # interpolated \n");
 }
 
 
