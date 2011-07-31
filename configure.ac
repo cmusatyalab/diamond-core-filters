@@ -7,13 +7,6 @@ AC_CONFIG_SRCDIR([include/lib_sfimage.h]) AC_CONFIG_HEADER([config.h])
 AC_PROG_CXX
 AC_PROG_CC
 
-
-#
-# Load snapfind macros
-#
-#AC_CONFIG_AUX_DIR(configs)
-sinclude(configs/snapfind_macros.m4)
-
 #
 # Paths to search for static libraries when building searchlet code.
 #
