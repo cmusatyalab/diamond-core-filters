@@ -17,6 +17,7 @@
  * texture filter
  */
 
+#include <sys/queue.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,15 +26,18 @@
 #include "lib_filter.h"
 #include "rgb.h"
 #include "lib_results.h"
+#include "lib_sfimage.h"
 #include "gabor_tools.h"
 #include "gabor.h"
 
-static int
-read_texture_args(const char *fname, gtexture_args_t *data, int argc, const char * const *args)
+static void
+read_texture_args(const char *fname, gtexture_args_t *data, int argc,
+			const char * const *args, const void *blob,
+			int blob_len)
 {
-	int	i,j;
-	float *	respv;
-	int num_resp;
+	example_list2_t examples;
+	example_patch2_t *patch;
+	int i, err, patch_size, num_resp;
 
 	data->name = strdup(fname);
 	assert(data->name != NULL);
@@ -52,28 +56,52 @@ read_texture_args(const char *fname, gtexture_args_t *data, int argc, const char
 	data->max_freq = atof(*args++);
 	data->min_freq = atof(*args++);
 
-	data->num_samples = atoi(*args++);
-	num_resp = data->num_angles * data->num_freq;
 
-	data->response_list = (float **) malloc(sizeof(float *) *
-	                                        data->num_samples);
+	/* Process examples */
+	TAILQ_INIT(&examples);
+	load_examples(blob, blob_len, &examples);
 
-	for (i=0; i < data->num_samples; i++) {
-		respv = (float *) malloc(sizeof(float) * num_resp);
-		assert(respv != NULL);
-		data->response_list[i] = respv;
-
-		for (j=0; j < num_resp; j++) {
-			respv[j] = atof(*args++);
+	patch_size = 2 * data->radius + 1;
+	data->num_samples = 0;
+	TAILQ_FOREACH(patch, &examples, link) {
+		if ((patch->image->width <= patch_size) ||
+		    (patch->image->height <= patch_size)) {
+			continue;
 		}
+		data->num_samples++;
+	}
+	if (data->num_samples == 0) {
+		fprintf(stderr, "No patches of large enough size \n");
+		abort();
 	}
 
-	data->gobj = new gabor(data->num_angles, data->radius, data->num_freq,
-	                       data->max_freq, data->min_freq);
-	return (0);
+	data->response_list = (float **) malloc(sizeof(float *) *
+				data->num_samples);
+	data->gobj = new gabor(data->num_angles, data->radius,
+				data->num_freq, data->max_freq,
+				data->min_freq);
+
+	num_resp = data->num_angles * data->num_freq;
+	i = 0;
+	TAILQ_FOREACH(patch, &examples, link) {
+		if ((patch->image->width <= patch_size) ||
+		    (patch->image->height <= patch_size)) {
+			continue;
+		}
+		data->response_list[i] = (float *) malloc(sizeof(float) *
+					num_resp);
+		err = gabor_patch_response(patch->image, data, num_resp,
+					data->response_list[i]);
+		if (err) {
+			fprintf(stderr, "get_response failed\n");
+			abort();
+		}
+		i++;
+	}
+
+	free_examples(&examples);
 }
 
-                                                                                
 
 
 static int
@@ -81,13 +109,11 @@ f_init_gab_texture(int numarg, const char * const *args, int blob_len,
                    const void *blob, const char *fname, void **f_datap)
 {
 	gtexture_args_t*	data;
-	int			err;
 
 	data = (gtexture_args_t *) malloc(sizeof(*data));
 	assert(data != NULL);
 
-	err = read_texture_args(fname, data, numarg, args);
-	assert(err == 0);
+	read_texture_args(fname, data, numarg, args, blob, blob_len);
 
 	*f_datap = data;
 	return(0);

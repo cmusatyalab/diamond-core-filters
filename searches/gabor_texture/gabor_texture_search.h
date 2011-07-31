@@ -66,9 +66,6 @@ public:
 
 
 private:
-	int 	gen_args(gtexture_args_t *gargs);
- 	void 	release_args(gtexture_args_t *gargs);
-
 	int			method;
 	double			similarity;
 	int			num_angles;

@@ -386,89 +386,6 @@ gabor_texture_search::save_edits()
 	example_search::save_edits();
 }
 
-void
-gabor_texture_search::release_args(gtexture_args_t *gargs)
-{
-
-	int	i;
-	delete	gargs->gobj;
-	
-	for (i=0; i < gargs->num_samples; i++) {
-		free(gargs->response_list[i]);
-	}
-	free(gargs->response_list);
-}
-
-int
-gabor_texture_search::gen_args(gtexture_args_t *gargs)
-{
-	int		samples, patch_size, num_resp;
-	example_patch_t	*	cur_patch;
-	float *			respv;
-	int			err;
-	int	i;
-
-	gargs->name = strdup(get_name());
-	assert(gargs->name != NULL);
-
-	gargs->step = get_stride();
-	gargs->xdim = get_testx();
-	gargs->ydim = get_testy();
-	gargs->min_matches = get_matches();
-	gargs->max_distance = 1.0 - similarity;
-	gargs->num_angles = num_angles;
-	gargs->num_freq = num_freq;
-	gargs->radius = radius;
-	gargs->max_freq = max_freq;
-	gargs->min_freq = min_freq;
-
-	patch_size = 2 * radius + 1;
-	/* count the number of patches of the appropriate size*/
-	samples = 0;
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		if ((cur_patch->patch_image->width < (patch_size+1)) ||
-		    (cur_patch->patch_image->height < (patch_size+1))) {
-				continue;
-		} else {
-			samples++;
-		}
-	}
-
-	/* if no samples we skip out */
-	if (samples == 0) {
-		return(0);
-	}
-	
-	gargs->num_samples = samples;
-	num_resp = num_angles * num_freq;
-	gargs->response_list = (float **)malloc(sizeof(float *) * samples);
-
-
-	gargs->gobj = new gabor(gargs->num_angles, gargs->radius, 
-		gargs->num_freq, gargs->max_freq, gargs->min_freq);
-
-	i = 0;
-	TAILQ_FOREACH(cur_patch, &ex_plist, link) {
-		if ((cur_patch->patch_image->width < patch_size) ||
-		    (cur_patch->patch_image->height < patch_size)) {
-			continue;
-		}
-
-		respv = (float *) malloc(sizeof(float) * num_resp);
-		assert(respv != NULL);
-		gargs->response_list[i] = respv;
-
-		err = gabor_patch_response(cur_patch->patch_image, gargs, num_resp, respv);
-		if (err) {
-			fprintf(stderr, "get_response failed\n");
-			/* XXX */
-			continue;
-		}
-		i++;
-	}
-	return(1);
-}
-
 /*
  * This write the relevant section of the filter specification file
  * for this search.
@@ -477,19 +394,8 @@ gabor_texture_search::gen_args(gtexture_args_t *gargs)
 void
 gabor_texture_search::write_fspec(FILE *ostream)
 {
-	int		i = 0;
-	int 		j;
-	int		err;
-	int		num_resp;
-	gtexture_args_t	gargs;
-
 	save_edits();
 
-	err = gen_args(&gargs);
-	if (err == 0) {
-		fprintf(stderr, "No patches of large enough size \n");
-		return;
-	}
 	/*
 	 * First we write the header section that corrspons
 	 * to the filter, the filter name, the assocaited functions.
@@ -515,26 +421,16 @@ gabor_texture_search::write_fspec(FILE *ostream)
 	 */
 
 	fprintf(ostream, "ARG  %f  # similarity \n", 0.0);
-	fprintf(ostream, "ARG  %d  # num_angles \n", gargs.num_angles);
-	fprintf(ostream, "ARG  %d  # num_freq \n", gargs.num_freq);
-	fprintf(ostream, "ARG  %d  # radius \n", gargs.radius);
-	fprintf(ostream, "ARG  %f  # max_freq \n", gargs.max_freq);
-	fprintf(ostream, "ARG  %f  # min_freq \n", gargs.min_freq);
-	fprintf(ostream, "ARG  %d  # num examples \n", gargs.num_samples);
-
-	num_resp = num_angles * num_freq;
-
-	for (i=0; i < gargs.num_samples; i++) {
-		for (j=0; j < num_resp; j++) {
-			fprintf(ostream, "ARG  %f  # sample %d resp %d \n",
-			        gargs.response_list[i][j], i, j);
-		}
-	}
-
-	release_args(&gargs);
+	fprintf(ostream, "ARG  %d  # num_angles \n", num_angles);
+	fprintf(ostream, "ARG  %d  # num_freq \n", num_freq);
+	fprintf(ostream, "ARG  %d  # radius \n", radius);
+	fprintf(ostream, "ARG  %f  # max_freq \n", max_freq);
+	fprintf(ostream, "ARG  %f  # min_freq \n", min_freq);
 
 	fprintf(ostream, "REQUIRES  RGB # dependencies \n");
 	fprintf(ostream, "MERIT  100 # some relative cost \n");
+
+	set_auxiliary_data_from_examples();
 }
 
 void
