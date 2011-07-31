@@ -40,8 +40,6 @@ typedef TAILQ_HEAD(example_list2_t, example_patch2) example_list2_t;
 
 RGBImage	   *read_rgb_image(const void *buf, size_t buflen);
 
-int rgb_write_image_file(RGBImage *img, FILE *fp);
-
 int pnm_parse_header(char *fdata, size_t nb,
 		     int *width, int *height,
 		     image_type_t *magic, int *headerlen);
@@ -51,8 +49,6 @@ int pnm_parse_header(char *fdata, size_t nb,
 RGBImage* image_gen_image_scale(RGBImage *, int scale);
 
 void load_examples(const void *data, size_t len, example_list2_t *examples);
-
-void *save_examples(example_list2_t *examples, size_t *len);
 
 void free_examples(example_list2_t *examples);
                                                                                 

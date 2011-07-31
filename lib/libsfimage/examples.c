@@ -24,7 +24,6 @@
 #include <archive_entry.h>
 
 #include "lib_sfimage.h"
-#include "writepng.h"
 
 #define EXAMPLE_DIR "examples"
 
@@ -79,58 +78,6 @@ void load_examples(const void *data, size_t len, example_list2_t *examples)
 	assert(ret == ARCHIVE_EOF);
 	if (archive_read_finish(arch))
 		abort();
-}
-
-void *save_examples(example_list2_t *examples, size_t *len)
-{
-	FILE *fp;
-	char *zip;
-	struct archive *arch;
-	struct archive_entry *ent;
-	example_patch2_t *patch;
-	void *png;
-	size_t pngsize;
-	char path[512];
-	int i = 0;
-
-	fp = open_memstream(&zip, len);
-	arch = archive_write_new();
-	assert(arch != NULL);
-	ent = archive_entry_new();
-	if (archive_write_set_format_zip(arch))
-		abort();
-	if (archive_write_open_FILE(arch, fp))
-		abort();
-	archive_entry_set_pathname(ent, EXAMPLE_DIR);
-	archive_entry_set_filetype(ent, AE_IFDIR);
-	if (archive_write_header(arch, ent))
-		abort();
-	TAILQ_FOREACH(patch, examples, link) {
-		png = convertRGBImagetoPNG(patch->image, &pngsize);
-		if (png == NULL) {
-			fprintf(stderr, "Couldn't encode PNG\n");
-			abort();
-		}
-		archive_entry_clear(ent);
-		snprintf(path, sizeof(path), EXAMPLE_DIR "/%d.png", i++);
-		archive_entry_set_pathname(ent, path);
-		archive_entry_set_filetype(ent, AE_IFREG);
-		archive_entry_set_size(ent, pngsize);
-		if (archive_write_header(arch, ent)) {
-			fprintf(stderr, "Couldn't write header for %s", path);
-			abort();
-		}
-		if (archive_write_data(arch, png, pngsize) != pngsize) {
-			fprintf(stderr, "Couldn't write data for %s", path);
-			abort();
-		}
-		free(png);
-	}
-	if (archive_write_finish(arch))
-		abort();
-	archive_entry_free(ent);
-	fclose(fp);
-	return zip;
 }
 
 void free_examples(example_list2_t *examples)

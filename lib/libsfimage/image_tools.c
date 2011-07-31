@@ -64,29 +64,6 @@ skip_space_comments(char *buf, char *endbuf)
 }
 
 
-int
-rgb_write_image_file(RGBImage *img, FILE *fp)
-{
-	int             err;
-	int             i;
-
-	/*
-	 * now we write out the header 
-	 */
-	fprintf(fp, "P6 \n");
-	fprintf(fp, "%d %d \n", img->width, img->height);
-	fprintf(fp, "255\n");
-
-	for (i = 0; i < (img->height * img->width); i++) {
-		err = fwrite(&img->data[i], 3, 1, fp);
-		assert(err == 1);
-	}
-
-	return 0;
-}
-
-
-
 /*
  * read a portable anymap header from a bunch of bytes
  * returns 0 or error status
