@@ -1,16 +1,19 @@
 *~
+.deps
+.dirstamp
+Makefile
+Makefile.in
 *.a
 *.o
-*.so
 *.search
 
 /autom4te.cache
 /aclocal.m4
+/build-aux
 /configure
 /config.h.in
 /config.h
 /config.log
 /config.status
-/Makefile.template
-
-Makefile
+/m4
+/stamp-h1

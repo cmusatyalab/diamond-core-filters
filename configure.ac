@@ -2,11 +2,18 @@
 
 AC_PREREQ(2.57)
 AC_INIT([SnapFind], [2.0], [diamond@cs.cmu.edu])
+AC_CONFIG_AUX_DIR([build-aux])
+AM_INIT_AUTOMAKE([1.11 foreign subdir-objects])
+AM_SILENT_RULES([yes])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([include/lib_sfimage.h])
 AC_CONFIG_HEADER([config.h])
+
 # Checks for the standard compile programs 
 AC_PROG_CXX
 AC_PROG_CC
+AM_PROG_CC_C_O
+AC_PROG_RANLIB
 
 # Add command-line options.
 
@@ -66,24 +73,5 @@ AC_ARG_WITH(buildroot,
     [ BUILDROOT=${OBJROOT}/target]
     ) 
 
-AC_CONFIG_FILES([Makefile
-		Makefile.template
-		searches/Makefile
-		searches/text_attr/Makefile
-		searches/num_attr/Makefile
-		searches/gabor_texture/Makefile
-		searches/ocv_face/Makefile
-		searches/rgbimg/Makefile
-		searches/dog_texture/Makefile
-		searches/rgb_histogram/Makefile
-		searches/img_diff/Makefile
-		searches/thumbnailer/Makefile
-		searches/null/Makefile
-		searches/shingling/Makefile
-		lib/Makefile
-		lib/libsfimage/Makefile
-		lib/libresults/Makefile
-		lib/libocvimage/Makefile
-		target/Makefile
-		target/lib/Makefile])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
