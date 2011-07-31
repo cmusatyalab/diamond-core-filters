@@ -22,7 +22,6 @@
 #include <assert.h>
 #include "lib_results.h"
 #include "lib_sfimage.h"
-#include "snapfind_consts.h"
 
 /*
  * note: should make these functions localized 

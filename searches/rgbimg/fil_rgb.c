@@ -23,7 +23,6 @@
 #include <stdint.h>
 #include <math.h>
 #include <assert.h>
-#include "snapfind_consts.h"
 #include "lib_results.h"
 #include "lib_filter.h"
 #include "lib_sfimage.h"

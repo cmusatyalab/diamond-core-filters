@@ -25,7 +25,6 @@
 #include <stdint.h>
 #include <math.h>
 #include <assert.h>
-#include "snapfind_consts.h"
 #include "lib_results.h"
 #include "lib_filter.h"
 #include "lib_sfimage.h"
@@ -33,6 +32,8 @@
 
 #include <jpeglib.h>
 
+#define THUMBNAIL_ATTR			"thumbnail.jpeg"
+#define THUMBNAIL_JPEG_QUALITY          95
 
 struct filter_args {
     int width;

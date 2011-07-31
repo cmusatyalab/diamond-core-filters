@@ -17,7 +17,6 @@
 
 #include <sys/queue.h>
 #include "rgb.h"
-#include "snapfind_consts.h"
 
 #define HISTO_SCALE  	1.5
 

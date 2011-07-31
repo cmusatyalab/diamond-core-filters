@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include "lib_filter.h"
-#include "snapfind_consts.h"
 #include <sys/queue.h>
 #include "lib_sfimage.h"
 

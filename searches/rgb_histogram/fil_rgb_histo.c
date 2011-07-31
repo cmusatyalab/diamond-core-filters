@@ -29,7 +29,6 @@
 #include "lib_results.h"
 #include "lib_sfimage.h"
 #include "lib_filter.h"
-#include "snapfind_consts.h"
 #include "rgb.h"
 #include "rgb_histo.h"
 
