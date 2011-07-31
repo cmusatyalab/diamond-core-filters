@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="DOG Texture">
+  <options>
+    <optionGroup displayName="Difference of Gaussians">
+      <numberOption displayName="Min similarity" name="minScore"
+          default="93" min="0" max="100"/>
+      <choiceOption displayName="Channels" name="channels">
+        <choice displayName="Grayscale" value="1"/>
+        <choice displayName="Color" value="3" default="true"/>
+      </choiceOption>
+      <choiceOption displayName="Distance metric" name="metric">
+        <choice displayName="Mahalanobis" value="mahalanobis"/>
+        <choice displayName="Variance" value="variance"/>
+        <choice displayName="Pairwise" value="pairwise" default="true"/>
+      </choiceOption>
+      <exampleOption displayName="Examples" name="examples"/>
+    </optionGroup>
+    <optionGroup displayName="Window Search">
+      <numberOption displayName="Scale" name="scale"
+          default="1" min="1" max="200" step=".25"/>
+      <numberOption displayName="Test X" name="testx"
+          default="32" min="1" max="100" step="1"/>
+      <numberOption displayName="Test Y" name="testy"
+          default="32" min="1" max="100" step="1"/>
+      <numberOption displayName="Stride" name="stride"
+          default="16" min="1" max="100"/>
+      <numberOption displayName="Matches" name="matches"
+          default="1" min="1" max="100"/>
+    </optionGroup>
+  </options>
+  <filters>
+    <filter code="fil_dog_texture">
+      <minScore option="minScore"/>
+      <dependencies>
+        <dependency fixedName="RGB"/>
+      </dependencies>
+      <arguments>
+        <argument option="scale"/>
+        <argument option="testx"/>
+        <argument option="testy"/>
+        <argument option="stride"/>
+        <argument option="matches"/>
+        <argument value="0"/>  <!-- similarity -->
+        <argument option="channels"/>
+        <argument option="metric"/>
+      </arguments>
+      <blob>
+        <examples/>
+      </blob>
+    </filter>
+  </filters>
+</search>
