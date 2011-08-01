@@ -23,6 +23,7 @@ include lib/build.mk
 include searches/build.mk
 
 noinst_LIBRARIES = lib/libsnapfind.a
-snapfinddir = $(exec_prefix)/lib
-snapfind_PROGRAMS = $(FILTERS)
-snapfind_DATA = $(SEARCHES)
+filterdir = $(datadir)/diamond/filters
+searchdir = $(datadir)/diamond/searches
+filter_PROGRAMS = $(FILTERS)
+search_DATA = $(SEARCHES)
