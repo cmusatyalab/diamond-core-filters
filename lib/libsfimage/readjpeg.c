@@ -129,8 +129,8 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	    return NULL;
 	  }
 
-	  int w = cinfo.output_width;
-	  int h = cinfo.output_height;
+	  unsigned w = cinfo.output_width;
+	  unsigned h = cinfo.output_height;
 	  rgbimg = rgbimg_blank_image(w, h);    // output image
 
 	  // XXX WARNING XXX
@@ -153,7 +153,7 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	    //
 	    jpeg_read_scanlines(&cinfo, buffer, 1);
 	    u_char* curpix = buffer[0];   // [0] refers to 1st scanline
-	    int c;
+	    unsigned c;
 	    for (c=0; c < w; c++) {       // write scanline [note 3*w]
 
 	      if (cinfo.output_components == 1) { // monochrome

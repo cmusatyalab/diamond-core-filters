@@ -85,7 +85,7 @@ f_init_opencv_detect(int numarg, const char * const *args,
 	assert(fd >=0);
 
 	nbytes = write(fd, blob_data, blob_len);
-	assert(nbytes == blob_len);
+	assert(nbytes == (size_t) blob_len);
 	close(fd);
 
 	// cvLoad requires the filename end in .xml, argh.

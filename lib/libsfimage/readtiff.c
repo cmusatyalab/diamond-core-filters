@@ -127,7 +127,8 @@ int
 myTIFFmmap(thandle_t f, tdata_t* data, toff_t* length)
 {
 	MyTIFF* file = (MyTIFF*)f;
-	*data = file->buf;
+	// we only open for reading, so casting away the const is "safe"
+	*data = (tdata_t) file->buf;
 	return 0;	// don't know what to return.
 }
 

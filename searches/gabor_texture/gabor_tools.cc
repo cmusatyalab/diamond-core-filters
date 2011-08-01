@@ -25,7 +25,7 @@
 #include "gabor_tools.h"
 #include "gabor.h"
 
-
+#if 0
 static void
 dump_gtexture_args(gtexture_args_t *gargs)
 {
@@ -52,6 +52,7 @@ dump_gtexture_args(gtexture_args_t *gargs)
 		fprintf(stderr, "\n");
 	}
 }
+#endif
 
 static float
 gabor_vsum(int num, float *vec)
@@ -76,6 +77,7 @@ dump_single_respv(int num_resp, float *new_vec)
 	fprintf(stderr, "\n");
 }
 
+#if 0
 static void
 dump_respv(int num_resp, float *new_vec, float *orig_vec)
 {
@@ -92,6 +94,7 @@ dump_respv(int num_resp, float *new_vec, float *orig_vec)
 	}
 	fprintf(stderr, "\n");
 }
+#endif
 
 
 

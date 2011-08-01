@@ -59,7 +59,7 @@ void load_examples(const void *data, size_t len, example_list_t *examples)
 			abort();
 		while ((count = archive_read_data(arch, block,
 					sizeof(block))) > 0)
-			if (fwrite(block, 1, count, fp) != count)
+			if (fwrite(block, 1, count, fp) != (size_t) count)
 				abort();
 		if (count < 0) {
 			fprintf(stderr, "%s\n", archive_error_string(arch));
