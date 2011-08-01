@@ -40,7 +40,6 @@ AC_SUBST(CVLDFLAGS)
 # Paths to search for static libraries when building searchlet code.
 #
 ADD_LIB_SEARCH([/opt/diamond-filter-kit/lib])
-ADD_LIB_SEARCH([/opt/diamond-filter-kit/opencv/lib])
 ADD_LIB_SEARCH([/usr/lib])
 ADD_LIB_SEARCH([/lib])
 
