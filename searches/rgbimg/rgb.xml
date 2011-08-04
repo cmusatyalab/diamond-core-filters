@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
-    displayName="Built-in" codec="true">
+<codec xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="Built-in">
   <filters>
     <filter code="fil_rgb" fixedName="RGB">
       <minScore value="1"/>
@@ -16,4 +16,4 @@
       </arguments>
     </filter>
   </filters>
-</search>
+</codec>
