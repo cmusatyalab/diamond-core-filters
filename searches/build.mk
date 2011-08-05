@@ -1,5 +1,6 @@
 FILTERS =
-SEARCHES =
+CODECS =
+PREDICATES =
 
 include searches/dog_texture/build.mk
 include searches/gabor_texture/build.mk
@@ -13,11 +14,13 @@ include searches/shingling/build.mk
 include searches/text_attr/build.mk
 include searches/thumbnailer/build.mk
 
-CLEANFILES  = $(SEARCHES)
-EXTRA_DIST += $(SEARCHES:.search=.xml)
+CLEANFILES  = $(CODECS) $(PREDICATES)
+EXTRA_DIST += $(PREDICATES:.codec=.xml) $(PREDICATES:.pred=.xml)
 
 AM_V_BUNDLE   = $(AM_V_BUNDLE_$(V))
 AM_V_BUNDLE_  = $(AM_V_BUNDLE_$(AM_DEFAULT_VERBOSITY))
 AM_V_BUNDLE_0 = @echo "  BUNDLE" $@;
-%.search: %.xml
-	$(AM_V_BUNDLE) $(DIAMOND_BUNDLE_SEARCH) -o $@ $^
+%.pred: %.xml
+	$(AM_V_BUNDLE) $(DIAMOND_BUNDLE_PREDICATE) -o $@ $^
+%.codec: %.xml
+	$(AM_V_BUNDLE) $(DIAMOND_BUNDLE_PREDICATE) -o $@ $^

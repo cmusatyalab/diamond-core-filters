@@ -24,6 +24,8 @@ include searches/build.mk
 
 noinst_LIBRARIES = lib/libsnapfind.a
 filterdir = $(datadir)/diamond/filters
-searchdir = $(datadir)/diamond/searches
+codecdir = $(datadir)/diamond/codecs
+predicatedir = $(datadir)/diamond/predicates
 filter_PROGRAMS = $(FILTERS)
-search_DATA = $(SEARCHES)
+codec_DATA = $(CODECS)
+predicate_DATA = $(PREDICATES)

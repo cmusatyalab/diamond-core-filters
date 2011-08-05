@@ -1,5 +1,5 @@
-FILTERS  += searches/ocv_face/fil_ocv
-SEARCHES += searches/ocv_face/ocv.search
+FILTERS    += searches/ocv_face/fil_ocv
+PREDICATES += searches/ocv_face/ocv.pred
 
 searches_ocv_face_fil_ocv_SOURCES = \
 	searches/ocv_face/fil_ocv.c \
@@ -20,4 +20,4 @@ OCV_FACE_BUNDLE = \
 
 EXTRA_DIST += $(OCV_FACE_BUNDLE)
 
-searches/ocv_face/ocv.search: $(OCV_FACE_BUNDLE)
+searches/ocv_face/ocv.pred: $(OCV_FACE_BUNDLE)

@@ -1,5 +1,5 @@
-FILTERS  += searches/gabor_texture/fil_gabor_texture
-SEARCHES += searches/gabor_texture/gabor_texture.search
+FILTERS    += searches/gabor_texture/fil_gabor_texture
+PREDICATES += searches/gabor_texture/gabor_texture.pred
 
 searches_gabor_texture_fil_gabor_texture_SOURCES = \
 	searches/gabor_texture/fil_gab_texture.cc \

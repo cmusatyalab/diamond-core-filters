@@ -1,5 +1,5 @@
-FILTERS  += searches/shingling/fil_shingling
-SEARCHES += searches/shingling/shingling.search
+FILTERS    += searches/shingling/fil_shingling
+PREDICATES += searches/shingling/shingling.pred
 
 searches_shingling_fil_shingling_SOURCES = \
 	searches/shingling/fil_shingling.c \

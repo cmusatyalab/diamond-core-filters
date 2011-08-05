@@ -1,5 +1,5 @@
-FILTERS  += searches/dog_texture/fil_dog_texture
-SEARCHES += searches/dog_texture/dog_texture.search
+FILTERS    += searches/dog_texture/fil_dog_texture
+PREDICATES += searches/dog_texture/dog_texture.pred
 
 searches_dog_texture_fil_dog_texture_SOURCES = \
 	searches/dog_texture/fil_texture.c \

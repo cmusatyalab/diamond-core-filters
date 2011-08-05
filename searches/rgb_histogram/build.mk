@@ -1,5 +1,5 @@
-FILTERS  += searches/rgb_histogram/fil_rgb_histo
-SEARCHES += searches/rgb_histogram/rgb_histo.search
+FILTERS    += searches/rgb_histogram/fil_rgb_histo
+PREDICATES += searches/rgb_histogram/rgb_histo.pred
 
 searches_rgb_histogram_fil_rgb_histo_SOURCES = \
 	searches/rgb_histogram/fil_rgb_histo.c \

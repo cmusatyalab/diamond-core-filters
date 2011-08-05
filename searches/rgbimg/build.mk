@@ -1,5 +1,5 @@
-FILTERS  += searches/rgbimg/fil_rgb
-SEARCHES += searches/rgbimg/rgb.search
+FILTERS += searches/rgbimg/fil_rgb
+CODECS  += searches/rgbimg/rgb.codec
 
 searches_rgbimg_fil_rgb_SOURCES = \
 	searches/rgbimg/fil_rgb.c
