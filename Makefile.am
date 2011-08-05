@@ -19,8 +19,16 @@ AM_CFLAGS   += -fdata-sections -ffunction-sections
 AM_CXXFLAGS += -fdata-sections -ffunction-sections
 AM_LDFLAGS  += -Wl,--gc-sections
 
+AM_V_BUNDLE   = $(AM_V_BUNDLE_$(V))
+AM_V_BUNDLE_  = $(AM_V_BUNDLE_$(AM_DEFAULT_VERBOSITY))
+AM_V_BUNDLE_0 = @echo "  BUNDLE" $@;
+BUNDLE_COMMAND = $(AM_V_BUNDLE) $(DIAMOND_BUNDLE_PREDICATE) -o $@ $^
+
+CLEANFILES =
 include lib/build.mk
 include searches/build.mk
+include codecs/build.mk
+include predicates/build.mk
 
 noinst_LIBRARIES = lib/libsnapfind.a
 filterdir = $(datadir)/diamond/filters

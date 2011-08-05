@@ -73,4 +73,5 @@ AC_ARG_WITH(buildroot,
     ) 
 
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_COMMANDS([mkdir], [$MKDIR_P codecs predicates])
 AC_OUTPUT

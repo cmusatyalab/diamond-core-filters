@@ -1,5 +1,4 @@
 FILTERS    += searches/img_diff/fil_img_diff
-PREDICATES += searches/img_diff/img_diff.pred
 
 searches_img_diff_fil_img_diff_SOURCES = \
 	searches/img_diff/fil_img_diff.c \
