@@ -1,7 +1,5 @@
 #
-#  SnapFind
-#  An interactive image search application
-#  Version 1
+#  Diamond Core Filters - collected filters for the Diamond platform
 #
 #  Copyright (c) 2002-2005 Intel Corporation
 #  All Rights Reserved.

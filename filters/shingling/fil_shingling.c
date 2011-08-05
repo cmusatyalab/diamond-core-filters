@@ -1,7 +1,5 @@
 /*
- *  SnapFind
- *  An interactive image search application
- *  Version 1
+ *  Diamond Core Filters - collected filters for the Diamond platform
  *
  *  Copyright (c) 2009 Carnegie Mellon University
  *  All Rights Reserved.
@@ -141,7 +139,7 @@ static int f_init_shingling(int numarg, const char * const *args,
     state = malloc(sizeof(*state));
 
     /* initialize rabin poly */
-    state->rpoly = rabin_init(SNAPFIND_POLY, W);
+    state->rpoly = rabin_init(FILTER_POLY, W);
 
     /* allocate the example set */
     N = fragment_len - W;

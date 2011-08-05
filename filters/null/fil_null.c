@@ -1,7 +1,5 @@
 /*
- *  SnapFind
- *  An interactive image search application
- *  Version 1
+ *  Diamond Core Filters - collected filters for the Diamond platform
  *
  *  Copyright (c) 2009 Carnegie Mellon University
  *  All Rights Reserved.

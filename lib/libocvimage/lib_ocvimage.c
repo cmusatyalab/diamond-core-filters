@@ -1,9 +1,8 @@
 /*
- * 	SnapFind (Release 0.9)
- *      An interactive image search application
+ *  Diamond Core Filters - collected filters for the Diamond platform
  *
- *      Copyright (c) 2002-2005 Intel Corporation
- *      All Rights Reserved
+ *  Copyright (c) 2002-2005 Intel Corporation
+ *  All Rights Reserved
  *
  *  This software is distributed under the terms of the Eclipse Public
  *  License, Version 1.0 which can be found in the file named LICENSE.

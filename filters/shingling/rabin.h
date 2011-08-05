@@ -1,7 +1,5 @@
 /*
- *  SnapFind
- *  An interactive image search application
- *  Version 1
+ *  Diamond Core Filters - collected filters for the Diamond platform
  *
  *  Copyright (c) 2009 Carnegie Mellon University
  *  All Rights Reserved.
@@ -18,7 +16,7 @@
 #include <stdint.h>
 
 /* 64-bit irreducible polynomial */
-#define SNAPFIND_POLY 0xd16a5bde9d0fd0c5ULL
+#define FILTER_POLY 0xd16a5bde9d0fd0c5ULL
 
 
 struct rabin_state {
