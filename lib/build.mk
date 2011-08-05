@@ -1,4 +1,4 @@
-lib_libsnapfind_a_SOURCES = \
+lib_libhelper_a_SOURCES = \
 	lib/libocvimage/lib_ocvimage.c \
 	lib/libresults/lib_results.c \
 	lib/libsfimage/examples.c \

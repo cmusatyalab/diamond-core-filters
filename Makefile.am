@@ -11,7 +11,7 @@ AM_CFLAGS   += -W -Wall -Wno-unused-parameter
 AM_CXXFLAGS += -W -Wall -Wno-unused-parameter
 AM_CFLAGS   += -Werror-implicit-function-declaration
 AM_LDFLAGS   = -pthread
-LDADD        = lib/libsnapfind.a $(STATIC_LIBS) $(CVLDFLAGS)
+LDADD        = lib/libhelper.a $(STATIC_LIBS) $(CVLDFLAGS)
 LDADD       += $(OPENDIAMOND_LIBS)
 
 # Filter size reduction
@@ -30,7 +30,7 @@ include filters/build.mk
 include codecs/build.mk
 include predicates/build.mk
 
-noinst_LIBRARIES = lib/libsnapfind.a
+noinst_LIBRARIES = lib/libhelper.a
 filterdir = $(datadir)/diamond/filters
 codecdir = $(datadir)/diamond/codecs
 predicatedir = $(datadir)/diamond/predicates
