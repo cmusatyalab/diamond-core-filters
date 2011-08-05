@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<search xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+<predicate xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
     displayName="RGB Histogram">
   <options>
     <optionGroup displayName="RGB Histogram">
@@ -51,4 +51,4 @@
       </blob>
     </filter>
   </filters>
-</search>
+</predicate>
