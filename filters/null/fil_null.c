@@ -1,7 +1,7 @@
 /*
  *  Diamond Core Filters - collected filters for the Diamond platform
  *
- *  Copyright (c) 2009 Carnegie Mellon University
+ *  Copyright (c) 2009-2011 Carnegie Mellon University
  *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
