@@ -30,7 +30,7 @@
 #include "opencv_face_tools.h"
 #include "rgb.h"
 #include "opencv_face.h"
-#include "lib_sfimage.h"
+#include "lib_filimage.h"
 
 
 #define compute_sum(ii,x,y,xsiz,ysiz) (			\

@@ -23,7 +23,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-#include "lib_sfimage.h"
+#include "lib_filimage.h"
 
 #define EXAMPLE_DIR "examples"
 

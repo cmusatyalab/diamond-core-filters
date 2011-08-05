@@ -21,7 +21,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include "lib_results.h"
-#include "lib_sfimage.h"
+#include "lib_filimage.h"
 #include "rgb.h"
 
 #define	RED_SCALE	205

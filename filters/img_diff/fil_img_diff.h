@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include "lib_filter.h"
 #include <sys/queue.h>
-#include "lib_sfimage.h"
+#include "lib_filimage.h"
 
 typedef struct img_diff_config
 {

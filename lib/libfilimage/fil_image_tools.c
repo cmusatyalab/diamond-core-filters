@@ -19,7 +19,7 @@
 
 #include "rgb.h"		// for image_type_h
 #include "lib_results.h"
-#include "lib_sfimage.h"
+#include "lib_filimage.h"
 #include "readjpeg.h"
 #include "readtiff.h"
 #include "readpng.h"

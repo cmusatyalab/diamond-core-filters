@@ -6,7 +6,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.11 foreign subdir-objects])
 AM_SILENT_RULES([yes])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([include/lib_sfimage.h])
+AC_CONFIG_SRCDIR([include/lib_filimage.h])
 AC_CONFIG_HEADER([config.h])
 
 # Checks for the standard compile programs 

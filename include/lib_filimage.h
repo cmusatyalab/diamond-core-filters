@@ -14,8 +14,8 @@
  *  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-#ifndef	_LIB_SFIMAGE_H_
-#define	_LIB_SFIMAGE_H_	1
+#ifndef	_LIB_FILIMAGE_H_
+#define	_LIB_FILIMAGE_H_	1
 
 #include <stdint.h>
 #include <stdio.h>
@@ -55,4 +55,4 @@ void free_examples(example_list_t *examples);
 #ifdef __cplusplus
 }
 #endif
-#endif                          /* ! _LIB_SFIMAGE_H_ */
+#endif                          /* ! _LIB_FILIMAGE_H_ */

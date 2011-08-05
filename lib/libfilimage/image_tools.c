@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "lib_results.h"
-#include "lib_sfimage.h"
+#include "lib_filimage.h"
 
 /*
  * note: should make these functions localized 

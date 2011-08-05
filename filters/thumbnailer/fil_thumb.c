@@ -27,7 +27,7 @@
 #include <assert.h>
 #include "lib_results.h"
 #include "lib_filter.h"
-#include "lib_sfimage.h"
+#include "lib_filimage.h"
 #include "rgb.h"
 
 #include <jpeglib.h>

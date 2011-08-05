@@ -30,7 +30,7 @@
 #include "lib_filter.h"
 #include "lib_results.h"
 #include "fil_img_diff.h"
-#include "lib_sfimage.h"
+#include "lib_filimage.h"
 
 double image_diff(const RGBImage* img1, const RGBImage* img2,
 	bbox_list_t *bbox);
