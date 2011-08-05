@@ -26,7 +26,7 @@ BUNDLE_COMMAND = $(AM_V_BUNDLE) $(DIAMOND_BUNDLE_PREDICATE) -o $@ $^
 
 CLEANFILES =
 include lib/build.mk
-include searches/build.mk
+include filters/build.mk
 include codecs/build.mk
 include predicates/build.mk
 
