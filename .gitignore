@@ -5,7 +5,8 @@ Makefile
 Makefile.in
 *.a
 *.o
-*.search
+*.codec
+*.pred
 
 /autom4te.cache
 /aclocal.m4
