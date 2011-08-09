@@ -22,8 +22,8 @@ RGBImage* convertPNGtoRGBImage(const void *buf, size_t size)
 	FILE *fp;
 	png_structp png = NULL;
 	png_infop info = NULL;
-	RGBImage *img = NULL;
-	png_bytepp rows = NULL;
+	volatile RGBImage *img = NULL;
+	volatile png_bytepp rows = NULL;
 	uint32_t nbytes, width, height, y;
 
 	/* Allocate structures */
@@ -68,10 +68,6 @@ RGBImage* convertPNGtoRGBImage(const void *buf, size_t size)
 	for (y = 0; y < height; y++)
 		rows[y] = (png_bytep) &img->data[y * width];
 
-	/* Commit image allocations for error handling */
-	if (setjmp(png_jmpbuf(png)))
-		goto bad;
-
 	/* Read image */
 	png_read_image(png, rows);
 
@@ -81,10 +77,10 @@ RGBImage* convertPNGtoRGBImage(const void *buf, size_t size)
 	free(rows);
 	fclose(fp);
 
-	return img;
+	return (RGBImage *) img;
 bad:
 	free(rows);
-	free(img);
+	free((void *) img);
 	if (png != NULL || info != NULL)
 		png_destroy_read_struct(&png, &info, NULL);
 	if (fp != NULL)
