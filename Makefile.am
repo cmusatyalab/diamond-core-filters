@@ -10,7 +10,7 @@ AM_CFLAGS   += -W -Wall -Wno-unused-parameter
 AM_CXXFLAGS += -W -Wall -Wno-unused-parameter
 AM_CFLAGS   += -Werror-implicit-function-declaration
 AM_LDFLAGS   = -pthread
-LDADD        = lib/libhelper.a $(STATIC_LIBS) $(CVLDFLAGS)
+LDADD        = lib/libhelper.a $(CVLDFLAGS) $(STATIC_LIBS)
 LDADD       += $(OPENDIAMOND_LIBS)
 
 # Filter size reduction
