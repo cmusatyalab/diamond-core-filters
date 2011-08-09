@@ -45,7 +45,7 @@ ADD_LIB_SEARCH([/lib])
 # Checks for libraries.
 
 # Look for the various diamond libraries that we need
-PKG_CHECK_MODULES(OPENDIAMOND, [opendiamond >= 6.1])
+PKG_CHECK_MODULES(OPENDIAMOND, [opendiamond >= 7.0])
 AC_SUBST(DIAMOND_BUNDLE_PREDICATE,
     [$($PKG_CONFIG opendiamond --variable=bindir)/diamond-bundle-predicate])
 
