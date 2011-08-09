@@ -74,7 +74,6 @@ pnm_parse_header(char *buf, size_t buflen,
 	char           *endptr;
 	char           *startbuf,
 	*endbuf;
-	int             maxval;
 
 	/*
 	 * we are assuming that buflen > sizeof the whole header XXX 
@@ -124,7 +123,7 @@ pnm_parse_header(char *buf, size_t buflen,
 	/*
 	 * maxval 
 	 */
-	maxval = strtol(buf, &endptr, 0);
+	(void) strtol(buf, &endptr, 0);
 	buf = endptr;
 
 	/*

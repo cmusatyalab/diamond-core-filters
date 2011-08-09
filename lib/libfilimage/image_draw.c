@@ -61,8 +61,6 @@ image_gen_image_scale(RGBImage * data, int scale)
 	double          cum_r, cum_g, cum_b;
 	double          avg_r, avg_g, avg_b;
 	double          min_color, max_color;
-	double          diff;
-	u_char          red, green, blue;
 	int             x_scale, y_scale;
 	int		columns, rows, nbytes;
 
@@ -97,20 +95,15 @@ image_gen_image_scale(RGBImage * data, int scale)
 	min_color = 0;
 	max_color = 255;
 
-	/*
-	 * Compute some constants that we will need.
-	 */
-	diff = max_color - min_color;
 #ifdef VERBOSE
-
-	fprintf(stderr, "min color %f max %f diff %f \n", min_color, max_color, diff);
+	fprintf(stderr, "min color %f max %f diff %f \n", min_color, max_color,
+	                        max_color - min_color);
 	fprintf(stderr, "orig row %d col %d \n", data->columns, data->rows);
 	fprintf(stderr, "scaled row %d col %d \n", img->columns, img->rows);
 #endif
 
 	for (y = 0; y < img->rows; y++) {
 		for (x = 0; x < img->columns; x++) {
-			red = green = blue = 0;
 			y_scale = y * scale;
 			x_scale = x * scale;
 

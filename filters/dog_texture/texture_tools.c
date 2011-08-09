@@ -30,8 +30,6 @@ texture_test_entire_image_mahalanobis(IplImage * img, texture_args_t * targs,
 
 	double          variance[NUM_LAP_PYR_LEVELS * TEXTURE_MAX_CHANNELS];
 	double          mean[NUM_LAP_PYR_LEVELS * TEXTURE_MAX_CHANNELS];
-	double          ave_sample_mean_diff[NUM_LAP_PYR_LEVELS *
-	                                     TEXTURE_MAX_CHANNELS];
 
 	double          distance;
 	double          min_distance;   // min distance for one window from all
@@ -75,33 +73,6 @@ texture_test_entire_image_mahalanobis(IplImage * img, texture_args_t * targs,
 
 		}
 
-	}
-
-	/*
-	 * set default weights for if only one sample is given Note: these may
-	 * not be optimal.. based on grass and waves 
-	 */
-	if (targs->num_samples <= 1) {
-		for (i = 0; i < NUM_LAP_PYR_LEVELS * targs->num_channels; i++) {
-			if (i / targs->num_channels == 0) {
-				ave_sample_mean_diff[i] = 2.6;
-			}
-			if (i / targs->num_channels == 1) {
-				ave_sample_mean_diff[i] = 90.0;
-			}
-			if (i / targs->num_channels == 2) {
-				ave_sample_mean_diff[i] = 4.5;
-			}
-			if (i / targs->num_channels == 3) {
-				ave_sample_mean_diff[i] = 90.0;
-			}
-			if (i / targs->num_channels == 4) {
-				ave_sample_mean_diff[i] = 10.0;
-			}
-			if (i / targs->num_channels > 4) {
-				ave_sample_mean_diff[i] = 50.0;
-			}
-		}
 	}
 
 	/*

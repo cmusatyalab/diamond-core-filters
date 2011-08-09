@@ -356,6 +356,7 @@ gabor_compute_ii_img(RGBImage * img, gtexture_args_t * gargs,
 			y = yoff + 1;
 			err = gargs->gobj->get_responses(fimg, xoff, yoff,
 			                                 gii_img->num_resp, respv, 1);
+			assert(err == 0);
 
 			/* get the II by do the adds/subtracts */
 			gabor_response_add(gii_img->num_resp, respv,
