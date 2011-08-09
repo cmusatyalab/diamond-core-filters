@@ -5,7 +5,6 @@ AC_INIT([Diamond Core Filters], [2.0], [diamond@cs.cmu.edu])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.11 foreign subdir-objects])
 AM_SILENT_RULES([yes])
-AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([include/lib_filimage.h])
 AC_CONFIG_HEADER([config.h])
 
