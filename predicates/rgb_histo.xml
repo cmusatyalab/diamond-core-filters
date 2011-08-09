@@ -9,7 +9,7 @@
           name="interpolated" default="true"/>
       <exampleOption displayName="Examples" name="examples"/>
     </optionGroup>
-    <optionGroup displayName="Window Search">
+    <optionGroup displayName="Search Window">
       <numberOption displayName="Scale" name="scale"
           default="1" min="1" max="200" step=".25"/>
       <numberOption displayName="Test X" name="testx"
