@@ -4,10 +4,10 @@
   <options>
     <numberOption displayName="Min similarity" name="similarity"
         default="80" min="0" max="100"/>
-    <choiceOption displayName="Hash function" name="function">
+    <!-- choiceOption displayName="Hash function" name="function">
       <choice displayName="Average Hash" value="average"/>
       <choice displayName="pHash" value="phash"/>
-    </choiceOption>
+    </choiceOption -->
     <choiceOption displayName="Hash size" name="size">
       <choice displayName="8x8 pixels" value="8"/>
       <choice displayName="16x16 pixels" value="16"/>
@@ -22,7 +22,7 @@
         <dependency fixedName="RGB"/>
       </dependencies>
       <arguments>
-        <argument option="function"/>
+        <argument value="average"/>
         <argument option="size"/>
       </arguments>
       <blob>
