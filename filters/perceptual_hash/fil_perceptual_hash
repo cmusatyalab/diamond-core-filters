@@ -10,8 +10,8 @@
 #  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 
-# Average hash filter - find similar images using the average hash
-# algorithm as described at
+# Perceptual hash filter - find similar images using perceptual hashing.
+# Implements both average and phash algorithms as described at,
 # http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
 
 from opendiamond.filter import Filter
@@ -19,27 +19,41 @@ from opendiamond.filter.parameters import *
 
 from PIL.Image import ANTIALIAS
 import numpy as np
+try:
+    from scipy.fftpack import dct
+except ImportError:
+    dct = None
 
 class HashFilter(Filter):
     params = (
+        StringParameter('function'),
         NumberParameter('size'),
     )
     load_examples = True
 
     def average_hash(self, img):
-        if not img.mode in ['RGB', 'RGBA']:
-            img = img.convert('RGB')
+        if img.mode != 'RGB': img = img.convert('RGB')
         img = img.resize((self.size, self.size), ANTIALIAS).convert('L')
-        mask = img < np.mean(img)
-        return mask
+        return img < np.mean(img)
+
+    def phash(self, img):
+        if img.mode != 'RGB': img = img.convert('RGB')
+        img = img.resize((32, 32), ANTIALIAS).convert('L')
+        img = np.array(img, dtype='float')
+        d = dct(dct(img, axis=0), axis=1)[:self.size,:self.size]
+        d[0,0] = 0
+        return d < np.mean(d)
 
     def __init__(self, *args, **kwargs):
         Filter.__init__(self, *args, **kwargs)
+        if self.function == 'average':
+              self.hash_function = self.average_hash
+        else: self.hash_function = self.phash
         self.size = int(self.size)
-        self.targets = [ self.average_hash(x) for x in self.examples ]
+        self.targets = [ self.hash_function(x) for x in self.examples ]
 
     def __call__(self, obj):
-        mask = self.average_hash(obj.image)
+        mask = self.hash_function(obj.image)
         distances = [ np.logical_xor(mask, t).sum() for t in self.targets ]
         return 100 - ((min(distances) * 100.0) / (self.size * self.size))
 

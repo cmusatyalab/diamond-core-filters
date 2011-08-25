@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <predicate xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
-    displayName="Average Hash">
+    displayName="Perceptual Hashing">
   <options>
     <numberOption displayName="Min similarity" name="similarity"
         default="80" min="0" max="100"/>
+    <choiceOption displayName="Hash function" name="function">
+      <choice displayName="Average Hash" value="average"/>
+      <choice displayName="pHash" value="phash"/>
+    </choiceOption>
     <choiceOption displayName="Hash size" name="size">
       <choice displayName="8x8 pixels" value="8"/>
       <choice displayName="16x16 pixels" value="16"/>
@@ -11,13 +15,14 @@
     <exampleOption displayName="Examples" name="examples"/>
   </options>
   <filters>
-    <filter code="fil_average_hash">
+    <filter code="fil_perceptual_hash">
       <minScore option="similarity"/>
       <dependencies>
         <!-- We need to run after the RGB image decoder -->
         <dependency fixedName="RGB"/>
       </dependencies>
       <arguments>
+        <argument option="function"/>
         <argument option="size"/>
       </arguments>
       <blob>
