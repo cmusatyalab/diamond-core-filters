@@ -2,6 +2,7 @@ CLEANFILES += $(PREDICATES)
 EXTRA_DIST += $(PREDICATES:.pred=.xml) $(OCV_FACE_BUNDLE)
 
 PREDICATES = \
+	predicates/average_hash.pred \
 	predicates/dog_texture.pred \
 	predicates/gabor_texture.pred \
 	predicates/img_diff.pred \

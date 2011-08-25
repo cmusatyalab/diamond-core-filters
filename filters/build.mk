@@ -1,5 +1,7 @@
 FILTERS =
+FILTERSCRIPTS =
 
+include filters/average_hash/build.mk
 include filters/dog_texture/build.mk
 include filters/gabor_texture/build.mk
 include filters/img_diff/build.mk

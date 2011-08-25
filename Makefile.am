@@ -34,5 +34,6 @@ filterdir = $(datadir)/diamond/filters
 codecdir = $(datadir)/diamond/codecs
 predicatedir = $(datadir)/diamond/predicates
 filter_PROGRAMS = $(FILTERS)
+dist_filter_SCRIPTS = $(FILTERSCRIPTS)
 codec_DATA = $(CODECS)
 predicate_DATA = $(PREDICATES)

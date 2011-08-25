@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<predicate xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
+    displayName="Average Hash">
+  <options>
+    <numberOption displayName="Min similarity" name="similarity"
+        default="80" min="0" max="100"/>
+    <choiceOption displayName="Hash size" name="size">
+      <choice displayName="8x8 pixels" value="8"/>
+      <choice displayName="16x16 pixels" value="16"/>
+    </choiceOption>
+    <exampleOption displayName="Examples" name="examples"/>
+  </options>
+  <filters>
+    <filter code="fil_average_hash">
+      <minScore option="similarity"/>
+      <dependencies>
+        <!-- We need to run after the RGB image decoder -->
+        <dependency fixedName="RGB"/>
+      </dependencies>
+      <arguments>
+        <argument option="size"/>
+      </arguments>
+      <blob>
+        <examples/>
+      </blob>
+    </filter>
+  </filters>
+</predicate>

@@ -1,0 +1,48 @@
+#!/usr/bin/python
+#
+#  Diamond Core Filters - collected filters for the Diamond platform
+#
+#  Copyright (c) 2011 Carnegie Mellon University
+#  All Rights Reserved.
+#
+#  This software is distributed under the terms of the Eclipse Public
+#  License, Version 1.0 which can be found in the file named LICENSE.
+#  ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+#  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+
+# Average hash filter - find similar images using the average hash
+# algorithm as described at
+# http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
+
+from opendiamond.filter import Filter
+from opendiamond.filter.parameters import *
+
+from PIL.Image import ANTIALIAS
+import numpy as np
+
+class HashFilter(Filter):
+    params = (
+        NumberParameter('size'),
+    )
+    load_examples = True
+
+    def average_hash(self, img):
+        if not img.mode in ['RGB', 'RGBA']:
+            img = img.convert('RGB')
+        img = img.resize((self.size, self.size), ANTIALIAS).convert('L')
+        mask = img < np.mean(img)
+        return mask
+
+    def __init__(self, *args, **kwargs):
+        Filter.__init__(self, *args, **kwargs)
+        self.size = int(self.size)
+        self.targets = [ self.average_hash(x) for x in self.examples ]
+
+    def __call__(self, obj):
+        mask = self.average_hash(obj.image)
+        distances = [ np.logical_xor(mask, t).sum() for t in self.targets ]
+        return 100 - ((min(distances) * 100.0) / (self.size * self.size))
+
+if __name__ == '__main__':
+    HashFilter.run()
+
