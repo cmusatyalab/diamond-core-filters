@@ -11,7 +11,7 @@
 #  RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 
 # Perceptual hash filter - find similar images using perceptual hashing.
-# Implements both average and phash algorithms as described at,
+# Implements both average and phash (dct_hash here) algorithms as described at,
 # http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
 
 from opendiamond.filter import Filter
@@ -19,10 +19,23 @@ from opendiamond.filter.parameters import *
 
 from PIL.Image import ANTIALIAS
 import numpy as np
+
 try:
     from scipy.fftpack import dct
+    def dct2D(M):
+        return dct(dct(M, axis=0), axis=1)
 except ImportError:
-    dct = None
+    import math
+    def __dct_transform(N):
+        tmp = np.zeros((N,N))
+        for (i,j),_ in np.ndenumerate(tmp):
+            tmp[i,j] = math.sqrt(2.0/N)*math.cos((math.pi/N)*(i+0.5)*j)
+        return tmp
+    __dct_transform32 = __dct_transform(32)
+    def dct2D(M):
+        tmp = np.dot(M, __dct_transform32)
+        tmp = np.dot(tmp.T, __dct_transform32)
+        return tmp.T
 
 class HashFilter(Filter):
     params = (
@@ -36,11 +49,11 @@ class HashFilter(Filter):
         img = img.resize((self.size, self.size), ANTIALIAS).convert('L')
         return img < np.mean(img)
 
-    def phash(self, img):
+    def dct_hash(self, img):
         if img.mode != 'RGB': img = img.convert('RGB')
         img = img.resize((32, 32), ANTIALIAS).convert('L')
         img = np.array(img, dtype='float')
-        d = dct(dct(img, axis=0), axis=1)[:self.size,:self.size]
+        d = dct2D(img)[:self.size,:self.size]
         d[0,0] = 0
         return d < np.mean(d)
 
@@ -48,7 +61,7 @@ class HashFilter(Filter):
         Filter.__init__(self, *args, **kwargs)
         if self.function == 'average':
               self.hash_function = self.average_hash
-        else: self.hash_function = self.phash
+        else: self.hash_function = self.dct_hash
         self.size = int(self.size)
         self.targets = [ self.hash_function(x) for x in self.examples ]
 

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <predicate xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1"
-    displayName="Perceptual Hashing">
+    displayName="Perceptual Hash">
   <options>
     <numberOption displayName="Min similarity" name="similarity"
         default="80" min="0" max="100"/>
-    <!-- choiceOption displayName="Hash function" name="function">
+    <choiceOption displayName="Hash function" name="function">
       <choice displayName="Average Hash" value="average"/>
-      <choice displayName="pHash" value="phash"/>
-    </choiceOption -->
+      <choice displayName="DCT Hash" value="dct" default="true"/>
+    </choiceOption>
     <choiceOption displayName="Hash size" name="size">
       <choice displayName="8x8 pixels" value="8"/>
       <choice displayName="16x16 pixels" value="16"/>
@@ -22,7 +22,7 @@
         <dependency fixedName="RGB"/>
       </dependencies>
       <arguments>
-        <argument value="average"/>
+        <argument option="function"/>
         <argument option="size"/>
       </arguments>
       <blob>
