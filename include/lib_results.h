@@ -24,17 +24,17 @@
 typedef int32_t dim_t;
 
 typedef struct patch {
-    int                                 min_x;
-    int                                 min_y;
-    int                                 max_x;
-    int                                 max_y;
+    dim_t                               min_x;
+    dim_t                               min_y;
+    dim_t                               max_x;
+    dim_t                               max_y;
 } patch_t;
 
 typedef struct bbox {
-    int                                 min_x;
-    int                                 min_y;
-    int                                 max_x;
-    int                                 max_y;
+    dim_t                               min_x;
+    dim_t                               min_y;
+    dim_t                               max_x;
+    dim_t                               max_y;
     double                              distance;
     TAILQ_ENTRY(bbox)   link;
 } bbox_t;
@@ -44,7 +44,7 @@ typedef TAILQ_HEAD(bbox_list_t, bbox)   bbox_list_t;
 
 
 typedef struct img_patches {
-	int		num_patches;
+	dim_t		num_patches;
 	double		distance;
 	patch_t		patches[0];	
 } img_patches_t;
