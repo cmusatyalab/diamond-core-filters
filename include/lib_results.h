@@ -43,7 +43,7 @@ typedef TAILQ_HEAD(bbox_list_t, bbox)   bbox_list_t;
 
 
 
-typedef struct img_patches {
+typedef struct __attribute__((packed)) img_patches {
 	dim_t		num_patches;
 	double		distance;
 	patch_t		patches[0];	
