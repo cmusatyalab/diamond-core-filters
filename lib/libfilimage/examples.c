@@ -46,9 +46,14 @@ void load_examples(const void *data, size_t len, example_list_t *examples)
 	if (archive_read_open_memory(arch, (void *) data, len))
 		abort();
 	while (!(ret = archive_read_next_header(arch, &ent))) {
-		if (!S_ISREG(archive_entry_filetype(ent)))
-			continue;
 		path = archive_entry_pathname(ent);
+		/* On libarchive 3.0.1 to 3.0.3, archive_entry_filetype()
+		   always returns AE_IFREG if the underlying stream is
+		   seekable. Look for a trailing slash to ensure that we
+		   properly skip directories. */
+		if (!S_ISREG(archive_entry_filetype(ent)) ||
+				path[strlen(path) - 1] == '/')
+			continue;
 		if (strncmp(path, EXAMPLE_DIR "/", strlen(EXAMPLE_DIR) + 1))
 			continue;
 		/* archive_entry_size() is not reliable for Zip files */
