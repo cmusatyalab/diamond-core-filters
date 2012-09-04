@@ -21,7 +21,8 @@
 #include <stdint.h>
 
 #include "lib_ocvimage.h"
-#include <opencv/cvaux.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 #include <sys/queue.h>
 
@@ -64,8 +65,10 @@ opencv_face_scan(RGBImage *rgb, bbox_list_t *blist, opencv_fdetect_t *fconfig)
 
 	/* XXX fix args */
 	CvSize minSize = { 20, 20 };
+	CvSize maxSize = { 0, 0 };
 	faces = cvHaarDetectObjects(gray, fconfig->haar_cascade, storage,
-	                            fconfig->scale_mult, fconfig->support, CV_HAAR_DO_CANNY_PRUNING, minSize);
+	                            fconfig->scale_mult, fconfig->support,
+	                            CV_HAAR_DO_CANNY_PRUNING, minSize, maxSize);
 
 
 	/* XXX who cleans up the faces */

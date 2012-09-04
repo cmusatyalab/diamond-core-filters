@@ -15,7 +15,8 @@
 
 #include <sys/types.h>
 #include "lib_ocvimage.h"
-#include <opencv/cvaux.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 #include "lib_results.h"
 #include <sys/queue.h>
 

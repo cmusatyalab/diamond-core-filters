@@ -25,7 +25,8 @@
 #include <unistd.h>
 
 #include "lib_ocvimage.h"
-#include <opencv/cvaux.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 #include "lib_filter.h"
 #include "rgb.h"
