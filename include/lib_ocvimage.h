@@ -23,15 +23,6 @@
 #ifndef __cplusplus
 #define CV_INLINE static inline
 #endif
-
-/* cvcompat.h has inline functions with unused variables.  Luckily, we can
-   avoid including it. */
-#define CV_NO_BACKWARD_COMPATIBILITY
-
-/* ...except that cvaux.h uses some deprecated names.  Copy the relevant
-   redefinitions from cvcompat.h. */
-#define CvPoint3D64d CvPoint3D64f
-#define CvPoint2D64d CvPoint2D64f
 /*****************/
 
 
