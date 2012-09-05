@@ -25,12 +25,12 @@ AC_ARG_WITH(staticlib,
 AC_ARG_WITH(opencv, 
     [AS_HELP_STRING([--with-opencv=DIR], [root of opencv install dir])],
     [ pfx="`(cd ${withval} ; pwd)`"
-      CVCPPFLAGS="-I${pfx}/include/ -I${pfx}/include/opencv/"
-      CVLDFLAGS=" ${pfx}/lib/libcvaux.a ${pfx}/lib/libcv.a ${pfx}/lib/libcxcore.a"
+      CVCPPFLAGS="-I${pfx}/include"
+      CVLDFLAGS=" ${pfx}/lib/libopencv_objdetect.a ${pfx}/lib/libopencv_imgproc.a ${pfx}/lib/libopencv_core.a -lrt"
       ADD_LIB_SEARCH(${pfx}/lib)
     ],
-    [ CVCPPFLAGS="-I/opt/diamond-filter-kit/include -I/opt/diamond-filter-kit/include/opencv"
-      CVLDFLAGS=" -L/opt/diamond-filter-kit/lib -lcvaux -lcv -lcxcore"
+    [ CVCPPFLAGS="-I/opt/diamond-filter-kit/include"
+      CVLDFLAGS=" -L/opt/diamond-filter-kit/lib -lopencv_objdetect -lopencv_imgproc -lopencv_core -lrt"
     ])
 AC_SUBST(CVCPPFLAGS)
 AC_SUBST(CVLDFLAGS)
