@@ -39,6 +39,8 @@ AC_SUBST(CVLDFLAGS)
 # Paths to search for static libraries when building searchlet code.
 #
 ADD_LIB_SEARCH([/opt/diamond-filter-kit/lib])
+ADD_LIB_SEARCH([/usr/lib/x86_64-linux-gnu])
+ADD_LIB_SEARCH([/usr/lib/i386-linux-gnu])
 ADD_LIB_SEARCH([/usr/lib])
 ADD_LIB_SEARCH([/lib])
 
