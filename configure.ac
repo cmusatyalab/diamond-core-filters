@@ -58,6 +58,8 @@ CHECK_STATIC_LIB([libjpeg.a])
 CHECK_STATIC_LIB([libpng.a])
 CHECK_STATIC_LIB([libz.a])
 CHECK_STATIC_LIB([libarchive.a])
+CHECK_STATIC_LIB([libopencv_core.a])
+CHECK_STATIC_LIB([libopencv_highgui.a])
 
 OBJROOT=`pwd`
 AC_SUBST(OBJROOT)
