@@ -8,6 +8,9 @@ AM_SILENT_RULES([yes])
 AC_CONFIG_SRCDIR([include/lib_filimage.h])
 AC_CONFIG_HEADER([config.h])
 
+# Helps support multiarch by setting 'host_os' and 'host_cpu'
+AC_CANONICAL_HOST
+
 # Checks for the standard compile programs 
 AC_PROG_CXX
 AC_PROG_CC
@@ -21,6 +24,12 @@ AC_ARG_WITH(staticlib,
         [add DIR to search path for static libraries])],
     [ pfx="`(cd ${withval} ; pwd)`"
       ADD_LIB_SEARCH(${pfx})
+    ],
+    [ pfx="${host_cpu}-${host_os}"
+      # the below checks are Debian-specific; each OS needs special-casing for
+      # now :-(
+      AC_CHECK_FILE("/lib/${pfx}", [ADD_LIB_SEARCH("/lib/${pfx}")])
+      AC_CHECK_FILE("/usr/lib/${pfx}", [ADD_LIB_SEARCH("/usr/lib/${pfx}")])
     ])
 AC_ARG_WITH(opencv, 
     [AS_HELP_STRING([--with-opencv=DIR], [root of opencv install dir])],
