@@ -7,6 +7,7 @@ AM_INIT_AUTOMAKE([1.11 foreign subdir-objects])
 AM_SILENT_RULES([yes])
 AC_CONFIG_SRCDIR([include/lib_filimage.h])
 AC_CONFIG_HEADER([config.h])
+AC_CANONICAL_HOST
 
 # Checks for the standard compile programs 
 AC_PROG_CXX
@@ -39,7 +40,11 @@ AC_SUBST(CVLDFLAGS)
 # Paths to search for static libraries when building searchlet code.
 #
 ADD_LIB_SEARCH([/opt/diamond-filter-kit/lib])
+# Debian multiarch support
+pfx="${host_cpu}-${host_os}"
+AC_CHECK_FILE([/usr/lib/${pfx}], [ADD_LIB_SEARCH([/usr/lib/${pfx}])])
 ADD_LIB_SEARCH([/usr/lib])
+AC_CHECK_FILE([/lib/${pfx}], [ADD_LIB_SEARCH([/lib/${pfx}])])
 ADD_LIB_SEARCH([/lib])
 
 # Checks for libraries.
