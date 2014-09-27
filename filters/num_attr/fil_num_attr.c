@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/types.h>
-#include <regex.h>
 #include <assert.h>
 #include <string.h>
 #include "lib_filter.h"
