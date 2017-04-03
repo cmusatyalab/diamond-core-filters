@@ -79,7 +79,7 @@ void load_examples(const void *data, size_t len, example_list_t *examples)
 		free(buf);
 	}
 	assert(ret == ARCHIVE_EOF);
-	if (archive_read_finish(arch))
+	if (archive_read_free(arch))
 		abort();
 }
 
