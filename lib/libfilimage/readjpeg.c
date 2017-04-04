@@ -173,6 +173,10 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	} else {
 	  // setjmp returns again
 	  free(scanline);
+
+          if (rgbimg)
+            release_rgb_image(rgbimg);
+          rgbimg = NULL;
 	}
 
 	jpeg_finish_decompress(&cinfo);
