@@ -2,7 +2,8 @@ DISTCHECK_CONFIGURE_FLAGS = CFLAGS=-m32 CXXFLAGS=-m32 LDFLAGS=-m32
 
 EXTRA_DIST  = CREDITS INSTALL LICENSE
 
-AM_CPPFLAGS  = -I$(top_srcdir)/include $(CVCPPFLAGS) $(OPENDIAMOND_CFLAGS)
+AM_CPPFLAGS  = -I$(top_srcdir)/include
+AM_CPPFLAGS += $(FILTERLIBS_CFLAGS) $(OPENDIAMOND_CFLAGS)
 AM_CPPFLAGS += -pthread
 AM_CFLAGS    = -D_GNU_SOURCE -D_THREAD_SAFE -D_REENTRANT
 AM_CXXFLAGS  = -D_GNU_SOURCE -D_THREAD_SAFE -D_REENTRANT
@@ -10,7 +11,7 @@ AM_CFLAGS   += -W -Wall -Wno-unused-parameter
 AM_CXXFLAGS += -W -Wall -Wno-unused-parameter
 AM_CFLAGS   += -Werror-implicit-function-declaration
 AM_LDFLAGS   = -pthread
-LDADD        = lib/libhelper.a $(STATIC_LIBS)
+LDADD        = lib/libhelper.a $(FILTERLIBS_LIBS)
 LDADD       += $(OPENDIAMOND_LIBS)
 
 # Filter size reduction

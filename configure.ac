@@ -15,28 +15,9 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
 
-# Add command-line options.
-
-AC_ARG_WITH(staticlib, 
-    [AS_HELP_STRING([--with-staticlib=DIR],
-        [add DIR to search path for static libraries])],
-    [ pfx="`(cd ${withval} ; pwd)`"
-      ADD_LIB_SEARCH(${pfx})
-    ])
-AC_ARG_WITH(opencv, 
-    [AS_HELP_STRING([--with-opencv=DIR], [root of opencv install dir])],
-    [ pfx="`(cd ${withval} ; pwd)`"
-      CVCPPFLAGS="-I${pfx}/include"
-      ADD_LIB_SEARCH(${pfx}/lib)
-    ],
-    [ CVCPPFLAGS="-I/opt/diamond-filter-kit/include"
-    ])
-AC_SUBST(CVCPPFLAGS)
-
 #
 # Paths to search for static libraries when building searchlet code.
 #
-ADD_LIB_SEARCH([/opt/diamond-filter-kit/lib])
 # Debian multiarch support
 pfx="${host_cpu}-${host_os}"
 AC_CHECK_FILE([/usr/lib/${pfx}], [ADD_LIB_SEARCH([/usr/lib/${pfx}])])
@@ -45,24 +26,17 @@ AC_CHECK_FILE([/lib/${pfx}], [ADD_LIB_SEARCH([/lib/${pfx}])])
 ADD_LIB_SEARCH([/lib])
 
 # Checks for libraries.
+PKG_PROG_PKG_CONFIG
 
 # Look for the various diamond libraries that we need
 PKG_CHECK_MODULES(OPENDIAMOND, [opendiamond >= 7.0])
 AC_SUBST(DIAMOND_BUNDLE_PREDICATE,
     [$($PKG_CONFIG opendiamond --variable=bindir)/diamond-bundle-predicate])
 
-
 #
-# Find static libraries we need for compiling the searchlet code.
+# Find libraries we need for linking the searchlet code.
 #
-CHECK_STATIC_LIB([libopencv_objdetect.a])
-CHECK_STATIC_LIB([libopencv_imgproc.a])
-CHECK_STATIC_LIB([libopencv_core.a])
-CHECK_STATIC_LIB([libtiff.a])
-CHECK_STATIC_LIB([libjpeg.a])
-CHECK_STATIC_LIB([libpng.a])
-CHECK_STATIC_LIB([libz.a])
-CHECK_STATIC_LIB([libarchive.a])
+PKG_CHECK_MODULES(FILTERLIBS, [opencv libtiff-4 libjpeg libpng libarchive])
 
 OBJROOT=`pwd`
 AC_SUBST(OBJROOT)
