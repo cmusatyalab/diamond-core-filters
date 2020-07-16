@@ -3,7 +3,7 @@
  *
  *  Copyright (c) 2002-2005 Intel Corporation
  *  Copyright (c) 2006 Larry Huston <larry@thehustons.net>
- *  Copyright (c) 2010 Carnegie Mellon University
+ *  Copyright (c) 2010-2020 Carnegie Mellon University
  *  All Rights Reserved.
  *
  *  This software is distributed under the terms of the Eclipse Public
@@ -121,9 +121,7 @@ convertJPEGtoRGBImage(MyJPEG* jp)
 	  // cinfo.output_width
 	  // cinfo.output_height
 	  // cinfo.output_components	(3 for RGB, 1 for greyscale)
-	  // assert(cinfo.output_components == 3);
-	  if (!(cinfo.output_components == 3) ||
-	      (cinfo.output_components == 1)) {
+	  if (cinfo.output_components != 3 && cinfo.output_components != 1) {
 	    jpeg_destroy_decompress(&cinfo);
 	    return NULL;
 	  }
