@@ -30,8 +30,8 @@ PKG_PROG_PKG_CONFIG
 
 # Look for the various diamond libraries that we need
 PKG_CHECK_MODULES(OPENDIAMOND, [opendiamond >= 7.0])
-AC_SUBST(DIAMOND_BUNDLE_PREDICATE,
-    [$($PKG_CONFIG opendiamond --variable=bindir)/diamond-bundle-predicate])
+AC_PATH_PROG([DIAMOND_BUNDLE_PREDICATE], [diamond-bundle-predicate], [false],
+    [$PATH$PATH_SEPARATOR$($PKG_CONFIG opendiamond --variable=bindir)])
 
 #
 # Find libraries we need for linking the searchlet code.
